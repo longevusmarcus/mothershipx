@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { Users, TrendingUp, Clock, ArrowRight, Lock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +20,7 @@ interface ProblemCardProps {
 }
 
 export function ProblemCard({
+  id,
   title,
   category,
   sentiment,
@@ -29,6 +31,7 @@ export function ProblemCard({
   delay = 0,
   onClick,
 }: ProblemCardProps) {
+  const navigate = useNavigate();
   const slotsRemaining = slotsTotal - slotsFilled;
   const fillPercentage = (slotsFilled / slotsTotal) * 100;
 
@@ -47,7 +50,7 @@ export function ProblemCard({
       <Card
         variant={isLocked ? "default" : "interactive"}
         className={`relative overflow-hidden ${isLocked ? "opacity-60" : ""}`}
-        onClick={isLocked ? undefined : onClick}
+        onClick={isLocked ? undefined : () => { onClick?.(); navigate(`/problems/${id}`); }}
       >
         {isLocked && (
           <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-10">
