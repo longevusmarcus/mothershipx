@@ -10,10 +10,10 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
-  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { MothershipLogo } from "./MothershipLogo";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/" },
@@ -40,23 +40,7 @@ export function AppSidebar() {
     >
       {/* Logo */}
       <div className="h-16 flex items-center px-4 border-b border-sidebar-border">
-        <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-xl bg-gradient-primary flex items-center justify-center shadow-glow">
-            <Zap className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <AnimatePresence mode="wait">
-            {!collapsed && (
-              <motion.span
-                initial={{ opacity: 0, width: 0 }}
-                animate={{ opacity: 1, width: "auto" }}
-                exit={{ opacity: 0, width: 0 }}
-                className="font-bold text-lg tracking-tight overflow-hidden whitespace-nowrap"
-              >
-                Mothership
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </div>
+        <MothershipLogo collapsed={collapsed} />
       </div>
 
       {/* Main Nav */}
