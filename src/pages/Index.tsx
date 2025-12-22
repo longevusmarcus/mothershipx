@@ -1,10 +1,13 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Target, Rocket, Trophy, TrendingUp, Zap, Clock, ArrowRight } from "lucide-react";
+import { Target, Rocket, Trophy, TrendingUp, Zap, Clock, ArrowRight, Database } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { StatCard } from "@/components/StatCard";
 import { ProblemCard } from "@/components/ProblemCard";
 import { Leaderboard } from "@/components/Leaderboard";
 import { ActivityChart } from "@/components/ActivityChart";
+import { DataSourceSelector } from "@/components/DataSourceSelector";
+import { AITransformPanel } from "@/components/AITransformPanel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -60,6 +63,8 @@ const mockActivity = [
 ];
 
 const Index = () => {
+  const [selectedSources, setSelectedSources] = useState<string[]>(["reddit"]);
+
   return (
     <AppLayout title="Dashboard">
       <div className="space-y-6">
@@ -101,6 +106,41 @@ const Index = () => {
               <Progress value={82} size="lg" indicatorColor="gradient" />
             </div>
           </div>
+        </motion.div>
+
+        {/* Data Source Selection */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <Card variant="elevated">
+            <CardHeader className="pb-4">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Database className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <CardTitle className="text-base">Select Data Sources</CardTitle>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Choose platforms to discover pain points and opportunities
+                  </p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <DataSourceSelector onSelectionChange={setSelectedSources} />
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* AI Transform Panel */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <AITransformPanel selectedSources={selectedSources} />
         </motion.div>
 
         {/* Stats */}
