@@ -1,10 +1,14 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Search, Filter, TrendingUp, Zap } from "lucide-react";
+import { Search, Filter, TrendingUp, Zap, Database } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { ProblemCard } from "@/components/ProblemCard";
+import { DataSourceSelector } from "@/components/DataSourceSelector";
+import { AITransformPanel } from "@/components/AITransformPanel";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const categories = ["All", "Productivity", "UX/UI", "SMB Tools", "Developer Tools", "AI/ML"];
 
@@ -68,13 +72,51 @@ const mockProblems = [
 ];
 
 const Problems = () => {
+  const [selectedSources, setSelectedSources] = useState<string[]>(["reddit"]);
+
   return (
     <AppLayout title="Problem Discovery">
       <div className="space-y-6">
-        {/* Header */}
+        {/* Data Source Selection */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Card variant="elevated">
+            <CardHeader className="pb-4">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Database className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <CardTitle className="text-base">Select Data Sources</CardTitle>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Choose platforms to discover pain points and opportunities
+                  </p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <DataSourceSelector onSelectionChange={setSelectedSources} />
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* AI Transform Panel */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <AITransformPanel selectedSources={selectedSources} />
+        </motion.div>
+
+        {/* Search & Filters */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
           className="space-y-4"
         >
           <div className="flex flex-col md:flex-row md:items-center gap-4">
@@ -115,7 +157,7 @@ const Problems = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
+          transition={{ delay: 0.3 }}
           className="flex items-center justify-between p-4 rounded-xl bg-secondary/50 border border-border"
         >
           <div className="flex items-center gap-3">
