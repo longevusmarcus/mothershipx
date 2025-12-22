@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Plus, ExternalLink, Github, TrendingUp, BarChart3 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -46,6 +47,8 @@ const myBuilds = [
 ];
 
 const Builds = () => {
+  const navigate = useNavigate();
+
   return (
     <AppLayout title="My Builds">
       <div className="space-y-6">
@@ -60,7 +63,7 @@ const Builds = () => {
               Track your solutions and their market performance
             </p>
           </div>
-          <Button variant="glow">
+          <Button variant="glow" onClick={() => navigate("/submit")}>
             <Plus className="h-4 w-4 mr-2" />
             New Build
           </Button>
