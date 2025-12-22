@@ -3,9 +3,6 @@
 @import "@fontsource/sora/600.css";
 @import "@fontsource/sora/700.css";
 
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -51,21 +48,15 @@
     --warning: 38 92% 50%;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(262 83% 58%));
-    --gradient-accent: linear-gradient(135deg, hsl(262 83% 58%), hsl(330 81% 60%));
-    --gradient-success: linear-gradient(135deg, hsl(142 76% 36%), hsl(160 84% 39%));
-    --gradient-premium: linear-gradient(135deg, hsl(38 92% 50%), hsl(25 95% 53%));
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(234 89% 74%));
     --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 20% 98%));
     --gradient-glow: radial-gradient(ellipse at top, hsl(217 91% 60% / 0.15), transparent 50%);
-    --gradient-shimmer: linear-gradient(90deg, transparent, hsl(0 0% 100% / 0.4), transparent);
 
     /* Shadows */
     --shadow-sm: 0 1px 2px hsl(222 47% 11% / 0.05);
     --shadow-md: 0 4px 12px hsl(222 47% 11% / 0.08);
     --shadow-lg: 0 8px 24px hsl(222 47% 11% / 0.12);
     --shadow-glow: 0 0 40px hsl(217 91% 60% / 0.25);
-    --shadow-glow-accent: 0 0 40px hsl(262 83% 58% / 0.25);
-    --shadow-glow-premium: 0 0 40px hsl(38 92% 50% / 0.3);
 
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222 47% 11%;
@@ -115,21 +106,15 @@
     --warning: 38 92% 50%;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(262 83% 58%));
-    --gradient-accent: linear-gradient(135deg, hsl(262 83% 58%), hsl(330 81% 60%));
-    --gradient-success: linear-gradient(135deg, hsl(142 76% 36%), hsl(160 84% 39%));
-    --gradient-premium: linear-gradient(135deg, hsl(38 92% 50%), hsl(25 95% 53%));
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(234 89% 74%));
     --gradient-card: linear-gradient(180deg, hsl(222 47% 10%), hsl(222 47% 8%));
     --gradient-glow: radial-gradient(ellipse at top, hsl(217 91% 60% / 0.12), transparent 50%);
-    --gradient-shimmer: linear-gradient(90deg, transparent, hsl(0 0% 100% / 0.1), transparent);
 
     /* Shadows */
     --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.2);
     --shadow-md: 0 4px 12px hsl(0 0% 0% / 0.3);
     --shadow-lg: 0 8px 24px hsl(0 0% 0% / 0.4);
     --shadow-glow: 0 0 60px hsl(217 91% 60% / 0.3);
-    --shadow-glow-accent: 0 0 60px hsl(262 83% 58% / 0.3);
-    --shadow-glow-premium: 0 0 60px hsl(38 92% 50% / 0.35);
 
     --sidebar-background: 222 47% 7%;
     --sidebar-foreground: 210 40% 98%;
@@ -148,12 +133,11 @@
   }
 
   html {
-    font-family: "Space Grotesk", "Sora", system-ui, sans-serif;
+    font-family: "Sora", system-ui, sans-serif;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-feature-settings: "ss01", "ss02";
   }
 }
 
@@ -163,30 +147,8 @@
     background-image: var(--gradient-primary);
   }
 
-  .text-gradient-accent {
-    @apply bg-clip-text text-transparent;
-    background-image: var(--gradient-accent);
-  }
-
-  .text-gradient-premium {
-    @apply bg-clip-text text-transparent;
-    background-image: var(--gradient-premium);
-  }
-
   .bg-gradient-primary {
     background-image: var(--gradient-primary);
-  }
-
-  .bg-gradient-accent {
-    background-image: var(--gradient-accent);
-  }
-
-  .bg-gradient-success {
-    background-image: var(--gradient-success);
-  }
-
-  .bg-gradient-premium {
-    background-image: var(--gradient-premium);
   }
 
   .bg-gradient-card {
@@ -201,14 +163,6 @@
     box-shadow: var(--shadow-glow);
   }
 
-  .shadow-glow-accent {
-    box-shadow: var(--shadow-glow-accent);
-  }
-
-  .shadow-glow-premium {
-    box-shadow: var(--shadow-glow-premium);
-  }
-
   .glass {
     @apply backdrop-blur-xl;
     background: hsl(var(--card) / 0.8);
@@ -220,19 +174,6 @@
 
   .animate-float {
     animation: float 6s ease-in-out infinite;
-  }
-
-  .animate-shimmer {
-    animation: shimmer 2s linear infinite;
-    background-size: 200% 100%;
-  }
-
-  .font-display {
-    font-family: "Instrument Serif", Georgia, serif;
-  }
-
-  .font-body {
-    font-family: "Space Grotesk", "Sora", system-ui, sans-serif;
   }
 }
 
