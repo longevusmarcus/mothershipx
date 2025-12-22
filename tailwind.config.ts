@@ -14,7 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Sora", "system-ui", "sans-serif"],
+        sans: ["Space Grotesk", "Sora", "system-ui", "sans-serif"],
+        display: ["Instrument Serif", "Georgia", "serif"],
+        body: ["Space Grotesk", "Sora", "system-ui", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
