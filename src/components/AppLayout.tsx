@@ -52,16 +52,6 @@ export function AppLayout({ children, title }: AppLayoutProps) {
         <header className="h-14 md:h-16 border-b border-border bg-background/80 backdrop-blur-lg sticky top-0 z-40">
           <div className="h-full px-4 md:px-6 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              {/* Mobile Menu Button */}
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="md:hidden h-9 w-9 -ml-1"
-                onClick={() => setMobileMenuOpen(true)}
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
-              
               {/* Mobile Logo */}
               <div className="flex md:hidden items-center gap-2">
                 <img src={logo} alt="Mothership" className="h-7 w-7 object-contain" />
