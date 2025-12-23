@@ -104,7 +104,7 @@ const Index = () => {
         </motion.div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
           <StatCard icon={Target} label="Problems Joined" value={4} delay={0.1} />
           <StatCard icon={Rocket} label="Solutions Shipped" value={12} delay={0.2} />
           <StatCard icon={Trophy} label="Global Rank" value="#47" delay={0.3} />
@@ -122,7 +122,7 @@ const Index = () => {
                 <ArrowRight className="h-4 w-4 ml-1" />
               </Button>
             </div>
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
               {mockProblems.map((problem, index) => (
                 <ProblemCard
                   key={problem.id}

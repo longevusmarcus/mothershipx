@@ -158,7 +158,7 @@ const Problems = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="flex items-center justify-between p-4 rounded-xl bg-secondary/50 border border-border"
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl bg-secondary/50 border border-border"
         >
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -169,24 +169,24 @@ const Problems = () => {
               <p className="text-sm text-muted-foreground">Real-time validated pain points</p>
             </div>
           </div>
-          <div className="flex items-center gap-6 text-sm">
+          <div className="flex items-center gap-4 sm:gap-6 text-sm w-full sm:w-auto justify-between sm:justify-end">
             <div className="text-center">
-              <p className="text-2xl font-bold">156</p>
-              <p className="text-muted-foreground">Active</p>
+              <p className="text-xl sm:text-2xl font-bold">156</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Active</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-success">24</p>
-              <p className="text-muted-foreground">New Today</p>
+              <p className="text-xl sm:text-2xl font-bold text-success">24</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">New Today</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-warning">18</p>
-              <p className="text-muted-foreground">Almost Full</p>
+              <p className="text-xl sm:text-2xl font-bold text-warning">18</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Almost Full</p>
             </div>
           </div>
         </motion.div>
 
         {/* Problems Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {mockProblems.map((problem, index) => (
             <ProblemCard
               key={problem.id}
