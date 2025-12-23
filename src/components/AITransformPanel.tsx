@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { ArrowRight, MessageSquare, Target, TrendingUp, Tags, FileText, BarChart3, Layers, type LucideIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,16 +8,16 @@ interface AICapability {
   id: string;
   name: string;
   description: string;
-  icon: string;
+  Icon: LucideIcon;
 }
 
 const capabilities: AICapability[] = [
-  { id: "sentiment", name: "Sentiment Analysis", description: "Detect positive, negative, and neutral sentiment", icon: "💭" },
-  { id: "painpoints", name: "Pain Point Detection", description: "Identify user frustrations and needs", icon: "🎯" },
-  { id: "trends", name: "Trend Momentum", description: "Track velocity and direction of topics", icon: "📈" },
-  { id: "classify", name: "Classification", description: "Categorize content automatically", icon: "🏷️" },
-  { id: "summarize", name: "Summarization", description: "Condense long content into key points", icon: "📝" },
-  { id: "score", name: "Scoring", description: "Rate opportunities by market signal", icon: "⭐" },
+  { id: "sentiment", name: "Sentiment Analysis", description: "Detect positive, negative, and neutral sentiment", Icon: MessageSquare },
+  { id: "painpoints", name: "Pain Point Detection", description: "Identify user frustrations and needs", Icon: Target },
+  { id: "trends", name: "Trend Momentum", description: "Track velocity and direction of topics", Icon: TrendingUp },
+  { id: "classify", name: "Classification", description: "Categorize content automatically", Icon: Tags },
+  { id: "summarize", name: "Summarization", description: "Condense long content into key points", Icon: FileText },
+  { id: "score", name: "Scoring", description: "Rate opportunities by market signal", Icon: BarChart3 },
 ];
 
 interface AITransformPanelProps {
@@ -35,7 +35,7 @@ export function AITransformPanel({ selectedSources }: AITransformPanelProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-gradient-primary flex items-center justify-center">
-              <Sparkles className="h-5 w-5 text-primary-foreground" />
+              <Layers className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
               <CardTitle className="text-base">Transform with AI</CardTitle>
@@ -61,7 +61,7 @@ export function AITransformPanel({ selectedSources }: AITransformPanelProps) {
               className="p-3 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors cursor-pointer group"
             >
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-sm">{cap.icon}</span>
+                <cap.Icon className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
                 <span className="text-xs font-medium group-hover:text-primary transition-colors">
                   {cap.name}
                 </span>
