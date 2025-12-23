@@ -59,9 +59,7 @@ const Builds = () => {
           className="flex items-center justify-between"
         >
           <div>
-            <p className="text-muted-foreground">
-              Track your solutions and their market performance
-            </p>
+            <p className="text-muted-foreground">Track your solutions and their performance</p>
           </div>
           <Button variant="glow" onClick={() => navigate("/submit")}>
             <Plus className="h-4 w-4 mr-2" />
@@ -109,19 +107,13 @@ const Builds = () => {
                         <h3 className="text-lg font-semibold">{build.name}</h3>
                         <Badge
                           variant={
-                            build.status === "live"
-                              ? "live"
-                              : build.status === "submitted"
-                              ? "glow"
-                              : "secondary"
+                            build.status === "live" ? "live" : build.status === "submitted" ? "glow" : "secondary"
                           }
                         >
                           {build.status}
                         </Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        Problem: {build.problem}
-                      </p>
+                      <p className="text-sm text-muted-foreground">Problem: {build.problem}</p>
                       <div className="flex items-center gap-4 pt-2">
                         {build.url && (
                           <a
@@ -176,9 +168,7 @@ const Builds = () => {
 
                       <div className="space-y-1">
                         <p className="text-xs text-muted-foreground">Rank</p>
-                        <p className="font-bold">
-                          {build.rank ? `#${build.rank}` : "-"}
-                        </p>
+                        <p className="font-bold">{build.rank ? `#${build.rank}` : "-"}</p>
                       </div>
                     </div>
 
