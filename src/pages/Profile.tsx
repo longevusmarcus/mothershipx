@@ -11,24 +11,24 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  User,
-  Mail,
   MapPin,
+  ExternalLink,
+  Calendar,
+  Pencil,
+  Check,
+  ArrowUpRight,
+  Layers,
+  BarChart3,
+  Hash,
+  CircleDot,
+  User,
   Link as LinkIcon,
   Github,
   Twitter,
   Linkedin,
-  Trophy,
-  Rocket,
-  Target,
-  TrendingUp,
-  Calendar,
-  Edit3,
-  Save,
+  Mail,
+  CheckCircle2,
   Award,
-  Zap,
-  Star,
-  CheckCircle,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -53,19 +53,19 @@ const userData = {
 };
 
 const stats = [
-  { label: "Problems Solved", value: 8, icon: Target, color: "text-emerald-500" },
-  { label: "Total Builds", value: 12, icon: Rocket, color: "text-blue-500" },
-  { label: "Fit Score Avg", value: "87%", icon: TrendingUp, color: "text-amber-500" },
-  { label: "Leaderboard Rank", value: "#12", icon: Trophy, color: "text-purple-500" },
+  { label: "Problems Solved", value: 8, icon: CircleDot },
+  { label: "Total Builds", value: 12, icon: Layers },
+  { label: "Fit Score Avg", value: "87%", icon: BarChart3 },
+  { label: "Global Rank", value: "#12", icon: Hash },
 ];
 
 const achievements = [
-  { id: 1, name: "First Build", description: "Submitted your first solution", icon: Rocket, unlocked: true, date: "Mar 15, 2024" },
-  { id: 2, name: "Problem Solver", description: "Solved 5 problems", icon: Target, unlocked: true, date: "Apr 2, 2024" },
-  { id: 3, name: "Top 20", description: "Reached top 20 on leaderboard", icon: Trophy, unlocked: true, date: "Apr 18, 2024" },
-  { id: 4, name: "Perfect Fit", description: "Achieved 95%+ fit score", icon: Star, unlocked: true, date: "May 5, 2024" },
-  { id: 5, name: "Revenue Maker", description: "First verified revenue", icon: Zap, unlocked: true, date: "May 20, 2024" },
-  { id: 6, name: "Elite Builder", description: "Reach top 10 on leaderboard", icon: Award, unlocked: false, date: null },
+  { id: 1, name: "First Build", description: "Submitted your first solution", unlocked: true, date: "Mar 15, 2024" },
+  { id: 2, name: "Problem Solver", description: "Solved 5 problems", unlocked: true, date: "Apr 2, 2024" },
+  { id: 3, name: "Top 20", description: "Reached top 20 on leaderboard", unlocked: true, date: "Apr 18, 2024" },
+  { id: 4, name: "Perfect Fit", description: "Achieved 95%+ fit score", unlocked: true, date: "May 5, 2024" },
+  { id: 5, name: "Revenue Maker", description: "First verified revenue", unlocked: true, date: "May 20, 2024" },
+  { id: 6, name: "Elite Builder", description: "Reach top 10 on leaderboard", unlocked: false, date: null },
 ];
 
 const recentBuilds = [
@@ -93,7 +93,7 @@ export default function Profile() {
 
   return (
     <AppLayout title="Profile">
-      <div className="p-6 space-y-6 max-w-6xl mx-auto">
+      <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 max-w-6xl mx-auto">
         {/* Profile Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -101,38 +101,37 @@ export default function Profile() {
           transition={{ duration: 0.4 }}
         >
           <Card variant="elevated" className="overflow-hidden">
-            {/* Banner */}
-            <div className="h-32 bg-gradient-primary relative">
-              <div className="absolute inset-0 bg-gradient-glow opacity-50" />
-              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnM1LjM3MyAxMiAxMiAxMiAxMi01LjM3MyAxMi0xMi01LjM3My0xMi0xMi0xMnoiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjEpIiBzdHJva2Utd2lkdGg9IjIiLz48L2c+PC9zdmc+')] opacity-30" />
+            {/* Banner - Subtle gradient */}
+            <div className="h-24 sm:h-32 bg-gradient-to-br from-secondary via-secondary to-muted relative">
+              <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.02)_50%,transparent_75%)]" />
             </div>
             
-            <CardContent className="relative pt-0 pb-6">
+            <CardContent className="relative pt-0 pb-4 sm:pb-6 px-4 sm:px-6">
               {/* Avatar */}
-              <div className="flex flex-col md:flex-row md:items-end gap-4 -mt-16 mb-6">
-                <Avatar className="h-32 w-32 border-4 border-background shadow-lg">
+              <div className="flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-4 -mt-12 sm:-mt-16 mb-4 sm:mb-6">
+                <Avatar className="h-20 w-20 sm:h-28 sm:w-28 border-4 border-background shadow-lg">
                   <AvatarImage src={userData.avatar} />
-                  <AvatarFallback className="text-3xl font-bold bg-gradient-primary text-primary-foreground">
+                  <AvatarFallback className="text-xl sm:text-2xl font-bold bg-gradient-primary text-primary-foreground">
                     {userData.initials}
                   </AvatarFallback>
                 </Avatar>
                 
-                <div className="flex-1 pt-4 md:pt-0">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex-1 pt-2 sm:pt-0">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
-                      <div className="flex items-center gap-3">
-                        <h1 className="text-2xl font-bold">{userData.name}</h1>
-                        <Badge variant="secondary" className="bg-gradient-primary text-primary-foreground">
+                      <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                        <h1 className="text-xl sm:text-2xl font-bold">{userData.name}</h1>
+                        <Badge variant="outline" className="text-[10px] sm:text-xs font-medium">
                           {userData.tier}
                         </Badge>
                       </div>
-                      <div className="flex items-center gap-4 mt-1 text-muted-foreground text-sm">
+                      <div className="flex items-center gap-3 sm:gap-4 mt-1 text-muted-foreground text-xs sm:text-sm">
                         <span className="flex items-center gap-1">
-                          <MapPin className="h-3.5 w-3.5" />
+                          <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                           {userData.location}
                         </span>
                         <span className="flex items-center gap-1">
-                          <Calendar className="h-3.5 w-3.5" />
+                          <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                           Joined {userData.joinedDate}
                         </span>
                       </div>
@@ -140,18 +139,19 @@ export default function Profile() {
                     
                     <Button
                       variant={isEditing ? "default" : "outline"}
+                      size="sm"
                       onClick={isEditing ? handleSave : () => setIsEditing(true)}
-                      className="gap-2"
+                      className="gap-1.5 h-8 sm:h-9 text-xs sm:text-sm"
                     >
                       {isEditing ? (
                         <>
-                          <Save className="h-4 w-4" />
-                          Save Changes
+                          <Check className="h-3.5 w-3.5" />
+                          Save
                         </>
                       ) : (
                         <>
-                          <Edit3 className="h-4 w-4" />
-                          Edit Profile
+                          <Pencil className="h-3.5 w-3.5" />
+                          Edit
                         </>
                       )}
                     </Button>
@@ -160,32 +160,32 @@ export default function Profile() {
               </div>
 
               {/* XP Progress */}
-              <div className="bg-muted/50 rounded-xl p-4 mb-6">
+              <div className="bg-muted/30 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">Builder XP</span>
-                  <span className="text-sm text-muted-foreground">
-                    {userData.xp} / {userData.nextLevelXp} XP
+                  <span className="text-xs sm:text-sm font-medium">Builder XP</span>
+                  <span className="text-xs sm:text-sm text-muted-foreground">
+                    {userData.xp.toLocaleString()} / {userData.nextLevelXp.toLocaleString()}
                   </span>
                 </div>
-                <Progress value={(userData.xp / userData.nextLevelXp) * 100} className="h-2" />
-                <p className="text-xs text-muted-foreground mt-2">
-                  {userData.nextLevelXp - userData.xp} XP until next level
+                <Progress value={(userData.xp / userData.nextLevelXp) * 100} className="h-1.5 sm:h-2" />
+                <p className="text-[10px] sm:text-xs text-muted-foreground mt-1.5">
+                  {(userData.nextLevelXp - userData.xp).toLocaleString()} XP until next level
                 </p>
               </div>
 
               {/* Stats Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-4 gap-2 sm:gap-4">
                 {stats.map((stat, index) => (
                   <motion.div
                     key={stat.label}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="text-center p-4 rounded-xl bg-muted/30 border border-border/50"
+                    className="text-center p-2 sm:p-4 rounded-lg sm:rounded-xl bg-muted/20 border border-border/30"
                   >
-                    <stat.icon className={`h-5 w-5 mx-auto mb-2 ${stat.color}`} />
-                    <div className="text-2xl font-bold">{stat.value}</div>
-                    <div className="text-xs text-muted-foreground">{stat.label}</div>
+                    <stat.icon className="h-4 w-4 sm:h-5 sm:w-5 mx-auto mb-1 sm:mb-2 text-muted-foreground" />
+                    <div className="text-base sm:text-2xl font-bold">{stat.value}</div>
+                    <div className="text-[8px] sm:text-xs text-muted-foreground leading-tight">{stat.label}</div>
                   </motion.div>
                 ))}
               </div>
@@ -194,12 +194,12 @@ export default function Profile() {
         </motion.div>
 
         {/* Tabs Section */}
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="bg-muted/50 p-1">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="builds">My Builds</TabsTrigger>
-            <TabsTrigger value="achievements">Achievements</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
+        <Tabs defaultValue="overview" className="space-y-4 sm:space-y-6">
+          <TabsList className="bg-muted/50 p-1 h-auto flex-wrap">
+            <TabsTrigger value="overview" className="text-xs sm:text-sm px-2 sm:px-3">Overview</TabsTrigger>
+            <TabsTrigger value="builds" className="text-xs sm:text-sm px-2 sm:px-3">Builds</TabsTrigger>
+            <TabsTrigger value="achievements" className="text-xs sm:text-sm px-2 sm:px-3">Achievements</TabsTrigger>
+            <TabsTrigger value="settings" className="text-xs sm:text-sm px-2 sm:px-3">Settings</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
@@ -306,32 +306,32 @@ export default function Profile() {
               transition={{ delay: 0.4 }}
             >
               <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Rocket className="h-4 w-4" />
+                <CardHeader className="py-3 sm:py-4">
+                  <CardTitle className="text-sm sm:text-base flex items-center gap-2">
+                    <Layers className="h-4 w-4" />
                     Recent Builds
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
+                <CardContent className="px-3 sm:px-6">
+                  <div className="space-y-2 sm:space-y-3">
                     {recentBuilds.map((build) => (
                       <div
                         key={build.id}
-                        className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/50 hover:bg-muted/50 transition-colors"
+                        className="flex items-center justify-between p-2 sm:p-3 rounded-lg bg-muted/30 border border-border/50 hover:bg-muted/50 transition-colors"
                       >
-                        <div>
-                          <div className="font-medium">{build.name}</div>
-                          <div className="text-sm text-muted-foreground">{build.problem}</div>
+                        <div className="min-w-0 flex-1">
+                          <div className="font-medium text-sm sm:text-base truncate">{build.name}</div>
+                          <div className="text-xs sm:text-sm text-muted-foreground truncate">{build.problem}</div>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 sm:gap-3 ml-2">
                           <Badge
                             variant={build.status === "verified" ? "default" : "secondary"}
-                            className={build.status === "verified" ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : ""}
+                            className={`text-[10px] sm:text-xs ${build.status === "verified" ? "bg-success/10 text-success border-success/20" : ""}`}
                           >
-                            {build.status === "verified" && <CheckCircle className="h-3 w-3 mr-1" />}
-                            {build.fitScore}% Fit
+                            {build.status === "verified" && <CheckCircle2 className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />}
+                            {build.fitScore}%
                           </Badge>
-                          <span className="text-xs text-muted-foreground">{build.date}</span>
+                          <span className="text-[10px] sm:text-xs text-muted-foreground hidden sm:inline">{build.date}</span>
                         </div>
                       </div>
                     ))}
@@ -345,10 +345,10 @@ export default function Profile() {
           <TabsContent value="builds">
             <Card>
               <CardContent className="pt-6">
-                <div className="text-center py-12 text-muted-foreground">
-                  <Rocket className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>View all your submitted builds and their verification status.</p>
-                  <Button variant="outline" className="mt-4">
+                <div className="text-center py-8 sm:py-12 text-muted-foreground">
+                  <Layers className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-4 opacity-50" />
+                  <p className="text-sm sm:text-base">View all your submitted builds and their verification status.</p>
+                  <Button variant="outline" className="mt-4" size="sm">
                     View All Builds
                   </Button>
                 </div>
@@ -359,46 +359,46 @@ export default function Profile() {
           {/* Achievements Tab */}
           <TabsContent value="achievements">
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Award className="h-5 w-5" />
+              <CardHeader className="py-3 sm:py-4">
+                <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
+                  <Award className="h-4 w-4 sm:h-5 sm:w-5" />
                   Achievements
-                  <Badge variant="secondary" className="ml-2">
+                  <Badge variant="secondary" className="ml-2 text-[10px] sm:text-xs">
                     {achievements.filter(a => a.unlocked).length}/{achievements.length}
                   </Badge>
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <CardContent className="px-3 sm:px-6">
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4">
                   {achievements.map((achievement, index) => (
                     <motion.div
                       key={achievement.id}
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: index * 0.05 }}
-                      className={`p-4 rounded-xl border ${
+                      className={`p-2 sm:p-4 rounded-lg sm:rounded-xl border ${
                         achievement.unlocked
-                          ? "bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20"
-                          : "bg-muted/30 border-border/50 opacity-50"
+                          ? "bg-muted/30 border-border"
+                          : "bg-muted/10 border-border/30 opacity-50"
                       }`}
                     >
-                      <div className="flex items-start gap-3">
-                        <div className={`p-2 rounded-lg ${
+                      <div className="flex items-start gap-2 sm:gap-3">
+                        <div className={`p-1.5 sm:p-2 rounded-md sm:rounded-lg shrink-0 ${
                           achievement.unlocked ? "bg-primary/10" : "bg-muted"
                         }`}>
-                          <achievement.icon className={`h-5 w-5 ${
+                          <CircleDot className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${
                             achievement.unlocked ? "text-primary" : "text-muted-foreground"
                           }`} />
                         </div>
-                        <div className="flex-1">
-                          <div className="font-medium">{achievement.name}</div>
-                          <div className="text-xs text-muted-foreground">{achievement.description}</div>
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium text-xs sm:text-sm truncate">{achievement.name}</div>
+                          <div className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2">{achievement.description}</div>
                           {achievement.unlocked && achievement.date && (
-                            <div className="text-xs text-primary mt-1">{achievement.date}</div>
+                            <div className="text-[10px] sm:text-xs text-primary mt-0.5 sm:mt-1">{achievement.date}</div>
                           )}
                         </div>
                         {achievement.unlocked && (
-                          <CheckCircle className="h-4 w-4 text-emerald-500" />
+                          <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-success shrink-0" />
                         )}
                       </div>
                     </motion.div>
