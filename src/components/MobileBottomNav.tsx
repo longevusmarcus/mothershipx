@@ -5,16 +5,16 @@ import {
   Target,
   Plus,
   Trophy,
-  User,
+  Layers,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Home", path: "/" },
   { icon: Target, label: "Problems", path: "/problems" },
-  { icon: null, label: "Builds", path: "/builds", isAction: true },
+  { icon: Layers, label: "Builds", path: "/builds" },
+  { icon: null, label: "Submit", path: "/submit", isAction: true },
   { icon: Trophy, label: "Rank", path: "/leaderboard" },
-  { icon: User, label: "Profile", path: "/profile" },
 ];
 
 export function MobileBottomNav() {

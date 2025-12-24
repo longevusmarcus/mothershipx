@@ -1,4 +1,5 @@
 import { ReactNode, useState } from "react";
+import { Link } from "react-router-dom";
 import { AppSidebar } from "@/components/AppSidebar";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -75,9 +76,9 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                 <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-primary" />
               </Button>
               <ThemeToggle />
-              <div className="h-8 w-8 md:h-9 md:w-9 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground text-xs md:text-sm font-bold">
+              <Link to="/profile" className="h-8 w-8 md:h-9 md:w-9 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground text-xs md:text-sm font-bold hover:opacity-90 transition-opacity">
                 A
-              </div>
+              </Link>
             </div>
           </div>
         </header>
