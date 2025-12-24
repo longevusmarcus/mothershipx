@@ -12,8 +12,8 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { icon: LayoutDashboard, label: "Home", path: "/" },
   { icon: Target, label: "Problems", path: "/problems" },
-  { icon: Layers, label: "Builds", path: "/builds" },
   { icon: null, label: "Submit", path: "/submit", isAction: true },
+  { icon: Layers, label: "Builds", path: "/builds" },
   { icon: Trophy, label: "Rank", path: "/leaderboard" },
 ];
 
