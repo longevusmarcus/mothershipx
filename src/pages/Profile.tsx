@@ -186,18 +186,15 @@ export default function Profile() {
                     className={`relative text-center p-3 sm:p-4 rounded-lg sm:rounded-xl bg-muted/20 border border-border/30 ${stat.comingSoon ? 'overflow-hidden' : ''}`}
                   >
                     {stat.comingSoon && (
-                      <>
-                        <div className="absolute inset-0 backdrop-blur-[2px] bg-background/40 z-10" />
-                        <div className="absolute inset-0 flex items-center justify-center z-20">
-                          <Badge variant="secondary" className="text-[9px] bg-muted/80 backdrop-blur-sm">
-                            Soon
-                          </Badge>
-                        </div>
-                      </>
+                      <div className="absolute top-1 right-1 z-20">
+                        <Badge variant="secondary" className="text-[8px] px-1.5 py-0 bg-muted/80 backdrop-blur-sm">
+                          Soon
+                        </Badge>
+                      </div>
                     )}
-                    <stat.icon className="h-4 w-4 sm:h-5 sm:w-5 mx-auto mb-1.5 sm:mb-2 text-muted-foreground" />
-                    <div className="text-lg sm:text-2xl font-bold">{stat.value}</div>
-                    <div className="text-[10px] sm:text-xs text-muted-foreground leading-tight whitespace-nowrap">{stat.label}</div>
+                    <stat.icon className={`h-4 w-4 sm:h-5 sm:w-5 mx-auto mb-1.5 sm:mb-2 text-muted-foreground ${stat.comingSoon ? 'opacity-40' : ''}`} />
+                    <div className={`text-lg sm:text-2xl font-bold ${stat.comingSoon ? 'opacity-40 blur-[1px]' : ''}`}>{stat.value}</div>
+                    <div className={`text-[10px] sm:text-xs text-muted-foreground leading-tight whitespace-nowrap ${stat.comingSoon ? 'opacity-60' : ''}`}>{stat.label}</div>
                   </motion.div>
                 ))}
               </div>
