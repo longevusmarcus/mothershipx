@@ -26,6 +26,7 @@ import { SocialProofStats } from "@/components/SocialProofStats";
 import { OpportunityMeter } from "@/components/OpportunityMeter";
 import { SourceSignals } from "@/components/SourceSignals";
 import { HiddenInsightCard } from "@/components/HiddenInsightCard";
+import { TeamFormation } from "@/components/TeamFormation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -252,8 +253,11 @@ const ProblemDetail = () => {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="w-full sm:w-auto grid grid-cols-3 sm:inline-flex overflow-x-auto">
+          <TabsList className="w-full sm:w-auto grid grid-cols-4 sm:inline-flex overflow-x-auto">
             <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
+            <TabsTrigger value="squads" className="text-xs sm:text-sm">
+              🔥 Squads
+            </TabsTrigger>
             <TabsTrigger value="builders" className="text-xs sm:text-sm">
               Builders ({mockBuilders.length})
             </TabsTrigger>
@@ -344,6 +348,10 @@ const ProblemDetail = () => {
                 </CardContent>
               </Card>
             )}
+          </TabsContent>
+
+          <TabsContent value="squads" className="mt-4 sm:mt-6">
+            <TeamFormation problemId={problem.id} />
           </TabsContent>
 
           <TabsContent value="builders" className="mt-4 sm:mt-6 space-y-4 sm:space-y-6">
