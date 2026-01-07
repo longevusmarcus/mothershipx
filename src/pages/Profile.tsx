@@ -54,10 +54,10 @@ const userData = {
 };
 
 const stats = [
-  { label: "Problems Solved", value: 8, icon: CircleDot },
-  { label: "Total Builds", value: 12, icon: Layers },
-  { label: "Fit Score Avg", value: "87%", icon: BarChart3 },
-  { label: "Global Rank", value: "#12", icon: Hash },
+  { label: "Problems Solved", value: 8, icon: CircleDot, comingSoon: false },
+  { label: "Total Builds", value: 12, icon: Layers, comingSoon: true },
+  { label: "Fit Score Avg", value: "87%", icon: BarChart3, comingSoon: true },
+  { label: "Global Rank", value: "#12", icon: Hash, comingSoon: true },
 ];
 
 const achievements = [
@@ -183,8 +183,18 @@ export default function Profile() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="text-center p-3 sm:p-4 rounded-lg sm:rounded-xl bg-muted/20 border border-border/30"
+                    className={`relative text-center p-3 sm:p-4 rounded-lg sm:rounded-xl bg-muted/20 border border-border/30 ${stat.comingSoon ? 'overflow-hidden' : ''}`}
                   >
+                    {stat.comingSoon && (
+                      <>
+                        <div className="absolute inset-0 backdrop-blur-[2px] bg-background/40 z-10" />
+                        <div className="absolute inset-0 flex items-center justify-center z-20">
+                          <Badge variant="secondary" className="text-[9px] bg-muted/80 backdrop-blur-sm">
+                            Soon
+                          </Badge>
+                        </div>
+                      </>
+                    )}
                     <stat.icon className="h-4 w-4 sm:h-5 sm:w-5 mx-auto mb-1.5 sm:mb-2 text-muted-foreground" />
                     <div className="text-lg sm:text-2xl font-bold">{stat.value}</div>
                     <div className="text-[10px] sm:text-xs text-muted-foreground leading-tight whitespace-nowrap">{stat.label}</div>
