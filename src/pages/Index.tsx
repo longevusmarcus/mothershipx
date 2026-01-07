@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Target, Rocket, Trophy, TrendingUp, Zap, Clock, ArrowRight, Lock, Sparkles, Swords } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
+import { SEO } from "@/components/SEO";
 import { StatCard } from "@/components/StatCard";
 import { ProblemCard } from "@/components/ProblemCard";
 import { ActivityChart } from "@/components/ActivityChart";
@@ -61,6 +62,10 @@ const mockActivity = [
 const Index = () => {
   return (
     <AppLayout title="Dashboard">
+      <SEO 
+        title="Dashboard" 
+        description="Track your progress, discover hot problems, and build solutions with the Mothership community."
+      />
       <div className="space-y-6">
         {/* Hero Section */}
         <motion.div

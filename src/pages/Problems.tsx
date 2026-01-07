@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Search, Filter, TrendingUp, Zap, Database, Flame, Sparkles } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
+import { SEO } from "@/components/SEO";
 import { MarketProblemCard } from "@/components/MarketProblemCard";
 import { DataSourceSelector } from "@/components/DataSourceSelector";
 import { AITransformPanel } from "@/components/AITransformPanel";
@@ -33,6 +34,10 @@ const Problems = () => {
 
   return (
     <AppLayout title="Problems & Trends">
+      <SEO 
+        title="Problems & Trends" 
+        description="Discover real problems and trends from 10+ data sources. Find market opportunities and build solutions."
+      />
       <div className="space-y-4 sm:space-y-6">
         {/* Hero Banner */}
         <motion.div

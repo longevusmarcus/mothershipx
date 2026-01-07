@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { AppLayout } from "@/components/AppLayout";
+import { SEO } from "@/components/SEO";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -93,7 +94,8 @@ export default function Profile() {
 
   return (
     <AppLayout title="Profile">
-      <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 max-w-6xl mx-auto">
+      <SEO title="Profile" description="View your builder profile, achievements, and build history." />
+      <div className="space-y-4 sm:space-y-6 max-w-6xl mx-auto">
         {/* Profile Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -102,13 +104,13 @@ export default function Profile() {
         >
           <Card variant="elevated" className="overflow-hidden">
             {/* Banner - Subtle gradient */}
-            <div className="h-24 sm:h-32 bg-gradient-to-br from-secondary via-secondary to-muted relative">
+            <div className="h-28 sm:h-36 bg-gradient-to-br from-secondary via-secondary to-muted relative">
               <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.02)_50%,transparent_75%)]" />
             </div>
             
             <CardContent className="relative pt-0 pb-4 sm:pb-6 px-4 sm:px-6">
               {/* Avatar */}
-              <div className="flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-4 -mt-12 sm:-mt-16 mb-4 sm:mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-4 -mt-10 sm:-mt-14 mb-4 sm:mb-6">
                 <Avatar className="h-20 w-20 sm:h-28 sm:w-28 border-4 border-background shadow-lg">
                   <AvatarImage src={userData.avatar} />
                   <AvatarFallback className="text-xl sm:text-2xl font-bold bg-gradient-primary text-primary-foreground">
