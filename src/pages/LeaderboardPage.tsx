@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Trophy, Medal, TrendingUp, Filter, ChevronDown } from "lucide-react";
+import { Trophy, Medal, TrendingUp, Filter, ChevronDown, Sparkles, Users, Rocket } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -59,10 +59,50 @@ const LeaderboardPage = () => {
   return (
     <AppLayout title="Leaderboard">
       <div className="space-y-4 sm:space-y-6 max-w-5xl mx-auto">
+        {/* Demo Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4 sm:p-6"
+        >
+          <div className="absolute inset-0 bg-gradient-glow opacity-30" />
+          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-warning/20 to-warning/10 flex items-center justify-center border border-warning/20">
+                <Trophy className="h-6 w-6 text-warning" />
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <h2 className="font-semibold text-sm sm:text-base">Hackathon Arena</h2>
+                  <Badge variant="outline" className="gap-1 text-[10px] bg-warning/10 text-warning border-warning/30">
+                    <Sparkles className="h-2.5 w-2.5" />
+                    Demo Mode
+                  </Badge>
+                </div>
+                <p className="text-xs sm:text-sm text-muted-foreground max-w-md">
+                  This is a <span className="text-foreground font-medium">preview</span> of the upcoming leaderboard. 
+                  Soon you'll compete, earn XP, and climb the ranks by solving real problems with other builders.
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="outline" className="gap-1 text-[10px] sm:text-xs">
+                <Users className="h-3 w-3" />
+                Team Battles
+              </Badge>
+              <Badge variant="outline" className="gap-1 text-[10px] sm:text-xs">
+                <Rocket className="h-3 w-3" />
+                Weekly Sprints
+              </Badge>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Filters */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
           className="flex items-center justify-between gap-2"
         >
           <div className="flex items-center gap-1.5 sm:gap-2">
@@ -90,7 +130,7 @@ const LeaderboardPage = () => {
                 key={builder.rank}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: displayIndex * 0.15 }}
+                transition={{ delay: 0.15 + displayIndex * 0.15 }}
               >
                 <Card 
                   variant={isFirst ? "glow" : "elevated"} 
@@ -174,7 +214,10 @@ const LeaderboardPage = () => {
         {/* Leaderboard Table */}
         <Card variant="elevated">
           <CardHeader className="py-3 sm:py-4">
-            <CardTitle className="text-sm sm:text-base">Rankings</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm sm:text-base">Rankings</CardTitle>
+              <Badge variant="secondary" className="text-[10px]">Sample Data</Badge>
+            </div>
           </CardHeader>
           <CardContent className="px-2 sm:px-6">
             <div className="space-y-1 sm:space-y-2">
@@ -183,7 +226,7 @@ const LeaderboardPage = () => {
                   key={entry.rank}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
+                  transition={{ delay: 0.3 + index * 0.05 }}
                   className="flex items-center gap-2 sm:gap-4 p-2 sm:p-3 rounded-lg hover:bg-secondary/50 transition-colors"
                 >
                   <div className="w-6 sm:w-8 text-center">
@@ -211,6 +254,22 @@ const LeaderboardPage = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Coming Soon CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="text-center py-4"
+        >
+          <p className="text-sm text-muted-foreground mb-3">
+            Ready to compete? The Hackathon Arena opens soon.
+          </p>
+          <Button variant="glow" size="sm">
+            <Sparkles className="h-4 w-4 mr-2" />
+            Get Early Access
+          </Button>
+        </motion.div>
       </div>
     </AppLayout>
   );
