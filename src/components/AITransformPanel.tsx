@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowRight, MessageSquare, Target, TrendingUp, Tags, FileText, BarChart3, Layers, type LucideIcon } from "lucide-react";
+import { ArrowRight, MessageSquare, Target, TrendingUp, Tags, FileText, BarChart3, Layers, Lock, Sparkles, type LucideIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,14 +22,41 @@ const capabilities: AICapability[] = [
 
 interface AITransformPanelProps {
   selectedSources: string[];
+  isAdmin?: boolean;
 }
 
-export function AITransformPanel({ selectedSources }: AITransformPanelProps) {
+export function AITransformPanel({ selectedSources, isAdmin = false }: AITransformPanelProps) {
   const hasSelection = selectedSources.length > 0;
+  const isLocked = !isAdmin;
 
   return (
     <Card variant="elevated" className="relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-glow opacity-50 pointer-events-none" />
+      
+      {/* Lock Overlay for non-admins */}
+      {isLocked && (
+        <div className="absolute inset-0 z-20 bg-background/80 backdrop-blur-sm flex items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center p-6 space-y-3"
+          >
+            <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto">
+              <Lock className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-sm">Early Access Only</h3>
+              <p className="text-xs text-muted-foreground mt-1 max-w-[200px]">
+                AI Transform is available for founding members. Join the waitlist!
+              </p>
+            </div>
+            <Badge variant="outline" className="gap-1">
+              <Sparkles className="h-3 w-3" />
+              Coming Soon
+            </Badge>
+          </motion.div>
+        </div>
+      )}
       
       <CardHeader className="relative z-10 pb-4">
         <div className="flex items-center justify-between">
@@ -38,13 +65,16 @@ export function AITransformPanel({ selectedSources }: AITransformPanelProps) {
               <Layers className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
-              <CardTitle className="text-base">Transform with AI</CardTitle>
+              <CardTitle className="text-base flex items-center gap-2">
+                Transform with AI
+                {isLocked && <Lock className="h-3 w-3 text-muted-foreground" />}
+              </CardTitle>
               <p className="text-xs text-muted-foreground mt-0.5">
                 Extract insights from your selected sources
               </p>
             </div>
           </div>
-          <Badge variant={hasSelection ? "glow" : "secondary"}>
+          <Badge variant={hasSelection && !isLocked ? "glow" : "secondary"}>
             {hasSelection ? `${selectedSources.length} sources` : "No sources"}
           </Badge>
         </div>
@@ -74,11 +104,16 @@ export function AITransformPanel({ selectedSources }: AITransformPanelProps) {
         </div>
 
         <Button 
-          variant={hasSelection ? "glow" : "secondary"} 
+          variant={hasSelection && !isLocked ? "glow" : "secondary"} 
           className="w-full"
-          disabled={!hasSelection}
+          disabled={!hasSelection || isLocked}
         >
-          {hasSelection ? (
+          {isLocked ? (
+            <>
+              <Lock className="h-4 w-4 mr-2" />
+              Founders Only
+            </>
+          ) : hasSelection ? (
             <>
               Analyze Sources
               <ArrowRight className="h-4 w-4 ml-2" />
