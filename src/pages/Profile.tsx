@@ -174,18 +174,18 @@ export default function Profile() {
               </div>
 
               {/* Stats Grid */}
-              <div className="grid grid-cols-4 gap-2 sm:gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
                 {stats.map((stat, index) => (
                   <motion.div
                     key={stat.label}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="text-center p-2 sm:p-4 rounded-lg sm:rounded-xl bg-muted/20 border border-border/30"
+                    className="text-center p-3 sm:p-4 rounded-lg sm:rounded-xl bg-muted/20 border border-border/30"
                   >
-                    <stat.icon className="h-4 w-4 sm:h-5 sm:w-5 mx-auto mb-1 sm:mb-2 text-muted-foreground" />
-                    <div className="text-base sm:text-2xl font-bold">{stat.value}</div>
-                    <div className="text-[8px] sm:text-xs text-muted-foreground leading-tight">{stat.label}</div>
+                    <stat.icon className="h-4 w-4 sm:h-5 sm:w-5 mx-auto mb-1.5 sm:mb-2 text-muted-foreground" />
+                    <div className="text-lg sm:text-2xl font-bold">{stat.value}</div>
+                    <div className="text-[10px] sm:text-xs text-muted-foreground leading-tight whitespace-nowrap">{stat.label}</div>
                   </motion.div>
                 ))}
               </div>
