@@ -4,19 +4,25 @@ import { Check, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
+// Import logos
+import logoTiktok from "@/assets/logo-tiktok.png";
+import logoGoogleTrends from "@/assets/logo-google-trends.png";
+import logoFreelancer from "@/assets/logo-freelancer.png";
+
 interface DataSource {
   id: string;
   name: string;
-  icon: string;
+  icon?: string;
+  logo?: string;
   color: string;
   isLocked?: boolean;
 }
 
 // Only TikTok, Google Trends, and Freelancer are unlocked
 const dataSources: DataSource[] = [
-  { id: "tiktok", name: "TikTok", icon: "🎵", color: "bg-foreground/10", isLocked: false },
-  { id: "google_trends", name: "Google Trends", icon: "📈", color: "bg-blue-500/20", isLocked: false },
-  { id: "freelancer", name: "Freelancer", icon: "💼", color: "bg-blue-600/20", isLocked: false },
+  { id: "tiktok", name: "TikTok", logo: logoTiktok, color: "bg-foreground/10", isLocked: false },
+  { id: "google_trends", name: "Google Trends", logo: logoGoogleTrends, color: "bg-blue-500/20", isLocked: false },
+  { id: "freelancer", name: "Freelancer", logo: logoFreelancer, color: "bg-blue-600/20", isLocked: false },
   // Locked sources - coming soon
   { id: "reddit", name: "Reddit", icon: "🔴", color: "bg-orange-500/20", isLocked: true },
   { id: "hackernews", name: "Hacker News", icon: "🔥", color: "bg-orange-400/20", isLocked: true },
@@ -61,14 +67,22 @@ export function DataSourceSelector({ onSelectionChange }: DataSourceSelectorProp
                   transition={{ duration: 0.2, delay: index * 0.05 }}
                   onClick={() => toggleSource(source)}
                   className={cn(
-                    "relative h-14 w-14 rounded-xl flex items-center justify-center text-lg transition-all duration-200",
-                    "border hover:scale-105 active:scale-95",
+                    "relative h-14 w-14 rounded-xl flex items-center justify-center transition-all duration-200",
+                    "border hover:scale-105 active:scale-95 overflow-hidden",
                     isSelected
-                      ? "border-primary bg-primary/10 shadow-glow"
+                      ? "border-primary bg-card shadow-glow"
                       : "border-border/50 bg-secondary/50 hover:border-border hover:bg-secondary"
                   )}
                 >
-                  <span className="text-xl">{source.icon}</span>
+                  {source.logo ? (
+                    <img 
+                      src={source.logo} 
+                      alt={source.name} 
+                      className="h-8 w-8 object-contain"
+                    />
+                  ) : (
+                    <span className="text-xl">{source.icon}</span>
+                  )}
                   
                   {isSelected && (
                     <motion.div

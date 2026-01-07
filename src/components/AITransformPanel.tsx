@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowRight, MessageSquare, Target, TrendingUp, Tags, FileText, BarChart3, Layers, Lock, Sparkles, type LucideIcon } from "lucide-react";
+import { ArrowRight, MessageSquare, Target, TrendingUp, Tags, FileText, BarChart3, Layers, Lock, Sparkles, Users, Database, type LucideIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -35,25 +35,40 @@ export function AITransformPanel({ selectedSources, isAdmin = false }: AITransfo
       
       {/* Lock Overlay for non-admins */}
       {isLocked && (
-        <div className="absolute inset-0 z-20 bg-background/80 backdrop-blur-sm flex items-center justify-center">
+        <div className="absolute inset-0 z-20 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-center p-6 space-y-3"
+            className="text-center space-y-4 max-w-sm"
           >
-            <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto">
-              <Lock className="h-6 w-6 text-primary" />
+            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mx-auto border border-primary/20">
+              <Sparkles className="h-6 w-6 text-primary" />
             </div>
-            <div>
-              <h3 className="font-semibold text-sm">Early Access Only</h3>
-              <p className="text-xs text-muted-foreground mt-1 max-w-[200px]">
-                AI Transform is available for founding members. Join the waitlist!
+            <div className="space-y-2">
+              <h3 className="font-semibold">Founding Members Only</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Connect <span className="text-foreground font-medium">50+ data sources</span> to discover real problems and trends. 
+                Then <span className="text-foreground font-medium">build solutions together</span> with our community of builders.
               </p>
             </div>
-            <Badge variant="outline" className="gap-1">
-              <Sparkles className="h-3 w-3" />
-              Coming Soon
-            </Badge>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              <Badge variant="outline" className="gap-1">
+                <Database className="h-3 w-3" />
+                50+ Sources
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <TrendingUp className="h-3 w-3" />
+                AI Analysis
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Users className="h-3 w-3" />
+                Co-Build
+              </Badge>
+            </div>
+            <Button variant="glow" size="sm" className="mt-2">
+              <Sparkles className="h-4 w-4 mr-2" />
+              Join Waitlist
+            </Button>
           </motion.div>
         </div>
       )}
