@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { FitVerificationPanel } from "@/components/FitVerificationPanel";
+import { SolutionsLab } from "@/components/SolutionsLab";
 import { BuildersList } from "@/components/BuilderCard";
 import { TrendBadge } from "@/components/TrendBadge";
 import { SocialProofStats } from "@/components/SocialProofStats";
@@ -388,47 +389,11 @@ const ProblemDetail = () => {
           </TabsContent>
 
           <TabsContent value="solutions" className="mt-4 sm:mt-6 space-y-4 sm:space-y-6">
+            {/* Solutions Lab - Wiki-style collaborative ideas */}
+            <SolutionsLab problemId={problem.id} problemTitle={problem.title} />
+
             {/* Top Solution Fit Verification */}
             <FitVerificationPanel {...mockTopSolution} />
-
-            {/* Other Solutions */}
-            <Card variant="elevated">
-              <CardHeader className="pb-2 sm:pb-4">
-                <CardTitle className="text-sm sm:text-base">All Submissions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {mockBuilders
-                  .filter(b => b.solutionName)
-                  .map((builder, index) => (
-                    <motion.div
-                      key={builder.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="flex items-center justify-between p-3 rounded-lg bg-secondary/50"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground font-bold">
-                          {builder.name[0]}
-                        </div>
-                        <div>
-                          <p className="font-medium text-sm">{builder.solutionName}</p>
-                          <p className="text-xs text-muted-foreground">by {builder.name}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3 sm:gap-4">
-                        <div className="text-right">
-                          <p className="text-base sm:text-lg font-bold">{builder.fitScore}%</p>
-                          <p className="text-[10px] sm:text-xs text-muted-foreground">Fit Score</p>
-                        </div>
-                        <Button variant="ghost" size="sm">
-                          View
-                        </Button>
-                      </div>
-                    </motion.div>
-                  ))}
-              </CardContent>
-            </Card>
           </TabsContent>
         </Tabs>
       </div>
