@@ -10,7 +10,7 @@ import {
   Crown,
   Sparkles
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -225,21 +225,17 @@ export function TeamFormation({ problemId }: TeamFormationProps) {
 
       {/* Your Squad */}
       {userTeam && (
-        <Card variant="glow" className="border-primary/30">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <Crown className="h-4 w-4 text-warning" />
-              Your Squad
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <TeamCard
-              team={userTeam}
-              isUserTeam
-              onViewChat={() => handleOpenChat(userTeam)}
-            />
-          </CardContent>
-        </Card>
+        <div className="space-y-2">
+          <h3 className="text-sm font-medium flex items-center gap-2">
+            <Crown className="h-4 w-4 text-warning" />
+            Your Squad
+          </h3>
+          <TeamCard
+            team={userTeam}
+            isUserTeam
+            onViewChat={() => handleOpenChat(userTeam)}
+          />
+        </div>
       )}
 
       {/* All Squads */}
