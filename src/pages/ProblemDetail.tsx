@@ -254,7 +254,7 @@ const ProblemDetail = () => {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="w-full sm:w-auto grid grid-cols-4 sm:inline-flex overflow-x-auto">
+          <TabsList className="w-full sm:w-auto grid grid-cols-5 sm:inline-flex overflow-x-auto">
             <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
             <TabsTrigger value="squads" className="text-xs sm:text-sm">
               🔥 Squads
@@ -263,6 +263,7 @@ const ProblemDetail = () => {
               Builders ({mockBuilders.length})
             </TabsTrigger>
             <TabsTrigger value="solutions" className="text-xs sm:text-sm">Solutions</TabsTrigger>
+            <TabsTrigger value="competitors" className="text-xs sm:text-sm">Competitors</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="mt-4 sm:mt-6 space-y-4 sm:space-y-6">
@@ -394,6 +395,77 @@ const ProblemDetail = () => {
 
             {/* Top Solution Fit Verification */}
             <FitVerificationPanel {...mockTopSolution} />
+          </TabsContent>
+
+          <TabsContent value="competitors" className="mt-4 sm:mt-6">
+            {/* Competitors - Coming Soon Blurred */}
+            <div className="relative">
+              {/* Blur Overlay */}
+              <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-background/70 backdrop-blur-sm rounded-xl">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="text-center space-y-3 p-6"
+                >
+                  <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto">
+                    <Target className="h-7 w-7 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-semibold">Competitor Analysis</h3>
+                  <p className="text-sm text-muted-foreground max-w-sm">
+                    AI-powered competitor tracking, feature gaps, and market positioning
+                  </p>
+                  <Button variant="glow" className="gap-2 mt-2">
+                    <Zap className="h-4 w-4" />
+                    Join Waitlist
+                  </Button>
+                </motion.div>
+              </div>
+
+              {/* Blurred Content Preview */}
+              <div className="filter blur-[2px] pointer-events-none select-none opacity-60 space-y-4">
+                <Card variant="elevated">
+                  <CardContent className="p-6">
+                    <div className="space-y-4">
+                      {[
+                        { name: "CompetitorOne", funding: "$12M Series A", users: "50K+", threat: "High" },
+                        { name: "RivalApp", funding: "$3M Seed", users: "15K+", threat: "Medium" },
+                        { name: "AltSolution", funding: "Bootstrapped", users: "8K+", threat: "Low" },
+                      ].map((competitor) => (
+                        <div key={competitor.name} className="flex items-center justify-between p-3 rounded-lg bg-secondary/50">
+                          <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center font-bold">
+                              {competitor.name[0]}
+                            </div>
+                            <div>
+                              <p className="font-medium text-sm">{competitor.name}</p>
+                              <p className="text-xs text-muted-foreground">{competitor.funding}</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm font-medium">{competitor.users}</p>
+                            <Badge variant="outline" className="text-[10px]">{competitor.threat}</Badge>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card variant="elevated">
+                  <CardContent className="p-6">
+                    <h4 className="font-medium mb-3">Feature Gap Analysis</h4>
+                    <div className="space-y-2">
+                      {["Mobile app", "API access", "Team collaboration", "Analytics dashboard"].map((feature) => (
+                        <div key={feature} className="flex items-center justify-between text-sm">
+                          <span>{feature}</span>
+                          <Badge variant="secondary" className="text-[10px]">Gap</Badge>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
       </div>
