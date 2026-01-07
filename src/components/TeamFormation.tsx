@@ -81,9 +81,10 @@ const mockTeams: Team[] = [
 
 interface TeamFormationProps {
   problemId: string;
+  problemTitle?: string;
 }
 
-export function TeamFormation({ problemId }: TeamFormationProps) {
+export function TeamFormation({ problemId, problemTitle = "SaaS Onboarding" }: TeamFormationProps) {
   const { toast } = useToast();
   const [teams] = useState<Team[]>(mockTeams);
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
@@ -269,6 +270,7 @@ export function TeamFormation({ problemId }: TeamFormationProps) {
           team={selectedTeam}
           isOpen={isChatOpen}
           onClose={() => setIsChatOpen(false)}
+          problemTitle={problemTitle}
         />
       )}
     </div>
