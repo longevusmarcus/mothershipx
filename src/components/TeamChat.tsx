@@ -36,15 +36,16 @@ interface TeamChatProps {
   team: Team;
   isOpen: boolean;
   onClose: () => void;
+  problemTitle?: string;
 }
 
-const mockMessages: ChatMessage[] = [
+const getMessagesForProblem = (problemTitle: string): ChatMessage[] => [
   {
     id: "1",
     senderId: "1",
     senderName: "Alex",
     senderAvatar: "A",
-    content: "This onboarding problem is huge — 67% drop-off rate. Anyone else seeing this in their products?",
+    content: `This "${problemTitle}" problem looks promising. The signal data is strong — anyone else thinking about tackling this?`,
     timestamp: "10:30 AM",
   },
   {
@@ -52,7 +53,7 @@ const mockMessages: ChatMessage[] = [
     senderId: "2",
     senderName: "Sarah",
     senderAvatar: "S",
-    content: "Yeah, it's a real pain point. I've been thinking about a solution — what if we did progressive onboarding instead of dumping everything at once?",
+    content: "Yeah I've seen this pain point a lot. What's the competition like? Are there existing solutions?",
     timestamp: "10:33 AM",
   },
   {
@@ -60,7 +61,7 @@ const mockMessages: ChatMessage[] = [
     senderId: "ai",
     senderName: "Mothership AI",
     senderAvatar: "🤖",
-    content: "Interesting direction! Market data shows 3 similar solutions exist but all target enterprise. There's a gap for SMBs. The competition score is 72% — meaning low saturation.",
+    content: `Great question! For "${problemTitle}" — there are 3 solutions in market but all target enterprise. SMB segment is wide open. Competition gap score is 72%, meaning low saturation.`,
     timestamp: "10:35 AM",
     isAI: true,
     isPinned: true,
@@ -70,38 +71,38 @@ const mockMessages: ChatMessage[] = [
     senderId: "3",
     senderName: "Mike",
     senderAvatar: "M",
-    content: "I'd be down to build this. Anyone serious about committing? I can do frontend/React",
+    content: "Interesting. What would an MVP look like? I could commit if we scope it tight — 2 weeks max.",
     timestamp: "10:38 AM",
   },
   {
     id: "5",
-    senderId: "2",
-    senderName: "Sarah",
-    senderAvatar: "S",
-    content: "I'm in if we can scope it tight. What's the MVP look like? Maybe just a widget that guides first-time users?",
-    timestamp: "10:40 AM",
-  },
-  {
-    id: "6",
     senderId: "ai",
     senderName: "Mothership AI",
     senderAvatar: "🤖",
-    content: "For MVP, I'd suggest: 1) Embeddable JS widget, 2) 3-step max flows, 3) Analytics dashboard. This covers the top 3 pain points from the signal data. Estimated 2-week build.",
-    timestamp: "10:42 AM",
+    content: "Based on the top 3 pain points from signals: 1) Core widget, 2) Simple dashboard, 3) One integration. That's a 2-week build for a small team.",
+    timestamp: "10:40 AM",
     isAI: true,
+  },
+  {
+    id: "6",
+    senderId: "2",
+    senderName: "Sarah",
+    senderAvatar: "S",
+    content: "I'm interested but need a frontend dev. Anyone here with React experience want to team up? 👀",
+    timestamp: "10:42 AM",
   },
   {
     id: "7",
     senderId: "1",
     senderName: "Alex",
     senderAvatar: "A",
-    content: "That's actually doable. Who's committing? We need 1 more dev and someone for growth/distribution 👀",
+    content: "Count me in for product/backend. If we get one more person we could seriously compete for the sprint rewards 🏆",
     timestamp: "10:45 AM",
   },
 ];
 
-export function TeamChat({ team, isOpen, onClose }: TeamChatProps) {
-  const [messages, setMessages] = useState<ChatMessage[]>(mockMessages);
+export function TeamChat({ team, isOpen, onClose, problemTitle = "SaaS Onboarding" }: TeamChatProps) {
+  const [messages, setMessages] = useState<ChatMessage[]>(() => getMessagesForProblem(problemTitle));
   const [inputValue, setInputValue] = useState("");
   const [isAIMode, setIsAIMode] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -135,7 +136,7 @@ export function TeamChat({ team, isOpen, onClose }: TeamChatProps) {
           senderId: "ai",
           senderName: "Mothership AI",
           senderAvatar: "🤖",
-          content: "I'm analyzing your request... Based on the market data, here's what I found: The target demographic shows strong engagement with mobile-first solutions. Consider prioritizing responsive design in your MVP.",
+          content: `Analyzing your question about "${problemTitle}"... Based on the market data, the target demographic shows strong engagement with mobile-first solutions. Consider prioritizing responsive design in your MVP.`,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           isAI: true,
         };

@@ -352,7 +352,7 @@ const ProblemDetail = () => {
           </TabsContent>
 
           <TabsContent value="squads" className="mt-4 sm:mt-6">
-            <TeamFormation problemId={problem.id} />
+            <TeamFormation problemId={problem.id} problemTitle={problem.title} />
           </TabsContent>
 
           <TabsContent value="builders" className="mt-4 sm:mt-6 space-y-4 sm:space-y-6">
