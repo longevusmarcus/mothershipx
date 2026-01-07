@@ -8,7 +8,8 @@ import {
   Rocket, 
   Gift,
   Crown,
-  Sparkles
+  Sparkles,
+  AlertCircle
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +27,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { TeamCard, type Team } from "./TeamCard";
 import { TeamChat } from "./TeamChat";
+import { createSquadSchema } from "@/lib/validations";
 
 // Mock teams data
 const mockTeams: Team[] = [
@@ -92,6 +94,7 @@ export function TeamFormation({ problemId, problemTitle = "SaaS Onboarding" }: T
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [teamName, setTeamName] = useState("");
   const [teamTagline, setTeamTagline] = useState("");
+  const [formErrors, setFormErrors] = useState<{ name?: string; tagline?: string }>({});
 
   const handleJoinTeam = (team: Team) => {
     toast({
@@ -106,8 +109,19 @@ export function TeamFormation({ problemId, problemTitle = "SaaS Onboarding" }: T
   };
 
   const handleCreateTeam = () => {
-    if (!teamName.trim()) return;
+    const result = createSquadSchema.safeParse({ name: teamName, tagline: teamTagline });
     
+    if (!result.success) {
+      const errors: { name?: string; tagline?: string } = {};
+      result.error.errors.forEach((err) => {
+        if (err.path[0] === "name") errors.name = err.message;
+        if (err.path[0] === "tagline") errors.tagline = err.message;
+      });
+      setFormErrors(errors);
+      return;
+    }
+    
+    setFormErrors({});
     toast({
       title: "Team Created! 🚀",
       description: `${teamName} is ready. Invite builders to join your squad!`,
@@ -158,23 +172,42 @@ export function TeamFormation({ problemId, problemTitle = "SaaS Onboarding" }: T
                   id="team-name"
                   placeholder="e.g., Velocity Squad"
                   value={teamName}
-                  onChange={(e) => setTeamName(e.target.value)}
+                  onChange={(e) => {
+                    setTeamName(e.target.value);
+                    if (formErrors.name) setFormErrors(prev => ({ ...prev, name: undefined }));
+                  }}
+                  className={formErrors.name ? "border-destructive" : ""}
                 />
+                {formErrors.name && (
+                  <p className="text-xs text-destructive flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {formErrors.name}
+                  </p>
+                )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="team-tagline">Tagline</Label>
+                <Label htmlFor="team-tagline">Tagline (optional)</Label>
                 <Input
                   id="team-tagline"
                   placeholder="e.g., Ship fast, learn faster"
                   value={teamTagline}
-                  onChange={(e) => setTeamTagline(e.target.value)}
+                  onChange={(e) => {
+                    setTeamTagline(e.target.value);
+                    if (formErrors.tagline) setFormErrors(prev => ({ ...prev, tagline: undefined }));
+                  }}
+                  className={formErrors.tagline ? "border-destructive" : ""}
                 />
+                {formErrors.tagline && (
+                  <p className="text-xs text-destructive flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {formErrors.tagline}
+                  </p>
+                )}
               </div>
               <Button 
                 variant="glow" 
                 className="w-full" 
                 onClick={handleCreateTeam}
-                disabled={!teamName.trim()}
               >
                 <Sparkles className="h-4 w-4 mr-2" />
                 Launch Squad
