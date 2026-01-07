@@ -1,5 +1,20 @@
 import { motion } from "framer-motion";
-import { Trophy, Medal, TrendingUp, Filter, ChevronDown, Sparkles, Users, Rocket } from "lucide-react";
+import { 
+  Trophy, 
+  Medal, 
+  TrendingUp, 
+  Sparkles, 
+  Users, 
+  Rocket,
+  Lock,
+  Zap,
+  Target,
+  Crown,
+  Flame,
+  Timer,
+  Gift,
+  Swords
+} from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -45,13 +60,37 @@ const leaderboardData = [
   { rank: 6, name: "Lisa Anderson", score: 1847, solutions: 4, fitScore: 80 },
   { rank: 7, name: "David Brown", score: 1723, solutions: 3, fitScore: 78 },
   { rank: 8, name: "Maria Garcia", score: 1654, solutions: 3, fitScore: 76 },
-  { rank: 9, name: "Robert Taylor", score: 1589, solutions: 3, fitScore: 74 },
-  { rank: 10, name: "Jennifer Lee", score: 1456, solutions: 2, fitScore: 72 },
+];
+
+const arenaFeatures = [
+  {
+    icon: Swords,
+    title: "Squad Battles",
+    description: "Team up and compete in real-time hackathons",
+    stat: "4v4 Arena",
+  },
+  {
+    icon: Timer,
+    title: "Weekly Sprints",
+    description: "48-hour challenges with live leaderboards",
+    stat: "Every Friday",
+  },
+  {
+    icon: Crown,
+    title: "XP & Ranks",
+    description: "Climb from Bronze to Diamond tier",
+    stat: "6 Tiers",
+  },
+  {
+    icon: Gift,
+    title: "Prize Pool",
+    description: "Win funding, distribution, and acceleration",
+    stat: "$50K+ monthly",
+  },
 ];
 
 const LeaderboardPage = () => {
   const getPodiumOrder = (index: number) => {
-    // Display order: 2nd place, 1st place, 3rd place
     const order = [1, 0, 2];
     return topBuilders[order[index]];
   };
@@ -59,216 +98,215 @@ const LeaderboardPage = () => {
   return (
     <AppLayout title="Leaderboard">
       <div className="space-y-4 sm:space-y-6 max-w-5xl mx-auto">
-        {/* Demo Banner */}
+        {/* Hackathon Arena Hero */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4 sm:p-6"
+          className="relative overflow-hidden rounded-2xl border border-warning/30 bg-gradient-to-br from-warning/5 via-background to-primary/5"
         >
-          <div className="absolute inset-0 bg-gradient-glow opacity-30" />
-          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-warning/20 to-warning/10 flex items-center justify-center border border-warning/20">
-                <Trophy className="h-6 w-6 text-warning" />
-              </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <h2 className="font-semibold text-sm sm:text-base">Hackathon Arena</h2>
-                  <Badge variant="outline" className="gap-1 text-[10px] bg-warning/10 text-warning border-warning/30">
-                    <Sparkles className="h-2.5 w-2.5" />
-                    Demo Mode
-                  </Badge>
-                </div>
-                <p className="text-xs sm:text-sm text-muted-foreground max-w-md">
-                  This is a <span className="text-foreground font-medium">preview</span> of the upcoming leaderboard. 
-                  Soon you'll compete, earn XP, and climb the ranks by solving real problems with other builders.
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="outline" className="gap-1 text-[10px] sm:text-xs">
-                <Users className="h-3 w-3" />
+          <div className="absolute inset-0 bg-gradient-glow opacity-50" />
+          <div className="relative z-10 p-6 sm:p-8 text-center space-y-4">
+            <motion.div
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-warning/10 border border-warning/20"
+            >
+              <Trophy className="h-4 w-4 text-warning" />
+              <span className="text-sm font-medium text-warning">Arena Coming Soon</span>
+            </motion.div>
+            
+            <h2 className="text-2xl sm:text-3xl font-bold">
+              Hackathon Arena ⚔️
+            </h2>
+            <p className="text-muted-foreground max-w-lg mx-auto">
+              Compete in real-time hackathons, climb the ranks, and win prizes for building the best solutions
+            </p>
+
+            <div className="flex flex-wrap justify-center gap-3 pt-2">
+              <Badge variant="outline" className="gap-1 border-warning/30">
+                <Swords className="h-3 w-3" />
                 Team Battles
               </Badge>
-              <Badge variant="outline" className="gap-1 text-[10px] sm:text-xs">
-                <Rocket className="h-3 w-3" />
-                Weekly Sprints
+              <Badge variant="outline" className="gap-1 border-warning/30">
+                <Flame className="h-3 w-3" />
+                Live Rankings
+              </Badge>
+              <Badge variant="outline" className="gap-1 border-warning/30">
+                <Gift className="h-3 w-3" />
+                Weekly Prizes
               </Badge>
             </div>
           </div>
         </motion.div>
 
-        {/* Filters */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="flex items-center justify-between gap-2"
-        >
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <Badge variant="default" className="text-[10px] sm:text-xs px-2 sm:px-3">Global</Badge>
-            <Badge variant="outline" className="cursor-pointer text-[10px] sm:text-xs px-2 sm:px-3">Weekly</Badge>
-            <Badge variant="outline" className="cursor-pointer text-[10px] sm:text-xs px-2 sm:px-3">Monthly</Badge>
-          </div>
-          <Button variant="outline" size="sm" className="text-xs h-8 px-2 sm:px-3">
-            <Filter className="h-3.5 w-3.5 sm:mr-2" />
-            <span className="hidden sm:inline">Filter by Problem</span>
-            <ChevronDown className="h-3.5 w-3.5 ml-1" />
-          </Button>
-        </motion.div>
-
-        {/* Top 3 Podium - Compact on mobile */}
-        <div className="grid grid-cols-3 gap-2 sm:gap-4 items-end">
-          {[0, 1, 2].map((displayIndex) => {
-            const builder = getPodiumOrder(displayIndex);
-            const isFirst = builder.rank === 1;
-            const isSecond = builder.rank === 2;
-            const isThird = builder.rank === 3;
-
-            return (
-              <motion.div
-                key={builder.rank}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 + displayIndex * 0.15 }}
-              >
-                <Card 
-                  variant={isFirst ? "glow" : "elevated"} 
-                  className="relative overflow-hidden"
-                >
-                  {isFirst && (
-                    <div className="absolute inset-0 bg-gradient-glow pointer-events-none" />
-                  )}
-                  <CardContent className={`relative z-10 p-2 sm:p-4 ${isFirst ? "pt-3 sm:pt-6 pb-3 sm:pb-6" : "pt-2 sm:pt-4 pb-2 sm:pb-4"}`}>
-                    <div className="text-center space-y-1 sm:space-y-3">
-                      {/* Avatar */}
-                      <div className="relative inline-block">
-                        <div
-                          className={`rounded-full flex items-center justify-center font-bold mx-auto ${
-                            isFirst
-                              ? "h-10 w-10 sm:h-16 sm:w-16 text-sm sm:text-xl bg-gradient-primary text-primary-foreground"
-                              : "h-8 w-8 sm:h-12 sm:w-12 text-xs sm:text-lg bg-secondary text-secondary-foreground"
-                          }`}
-                        >
-                          {builder.avatar}
-                        </div>
-                        <div
-                          className={`absolute -bottom-0.5 -right-0.5 sm:-bottom-1 sm:-right-1 rounded-full flex items-center justify-center ${
-                            isFirst
-                              ? "h-5 w-5 sm:h-7 sm:w-7 bg-warning text-background"
-                              : isSecond
-                              ? "h-4 w-4 sm:h-6 sm:w-6 bg-muted-foreground/30 text-muted-foreground"
-                              : "h-4 w-4 sm:h-6 sm:w-6 bg-warning/60 text-background"
-                          }`}
-                        >
-                          {isFirst ? (
-                            <Trophy className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5" />
-                          ) : (
-                            <Medal className="h-2 w-2 sm:h-3 sm:w-3" />
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Name & Score */}
-                      <div className="space-y-0">
-                        <p className={`font-semibold truncate ${isFirst ? "text-xs sm:text-base" : "text-[10px] sm:text-sm"}`}>
-                          {builder.name.split(' ')[0]}
-                          <span className="hidden sm:inline"> {builder.name.split(' ')[1]}</span>
-                        </p>
-                        <p className={`font-bold text-gradient ${isFirst ? "text-lg sm:text-2xl" : "text-base sm:text-xl"}`}>
-                          {builder.score.toLocaleString()}
-                        </p>
-                        <p className="text-[8px] sm:text-[10px] text-muted-foreground uppercase tracking-wider">XP Points</p>
-                      </div>
-
-                      {/* Stats */}
-                      <div className={`grid grid-cols-3 gap-0.5 sm:gap-1 text-center ${isFirst ? "text-[9px] sm:text-xs" : "text-[8px] sm:text-[10px]"}`}>
-                        <div>
-                          <p className="font-bold">{builder.solutions}</p>
-                          <p className="text-muted-foreground">Solns</p>
-                        </div>
-                        <div>
-                          <p className="font-bold text-success">{builder.fitScore}%</p>
-                          <p className="text-muted-foreground">Fit</p>
-                        </div>
-                        <div>
-                          <p className="font-bold">{builder.streak}</p>
-                          <p className="text-muted-foreground">Streak</p>
-                        </div>
-                      </div>
-
-                      {isFirst && (
-                        <Badge variant="success" className="text-[9px] sm:text-xs px-1.5 sm:px-2 py-0.5">
-                          <TrendingUp className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />
-                          {builder.change} this week
-                        </Badge>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            );
-          })}
+        {/* Arena Features Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          {arenaFeatures.map((feature, index) => (
+            <motion.div
+              key={feature.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <Card variant="elevated" className="h-full relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-br from-warning/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <CardContent className="p-4 space-y-3 relative">
+                  <div className="h-10 w-10 rounded-xl bg-warning/10 flex items-center justify-center">
+                    <feature.icon className="h-5 w-5 text-warning" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-sm">{feature.title}</h4>
+                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                      {feature.description}
+                    </p>
+                  </div>
+                  <Badge variant="secondary" className="text-[10px]">
+                    {feature.stat}
+                  </Badge>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
         </div>
 
-        {/* Leaderboard Table */}
-        <Card variant="elevated">
-          <CardHeader className="py-3 sm:py-4">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm sm:text-base">Rankings</CardTitle>
-              <Badge variant="secondary" className="text-[10px]">Sample Data</Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="px-2 sm:px-6">
-            <div className="space-y-1 sm:space-y-2">
-              {leaderboardData.map((entry, index) => (
-                <motion.div
-                  key={entry.rank}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 + index * 0.05 }}
-                  className="flex items-center gap-2 sm:gap-4 p-2 sm:p-3 rounded-lg hover:bg-secondary/50 transition-colors"
-                >
-                  <div className="w-6 sm:w-8 text-center">
-                    <span className="font-bold text-xs sm:text-base text-muted-foreground">{entry.rank}</span>
-                  </div>
-                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-secondary flex items-center justify-center font-bold text-xs sm:text-base shrink-0">
-                    {entry.name[0]}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate text-xs sm:text-base">{entry.name}</p>
-                    <div className="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-xs text-muted-foreground">
-                      <span>{entry.solutions} solns</span>
-                      <span className="text-success">{entry.fitScore}%</span>
-                    </div>
-                  </div>
-                  <div className="w-24 hidden md:block">
-                    <Progress value={entry.fitScore} size="sm" indicatorColor="gradient" />
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-xs sm:text-base">{entry.score.toLocaleString()}</p>
-                    <p className="text-[9px] sm:text-xs text-muted-foreground">XP</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        {/* Blurred Preview Section */}
+        <div className="relative">
+          {/* Blur Overlay */}
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-background/60 backdrop-blur-sm rounded-xl">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center space-y-3 p-6"
+            >
+              <div className="h-14 w-14 rounded-2xl bg-warning/10 flex items-center justify-center mx-auto">
+                <Lock className="h-7 w-7 text-warning" />
+              </div>
+              <h3 className="text-lg font-semibold">Live Leaderboard</h3>
+              <p className="text-sm text-muted-foreground max-w-sm">
+                Compete, earn XP, and climb from Bronze to Diamond tier
+              </p>
+              <Button variant="glow" className="gap-2 mt-2">
+                <Sparkles className="h-4 w-4" />
+                Join Waitlist
+              </Button>
+            </motion.div>
+          </div>
 
-        {/* Coming Soon CTA */}
+          {/* Blurred Content Preview */}
+          <div className="filter blur-[2px] pointer-events-none select-none opacity-60 space-y-4">
+            {/* Top 3 Podium Preview */}
+            <div className="grid grid-cols-3 gap-2 sm:gap-4 items-end">
+              {[0, 1, 2].map((displayIndex) => {
+                const builder = getPodiumOrder(displayIndex);
+                const isFirst = builder.rank === 1;
+
+                return (
+                  <Card 
+                    key={builder.rank}
+                    variant={isFirst ? "glow" : "elevated"} 
+                    className="relative overflow-hidden"
+                  >
+                    <CardContent className={`relative z-10 p-2 sm:p-4 ${isFirst ? "pt-3 sm:pt-6 pb-3 sm:pb-6" : "pt-2 sm:pt-4 pb-2 sm:pb-4"}`}>
+                      <div className="text-center space-y-1 sm:space-y-3">
+                        <div className="relative inline-block">
+                          <div
+                            className={`rounded-full flex items-center justify-center font-bold mx-auto ${
+                              isFirst
+                                ? "h-10 w-10 sm:h-16 sm:w-16 text-sm sm:text-xl bg-gradient-primary text-primary-foreground"
+                                : "h-8 w-8 sm:h-12 sm:w-12 text-xs sm:text-lg bg-secondary text-secondary-foreground"
+                            }`}
+                          >
+                            {builder.avatar}
+                          </div>
+                          <div
+                            className={`absolute -bottom-0.5 -right-0.5 sm:-bottom-1 sm:-right-1 rounded-full flex items-center justify-center ${
+                              isFirst
+                                ? "h-5 w-5 sm:h-7 sm:w-7 bg-warning text-background"
+                                : "h-4 w-4 sm:h-6 sm:w-6 bg-muted-foreground/30 text-muted-foreground"
+                            }`}
+                          >
+                            {isFirst ? (
+                              <Trophy className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5" />
+                            ) : (
+                              <Medal className="h-2 w-2 sm:h-3 sm:w-3" />
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="space-y-0">
+                          <p className={`font-semibold truncate ${isFirst ? "text-xs sm:text-base" : "text-[10px] sm:text-sm"}`}>
+                            {builder.name.split(' ')[0]}
+                          </p>
+                          <p className={`font-bold text-gradient ${isFirst ? "text-lg sm:text-2xl" : "text-base sm:text-xl"}`}>
+                            {builder.score.toLocaleString()}
+                          </p>
+                          <p className="text-[8px] sm:text-[10px] text-muted-foreground uppercase tracking-wider">XP</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+
+            {/* Leaderboard Table Preview */}
+            <Card variant="elevated">
+              <CardHeader className="py-3 sm:py-4">
+                <CardTitle className="text-sm sm:text-base">Rankings</CardTitle>
+              </CardHeader>
+              <CardContent className="px-2 sm:px-6">
+                <div className="space-y-1 sm:space-y-2">
+                  {leaderboardData.slice(0, 5).map((entry) => (
+                    <div
+                      key={entry.rank}
+                      className="flex items-center gap-2 sm:gap-4 p-2 sm:p-3 rounded-lg"
+                    >
+                      <div className="w-6 sm:w-8 text-center">
+                        <span className="font-bold text-xs sm:text-base text-muted-foreground">{entry.rank}</span>
+                      </div>
+                      <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-secondary flex items-center justify-center font-bold text-xs sm:text-base shrink-0">
+                        {entry.name[0]}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium truncate text-xs sm:text-base">{entry.name}</p>
+                        <p className="text-[10px] sm:text-xs text-muted-foreground">{entry.solutions} solutions</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-xs sm:text-base">{entry.score.toLocaleString()}</p>
+                        <p className="text-[9px] sm:text-xs text-muted-foreground">XP</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Bottom CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="text-center py-4"
+          className="text-center py-6 space-y-3"
         >
-          <p className="text-sm text-muted-foreground mb-3">
-            Ready to compete? The Hackathon Arena opens soon.
+          <p className="text-sm text-muted-foreground">
+            Be the first to compete when the Arena opens
           </p>
-          <Button variant="glow" size="sm">
-            <Sparkles className="h-4 w-4 mr-2" />
-            Get Early Access
-          </Button>
+          <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <Users className="h-3 w-3" />
+              3,421 on waitlist
+            </span>
+            <span className="flex items-center gap-1">
+              <Trophy className="h-3 w-3" />
+              Weekly prizes
+            </span>
+            <span className="flex items-center gap-1">
+              <Zap className="h-3 w-3" />
+              $50K+ pool
+            </span>
+          </div>
         </motion.div>
       </div>
     </AppLayout>
