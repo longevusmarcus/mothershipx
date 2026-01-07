@@ -145,24 +145,24 @@ export function TeamCard({ team, onJoin, onViewChat, isUserTeam, delay = 0 }: Te
           </div>
 
           {/* Actions */}
-          <div className="flex gap-2">
+          <div className="flex justify-end gap-2">
             {isUserTeam ? (
-              <Button variant="glow" size="sm" className="flex-1 gap-1.5" onClick={onViewChat}>
+              <Button variant="glow" size="sm" className="gap-1.5" onClick={onViewChat}>
                 <MessageCircle className="h-3.5 w-3.5" />
                 Open Chat
               </Button>
             ) : isFull ? (
-              <Button variant="secondary" size="sm" className="flex-1 gap-1.5" disabled>
+              <Button variant="secondary" size="sm" className="gap-1.5" disabled>
                 <Lock className="h-3.5 w-3.5" />
                 Team Full
               </Button>
             ) : team.isHiring ? (
-              <Button variant="outline" size="sm" className="flex-1 gap-1.5" onClick={onJoin}>
+              <Button variant="outline" size="sm" className="gap-1.5" onClick={onJoin}>
                 <Sparkles className="h-3.5 w-3.5" />
                 Request to Join
               </Button>
             ) : (
-              <Button variant="ghost" size="sm" className="flex-1 gap-1.5" disabled>
+              <Button variant="ghost" size="sm" className="gap-1.5" disabled>
                 <Lock className="h-3.5 w-3.5" />
                 Invite Only
               </Button>
