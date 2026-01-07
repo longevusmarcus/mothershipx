@@ -47,14 +47,14 @@ export function AITransformPanel({ selectedSources, isAdmin = false }: AITransfo
             <div className="space-y-2">
               <h3 className="font-semibold">Founding Members Only</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Connect <span className="text-foreground font-medium">50+ data sources</span> to discover real problems and trends. 
+                Connect <span className="text-foreground font-medium">10+ data sources</span> to discover real problems and trends.
                 Then <span className="text-foreground font-medium">build solutions together</span> with our community of builders.
               </p>
             </div>
             <div className="flex flex-wrap items-center justify-center gap-2">
               <Badge variant="outline" className="gap-1">
                 <Database className="h-3 w-3" />
-                50+ Sources
+                10+ Sources
               </Badge>
               <Badge variant="outline" className="gap-1">
                 <TrendingUp className="h-3 w-3" />
