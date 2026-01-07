@@ -68,7 +68,7 @@ export function DataSourceSelector({ onSelectionChange }: DataSourceSelectorProp
                   onClick={() => toggleSource(source)}
                   className={cn(
                     "relative h-14 w-14 rounded-xl flex items-center justify-center transition-all duration-200",
-                    "border hover:scale-105 active:scale-95 overflow-hidden",
+                    "border hover:scale-105 active:scale-95",
                     isSelected
                       ? "border-primary bg-card shadow-glow"
                       : "border-border/50 bg-secondary/50 hover:border-border hover:bg-secondary"
