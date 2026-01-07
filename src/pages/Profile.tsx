@@ -54,7 +54,7 @@ const userData = {
 };
 
 const stats = [
-  { label: "Problems Solved", value: 8, icon: CircleDot, comingSoon: false },
+  { label: "Trends Joined", value: 8, icon: CircleDot, comingSoon: false },
   { label: "Total Builds", value: 12, icon: Layers, comingSoon: true },
   { label: "Fit Score Avg", value: "87%", icon: BarChart3, comingSoon: true },
   { label: "Global Rank", value: "#12", icon: Hash, comingSoon: true },
