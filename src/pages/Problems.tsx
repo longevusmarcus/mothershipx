@@ -32,7 +32,7 @@ const Problems = () => {
   }, 0);
 
   return (
-    <AppLayout title="Market Intelligence">
+    <AppLayout title="Problems & Trends">
       <div className="space-y-4 sm:space-y-6">
         {/* Hero Banner */}
         <motion.div
