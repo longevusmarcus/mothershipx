@@ -50,49 +50,42 @@ export function TeamCard({ team, onJoin, onViewChat, isUserTeam, delay = 0 }: Te
         variant={isUserTeam ? "glow" : "elevated"} 
         className={`relative overflow-hidden ${isUserTeam ? "border-primary/50" : ""}`}
       >
-        {/* Rank Badge */}
-        {team.rank && team.rank <= 3 && (
-          <div className="absolute top-2 right-2 z-10">
-            <Badge 
-              className={`gap-1 ${
-                team.rank === 1 
-                  ? "bg-gradient-to-r from-yellow-500 to-amber-500 text-white border-0" 
-                  : team.rank === 2 
-                  ? "bg-gradient-to-r from-gray-400 to-gray-500 text-white border-0"
-                  : "bg-gradient-to-r from-amber-600 to-amber-700 text-white border-0"
-              }`}
-            >
-              <Trophy className="h-3 w-3" />
-              #{team.rank}
-            </Badge>
-          </div>
-        )}
-
-        {/* Active Chat Indicator */}
-        {team.chatActive && (
-          <div className="absolute top-2 left-2 z-10">
-            <motion.div
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              <Badge variant="outline" className="gap-1 bg-success/10 text-success border-success/30 text-[10px]">
-                <div className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
-                Live
-              </Badge>
-            </motion.div>
-          </div>
-        )}
-
         <CardContent className="p-4 space-y-4">
           {/* Team Header */}
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-sm">{team.name}</h3>
-              {team.streak && team.streak >= 3 && (
-                <Badge variant="outline" className="text-[10px] gap-0.5 px-1.5">
-                  🔥 {team.streak}
-                </Badge>
-              )}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <h3 className="font-semibold text-sm">{team.name}</h3>
+                {team.streak && team.streak >= 3 && (
+                  <Badge variant="outline" className="text-[10px] gap-0.5 px-1.5">
+                    🔥 {team.streak}
+                  </Badge>
+                )}
+              </div>
+              
+              {/* Badges - Live or Rank */}
+              <div className="flex items-center gap-1.5">
+                {team.chatActive && (
+                  <Badge variant="outline" className="gap-1 bg-success/10 text-success border-success/30 text-[10px]">
+                    <div className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
+                    Live
+                  </Badge>
+                )}
+                {team.rank && team.rank <= 3 && (
+                  <Badge 
+                    className={`gap-1 text-[10px] ${
+                      team.rank === 1 
+                        ? "bg-gradient-to-r from-yellow-500 to-amber-500 text-white border-0" 
+                        : team.rank === 2 
+                        ? "bg-gradient-to-r from-gray-400 to-gray-500 text-white border-0"
+                        : "bg-gradient-to-r from-amber-600 to-amber-700 text-white border-0"
+                    }`}
+                  >
+                    <Trophy className="h-2.5 w-2.5" />
+                    #{team.rank}
+                  </Badge>
+                )}
+              </div>
             </div>
             <p className="text-xs text-muted-foreground line-clamp-1">{team.tagline}</p>
           </div>
@@ -114,7 +107,7 @@ export function TeamCard({ team, onJoin, onViewChat, isUserTeam, delay = 0 }: Te
                     </AvatarFallback>
                   </Avatar>
                   {member.role === "lead" && (
-                    <Crown className="absolute -top-1 -right-1 h-3 w-3 text-warning" />
+                    <Crown className="absolute -top-1.5 left-1/2 -translate-x-1/2 h-3 w-3 text-warning" />
                   )}
                   {member.isOnline && (
                     <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-success border-2 border-background" />
