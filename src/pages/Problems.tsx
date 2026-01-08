@@ -55,7 +55,7 @@ const Problems = () => {
                 <div>
                   <h2 className="text-lg sm:text-xl font-bold">Products to Build in 2026</h2>
                   <p className="text-xs sm:text-sm text-muted-foreground">
-                    Real problems from TikTok, Google Trends & Freelancer
+                    Real problems and trends from TikTok, Google Trends & Freelancer
                   </p>
                 </div>
               </div>
