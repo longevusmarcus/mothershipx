@@ -11,6 +11,8 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  Swords,
+  Flame,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -93,7 +95,91 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
 
       {/* Main Nav */}
       <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
-        {navItems.map((item) => {
+        {navItems.slice(0, 2).map((item) => {
+          const isActive = location.pathname === item.path;
+          return (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={cn(
+                "flex items-center gap-3 px-3 py-3 md:py-2.5 rounded-lg text-sm font-medium transition-all duration-200 active:scale-[0.98]",
+                isActive
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+              )}
+            >
+              <item.icon className={cn("h-5 w-5 shrink-0", isActive && "text-primary")} />
+              <AnimatePresence mode="wait">
+                {(!collapsed || isMobile) && (
+                  <motion.span
+                    initial={{ opacity: 0, width: 0 }}
+                    animate={{ opacity: 1, width: "auto" }}
+                    exit={{ opacity: 0, width: 0 }}
+                    className="overflow-hidden whitespace-nowrap"
+                  >
+                    {item.label}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </NavLink>
+          );
+        })}
+
+        {/* Challenges Button - Standout Design */}
+        <NavLink
+          to="/challenges"
+          className={cn(
+            "relative flex items-center gap-3 px-3 py-3 md:py-2.5 rounded-lg text-sm font-medium transition-all duration-200 active:scale-[0.98] overflow-hidden",
+            location.pathname === "/challenges"
+              ? "bg-gradient-to-r from-warning/20 via-destructive/20 to-warning/20 text-foreground border border-warning/40"
+              : "bg-gradient-to-r from-warning/10 via-destructive/10 to-warning/10 text-foreground hover:from-warning/20 hover:via-destructive/20 hover:to-warning/20 border border-warning/20 hover:border-warning/40"
+          )}
+        >
+          {/* Animated glow effect */}
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-warning/0 via-warning/20 to-warning/0"
+            animate={{
+              x: ["-100%", "100%"],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              repeatDelay: 3,
+            }}
+          />
+          <div className="relative flex items-center gap-3 w-full">
+            <div className="relative">
+              <Swords className={cn(
+                "h-5 w-5 shrink-0 text-warning",
+                location.pathname === "/challenges" && "text-warning"
+              )} />
+              <motion.div
+                className="absolute -top-1 -right-1"
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                <Flame className="h-3 w-3 text-destructive" />
+              </motion.div>
+            </div>
+            <AnimatePresence mode="wait">
+              {(!collapsed || isMobile) && (
+                <motion.div
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: "auto" }}
+                  exit={{ opacity: 0, width: 0 }}
+                  className="flex items-center gap-2 overflow-hidden whitespace-nowrap"
+                >
+                  <span className="font-semibold">Challenges</span>
+                  <span className="text-[10px] bg-destructive text-destructive-foreground px-1.5 py-0.5 rounded-full font-bold animate-pulse">
+                    LIVE
+                  </span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </NavLink>
+
+        {navItems.slice(2).map((item) => {
           const isActive = location.pathname === item.path;
           return (
             <NavLink

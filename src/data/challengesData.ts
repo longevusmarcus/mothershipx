@@ -1,3 +1,11 @@
+import { TrendSource } from "./marketIntelligence";
+
+export interface ChallengeSource {
+  source: TrendSource;
+  metric: string;
+  value: string;
+}
+
 export interface DailyChallenge {
   id: string;
   title: string;
@@ -13,7 +21,12 @@ export interface DailyChallenge {
   tags: string[];
   isToday: boolean;
   status: "active" | "voting" | "completed";
-  winnerPrize: number; // 90% of pool
+  winnerPrize: number;
+  // New relevance fields
+  whyRelevant: string;
+  sources: ChallengeSource[];
+  trendGrowth: string;
+  audienceSize: string;
 }
 
 export const mockChallenges: DailyChallenge[] = [
@@ -27,12 +40,19 @@ export const mockChallenges: DailyChallenge[] = [
     participants: 127,
     soloParticipants: 89,
     teamCount: 12,
-    endsAt: new Date(Date.now() + 8 * 60 * 60 * 1000), // 8 hours from now
+    endsAt: new Date(Date.now() + 8 * 60 * 60 * 1000),
     difficulty: "beginner",
     tags: ["AI", "Relationships", "Fun"],
     isToday: true,
     status: "active",
-    winnerPrize: 114.30, // 90%
+    winnerPrize: 114.30,
+    whyRelevant: "Couples arguing about chores & decisions is trending on TikTok. 'Who's right' videos get millions of views. People want a neutral AI judge.",
+    sources: [
+      { source: "tiktok", metric: "Views this week", value: "12.4M" },
+      { source: "google_trends", metric: "Search growth", value: "+340%" },
+    ],
+    trendGrowth: "+340%",
+    audienceSize: "18-35 couples",
   },
   {
     id: "challenge-2",
@@ -44,12 +64,20 @@ export const mockChallenges: DailyChallenge[] = [
     participants: 89,
     soloParticipants: 62,
     teamCount: 8,
-    endsAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // Ended 2 hours ago
+    endsAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
     difficulty: "intermediate",
     tags: ["Wellness", "Productivity", "Mobile"],
     isToday: false,
     status: "voting",
     winnerPrize: 80.10,
+    whyRelevant: "Screen time guilt is at an all-time high. Gen Z actively seeking dopamine detox solutions. Huge viral potential.",
+    sources: [
+      { source: "tiktok", metric: "Hashtag views", value: "8.2M" },
+      { source: "google_trends", metric: "Search growth", value: "+180%" },
+      { source: "reddit", metric: "Posts/week", value: "2.4K" },
+    ],
+    trendGrowth: "+180%",
+    audienceSize: "Gen Z & Millennials",
   },
   {
     id: "challenge-3",
@@ -67,6 +95,13 @@ export const mockChallenges: DailyChallenge[] = [
     isToday: false,
     status: "completed",
     winnerPrize: 140.40,
+    whyRelevant: "'Rate my outfit' posts dominate social. AI fashion tools are exploding. People want honest feedback without asking friends.",
+    sources: [
+      { source: "tiktok", metric: "Creator videos", value: "45K" },
+      { source: "google_trends", metric: "Search growth", value: "+420%" },
+    ],
+    trendGrowth: "+420%",
+    audienceSize: "Fashion-conscious 16-28",
   },
   {
     id: "challenge-4",
@@ -84,6 +119,14 @@ export const mockChallenges: DailyChallenge[] = [
     isToday: false,
     status: "completed",
     winnerPrize: 182.70,
+    whyRelevant: "Fake 'get rich' content floods TikTok. Users are desperate to know what's real. Scam-busting content goes viral.",
+    sources: [
+      { source: "tiktok", metric: "Related hashtags", value: "28M views" },
+      { source: "freelancer", metric: "Related gigs", value: "1.2K" },
+      { source: "google_trends", metric: "Search growth", value: "+210%" },
+    ],
+    trendGrowth: "+210%",
+    audienceSize: "Aspiring entrepreneurs",
   },
 ];
 

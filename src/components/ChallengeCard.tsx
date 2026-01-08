@@ -12,11 +12,13 @@ import {
   Crown,
   Vote,
   CheckCircle2,
+  TrendingUp,
+  Eye,
+  Target,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import {
   Dialog,
   DialogContent,
@@ -27,6 +29,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { DailyChallenge, getTimeRemaining, getDifficultyColor } from "@/data/challengesData";
+import { getSourceIcon, getSourceLabel } from "@/data/marketIntelligence";
 
 interface ChallengeCardProps {
   challenge: DailyChallenge;
@@ -128,6 +131,48 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
                 {challenge.prizePool}
               </div>
               <p className="text-[10px] text-muted-foreground">prize pool</p>
+            </div>
+          </div>
+
+          {/* Why This Challenge - Relevance Section */}
+          <div className="bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 rounded-lg p-3 mb-3 border border-primary/20">
+            <div className="flex items-start gap-2 mb-2">
+              <Target className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-[10px] uppercase tracking-wider text-primary font-semibold mb-1">
+                  Why This Challenge?
+                </p>
+                <p className="text-xs text-foreground/80 leading-relaxed">
+                  {challenge.whyRelevant}
+                </p>
+              </div>
+            </div>
+            
+            {/* Data Sources */}
+            <div className="flex flex-wrap gap-2 mt-2">
+              {challenge.sources.map((src, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center gap-1.5 bg-background/60 rounded-md px-2 py-1 border border-border/50"
+                >
+                  <span className="text-sm">{getSourceIcon(src.source)}</span>
+                  <span className="text-[10px] text-muted-foreground">{src.metric}:</span>
+                  <span className="text-[10px] font-semibold text-foreground">{src.value}</span>
+                </div>
+              ))}
+            </div>
+            
+            {/* Trend Stats */}
+            <div className="flex items-center gap-4 mt-2 pt-2 border-t border-primary/10">
+              <div className="flex items-center gap-1 text-xs">
+                <TrendingUp className="h-3 w-3 text-success" />
+                <span className="text-success font-medium">{challenge.trendGrowth}</span>
+                <span className="text-muted-foreground">growth</span>
+              </div>
+              <div className="flex items-center gap-1 text-xs">
+                <Eye className="h-3 w-3 text-muted-foreground" />
+                <span className="text-muted-foreground">{challenge.audienceSize}</span>
+              </div>
             </div>
           </div>
 
