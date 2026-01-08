@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Users, Clock, ArrowRight, Flame, Zap } from "lucide-react";
+import { Users, ArrowRight, Zap } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { TrendBadge } from "@/components/TrendBadge";
 import { SocialProofStats } from "@/components/SocialProofStats";
 import { OpportunityMeter } from "@/components/OpportunityMeter";
+import { AuthModal } from "@/components/AuthModal";
 import type { MarketProblem } from "@/data/marketIntelligence";
 
 interface MarketProblemCardProps {
@@ -17,6 +19,7 @@ interface MarketProblemCardProps {
 
 export function MarketProblemCard({ problem, delay = 0 }: MarketProblemCardProps) {
   const navigate = useNavigate();
+  const [authOpen, setAuthOpen] = useState(false);
   const slotsRemaining = problem.slotsTotal - problem.slotsFilled;
   const fillPercentage = (problem.slotsFilled / problem.slotsTotal) * 100;
 
@@ -30,7 +33,7 @@ export function MarketProblemCard({ problem, delay = 0 }: MarketProblemCardProps
       <Card
         variant="interactive"
         className="relative overflow-hidden cursor-pointer group"
-        onClick={() => navigate(`/problems/${problem.id}`)}
+        onClick={() => setAuthOpen(true)}
       >
         {/* Viral Indicator */}
         {problem.isViral && (
@@ -127,6 +130,13 @@ export function MarketProblemCard({ problem, delay = 0 }: MarketProblemCardProps
             <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
           </Button>
         </CardContent>
+
+        {/* Auth Modal */}
+        <AuthModal
+          open={authOpen}
+          onOpenChange={setAuthOpen}
+          onSuccess={() => navigate(`/problems/${problem.id}`)}
+        />
       </Card>
     </motion.div>
   );
