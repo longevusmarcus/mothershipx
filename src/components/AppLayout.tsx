@@ -7,6 +7,7 @@ import { Bell, Search, Menu, X, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
 import logo from "@/assets/logo.png";
 
 interface AppLayoutProps {
@@ -16,6 +17,7 @@ interface AppLayoutProps {
 
 export function AppLayout({ children, title }: AppLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user } = useAuth();
 
   return (
     <div className="flex min-h-screen w-full bg-background">
@@ -82,7 +84,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                 </Button>
               </Link>
               <Link to="/profile" className="h-8 w-8 md:h-9 md:w-9 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground text-xs md:text-sm font-bold hover:opacity-90 transition-opacity">
-                A
+                {user?.initials || "?"}
               </Link>
             </div>
           </div>
