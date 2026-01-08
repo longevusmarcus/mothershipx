@@ -110,9 +110,9 @@ const Index = () => {
         {/* Stats */}
         <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
           <StatCard icon={Target} label="Problems Joined" value={4} delay={0.1} />
-          <StatCard icon={Rocket} label="Solutions Shipped" value={12} delay={0.2} />
-          <StatCard icon={Trophy} label="Global Rank" value="#47" delay={0.3} />
-          <StatCard icon={TrendingUp} label="Fit Score" value={89} suffix="%" delay={0.4} />
+          <StatCard icon={Rocket} label="Solutions Shipped" value={12} delay={0.2} comingSoon />
+          <StatCard icon={Trophy} label="Global Rank" value="#47" delay={0.3} comingSoon />
+          <StatCard icon={TrendingUp} label="Fit Score" value={89} suffix="%" delay={0.4} comingSoon />
         </div>
 
         {/* Main Grid */}
