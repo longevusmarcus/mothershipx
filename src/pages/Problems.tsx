@@ -6,7 +6,6 @@ import { SEO } from "@/components/SEO";
 import { MarketProblemCard } from "@/components/MarketProblemCard";
 import { DataSourceSelector } from "@/components/DataSourceSelector";
 import { AITransformPanel } from "@/components/AITransformPanel";
-import { CommunityChallenges } from "@/components/CommunityChallenges";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -221,9 +220,6 @@ const Problems = () => {
             <p className="text-muted-foreground">No problems found matching your criteria.</p>
           </motion.div>
         )}
-
-        {/* Community Challenges Section */}
-        <CommunityChallenges />
       </div>
     </AppLayout>
   );
