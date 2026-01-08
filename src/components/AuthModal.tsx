@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ArrowRight, Mail, Lock, User } from "lucide-react";
+import { ArrowRight, Mail, Lock, User } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface AuthModalProps {
   open: boolean;
@@ -19,13 +20,20 @@ export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { signIn, signUp } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    if (mode === "signin") {
+      signIn(email, password);
+    } else {
+      signUp(name, email, password);
+    }
 
     setIsLoading(false);
     toast.success(mode === "signin" ? "Welcome back" : "Account created");
