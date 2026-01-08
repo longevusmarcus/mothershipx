@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Search, Filter, TrendingUp, Zap, Database, Flame, Target, Gauge } from "lucide-react";
+import { Search, Filter, TrendingUp, Zap, Database, Flame, Gauge } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
 import { MarketProblemCard } from "@/components/MarketProblemCard";
@@ -48,16 +48,11 @@ const Problems = () => {
           <div className="absolute inset-0 bg-gradient-glow" />
           <div className="relative z-10">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                  <Target className="h-6 w-6 text-primary-foreground" />
-                </div>
-                <div>
-                  <h2 className="text-lg sm:text-xl font-bold">Products to Build in 2026</h2>
-                  <p className="text-xs sm:text-sm text-muted-foreground">
-                    Real problems and trends from TikTok, Google Trends & Freelancer
-                  </p>
-                </div>
+              <div>
+                <h2 className="text-lg sm:text-xl font-bold">Products to Build in 2026</h2>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Real problems and trends from TikTok, Google Trends & Freelancer
+                </p>
               </div>
               <div className="flex items-center gap-3">
                 <Badge variant="outline" className="gap-1 bg-destructive/10 text-destructive border-destructive/30">
