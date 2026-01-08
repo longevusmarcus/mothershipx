@@ -19,23 +19,23 @@ const Problems = () => {
 
   const filteredProblems = mockMarketProblems.filter((problem) => {
     const matchesCategory = selectedCategory === "All" || problem.category === selectedCategory;
-    const matchesSearch = 
+    const matchesSearch =
       problem.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       problem.subtitle.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
-  const viralCount = mockMarketProblems.filter(p => p.isViral).length;
-  const explodingCount = mockMarketProblems.filter(p => p.sentiment === "exploding").length;
+  const viralCount = mockMarketProblems.filter((p) => p.isViral).length;
+  const explodingCount = mockMarketProblems.filter((p) => p.sentiment === "exploding").length;
   const totalOpportunityValue = mockMarketProblems.reduce((acc, p) => {
-    const value = parseFloat(p.marketSize.replace(/[^0-9.]/g, ''));
+    const value = parseFloat(p.marketSize.replace(/[^0-9.]/g, ""));
     return acc + value;
   }, 0);
 
   return (
     <AppLayout title="Problems & Trends">
-      <SEO 
-        title="Problems & Trends" 
+      <SEO
+        title="Problems & Trends"
         description="Discover real problems and trends from 10+ data sources. Find market opportunities and build solutions."
       />
       <div className="space-y-4 sm:space-y-6">
@@ -49,7 +49,7 @@ const Problems = () => {
           <div className="relative z-10">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h2 className="text-lg sm:text-xl font-bold">Products to Build in 2026</h2>
+                <h2 className="text-lg sm:text-xl font-bold">Products to solve in 2026</h2>
                 <p className="text-xs sm:text-sm text-muted-foreground">
                   Real problems and trends from TikTok, Google Trends & Freelancer
                 </p>
@@ -60,8 +60,7 @@ const Problems = () => {
                   {viralCount} Viral
                 </Badge>
                 <Badge variant="outline" className="gap-1 bg-success/10 text-success border-success/30">
-                  <TrendingUp className="h-3 w-3" />
-                  ${totalOpportunityValue.toFixed(1)}B+ TAM
+                  <TrendingUp className="h-3 w-3" />${totalOpportunityValue.toFixed(1)}B+ TAM
                 </Badge>
               </div>
             </div>
@@ -203,20 +202,12 @@ const Problems = () => {
         {/* Problems Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {filteredProblems.map((problem, index) => (
-            <MarketProblemCard
-              key={problem.id}
-              problem={problem}
-              delay={0.05 * index}
-            />
+            <MarketProblemCard key={problem.id} problem={problem} delay={0.05 * index} />
           ))}
         </div>
 
         {filteredProblems.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-12"
-          >
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12">
             <p className="text-muted-foreground">No problems found matching your criteria.</p>
           </motion.div>
         )}
