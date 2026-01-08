@@ -44,9 +44,6 @@ export const CommunityChallenges = () => {
         <div className="absolute top-4 right-4 animate-pulse-slow">
           <Sparkles className="h-6 w-6 text-warning/40" />
         </div>
-        <div className="absolute bottom-4 left-1/2 animate-float">
-          <Trophy className="h-5 w-5 text-primary/30" />
-        </div>
 
         <div className="relative z-10">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
