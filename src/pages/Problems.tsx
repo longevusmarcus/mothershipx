@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Search, Filter, TrendingUp, Zap, Database, Flame, Sparkles } from "lucide-react";
+import { Search, Filter, TrendingUp, Zap, Database, Flame, Target, Gauge } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
 import { MarketProblemCard } from "@/components/MarketProblemCard";
@@ -50,7 +50,7 @@ const Problems = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                  <Sparkles className="h-6 w-6 text-primary-foreground" />
+                  <Target className="h-6 w-6 text-primary-foreground" />
                 </div>
                 <div>
                   <h2 className="text-lg sm:text-xl font-bold">Products to Build in 2026</h2>
@@ -195,7 +195,7 @@ const Problems = () => {
           <Card variant="elevated" className="p-3 sm:p-4">
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl bg-warning/10 flex items-center justify-center">
-                <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
+                <Gauge className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
               </div>
               <div>
                 <p className="text-lg sm:text-2xl font-bold text-warning">89%</p>
