@@ -51,25 +51,61 @@ const achievements = [
 const recentBuilds: { id: number; name: string; problem: string; fitScore: number; status: string; date: string }[] = [];
 
 export default function Profile() {
-  const { user, isAuthenticated, signOut } = useAuth();
+  const { user, profile, isAuthenticated, signOut, updateProfile } = useAuth();
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: user?.name || "",
-    bio: "",
-    location: "",
-    website: "",
-    github: "",
-    twitter: "",
+    name: profile?.name || "",
+    bio: profile?.bio || "",
+    location: profile?.location || "",
+    website: profile?.website || "",
+    github: profile?.github || "",
+    twitter: profile?.twitter || "",
     linkedin: "",
   });
 
-  const handleSave = () => {
-    setIsEditing(false);
+  // Update form data when profile loads
+  useState(() => {
+    if (profile) {
+      setFormData({
+        name: profile.name || "",
+        bio: profile.bio || "",
+        location: profile.location || "",
+        website: profile.website || "",
+        github: profile.github || "",
+        twitter: profile.twitter || "",
+        linkedin: "",
+      });
+    }
+  });
+
+  const initials = profile?.name
+    ? profile.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+    : "?";
+
+  const joinedDate = profile?.created_at
+    ? new Date(profile.created_at).toLocaleDateString("en-US", { month: "long", year: "numeric" })
+    : "Recently";
+
+  const handleSave = async () => {
+    setIsLoading(true);
+    const { error } = await updateProfile({
+      name: formData.name,
+      bio: formData.bio,
+      location: formData.location,
+      website: formData.website,
+      github: formData.github,
+      twitter: formData.twitter,
+    });
+    setIsLoading(false);
+    if (!error) {
+      setIsEditing(false);
+    }
   };
 
-  const handleSignOut = () => {
-    signOut();
+  const handleSignOut = async () => {
+    await signOut();
     navigate("/");
   };
 
@@ -81,7 +117,7 @@ export default function Profile() {
           <User className="h-16 w-16 text-muted-foreground/30 mb-4" />
           <h2 className="text-xl font-semibold mb-2">Not signed in</h2>
           <p className="text-muted-foreground mb-6">Sign in to view your profile</p>
-          <Button onClick={() => navigate("/problems")}>Browse Problems</Button>
+          <Button onClick={() => navigate("/auth")}>Sign In</Button>
         </div>
       </AppLayout>
     );
@@ -108,7 +144,7 @@ export default function Profile() {
               <div className="flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-4 -mt-10 sm:-mt-14 mb-4 sm:mb-6">
                 <Avatar className="h-20 w-20 sm:h-28 sm:w-28 border-4 border-background shadow-lg">
                   <AvatarFallback className="text-xl sm:text-2xl font-bold bg-gradient-primary text-primary-foreground">
-                    {user.initials}
+                    {initials}
                   </AvatarFallback>
                 </Avatar>
                 
@@ -116,7 +152,7 @@ export default function Profile() {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                        <h1 className="text-xl sm:text-2xl font-bold">{user.name}</h1>
+                        <h1 className="text-xl sm:text-2xl font-bold">{profile?.name || "Builder"}</h1>
                         <Badge variant="outline" className="text-[10px] sm:text-xs font-medium">
                           New Builder
                         </Badge>
@@ -130,7 +166,7 @@ export default function Profile() {
                         )}
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                          Joined {user.joinedDate}
+                          Joined {joinedDate}
                         </span>
                       </div>
                     </div>
@@ -441,11 +477,11 @@ export default function Profile() {
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
                       <Label>Display Name</Label>
-                      <Input defaultValue={user.name} />
+                      <Input defaultValue={profile?.name || ""} />
                     </div>
                     <div>
                       <Label>Email</Label>
-                      <Input defaultValue={user.email} type="email" />
+                      <Input defaultValue={profile?.email || user?.email || ""} type="email" disabled />
                     </div>
                   </div>
                   <div>

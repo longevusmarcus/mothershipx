@@ -61,8 +61,8 @@ const mockActivity = [
 ];
 
 const Index = () => {
-  const { user } = useAuth();
-  const firstName = user?.name?.split(" ")[0] || "Builder";
+  const { profile } = useAuth();
+  const firstName = profile?.name?.split(" ")[0] || "Builder";
   
   return (
     <AppLayout title="Dashboard">
