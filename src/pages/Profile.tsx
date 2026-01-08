@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,11 +12,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   MapPin,
-  ExternalLink,
   Calendar,
   Pencil,
   Check,
-  ArrowUpRight,
   Layers,
   BarChart3,
   Hash,
@@ -27,70 +24,68 @@ import {
   Github,
   Twitter,
   Linkedin,
-  Mail,
   CheckCircle2,
   Award,
+  LogOut,
 } from "lucide-react";
 import { useState } from "react";
-
-// Mock user data
-const userData = {
-  name: "Alex Chen",
-  email: "alex@startup.io",
-  avatar: "",
-  initials: "AC",
-  location: "San Francisco, CA",
-  bio: "Serial entrepreneur & product builder. Passionate about solving real problems with elegant solutions. Previously built 2 YC-backed startups.",
-  website: "alexchen.io",
-  github: "alexchen",
-  twitter: "alexbuilds",
-  linkedin: "alexchen",
-  joinedDate: "March 2024",
-  tier: "Pro Builder",
-  xp: 2450,
-  nextLevelXp: 3000,
-  rank: 12,
-  totalBuilders: 1247,
-};
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const stats = [
-  { label: "Trends Joined", value: 8, icon: CircleDot, comingSoon: false },
-  { label: "Total Builds", value: 12, icon: Layers, comingSoon: true },
-  { label: "Fit Score Avg", value: "87%", icon: BarChart3, comingSoon: true },
-  { label: "Global Rank", value: "#12", icon: Hash, comingSoon: true },
+  { label: "Trends Joined", value: 0, icon: CircleDot, comingSoon: false },
+  { label: "Total Builds", value: 0, icon: Layers, comingSoon: true },
+  { label: "Fit Score Avg", value: "-", icon: BarChart3, comingSoon: true },
+  { label: "Global Rank", value: "-", icon: Hash, comingSoon: true },
 ];
 
 const achievements = [
-  { id: 1, name: "First Build", description: "Submitted your first solution", unlocked: true, date: "Mar 15, 2024" },
-  { id: 2, name: "Problem Solver", description: "Solved 5 problems", unlocked: true, date: "Apr 2, 2024" },
-  { id: 3, name: "Top 20", description: "Reached top 20 on leaderboard", unlocked: true, date: "Apr 18, 2024" },
-  { id: 4, name: "Perfect Fit", description: "Achieved 95%+ fit score", unlocked: true, date: "May 5, 2024" },
-  { id: 5, name: "Revenue Maker", description: "First verified revenue", unlocked: true, date: "May 20, 2024" },
+  { id: 1, name: "First Build", description: "Submitted your first solution", unlocked: false, date: null },
+  { id: 2, name: "Problem Solver", description: "Solved 5 problems", unlocked: false, date: null },
+  { id: 3, name: "Top 20", description: "Reached top 20 on leaderboard", unlocked: false, date: null },
+  { id: 4, name: "Perfect Fit", description: "Achieved 95%+ fit score", unlocked: false, date: null },
+  { id: 5, name: "Revenue Maker", description: "First verified revenue", unlocked: false, date: null },
   { id: 6, name: "Elite Builder", description: "Reach top 10 on leaderboard", unlocked: false, date: null },
 ];
 
-const recentBuilds = [
-  { id: 1, name: "DataSync Pro", problem: "API Integration Pain", fitScore: 92, status: "verified", date: "2 days ago" },
-  { id: 2, name: "FormFlow", problem: "Form Abandonment", fitScore: 87, status: "verified", date: "1 week ago" },
-  { id: 3, name: "MetricDash", problem: "Analytics Complexity", fitScore: 84, status: "pending", date: "2 weeks ago" },
-];
+const recentBuilds: { id: number; name: string; problem: string; fitScore: number; status: string; date: string }[] = [];
 
 export default function Profile() {
+  const { user, isAuthenticated, signOut } = useAuth();
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    name: userData.name,
-    bio: userData.bio,
-    location: userData.location,
-    website: userData.website,
-    github: userData.github,
-    twitter: userData.twitter,
-    linkedin: userData.linkedin,
+    name: user?.name || "",
+    bio: "",
+    location: "",
+    website: "",
+    github: "",
+    twitter: "",
+    linkedin: "",
   });
 
   const handleSave = () => {
     setIsEditing(false);
-    // Save logic here
   };
+
+  const handleSignOut = () => {
+    signOut();
+    navigate("/");
+  };
+
+  if (!isAuthenticated || !user) {
+    return (
+      <AppLayout title="Profile">
+        <SEO title="Profile" description="View your builder profile." />
+        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+          <User className="h-16 w-16 text-muted-foreground/30 mb-4" />
+          <h2 className="text-xl font-semibold mb-2">Not signed in</h2>
+          <p className="text-muted-foreground mb-6">Sign in to view your profile</p>
+          <Button onClick={() => navigate("/problems")}>Browse Problems</Button>
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout title="Profile">
@@ -112,9 +107,8 @@ export default function Profile() {
               {/* Avatar */}
               <div className="flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-4 -mt-10 sm:-mt-14 mb-4 sm:mb-6">
                 <Avatar className="h-20 w-20 sm:h-28 sm:w-28 border-4 border-background shadow-lg">
-                  <AvatarImage src={userData.avatar} />
                   <AvatarFallback className="text-xl sm:text-2xl font-bold bg-gradient-primary text-primary-foreground">
-                    {userData.initials}
+                    {user.initials}
                   </AvatarFallback>
                 </Avatar>
                 
@@ -122,19 +116,21 @@ export default function Profile() {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                        <h1 className="text-xl sm:text-2xl font-bold">{userData.name}</h1>
+                        <h1 className="text-xl sm:text-2xl font-bold">{user.name}</h1>
                         <Badge variant="outline" className="text-[10px] sm:text-xs font-medium">
-                          {userData.tier}
+                          New Builder
                         </Badge>
                       </div>
                       <div className="flex items-center gap-3 sm:gap-4 mt-1 text-muted-foreground text-xs sm:text-sm">
-                        <span className="flex items-center gap-1">
-                          <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                          {userData.location}
-                        </span>
+                        {formData.location && (
+                          <span className="flex items-center gap-1">
+                            <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                            {formData.location}
+                          </span>
+                        )}
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                          Joined {userData.joinedDate}
+                          Joined {user.joinedDate}
                         </span>
                       </div>
                     </div>
@@ -166,12 +162,12 @@ export default function Profile() {
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs sm:text-sm font-medium">Builder XP</span>
                   <span className="text-xs sm:text-sm text-muted-foreground">
-                    {userData.xp.toLocaleString()} / {userData.nextLevelXp.toLocaleString()}
+                    0 / 500
                   </span>
                 </div>
-                <Progress value={(userData.xp / userData.nextLevelXp) * 100} className="h-1.5 sm:h-2" />
+                <Progress value={0} className="h-1.5 sm:h-2" />
                 <p className="text-[10px] sm:text-xs text-muted-foreground mt-1.5">
-                  {(userData.nextLevelXp - userData.xp).toLocaleString()} XP until next level
+                  500 XP until next level
                 </p>
               </div>
 
@@ -236,7 +232,7 @@ export default function Profile() {
                         className="resize-none"
                       />
                     ) : (
-                      <p className="text-muted-foreground">{userData.bio}</p>
+                      <p className="text-muted-foreground">{formData.bio || "No bio added yet. Click Edit to add your bio."}</p>
                     )}
                   </CardContent>
                 </Card>
@@ -284,24 +280,38 @@ export default function Profile() {
                         </div>
                       </div>
                     ) : (
-                      <>
-                        <a href={`https://${userData.website}`} className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-                          <LinkIcon className="h-4 w-4" />
-                          {userData.website}
-                        </a>
-                        <a href={`https://github.com/${userData.github}`} className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-                          <Github className="h-4 w-4" />
-                          {userData.github}
-                        </a>
-                        <a href={`https://twitter.com/${userData.twitter}`} className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-                          <Twitter className="h-4 w-4" />
-                          @{userData.twitter}
-                        </a>
-                        <a href={`https://linkedin.com/in/${userData.linkedin}`} className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-                          <Linkedin className="h-4 w-4" />
-                          {userData.linkedin}
-                        </a>
-                      </>
+                      <div className="text-sm text-muted-foreground">
+                        {formData.website || formData.github || formData.twitter || formData.linkedin ? (
+                          <>
+                            {formData.website && (
+                              <a href={`https://${formData.website}`} className="flex items-center gap-2 hover:text-foreground transition-colors mb-2">
+                                <LinkIcon className="h-4 w-4" />
+                                {formData.website}
+                              </a>
+                            )}
+                            {formData.github && (
+                              <a href={`https://github.com/${formData.github}`} className="flex items-center gap-2 hover:text-foreground transition-colors mb-2">
+                                <Github className="h-4 w-4" />
+                                {formData.github}
+                              </a>
+                            )}
+                            {formData.twitter && (
+                              <a href={`https://twitter.com/${formData.twitter}`} className="flex items-center gap-2 hover:text-foreground transition-colors mb-2">
+                                <Twitter className="h-4 w-4" />
+                                @{formData.twitter}
+                              </a>
+                            )}
+                            {formData.linkedin && (
+                              <a href={`https://linkedin.com/in/${formData.linkedin}`} className="flex items-center gap-2 hover:text-foreground transition-colors">
+                                <Linkedin className="h-4 w-4" />
+                                {formData.linkedin}
+                              </a>
+                            )}
+                          </>
+                        ) : (
+                          <p>No links added yet. Click Edit to add your links.</p>
+                        )}
+                      </div>
                     )}
                   </CardContent>
                 </Card>
@@ -423,7 +433,7 @@ export default function Profile() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Mail className="h-5 w-5" />
+                    <User className="h-5 w-5" />
                     Account Settings
                   </CardTitle>
                 </CardHeader>
@@ -431,20 +441,25 @@ export default function Profile() {
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
                       <Label>Display Name</Label>
-                      <Input defaultValue={userData.name} />
+                      <Input defaultValue={user.name} />
                     </div>
                     <div>
                       <Label>Email</Label>
-                      <Input defaultValue={userData.email} type="email" />
+                      <Input defaultValue={user.email} type="email" />
                     </div>
                   </div>
                   <div>
                     <Label>Location</Label>
-                    <Input defaultValue={userData.location} />
+                    <Input defaultValue={formData.location} />
                   </div>
-                  <Separator />
-                  <div className="flex justify-end">
-                    <Button>Save Settings</Button>
+                  <div className="border-t border-border pt-4 mt-4">
+                    <div className="flex justify-between items-center">
+                      <Button>Save Settings</Button>
+                      <Button variant="outline" onClick={handleSignOut} className="gap-2 text-muted-foreground hover:text-destructive">
+                        <LogOut className="h-4 w-4" />
+                        Sign Out
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
