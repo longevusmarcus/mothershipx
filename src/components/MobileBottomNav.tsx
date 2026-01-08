@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import {
   LayoutDashboard,
   Target,
-  Plus,
   Trophy,
   Layers,
 } from "lucide-react";
@@ -12,7 +11,6 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { icon: LayoutDashboard, label: "Home", path: "/" },
   { icon: Target, label: "Problems", path: "/problems" },
-  { icon: null, label: "Submit", path: "/submit", isAction: true },
   { icon: Layers, label: "Builds", path: "/builds" },
   { icon: Trophy, label: "Rank", path: "/leaderboard" },
 ];
@@ -25,26 +23,8 @@ export function MobileBottomNav() {
       <div className="relative mx-auto max-w-md">
         {/* Glass pill container */}
         <div className="flex items-center justify-around h-16 px-2 rounded-2xl bg-card/70 dark:bg-card/60 backdrop-blur-xl border border-border/50 shadow-lg">
-          {navItems.map((item, index) => {
+          {navItems.map((item) => {
             const isActive = location.pathname === item.path;
-            
-            // Central action button
-            if (item.isAction) {
-              return (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  className="relative -mt-6"
-                >
-                  <motion.div
-                    whileTap={{ scale: 0.95 }}
-                    className="h-14 w-14 rounded-full bg-foreground flex items-center justify-center shadow-lg"
-                  >
-                    <Plus className="h-6 w-6 text-background" />
-                  </motion.div>
-                </NavLink>
-              );
-            }
 
             return (
               <NavLink
