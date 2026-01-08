@@ -104,11 +104,11 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
               className={cn(
                 "flex items-center gap-3 px-3 py-3 md:py-2.5 rounded-lg text-sm font-medium transition-all duration-200 active:scale-[0.98]",
                 isActive
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                  ? "text-foreground"
+                  : "text-sidebar-foreground/50 hover:text-sidebar-foreground/80"
               )}
             >
-              <item.icon className={cn("h-5 w-5 shrink-0", isActive && "text-primary")} />
+              <item.icon className={cn("h-5 w-5 shrink-0", isActive ? "text-foreground" : "text-sidebar-foreground/50")} />
               <AnimatePresence mode="wait">
                 {(!collapsed || isMobile) && (
                   <motion.span
@@ -188,11 +188,11 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
               className={cn(
                 "flex items-center gap-3 px-3 py-3 md:py-2.5 rounded-lg text-sm font-medium transition-all duration-200 active:scale-[0.98]",
                 isActive
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                  ? "text-foreground"
+                  : "text-sidebar-foreground/50 hover:text-sidebar-foreground/80"
               )}
             >
-              <item.icon className={cn("h-5 w-5 shrink-0", isActive && "text-primary")} />
+              <item.icon className={cn("h-5 w-5 shrink-0", isActive ? "text-foreground" : "text-sidebar-foreground/50")} />
               <AnimatePresence mode="wait">
                 {(!collapsed || isMobile) && (
                   <motion.span
