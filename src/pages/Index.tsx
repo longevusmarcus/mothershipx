@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { useAuth } from "@/contexts/AuthContext";
 
 const mockProblems = [
   {
@@ -60,6 +61,9 @@ const mockActivity = [
 ];
 
 const Index = () => {
+  const { user } = useAuth();
+  const firstName = user?.name?.split(" ")[0] || "Builder";
+  
   return (
     <AppLayout title="Dashboard">
       <SEO 
@@ -82,7 +86,7 @@ const Index = () => {
                   <Zap className="h-3 w-3 mr-1" />
                   Level 12 Builder
                 </Badge>
-                <h2 className="text-2xl font-bold tracking-tight">Welcome back, Alex</h2>
+                <h2 className="text-2xl font-bold tracking-tight">Welcome back, {firstName}</h2>
                 <p className="text-muted-foreground">
                   You're making great progress. Keep solving real problems.
                 </p>
