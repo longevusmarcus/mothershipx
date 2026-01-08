@@ -10,7 +10,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Problems from "./pages/Problems";
 import ProblemDetail from "./pages/ProblemDetail";
-import Challenges from "./pages/Challenges";
+import Arena from "./pages/Arena";
 import Builds from "./pages/Builds";
 import SubmitSolution from "./pages/SubmitSolution";
 import LeaderboardPage from "./pages/LeaderboardPage";
@@ -35,7 +35,7 @@ const App = () => (
                 <Route path="/" element={<Index />} />
                 <Route path="/problems" element={<Problems />} />
                 <Route path="/problems/:id" element={<ProblemDetail />} />
-                <Route path="/challenges" element={<Challenges />} />
+                <Route path="/arena" element={<Arena />} />
                 <Route path="/builds" element={<Builds />} />
                 <Route path="/submit" element={<SubmitSolution />} />
                 <Route path="/leaderboard" element={<LeaderboardPage />} />

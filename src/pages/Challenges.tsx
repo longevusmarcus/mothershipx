@@ -4,7 +4,7 @@ import { CommunityChallenges } from "@/components/CommunityChallenges";
 
 const Challenges = () => {
   return (
-    <AppLayout title="Daily Challenges">
+    <AppLayout title="Arena">
       <SEO
         title="Hackathon Arena"
         description="Join daily build sprints, compete solo or in teams, and win 90% of the prize pool. AI judges your code quality and aesthetics."
@@ -14,4 +14,4 @@ const Challenges = () => {
   );
 };
 
-export default Challenges;
+export default Arena;
