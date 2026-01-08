@@ -53,7 +53,7 @@ export const CommunityChallenges = () => {
                   <Trophy className="h-5 w-5 text-warning" />
                 </div>
                 <div>
-                  <h2 className="text-lg sm:text-xl font-bold">Community Challenges</h2>
+                  <h2 className="text-lg sm:text-xl font-bold">Hackathon Arena ⚔️</h2>
                   <p className="text-xs text-muted-foreground">
                     Daily build sprints • $1 entry • Win 90% of the pool
                   </p>

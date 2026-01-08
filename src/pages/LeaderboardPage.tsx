@@ -62,23 +62,23 @@ const leaderboardData = [
   { rank: 8, name: "Maria Garcia", score: 1654, solutions: 3, fitScore: 76 },
 ];
 
-const arenaFeatures = [
+const leagueFeatures = [
   {
-    icon: Swords,
-    title: "Squad Battles",
-    description: "Team up and compete in real-time hackathons",
-    stat: "4v4 Arena",
+    icon: Crown,
+    title: "Global Rankings",
+    description: "Compete globally and climb the tiers",
+    stat: "6 Tiers",
   },
   {
     icon: Timer,
-    title: "Weekly Sprints",
-    description: "48-hour challenges with live leaderboards",
-    stat: "Every Friday",
+    title: "Seasonal Leagues",
+    description: "Monthly seasons with fresh leaderboards",
+    stat: "30 Days",
   },
   {
-    icon: Crown,
+    icon: Trophy,
     title: "XP & Ranks",
-    description: "Climb from Bronze to Diamond tier",
+    description: "Earn XP from Bronze to Diamond tier",
     stat: "6 Tiers",
   },
   {
@@ -98,7 +98,7 @@ const LeaderboardPage = () => {
   return (
     <AppLayout title="Leaderboard">
       <div className="space-y-4 sm:space-y-6 max-w-5xl mx-auto">
-        {/* Hackathon Arena Hero */}
+        {/* Mother League Hero */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -112,36 +112,36 @@ const LeaderboardPage = () => {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-warning/10 border border-warning/20"
             >
               <Trophy className="h-4 w-4 text-warning" />
-              <span className="text-sm font-medium text-warning">Arena Coming Soon</span>
+              <span className="text-sm font-medium text-warning">League Coming Soon</span>
             </motion.div>
             
             <h2 className="text-2xl sm:text-3xl font-bold">
-              Hackathon Arena ⚔️
+              Mother League 🏆
             </h2>
             <p className="text-muted-foreground max-w-lg mx-auto">
-              Compete in real-time hackathons, climb the ranks, and win prizes for building the best solutions
+              Climb the global rankings, earn XP every season, and win prizes for being the top builders
             </p>
 
             <div className="flex flex-wrap justify-center gap-3 pt-2">
               <Badge variant="outline" className="gap-1 border-warning/30">
-                <Swords className="h-3 w-3" />
-                Team Battles
+                <Crown className="h-3 w-3" />
+                Global Rankings
               </Badge>
               <Badge variant="outline" className="gap-1 border-warning/30">
                 <Flame className="h-3 w-3" />
-                Live Rankings
+                Seasonal Leagues
               </Badge>
               <Badge variant="outline" className="gap-1 border-warning/30">
                 <Gift className="h-3 w-3" />
-                Weekly Prizes
+                Monthly Prizes
               </Badge>
             </div>
           </div>
         </motion.div>
 
-        {/* Arena Features Grid */}
+        {/* League Features Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          {arenaFeatures.map((feature, index) => (
+          {leagueFeatures.map((feature, index) => (
             <motion.div
               key={feature.title}
               initial={{ opacity: 0, y: 20 }}
@@ -291,7 +291,7 @@ const LeaderboardPage = () => {
           className="text-center py-6 space-y-3"
         >
           <p className="text-sm text-muted-foreground">
-            Be the first to compete when the Arena opens
+            Be the first to compete when the League opens
           </p>
           <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
