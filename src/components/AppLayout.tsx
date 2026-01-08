@@ -17,7 +17,11 @@ interface AppLayoutProps {
 
 export function AppLayout({ children, title }: AppLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { user } = useAuth();
+  const { profile } = useAuth();
+
+  const initials = profile?.name
+    ? profile.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+    : "?";
 
   return (
     <div className="flex min-h-screen w-full bg-background">
@@ -84,7 +88,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                 </Button>
               </Link>
               <Link to="/profile" className="h-8 w-8 md:h-9 md:w-9 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground text-xs md:text-sm font-bold hover:opacity-90 transition-opacity">
-                {user?.initials || "?"}
+                {initials}
               </Link>
             </div>
           </div>
