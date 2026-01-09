@@ -50,7 +50,7 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
   };
 
   const handleConfirmJoin = () => {
-    toast.success(`Joined challenge as ${joinType}! $1 entry fee processed.`, {
+    toast.success(`Joined challenge as ${joinType}! $2 entry fee processed.`, {
       description: "You have 24 hours to build and submit your solution.",
     });
     setIsJoinDialogOpen(false);
@@ -242,7 +242,7 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
               <DialogTrigger asChild>
                 <Button className="w-full gap-2 bg-gradient-primary hover:opacity-90">
                   <Trophy className="h-4 w-4" />
-                  Join Challenge - $1 Entry
+                  Join Challenge - $2 Entry
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </DialogTrigger>
@@ -253,7 +253,7 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
                     Join "{challenge.title}"
                   </DialogTitle>
                   <DialogDescription>
-                    Choose how you want to compete. Entry fee: $1.
+                    Choose how you want to compete. Entry fee: $2.
                   </DialogDescription>
                 </DialogHeader>
 
@@ -290,7 +290,7 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
                   <div className="bg-secondary rounded-lg p-4 space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Entry Fee</span>
-                      <span className="font-medium">$1.00</span>
+                      <span className="font-medium">$2.00</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Current Pool</span>
@@ -325,7 +325,7 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
                     onClick={handleConfirmJoin}
                   >
                     {joinType
-                      ? `Join as ${joinType === "solo" ? "Solo Builder" : "Team"} - Pay $1`
+                      ? `Join as ${joinType === "solo" ? "Solo Builder" : "Team"} - Pay $2`
                       : "Select Solo or Team"}
                   </Button>
                 </div>
