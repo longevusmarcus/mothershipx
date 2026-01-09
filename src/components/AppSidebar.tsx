@@ -169,7 +169,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
                   exit={{ opacity: 0, width: 0 }}
                   className="flex items-center gap-2 overflow-hidden whitespace-nowrap"
                 >
-                  <span className="font-semibold">Challenges</span>
+                  <span className="font-semibold">Arena</span>
                   <span className="text-[10px] bg-destructive text-destructive-foreground px-1.5 py-0.5 rounded-full font-bold animate-pulse">
                     LIVE
                   </span>
