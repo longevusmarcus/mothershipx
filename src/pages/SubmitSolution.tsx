@@ -16,23 +16,21 @@ import {
   AlertCircle,
   Sparkles,
   Loader2,
-  FileText,
-  Target,
-  Users,
-  Zap,
   Trophy,
   Clock,
   DollarSign,
+  Target,
+  Zap,
+  Award,
+  BarChart3,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { FitVerificationPanel } from "@/components/FitVerificationPanel";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   Form,
@@ -111,25 +109,6 @@ interface SubmissionStep {
   completed: boolean;
 }
 
-interface AIGeneratedData {
-  problemStatement: string;
-  solutionNarrative: string;
-  uniqueValue: string;
-  targetPersona: string;
-  gtmStrategy: string;
-  pricingModel: string;
-}
-
-interface FitVerificationData {
-  sentimentFitScore: number;
-  problemCoverage: number;
-  adoptionVelocity: number;
-  revenuePresent: boolean;
-  revenueAmount?: string;
-  buildMomentum: number;
-  misalignments: string[];
-}
-
 const SubmitSolution = () => {
   const { toast } = useToast();
   const location = useLocation();
@@ -141,11 +120,9 @@ const SubmitSolution = () => {
   const joinType = state?.joinType;
   
   const [currentStep, setCurrentStep] = useState(0);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysisProgress, setAnalysisProgress] = useState(0);
-  const [aiGeneratedData, setAiGeneratedData] = useState<AIGeneratedData | null>(null);
-  const [fitVerificationData, setFitVerificationData] = useState<FitVerificationData | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionProgress, setSubmissionProgress] = useState(0);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const form = useForm<SubmissionFormData>({
     resolver: zodResolver(submissionSchema),
@@ -165,7 +142,7 @@ const SubmitSolution = () => {
     if (!authLoading && !isAuthenticated) {
       toast({
         title: "Authentication Required",
-        description: "Please sign in to submit your solution.",
+        description: "Please sign in to submit your entry.",
         variant: "destructive",
       });
       navigate("/auth", { state: { returnTo: "/submit" } });
@@ -188,103 +165,51 @@ const SubmitSolution = () => {
   };
 
   const steps: SubmissionStep[] = [
-    { id: "integrations", title: "Connect Sources", description: "Product URL & integrations", icon: Database, completed: currentStep > 0 },
-    { id: "analysis", title: "AI Analysis", description: "Generating narrative & GTM", icon: Sparkles, completed: currentStep > 1 },
-    { id: "verification", title: "Fit Verification", description: "Problem-solution fit score", icon: Target, completed: currentStep > 2 },
+    { id: "details", title: "Build Details", description: "Product URL & integrations", icon: Database, completed: currentStep > 0 },
+    { id: "submitting", title: "Submitting", description: "AI validation in progress", icon: Sparkles, completed: currentStep > 1 },
+    { id: "confirmed", title: "Confirmed", description: "Entry submitted", icon: CheckCircle2, completed: currentStep > 2 },
   ];
 
-  const simulateAIAnalysis = async (data: SubmissionFormData) => {
-    setIsAnalyzing(true);
+  const handleSubmit = async (data: SubmissionFormData) => {
+    setIsSubmitting(true);
     setCurrentStep(1);
     
+    // Simulate submission & AI validation progress
     const progressSteps = [
-      { progress: 15, delay: 500 },
-      { progress: 35, delay: 800 },
-      { progress: 55, delay: 600 },
-      { progress: 75, delay: 700 },
-      { progress: 90, delay: 500 },
-      { progress: 100, delay: 400 },
+      { progress: 20, delay: 600, label: "Validating product URL..." },
+      { progress: 40, delay: 800, label: "Analyzing code quality..." },
+      { progress: 60, delay: 700, label: "Checking integrations..." },
+      { progress: 80, delay: 600, label: "Scoring submission..." },
+      { progress: 100, delay: 500, label: "Finalizing entry..." },
     ];
 
     for (const step of progressSteps) {
       await new Promise(resolve => setTimeout(resolve, step.delay));
-      setAnalysisProgress(step.progress);
+      setSubmissionProgress(step.progress);
     }
 
-    const productName = data.productName || "Your Product";
-    const challengeContext = challenge 
-      ? ` addressing the "${challenge.trend}" trend` 
-      : "";
-    
-    setAiGeneratedData({
-      problemStatement: `Users struggle with inefficient workflows and manual processes that waste time and reduce productivity. ${productName}${challengeContext} addresses the critical pain point of operational inefficiency in modern teams.`,
-      solutionNarrative: `${productName} provides an intelligent automation platform that streamlines repetitive tasks, integrates seamlessly with existing tools, and learns from user behavior to continuously optimize workflows.`,
-      uniqueValue: `Unlike generic automation tools, ${productName} uses AI-powered pattern recognition to proactively suggest optimizations and adapts to each team's unique processes.`,
-      targetPersona: "Operations managers and team leads at growing tech companies (50-500 employees) who spend 10+ hours weekly on manual coordination tasks.",
-      gtmStrategy: "Product-led growth with freemium tier targeting early-stage startups, combined with enterprise sales motion for larger organizations. Focus on Product Hunt launch and LinkedIn thought leadership.",
-      pricingModel: "Freemium with Pro at $29/user/mo and Enterprise custom pricing",
-    });
-
-    const hasRevenue = (data.stripePublicKey?.length || 0) > 0;
-    const hasGithub = (data.githubRepo?.length || 0) > 0;
-    const hasSupabase = (data.supabaseProjectUrl?.length || 0) > 0;
-    
-    const baseScore = 55;
-    const integrationBonus = (hasGithub ? 15 : 0) + (hasRevenue ? 15 : 0) + (hasSupabase ? 10 : 0);
-    
-    const misalignments: string[] = [];
-    if (!hasGithub) misalignments.push("No GitHub repository connected - build momentum cannot be verified");
-    if (!hasRevenue) misalignments.push("No Stripe integration - revenue signals unavailable");
-    if (!hasSupabase) misalignments.push("No Supabase connection - adoption velocity is estimated");
-
-    setFitVerificationData({
-      sentimentFitScore: Math.min(95, baseScore + integrationBonus + Math.floor(Math.random() * 15)),
-      problemCoverage: Math.min(90, baseScore + Math.floor(Math.random() * 20)),
-      adoptionVelocity: hasSupabase ? Math.floor(Math.random() * 150) + 50 : Math.floor(Math.random() * 30) + 10,
-      revenuePresent: hasRevenue,
-      revenueAmount: hasRevenue ? "$" + (Math.floor(Math.random() * 5000) + 500) + "/mo" : undefined,
-      buildMomentum: hasGithub ? Math.min(95, 60 + Math.floor(Math.random() * 35)) : 25,
-      misalignments,
-    });
-
-    setIsAnalyzing(false);
+    setIsSubmitting(false);
+    setIsSubmitted(true);
     setCurrentStep(2);
-  };
-
-  const onSubmitForm = async (data: SubmissionFormData) => {
-    await simulateAIAnalysis(data);
-  };
-
-  const handleFinalSubmit = async () => {
-    setIsSubmitting(true);
-    
-    // Simulate submission
-    await new Promise(resolve => setTimeout(resolve, 1500));
     
     toast({
-      title: challenge ? "Challenge Entry Submitted!" : "Solution Submitted!",
+      title: "Entry Submitted! 🎉",
       description: challenge 
-        ? `Your entry for "${challenge.title}" is now live. Good luck!`
-        : "Your solution is now live on the problem dashboard. Good luck!",
+        ? `Your build for "${challenge.title}" is now in the competition. AI will rank all entries when voting begins.`
+        : "Your solution has been submitted successfully.",
     });
-    
-    setIsSubmitting(false);
-    
-    // Navigate back to challenges or home
-    navigate(challenge ? "/challenges" : "/");
   };
 
   const handleBack = () => {
-    if (currentStep === 2) {
-      setCurrentStep(0);
-      setAiGeneratedData(null);
-      setFitVerificationData(null);
-      setAnalysisProgress(0);
-    } else if (challenge) {
+    if (challenge) {
       navigate("/challenges");
     } else {
       navigate(-1);
     }
+  };
+
+  const handleViewChallenge = () => {
+    navigate("/challenges");
   };
 
   const progressValue = ((currentStep + 1) / steps.length) * 100;
@@ -322,12 +247,12 @@ const SubmitSolution = () => {
             )}
           </Badge>
           <h1 className="text-2xl font-bold">
-            {challenge ? `Submit to "${challenge.title}"` : "Submit Your Solution"}
+            {challenge ? `Submit to "${challenge.title}"` : "Submit Your Build"}
           </h1>
           <p className="text-muted-foreground max-w-lg mx-auto">
             {challenge 
-              ? `Build something amazing for the "${challenge.trend}" trend and compete for $${challenge.winnerPrize.toFixed(0)}!`
-              : "Connect your data sources and let AI analyze your problem-solution fit."
+              ? `Submit your build and compete for $${challenge.winnerPrize.toFixed(0)}. AI will validate and rank all entries.`
+              : "Submit your solution and let AI validate your problem-solution fit."
             }
           </p>
         </motion.div>
@@ -408,7 +333,7 @@ const SubmitSolution = () => {
                       }`}>
                         {index < currentStep ? (
                           <CheckCircle2 className="h-5 w-5" />
-                        ) : index === 1 && isAnalyzing ? (
+                        ) : index === 1 && isSubmitting ? (
                           <Loader2 className="h-5 w-5 animate-spin" />
                         ) : (
                           <step.icon className="h-5 w-5" />
@@ -434,7 +359,7 @@ const SubmitSolution = () => {
         <AnimatePresence mode="wait">
           {currentStep === 0 && (
             <motion.div
-              key="integrations"
+              key="details"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
@@ -444,15 +369,15 @@ const SubmitSolution = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Database className="h-5 w-5 text-primary" />
-                    Connect Your Sources
+                    Build Details
                   </CardTitle>
                   <CardDescription>
-                    Provide your product details and connect data sources for verification
+                    Provide your build details. More integrations = higher scores from AI judges.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmitForm)} className="space-y-6">
+                    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
                       {/* Required Fields */}
                       <div className="space-y-4">
                         <FormField
@@ -460,9 +385,9 @@ const SubmitSolution = () => {
                           name="productName"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Product Name *</FormLabel>
+                              <FormLabel>Build Name *</FormLabel>
                               <FormControl>
-                                <Input placeholder="OnboardFlow" {...field} />
+                                <Input placeholder="Couple Conflict AI" {...field} />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -474,12 +399,12 @@ const SubmitSolution = () => {
                           name="productUrl"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Product URL *</FormLabel>
+                              <FormLabel>Live URL *</FormLabel>
                               <FormControl>
                                 <div className="relative">
                                   <ExternalLink className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                   <Input 
-                                    placeholder="https://onboardflow.app" 
+                                    placeholder="https://my-build.lovable.app" 
                                     className="pl-10" 
                                     {...field} 
                                   />
@@ -495,7 +420,7 @@ const SubmitSolution = () => {
                           name="demoUrl"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Demo / Video URL (optional)</FormLabel>
+                              <FormLabel>Demo Video (optional)</FormLabel>
                               <FormControl>
                                 <Input placeholder="https://loom.com/share/..." {...field} />
                               </FormControl>
@@ -505,15 +430,15 @@ const SubmitSolution = () => {
                         />
                       </div>
 
-                      {/* Integration Fields */}
+                      {/* Integration Fields - Scoring Boost */}
                       <div className="pt-4 border-t border-border">
                         <div className="p-4 rounded-lg bg-primary/5 border border-primary/20 mb-4">
                           <div className="flex items-start gap-3">
-                            <AlertCircle className="h-5 w-5 text-primary mt-0.5" />
+                            <Award className="h-5 w-5 text-primary mt-0.5" />
                             <div>
-                              <p className="text-sm font-medium">Connect Data Sources</p>
+                              <p className="text-sm font-medium">Boost Your Score</p>
                               <p className="text-xs text-muted-foreground mt-1">
-                                More integrations = higher verification accuracy & better fit scores
+                                Connect integrations for higher AI ranking. Revenue signals & active repos = higher scores.
                               </p>
                             </div>
                           </div>
@@ -528,6 +453,7 @@ const SubmitSolution = () => {
                                 <FormLabel className="flex items-center gap-2">
                                   <Github className="h-4 w-4" />
                                   GitHub Repository
+                                  <Badge variant="secondary" className="text-[10px] ml-auto">+15 pts</Badge>
                                 </FormLabel>
                                 <FormControl>
                                   <Input 
@@ -535,7 +461,6 @@ const SubmitSolution = () => {
                                     {...field} 
                                   />
                                 </FormControl>
-                                <p className="text-xs text-muted-foreground">Track build momentum & activity</p>
                                 <FormMessage />
                               </FormItem>
                             )}
@@ -549,11 +474,11 @@ const SubmitSolution = () => {
                                 <FormLabel className="flex items-center gap-2">
                                   <CreditCard className="h-4 w-4" />
                                   Stripe Publishable Key
+                                  <Badge variant="secondary" className="text-[10px] ml-auto">+20 pts</Badge>
                                 </FormLabel>
                                 <FormControl>
                                   <Input placeholder="pk_live_..." {...field} />
                                 </FormControl>
-                                <p className="text-xs text-muted-foreground">Verify revenue signals</p>
                                 <FormMessage />
                               </FormItem>
                             )}
@@ -567,6 +492,7 @@ const SubmitSolution = () => {
                                 <FormLabel className="flex items-center gap-2">
                                   <Database className="h-4 w-4" />
                                   Supabase Project URL
+                                  <Badge variant="secondary" className="text-[10px] ml-auto">+10 pts</Badge>
                                 </FormLabel>
                                 <FormControl>
                                   <Input 
@@ -574,11 +500,38 @@ const SubmitSolution = () => {
                                     {...field} 
                                   />
                                 </FormControl>
-                                <p className="text-xs text-muted-foreground">Measure adoption velocity</p>
                                 <FormMessage />
                               </FormItem>
                             )}
                           />
+                        </div>
+                      </div>
+
+                      {/* AI Judging Info */}
+                      <div className="p-4 rounded-lg bg-warning/10 border border-warning/30">
+                        <div className="flex items-start gap-3">
+                          <BarChart3 className="h-5 w-5 text-warning mt-0.5" />
+                          <div>
+                            <p className="text-sm font-medium">How AI Judges Your Build</p>
+                            <div className="grid grid-cols-2 gap-2 mt-2 text-xs text-muted-foreground">
+                              <div className="flex items-center gap-1">
+                                <Zap className="h-3 w-3 text-primary" />
+                                Code Quality & Aesthetics
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Target className="h-3 w-3 text-primary" />
+                                Problem-Solution Fit
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Sparkles className="h-3 w-3 text-primary" />
+                                Creativity & Innovation
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <DollarSign className="h-3 w-3 text-primary" />
+                                Revenue & Traction Signals
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
 
@@ -593,8 +546,8 @@ const SubmitSolution = () => {
                           variant="glow" 
                           disabled={!form.formState.isValid || form.formState.isSubmitting}
                         >
-                          <Sparkles className="h-4 w-4 mr-2" />
-                          Analyze with AI
+                          <Rocket className="h-4 w-4 mr-2" />
+                          Submit Entry
                           <ArrowRight className="h-4 w-4 ml-2" />
                         </Button>
                       </div>
@@ -605,9 +558,9 @@ const SubmitSolution = () => {
             </motion.div>
           )}
 
-          {currentStep === 1 && isAnalyzing && (
+          {currentStep === 1 && isSubmitting && (
             <motion.div
-              key="analyzing"
+              key="submitting"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
@@ -625,30 +578,30 @@ const SubmitSolution = () => {
                     </motion.div>
                     
                     <div className="space-y-2">
-                      <h3 className="text-xl font-bold">AI Analysis in Progress</h3>
+                      <h3 className="text-xl font-bold">Submitting Your Entry</h3>
                       <p className="text-muted-foreground">
-                        Analyzing your product and generating insights...
+                        AI is validating your build and preparing for ranking...
                       </p>
                     </div>
 
                     <div className="max-w-md mx-auto space-y-3">
-                      <Progress value={analysisProgress} size="lg" indicatorColor="gradient" />
+                      <Progress value={submissionProgress} size="lg" indicatorColor="gradient" />
                       <div className="flex flex-wrap justify-center gap-2">
-                        <Badge variant={analysisProgress >= 20 ? "success" : "secondary"} className="text-xs">
-                          <FileText className="h-3 w-3 mr-1" />
-                          Scraping Product
+                        <Badge variant={submissionProgress >= 20 ? "success" : "secondary"} className="text-xs">
+                          <ExternalLink className="h-3 w-3 mr-1" />
+                          Validating URL
                         </Badge>
-                        <Badge variant={analysisProgress >= 45 ? "success" : "secondary"} className="text-xs">
-                          <Target className="h-3 w-3 mr-1" />
-                          Identifying Persona
-                        </Badge>
-                        <Badge variant={analysisProgress >= 70 ? "success" : "secondary"} className="text-xs">
+                        <Badge variant={submissionProgress >= 40 ? "success" : "secondary"} className="text-xs">
                           <Zap className="h-3 w-3 mr-1" />
-                          Generating GTM
+                          Code Analysis
                         </Badge>
-                        <Badge variant={analysisProgress >= 90 ? "success" : "secondary"} className="text-xs">
-                          <Users className="h-3 w-3 mr-1" />
-                          Scoring Fit
+                        <Badge variant={submissionProgress >= 60 ? "success" : "secondary"} className="text-xs">
+                          <Database className="h-3 w-3 mr-1" />
+                          Integrations
+                        </Badge>
+                        <Badge variant={submissionProgress >= 80 ? "success" : "secondary"} className="text-xs">
+                          <BarChart3 className="h-3 w-3 mr-1" />
+                          Scoring
                         </Badge>
                       </div>
                     </div>
@@ -658,120 +611,113 @@ const SubmitSolution = () => {
             </motion.div>
           )}
 
-          {currentStep === 2 && aiGeneratedData && fitVerificationData && (
+          {currentStep === 2 && isSubmitted && (
             <motion.div
-              key="results"
+              key="confirmed"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
               className="space-y-6"
             >
-              {/* AI Generated Narrative & GTM */}
-              <Card variant="elevated">
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 rounded-lg bg-gradient-primary flex items-center justify-center">
-                      <Sparkles className="h-4 w-4 text-primary-foreground" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-base">AI-Generated Analysis</CardTitle>
-                      <CardDescription>Based on your product data</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Problem-Solution Narrative */}
-                  <div className="space-y-4">
-                    <h4 className="text-sm font-medium flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-primary" />
-                      Problem → Solution Narrative
-                    </h4>
-                    <div className="grid gap-3">
-                      <div className="p-4 rounded-lg bg-secondary/50">
-                        <p className="text-xs text-muted-foreground mb-1">Problem Statement</p>
-                        <p className="text-sm">{aiGeneratedData.problemStatement}</p>
-                      </div>
-                      <div className="p-4 rounded-lg bg-secondary/50">
-                        <p className="text-xs text-muted-foreground mb-1">Solution Narrative</p>
-                        <p className="text-sm">{aiGeneratedData.solutionNarrative}</p>
-                      </div>
-                      <div className="p-4 rounded-lg bg-secondary/50">
-                        <p className="text-xs text-muted-foreground mb-1">Unique Value Proposition</p>
-                        <p className="text-sm">{aiGeneratedData.uniqueValue}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Target & GTM */}
-                  <div className="space-y-4 pt-4 border-t border-border">
-                    <h4 className="text-sm font-medium flex items-center gap-2">
-                      <Target className="h-4 w-4 text-primary" />
-                      Target Persona & GTM Strategy
-                    </h4>
-                    <div className="grid md:grid-cols-2 gap-3">
-                      <div className="p-4 rounded-lg bg-secondary/50">
-                        <p className="text-xs text-muted-foreground mb-1">Target Persona</p>
-                        <p className="text-sm">{aiGeneratedData.targetPersona}</p>
-                      </div>
-                      <div className="p-4 rounded-lg bg-secondary/50">
-                        <p className="text-xs text-muted-foreground mb-1">Go-to-Market Strategy</p>
-                        <p className="text-sm">{aiGeneratedData.gtmStrategy}</p>
-                      </div>
-                    </div>
-                    <div className="p-3 rounded-lg bg-primary/10 border border-primary/20">
-                      <p className="text-xs text-muted-foreground mb-1">Suggested Pricing</p>
-                      <p className="text-sm font-medium">{aiGeneratedData.pricingModel}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Fit Verification Panel */}
-              <FitVerificationPanel {...fitVerificationData} />
-
-              {/* Submit Button */}
-              <Card variant="elevated">
-                <CardContent className="py-4">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div>
-                      <p className="text-sm font-medium">
-                        {challenge ? "Ready to compete?" : "Ready to submit?"}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
+              {/* Success Card */}
+              <Card variant="glow" className="border-success/30">
+                <CardContent className="py-8">
+                  <div className="text-center space-y-4">
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring", duration: 0.5 }}
+                      className="h-20 w-20 rounded-full bg-success/20 mx-auto flex items-center justify-center"
+                    >
+                      <CheckCircle2 className="h-10 w-10 text-success" />
+                    </motion.div>
+                    
+                    <div className="space-y-2">
+                      <h3 className="text-2xl font-bold">Entry Submitted! 🎉</h3>
+                      <p className="text-muted-foreground max-w-md mx-auto">
                         {challenge 
-                          ? `Submit your entry for "${challenge.title}"`
-                          : "Submit your solution to the problem dashboard"
+                          ? `Your build is now competing in "${challenge.title}". AI will rank all entries when the challenge ends.`
+                          : "Your solution has been submitted successfully."
                         }
                       </p>
                     </div>
-                    <div className="flex items-center gap-3 w-full sm:w-auto">
-                      <Button variant="outline" onClick={handleBack} className="flex-1 sm:flex-initial">
-                        <ArrowLeft className="h-4 w-4 mr-2" />
-                        Edit
-                      </Button>
-                      <Button 
-                        variant="glow" 
-                        onClick={handleFinalSubmit}
-                        disabled={isSubmitting}
-                        className="flex-1 sm:flex-initial"
-                      >
-                        {isSubmitting ? (
-                          <>
-                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                            Submitting...
-                          </>
-                        ) : (
-                          <>
-                            <Rocket className="h-4 w-4 mr-2" />
-                            {challenge ? "Submit Entry" : "Submit Solution"}
-                          </>
-                        )}
-                      </Button>
+
+                    {challenge && (
+                      <div className="flex items-center justify-center gap-6 pt-4">
+                        <div className="text-center">
+                          <div className="flex items-center gap-1 text-success font-bold text-xl">
+                            <DollarSign className="h-5 w-5" />
+                            {challenge.winnerPrize.toFixed(0)}
+                          </div>
+                          <p className="text-xs text-muted-foreground">potential prize</p>
+                        </div>
+                        <div className="h-10 w-px bg-border" />
+                        <div className="text-center">
+                          <div className="flex items-center gap-1 text-warning font-bold text-xl">
+                            <Clock className="h-5 w-5" />
+                            {getTimeRemaining()?.replace(" remaining", "")}
+                          </div>
+                          <p className="text-xs text-muted-foreground">until voting</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* What Happens Next */}
+              <Card variant="elevated">
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-primary" />
+                    What Happens Next
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid sm:grid-cols-3 gap-4">
+                    <div className="p-4 rounded-lg bg-secondary/50 text-center">
+                      <div className="h-10 w-10 rounded-full bg-primary/10 mx-auto mb-2 flex items-center justify-center">
+                        <Clock className="h-5 w-5 text-primary" />
+                      </div>
+                      <p className="font-medium text-sm">Challenge Ends</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Submissions close when timer hits zero
+                      </p>
+                    </div>
+                    <div className="p-4 rounded-lg bg-secondary/50 text-center">
+                      <div className="h-10 w-10 rounded-full bg-primary/10 mx-auto mb-2 flex items-center justify-center">
+                        <BarChart3 className="h-5 w-5 text-primary" />
+                      </div>
+                      <p className="font-medium text-sm">AI Ranks Entries</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        All builds scored on code, creativity & fit
+                      </p>
+                    </div>
+                    <div className="p-4 rounded-lg bg-secondary/50 text-center">
+                      <div className="h-10 w-10 rounded-full bg-success/10 mx-auto mb-2 flex items-center justify-center">
+                        <Trophy className="h-5 w-5 text-success" />
+                      </div>
+                      <p className="font-medium text-sm">Winner Announced</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Top builder takes 90% of the pool
+                      </p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Actions */}
+              <div className="flex items-center justify-center gap-3">
+                <Button variant="outline" onClick={handleViewChallenge}>
+                  <Trophy className="h-4 w-4 mr-2" />
+                  View Challenge
+                </Button>
+                <Button variant="glow" onClick={() => navigate("/")}>
+                  <Rocket className="h-4 w-4 mr-2" />
+                  Explore More
+                </Button>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
