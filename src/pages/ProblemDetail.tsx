@@ -36,7 +36,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { mockMarketProblems } from "@/data/marketIntelligence";
+import { mockMarketProblems, getDbProblemId } from "@/data/marketIntelligence";
 import { useProblemBuilders } from "@/hooks/useProblemBuilders";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -63,8 +63,11 @@ const ProblemDetail = () => {
   // Find the problem from mock data
   const problem = mockMarketProblems.find(p => p.id === id) || mockMarketProblems[0];
   
-  // Use the problem builders hook for join state
-  const { isJoined, joinProblem, leaveProblem } = useProblemBuilders(problem.id);
+  // Get the database UUID for this problem
+  const dbProblemId = getDbProblemId(problem.id);
+  
+  // Use the problem builders hook for join state with the database UUID
+  const { isJoined, joinProblem, leaveProblem } = useProblemBuilders(dbProblemId);
   
   const slotsRemaining = problem.slotsTotal - problem.slotsFilled;
   const fillPercentage = (problem.slotsFilled / problem.slotsTotal) * 100;
@@ -337,7 +340,7 @@ const ProblemDetail = () => {
           </TabsContent>
 
           <TabsContent value="squads" forceMount className={`mt-4 sm:mt-6 ${activeTab !== "squads" ? "hidden" : ""}`}>
-            <TeamFormation problemId={problem.id} problemTitle={problem.title} />
+            <TeamFormation problemId={dbProblemId} problemTitle={problem.title} />
           </TabsContent>
 
           <TabsContent value="builders" forceMount className={`mt-4 sm:mt-6 space-y-4 sm:space-y-6 ${activeTab !== "builders" ? "hidden" : ""}`}>
@@ -366,14 +369,14 @@ const ProblemDetail = () => {
 
             {/* Builders Grid */}
             <div className="grid md:grid-cols-2 gap-4">
-              <BuildersList problemId={problem.id} />
+              <BuildersList problemId={dbProblemId} />
             </div>
           </TabsContent>
 
           <TabsContent value="solutions" forceMount className={`mt-4 sm:mt-6 space-y-4 sm:space-y-6 ${activeTab !== "solutions" ? "hidden" : ""}`}>
             {/* Solutions Lab - Wiki-style collaborative ideas */}
             <SolutionsLab 
-              problemId={problem.id} 
+              problemId={dbProblemId}
               problemTitle={problem.title}
               problemTrend={problem.niche}
               problemPainPoints={problem.painPoints}
