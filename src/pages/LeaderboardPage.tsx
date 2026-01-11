@@ -20,6 +20,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { WaitlistForm } from "@/components/WaitlistForm";
+import { useWaitlistCount } from "@/hooks/useWaitlist";
 
 const topBuilders = [
   {
@@ -90,6 +92,8 @@ const leagueFeatures = [
 ];
 
 const LeaderboardPage = () => {
+  const { data: waitlistCount = 0 } = useWaitlistCount("leaderboard");
+  
   const getPodiumOrder = (index: number) => {
     const order = [1, 0, 2];
     return topBuilders[order[index]];
@@ -185,10 +189,7 @@ const LeaderboardPage = () => {
               <p className="text-sm text-muted-foreground max-w-sm">
                 Compete, earn XP, and climb from Bronze to Diamond tier
               </p>
-              <Button variant="glow" className="gap-2 mt-2">
-                <Sparkles className="h-4 w-4" />
-                Join Waitlist
-              </Button>
+              <WaitlistForm feature="leaderboard" buttonText="Join Waitlist" />
             </motion.div>
           </div>
 
@@ -296,7 +297,7 @@ const LeaderboardPage = () => {
           <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
               <Users className="h-3 w-3" />
-              3,421 on waitlist
+              {(3421 + waitlistCount).toLocaleString()} on waitlist
             </span>
             <span className="flex items-center gap-1">
               <Trophy className="h-3 w-3" />

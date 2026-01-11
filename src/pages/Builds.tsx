@@ -22,6 +22,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { WaitlistForm } from "@/components/WaitlistForm";
+import { useWaitlistCount } from "@/hooks/useWaitlist";
 
 const myBuilds = [
   {
@@ -91,6 +93,7 @@ const acceleratorFeatures = [
 
 const Builds = () => {
   const navigate = useNavigate();
+  const { data: waitlistCount = 0 } = useWaitlistCount("builds");
 
   return (
     <AppLayout title="My Builds">
@@ -182,10 +185,7 @@ const Builds = () => {
               <p className="text-sm text-muted-foreground max-w-sm">
                 Track performance, get validation scores, and accelerate your ideas
               </p>
-              <Button variant="glow" className="gap-2 mt-2">
-                <Sparkles className="h-4 w-4" />
-                Join Waitlist
-              </Button>
+              <WaitlistForm feature="builds" buttonText="Join Waitlist" />
             </motion.div>
           </div>
 
@@ -259,7 +259,7 @@ const Builds = () => {
           <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
               <Users className="h-3 w-3" />
-              2,847 on waitlist
+              {(2847 + waitlistCount).toLocaleString()} on waitlist
             </span>
             <span className="flex items-center gap-1">
               <Handshake className="h-3 w-3" />

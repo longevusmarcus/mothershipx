@@ -28,9 +28,10 @@ import {
   Award,
   LogOut,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const stats = [
   { label: "Trends Joined", value: 0, icon: CircleDot, comingSoon: false },
@@ -56,17 +57,17 @@ export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: profile?.name || "",
-    bio: profile?.bio || "",
-    location: profile?.location || "",
-    website: profile?.website || "",
-    github: profile?.github || "",
-    twitter: profile?.twitter || "",
+    name: "",
+    bio: "",
+    location: "",
+    website: "",
+    github: "",
+    twitter: "",
     linkedin: "",
   });
 
-  // Update form data when profile loads
-  useState(() => {
+  // Update form data when profile loads or changes
+  useEffect(() => {
     if (profile) {
       setFormData({
         name: profile.name || "",
@@ -78,7 +79,7 @@ export default function Profile() {
         linkedin: "",
       });
     }
-  });
+  }, [profile]);
 
   const initials = profile?.name
     ? profile.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
@@ -101,6 +102,9 @@ export default function Profile() {
     setIsLoading(false);
     if (!error) {
       setIsEditing(false);
+      toast.success("Profile updated successfully!");
+    } else {
+      toast.error("Failed to update profile");
     }
   };
 
@@ -477,7 +481,11 @@ export default function Profile() {
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
                       <Label>Display Name</Label>
-                      <Input defaultValue={profile?.name || ""} />
+                      <Input 
+                        value={formData.name} 
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        placeholder="Your display name"
+                      />
                     </div>
                     <div>
                       <Label>Email</Label>
@@ -486,11 +494,17 @@ export default function Profile() {
                   </div>
                   <div>
                     <Label>Location</Label>
-                    <Input defaultValue={formData.location} />
+                    <Input 
+                      value={formData.location}
+                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                      placeholder="City, Country"
+                    />
                   </div>
                   <div className="border-t border-border pt-4 mt-4">
                     <div className="flex justify-between items-center">
-                      <Button>Save Settings</Button>
+                      <Button onClick={handleSave} disabled={isLoading}>
+                        {isLoading ? "Saving..." : "Save Settings"}
+                      </Button>
                       <Button variant="outline" onClick={handleSignOut} className="gap-2 text-muted-foreground hover:text-destructive">
                         <LogOut className="h-4 w-4" />
                         Sign Out
