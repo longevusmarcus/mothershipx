@@ -34,7 +34,7 @@ import { toast } from "sonner";
 import { DailyChallenge, getTimeRemaining, getDifficultyColor } from "@/data/challengesData";
 import { getSourceIcon } from "@/data/marketIntelligence";
 import { useAuth } from "@/contexts/AuthContext";
-import { useMySubmissions } from "@/hooks/useSubmissions";
+import { useMyChallengeJoins, useJoinChallenge } from "@/hooks/useChallengeJoins";
 
 interface ChallengeCardProps {
   challenge: DailyChallenge;
@@ -43,8 +43,9 @@ interface ChallengeCardProps {
 
 export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useAuth();
-  const { data: mySubmissions = [] } = useMySubmissions();
+  const { isAuthenticated } = useAuth();
+  const { data: myChallengeJoins = [] } = useMyChallengeJoins();
+  const joinChallengeMutation = useJoinChallenge();
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
   const [joinType, setJoinType] = useState<"solo" | "team" | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -55,8 +56,8 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
   const isCompleted = challenge.status === "completed";
 
   // Check if user has already joined this challenge
-  const existingSubmission = mySubmissions.find(s => s.challenge_id === challenge.id);
-  const hasJoined = !!existingSubmission;
+  const existingJoin = myChallengeJoins.find(j => j.challenge_id === challenge.id);
+  const hasJoined = !!existingJoin;
 
   const handleJoin = (type: "solo" | "team") => {
     setJoinType(type);
@@ -67,35 +68,44 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
     
     setIsProcessing(true);
     
-    // Simulate payment processing
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    toast.success(`Joined challenge as ${joinType}! $2 entry fee processed.`, {
-      description: "Redirecting to submission page...",
-    });
-    
-    setIsJoinDialogOpen(false);
-    setIsProcessing(false);
-    
-    // Navigate to submit page with challenge context
-    navigate("/submit", {
-      state: {
-        challenge: {
-          id: challenge.id,
-          title: challenge.title,
-          trend: challenge.trend,
-          description: challenge.description,
-          example: challenge.example,
-          prizePool: challenge.prizePool,
-          winnerPrize: challenge.winnerPrize,
-          endsAt: challenge.endsAt.toISOString(),
-          difficulty: challenge.difficulty,
-          tags: challenge.tags,
-        },
+    try {
+      // Store the join in the database
+      await joinChallengeMutation.mutateAsync({
+        challengeId: challenge.id,
         joinType,
-        entryFee: 2,
-      },
-    });
+      });
+      
+      toast.success(`Joined challenge as ${joinType}! $2 entry fee processed.`, {
+        description: "Redirecting to submission page...",
+      });
+      
+      setIsJoinDialogOpen(false);
+      
+      // Navigate to submit page with challenge context
+      navigate("/submit", {
+        state: {
+          challenge: {
+            id: challenge.id,
+            title: challenge.title,
+            trend: challenge.trend,
+            description: challenge.description,
+            example: challenge.example,
+            prizePool: challenge.prizePool,
+            winnerPrize: challenge.winnerPrize,
+            endsAt: challenge.endsAt.toISOString(),
+            difficulty: challenge.difficulty,
+            tags: challenge.tags,
+          },
+          joinType,
+          entryFee: 2,
+        },
+      });
+    } catch (error) {
+      console.error("Error joining challenge:", error);
+      toast.error("Failed to join challenge. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleAuthRedirect = () => {
@@ -290,7 +300,7 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
                   <div className="flex items-center justify-center gap-2 py-2 px-4 bg-success/10 rounded-lg border border-success/30">
                     <CheckCircle2 className="h-4 w-4 text-success" />
                     <span className="text-sm font-medium text-success">
-                      Joined as {existingSubmission?.join_type === "team" ? "Team" : "Solo"}
+                      Joined as {existingJoin?.join_type === "team" ? "Team" : "Solo"}
                     </span>
                   </div>
                   <Button 
@@ -309,7 +319,7 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
                           difficulty: challenge.difficulty,
                           tags: challenge.tags,
                         },
-                        joinType: existingSubmission?.join_type || "solo",
+                        joinType: existingJoin?.join_type || "solo",
                         entryFee: 2,
                       },
                     })}
