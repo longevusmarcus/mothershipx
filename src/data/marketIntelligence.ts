@@ -66,6 +66,23 @@ export const categories = [
   "Connections"
 ];
 
+// Map mock IDs to database UUIDs
+export const problemIdMap: Record<string, string> = {
+  "mh-001": "a1b2c3d4-0001-4000-8000-000000000001",
+  "ob-001": "a1b2c3d4-0002-4000-8000-000000000002",
+  "sk-001": "a1b2c3d4-0003-4000-8000-000000000003",
+  "gt-001": "a1b2c3d4-0004-4000-8000-000000000004",
+  "pr-001": "a1b2c3d4-0005-4000-8000-000000000005",
+  "cr-001": "a1b2c3d4-0006-4000-8000-000000000006",
+  "cn-001": "a1b2c3d4-0007-4000-8000-000000000007",
+  "mh-002": "a1b2c3d4-0008-4000-8000-000000000008",
+};
+
+// Helper to get database UUID from mock ID
+export function getDbProblemId(mockId: string): string {
+  return problemIdMap[mockId] || mockId;
+}
+
 export const mockMarketProblems: MarketProblem[] = [
   {
     id: "mh-001",
