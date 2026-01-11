@@ -37,47 +37,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { mockMarketProblems } from "@/data/marketIntelligence";
 
-// Mock builders data
-const mockBuilders = [
-  {
-    id: "1",
-    name: "Alex Chen",
-    stage: "launched" as const,
-    skills: ["React", "AI/ML", "UX Design"],
-    solutionName: "OnboardFlow",
-    fitScore: 78,
-    githubUrl: "https://github.com/alexchen/onboardflow",
-    productUrl: "https://onboardflow.app",
-    isLookingForTeam: false,
-  },
-  {
-    id: "2",
-    name: "Sarah Kim",
-    stage: "building" as const,
-    skills: ["Vue", "Node.js", "Product"],
-    solutionName: "StepWizard",
-    fitScore: 62,
-    githubUrl: "https://github.com/sarahkim/stepwizard",
-    isLookingForTeam: true,
-  },
-  {
-    id: "3",
-    name: "Mike Johnson",
-    stage: "idea" as const,
-    skills: ["Python", "Data Science"],
-    isLookingForTeam: true,
-  },
-  {
-    id: "4",
-    name: "Emma Davis",
-    stage: "building" as const,
-    skills: ["React Native", "Firebase", "Growth"],
-    solutionName: "FlowBuilder",
-    fitScore: 45,
-    isLookingForTeam: false,
-  },
-];
-
 const mockTopSolution = {
   sentimentFitScore: 78,
   problemCoverage: 72,
@@ -102,14 +61,6 @@ const ProblemDetail = () => {
   
   const slotsRemaining = problem.slotsTotal - problem.slotsFilled;
   const fillPercentage = (problem.slotsFilled / problem.slotsTotal) * 100;
-
-  const handleRequestCollab = (builderId: string) => {
-    const builder = mockBuilders.find(b => b.id === builderId);
-    toast({
-      title: "Collaboration Request Sent",
-      description: `Your request has been sent to ${builder?.name}. They'll be notified via email.`,
-    });
-  };
 
   const handleJoinDashboard = () => {
     toast({
@@ -261,7 +212,7 @@ const ProblemDetail = () => {
               🔥 Squads
             </TabsTrigger>
             <TabsTrigger value="builders" className="text-xs sm:text-sm">
-              Builders ({mockBuilders.length})
+              Builders
             </TabsTrigger>
             <TabsTrigger value="solutions" className="text-xs sm:text-sm">Solutions</TabsTrigger>
             <TabsTrigger value="competitors" className="text-xs sm:text-sm">Competitors</TabsTrigger>
@@ -371,7 +322,7 @@ const ProblemDetail = () => {
                 <div>
                   <p className="font-medium">Looking for collaborators?</p>
                   <p className="text-sm text-muted-foreground">
-                    {mockBuilders.filter(b => b.isLookingForTeam).length} builders are open to teaming up
+                    Find builders open to teaming up on this problem
                   </p>
                 </div>
               </div>
@@ -383,10 +334,7 @@ const ProblemDetail = () => {
 
             {/* Builders Grid */}
             <div className="grid md:grid-cols-2 gap-4">
-              <BuildersList 
-                builders={mockBuilders} 
-                onRequestCollab={handleRequestCollab}
-              />
+              <BuildersList problemId={problem.id} />
             </div>
           </TabsContent>
 
