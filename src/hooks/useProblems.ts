@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabaseClient";
-import { TrendSignalDB, HiddenInsightDB } from "@/types/database";
-import { mockMarketProblems, MarketProblem, TrendSignal } from "@/data/marketIntelligence";
+import { mockMarketProblems, MarketProblem, TrendSignal, problemIdMap, getDbProblemId } from "@/data/marketIntelligence";
 
 // DB row type from Supabase (with Json types)
 interface DBProblem {
@@ -32,23 +31,47 @@ interface DBProblem {
   updated_at: string;
 }
 
+interface SourceFromDB {
+  source: string;
+  metric: string;
+  value: string;
+  change?: number;
+  icon?: string;
+}
+
+interface HiddenInsightFromDB {
+  surfaceAsk: string;
+  realProblem: string;
+  hiddenSignal: string;
+}
+
+// Reverse map: UUID -> mock ID
+const uuidToMockId = Object.entries(problemIdMap).reduce((acc, [mockId, uuid]) => {
+  acc[uuid] = mockId;
+  return acc;
+}, {} as Record<string, string>);
+
 // Convert DB problem to MarketProblem format for compatibility
 function dbToMarketProblem(dbProblem: DBProblem): MarketProblem {
   // Parse JSONB sources
-  const sources = Array.isArray(dbProblem.sources) 
-    ? (dbProblem.sources as TrendSignalDB[]).map(s => ({
-        source: s.source,
+  const sources: TrendSignal[] = Array.isArray(dbProblem.sources) 
+    ? (dbProblem.sources as SourceFromDB[]).map(s => ({
+        source: s.source as TrendSignal["source"],
         metric: s.metric,
         value: s.value,
-        change: 0,
+        change: s.change || 0,
+        icon: s.icon,
       }))
     : [];
 
   // Parse JSONB hidden_insight
-  const hiddenInsight = dbProblem.hidden_insight as HiddenInsightDB | null;
+  const hiddenInsight = dbProblem.hidden_insight as HiddenInsightFromDB | null;
+
+  // Use the mock ID if this is a known UUID, otherwise use the UUID
+  const displayId = uuidToMockId[dbProblem.id] || dbProblem.id;
 
   return {
-    id: dbProblem.id,
+    id: displayId,
     title: dbProblem.title,
     subtitle: dbProblem.subtitle || "",
     category: dbProblem.category,
@@ -100,12 +123,14 @@ export function useProblems(category?: string) {
       }
 
       if (!data || data.length === 0) {
+        // Return mock data if database is empty
         return mockMarketProblems;
       }
 
       return (data as unknown as DBProblem[]).map(dbToMarketProblem);
     },
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 2, // Fresh for 2 minutes
+    gcTime: 1000 * 60 * 10, // Cache for 10 minutes
   });
 }
 
@@ -113,23 +138,30 @@ export function useProblem(id: string) {
   return useQuery({
     queryKey: ["problem", id],
     queryFn: async () => {
+      // Convert mock ID to database UUID if needed
+      const dbId = getDbProblemId(id);
+      
       const { data, error } = await supabase
         .from("problems")
         .select("*")
-        .eq("id", id)
+        .eq("id", dbId)
         .maybeSingle();
 
       if (error) {
         console.error("Error fetching problem:", error);
+        // Fallback to mock data
         return mockMarketProblems.find(p => p.id === id) || null;
       }
 
       if (!data) {
+        // Fallback to mock data if not found in DB
         return mockMarketProblems.find(p => p.id === id) || null;
       }
 
       return dbToMarketProblem(data as unknown as DBProblem);
     },
     enabled: !!id,
+    staleTime: 1000 * 60 * 2,
+    gcTime: 1000 * 60 * 10,
   });
 }

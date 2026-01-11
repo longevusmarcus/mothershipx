@@ -17,7 +17,8 @@ import {
   Zap,
   Calendar,
   CheckCircle2,
-  Check
+  Check,
+  Loader2
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { FitVerificationPanel } from "@/components/FitVerificationPanel";
@@ -35,8 +36,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { mockMarketProblems, getDbProblemId } from "@/data/marketIntelligence";
+import { getDbProblemId } from "@/data/marketIntelligence";
+import { useProblem } from "@/hooks/useProblems";
 import { useProblemBuilders } from "@/hooks/useProblemBuilders";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -60,14 +63,45 @@ const ProblemDetail = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [isSaved, setIsSaved] = useState(false);
 
-  // Find the problem from mock data
-  const problem = mockMarketProblems.find(p => p.id === id) || mockMarketProblems[0];
+  // Fetch problem from database (with mock fallback)
+  const { data: problem, isLoading } = useProblem(id || "");
   
   // Get the database UUID for this problem
-  const dbProblemId = getDbProblemId(problem.id);
+  const dbProblemId = problem ? getDbProblemId(problem.id) : "";
   
   // Use the problem builders hook for join state with the database UUID
   const { isJoined, joinProblem, leaveProblem } = useProblemBuilders(dbProblemId);
+  
+  // Loading state
+  if (isLoading) {
+    return (
+      <AppLayout title="">
+        <div className="space-y-6">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-64 w-full rounded-2xl" />
+          <div className="grid lg:grid-cols-2 gap-6">
+            <Skeleton className="h-48 rounded-xl" />
+            <Skeleton className="h-48 rounded-xl" />
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  // Not found state
+  if (!problem) {
+    return (
+      <AppLayout title="">
+        <div className="flex flex-col items-center justify-center py-20">
+          <h2 className="text-xl font-semibold mb-2">Problem not found</h2>
+          <p className="text-muted-foreground mb-4">This opportunity doesn't exist or has been removed.</p>
+          <Link to="/problems">
+            <Button>Browse Opportunities</Button>
+          </Link>
+        </div>
+      </AppLayout>
+    );
+  }
   
   const slotsRemaining = problem.slotsTotal - problem.slotsFilled;
   const fillPercentage = (problem.slotsFilled / problem.slotsTotal) * 100;
