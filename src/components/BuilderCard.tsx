@@ -1,24 +1,25 @@
 import { motion } from "framer-motion";
-import { User, MessageSquare, Users, ExternalLink, Github, Zap } from "lucide-react";
+import { User, MessageSquare, Users, ExternalLink, Github, Zap, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-
-interface Builder {
-  id: string;
-  name: string;
-  avatar?: string;
-  stage: "idea" | "building" | "launched" | "scaling";
-  skills: string[];
-  solutionName?: string;
-  fitScore?: number;
-  githubUrl?: string;
-  productUrl?: string;
-  isLookingForTeam?: boolean;
-}
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useProblemBuilders, type ProblemBuilder } from "@/hooks/useProblemBuilders";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface BuilderCardProps {
-  builder: Builder;
+  builder: {
+    id: string;
+    name: string;
+    avatar?: string | null;
+    stage: "idea" | "building" | "launched" | "scaling";
+    skills: string[];
+    solutionName?: string;
+    fitScore?: number;
+    githubUrl?: string;
+    productUrl?: string;
+    isLookingForTeam?: boolean;
+  };
   onRequestCollab?: (builderId: string) => void;
   delay?: number;
 }
@@ -48,9 +49,14 @@ export function BuilderCard({ builder, onRequestCollab, delay = 0 }: BuilderCard
       <div className="flex items-start gap-3">
         {/* Avatar */}
         <div className="relative">
-          <div className="h-12 w-12 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground font-bold text-lg">
-            {builder.avatar || builder.name[0]}
-          </div>
+          <Avatar className="h-12 w-12">
+            {builder.avatar ? (
+              <AvatarImage src={builder.avatar} alt={builder.name} />
+            ) : null}
+            <AvatarFallback className="bg-gradient-primary text-primary-foreground font-bold text-lg">
+              {builder.name[0]}
+            </AvatarFallback>
+          </Avatar>
           {builder.isLookingForTeam && (
             <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-success flex items-center justify-center">
               <Users className="h-3 w-3 text-success-foreground" />
@@ -148,18 +154,50 @@ export function BuilderCard({ builder, onRequestCollab, delay = 0 }: BuilderCard
 }
 
 interface BuildersListProps {
-  builders: Builder[];
-  onRequestCollab?: (builderId: string) => void;
+  problemId: string;
 }
 
-export function BuildersList({ builders, onRequestCollab }: BuildersListProps) {
+export function BuildersList({ problemId }: BuildersListProps) {
+  const { user } = useAuth();
+  const { builders, isLoading, requestCollab } = useProblemBuilders(problemId);
+
+  const handleRequestCollab = (userId: string) => {
+    requestCollab.mutate(userId);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (builders.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <Users className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+        <p className="text-sm text-muted-foreground">No builders yet. Be the first to join!</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-3">
       {builders.map((builder, index) => (
         <BuilderCard
           key={builder.id}
-          builder={builder}
-          onRequestCollab={onRequestCollab}
+          builder={{
+            id: builder.user_id,
+            name: builder.profile?.name || "Anonymous",
+            avatar: builder.profile?.avatar_url,
+            stage: builder.stage || "building",
+            skills: builder.skills || [],
+            githubUrl: builder.profile?.github ? `https://github.com/${builder.profile.github}` : undefined,
+            productUrl: builder.profile?.website || undefined,
+            isLookingForTeam: builder.isLookingForTeam,
+          }}
+          onRequestCollab={user ? handleRequestCollab : undefined}
           delay={index * 0.1}
         />
       ))}

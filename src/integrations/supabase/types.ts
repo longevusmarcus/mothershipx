@@ -368,6 +368,258 @@ export type Database = {
           },
         ]
       }
+      solution_contributors: {
+        Row: {
+          contributed_at: string
+          id: string
+          solution_id: string
+          user_id: string
+        }
+        Insert: {
+          contributed_at?: string
+          id?: string
+          solution_id: string
+          user_id: string
+        }
+        Update: {
+          contributed_at?: string
+          id?: string
+          solution_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solution_contributors_solution_id_fkey"
+            columns: ["solution_id"]
+            isOneToOne: false
+            referencedRelation: "solutions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      solution_upvotes: {
+        Row: {
+          created_at: string
+          id: string
+          solution_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          solution_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          solution_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solution_upvotes_solution_id_fkey"
+            columns: ["solution_id"]
+            isOneToOne: false
+            referencedRelation: "solutions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      solutions: {
+        Row: {
+          ai_generated: boolean
+          approach: string | null
+          comments: number
+          created_at: string
+          created_by: string
+          description: string
+          edit_count: number
+          forks: number
+          id: string
+          last_editor_id: string | null
+          market_fit: number
+          problem_id: string | null
+          status: string
+          tech_stack: string[] | null
+          title: string
+          updated_at: string
+          upvotes: number
+        }
+        Insert: {
+          ai_generated?: boolean
+          approach?: string | null
+          comments?: number
+          created_at?: string
+          created_by: string
+          description: string
+          edit_count?: number
+          forks?: number
+          id?: string
+          last_editor_id?: string | null
+          market_fit?: number
+          problem_id?: string | null
+          status?: string
+          tech_stack?: string[] | null
+          title: string
+          updated_at?: string
+          upvotes?: number
+        }
+        Update: {
+          ai_generated?: boolean
+          approach?: string | null
+          comments?: number
+          created_at?: string
+          created_by?: string
+          description?: string
+          edit_count?: number
+          forks?: number
+          id?: string
+          last_editor_id?: string | null
+          market_fit?: number
+          problem_id?: string | null
+          status?: string
+          tech_stack?: string[] | null
+          title?: string
+          updated_at?: string
+          upvotes?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solutions_problem_id_fkey"
+            columns: ["problem_id"]
+            isOneToOne: false
+            referencedRelation: "problems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      squad_members: {
+        Row: {
+          id: string
+          is_online: boolean
+          joined_at: string
+          role: string
+          squad_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          is_online?: boolean
+          joined_at?: string
+          role?: string
+          squad_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          is_online?: boolean
+          joined_at?: string
+          role?: string
+          squad_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "squad_members_squad_id_fkey"
+            columns: ["squad_id"]
+            isOneToOne: false
+            referencedRelation: "squads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      squad_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_ai: boolean
+          is_pinned: boolean
+          squad_id: string
+          user_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_ai?: boolean
+          is_pinned?: boolean
+          squad_id: string
+          user_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_ai?: boolean
+          is_pinned?: boolean
+          squad_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "squad_messages_squad_id_fkey"
+            columns: ["squad_id"]
+            isOneToOne: false
+            referencedRelation: "squads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      squads: {
+        Row: {
+          created_at: string
+          id: string
+          is_hiring: boolean
+          lead_id: string
+          max_members: number
+          momentum: number
+          name: string
+          problem_id: string | null
+          rank: number | null
+          streak: number
+          tagline: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_hiring?: boolean
+          lead_id: string
+          max_members?: number
+          momentum?: number
+          name: string
+          problem_id?: string | null
+          rank?: number | null
+          streak?: number
+          tagline?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_hiring?: boolean
+          lead_id?: string
+          max_members?: number
+          momentum?: number
+          name?: string
+          problem_id?: string | null
+          rank?: number | null
+          streak?: number
+          tagline?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "squads_problem_id_fkey"
+            columns: ["problem_id"]
+            isOneToOne: false
+            referencedRelation: "problems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       submissions: {
         Row: {
           adoption_velocity_score: number | null

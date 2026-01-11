@@ -9,7 +9,8 @@ import {
   Gift,
   Crown,
   Sparkles,
-  AlertCircle
+  AlertCircle,
+  Loader2
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -24,62 +25,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
-import { TeamCard, type Team } from "./TeamCard";
+import { TeamCard } from "./TeamCard";
 import { TeamChat } from "./TeamChat";
 import { createSquadSchema } from "@/lib/validations";
-
-// Mock teams data
-const mockTeams: Team[] = [
-  {
-    id: "1",
-    name: "Velocity Squad",
-    tagline: "Ship fast, learn faster",
-    members: [
-      { id: "1", name: "Alex Chen", avatar: "A", role: "lead", isOnline: true },
-      { id: "2", name: "Sarah Kim", avatar: "S", role: "member", isOnline: true },
-      { id: "3", name: "Mike J", avatar: "M", role: "member", isOnline: false },
-    ],
-    maxMembers: 4,
-    momentum: 89,
-    rank: 1,
-    isHiring: true,
-    chatActive: true,
-    streak: 7,
-  },
-  {
-    id: "2",
-    name: "Build Crew",
-    tagline: "From problem to product",
-    members: [
-      { id: "4", name: "Emma D", avatar: "E", role: "lead", isOnline: true },
-      { id: "5", name: "James W", avatar: "J", role: "member", isOnline: false },
-    ],
-    maxMembers: 3,
-    momentum: 67,
-    rank: 2,
-    isHiring: true,
-    chatActive: false,
-    streak: 4,
-  },
-  {
-    id: "3",
-    name: "Midnight Hackers",
-    tagline: "Sleep is overrated",
-    members: [
-      { id: "6", name: "Lisa A", avatar: "L", role: "lead", isOnline: false },
-      { id: "7", name: "David B", avatar: "D", role: "member", isOnline: false },
-      { id: "8", name: "Maria G", avatar: "M", role: "member", isOnline: true },
-      { id: "9", name: "Robert T", avatar: "R", role: "member", isOnline: false },
-    ],
-    maxMembers: 4,
-    momentum: 45,
-    rank: 3,
-    isHiring: false,
-    chatActive: true,
-    streak: 2,
-  },
-];
+import { useSquads, type Squad } from "@/hooks/useSquads";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface TeamFormationProps {
   problemId: string;
@@ -87,24 +37,21 @@ interface TeamFormationProps {
 }
 
 export function TeamFormation({ problemId, problemTitle = "SaaS Onboarding" }: TeamFormationProps) {
-  const { toast } = useToast();
-  const [teams] = useState<Team[]>(mockTeams);
-  const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
+  const { user } = useAuth();
+  const { squads, userSquad, isLoading, createSquad, joinSquad, leaveSquad } = useSquads(problemId);
+  const [selectedSquad, setSelectedSquad] = useState<Squad | null>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [teamName, setTeamName] = useState("");
   const [teamTagline, setTeamTagline] = useState("");
   const [formErrors, setFormErrors] = useState<{ name?: string; tagline?: string }>({});
 
-  const handleJoinTeam = (team: Team) => {
-    toast({
-      title: "Request Sent! 🎉",
-      description: `Your request to join ${team.name} has been sent to the team lead.`,
-    });
+  const handleJoinTeam = (squad: Squad) => {
+    joinSquad.mutate(squad.id);
   };
 
-  const handleOpenChat = (team: Team) => {
-    setSelectedTeam(team);
+  const handleOpenChat = (squad: Squad) => {
+    setSelectedSquad(squad);
     setIsChatOpen(true);
   };
 
@@ -122,17 +69,45 @@ export function TeamFormation({ problemId, problemTitle = "SaaS Onboarding" }: T
     }
     
     setFormErrors({});
-    toast({
-      title: "Team Created! 🚀",
-      description: `${teamName} is ready. Invite builders to join your squad!`,
-    });
-    setIsCreateOpen(false);
-    setTeamName("");
-    setTeamTagline("");
+    createSquad.mutate(
+      { name: teamName, tagline: teamTagline || undefined },
+      {
+        onSuccess: () => {
+          setIsCreateOpen(false);
+          setTeamName("");
+          setTeamTagline("");
+        },
+      }
+    );
   };
 
-  // User's team (mock - first team for demo)
-  const userTeam = teams[0];
+  // Transform Squad to TeamCard format
+  const transformSquadForCard = (squad: Squad) => ({
+    id: squad.id,
+    name: squad.name,
+    tagline: squad.tagline || "",
+    members: squad.members?.map((m) => ({
+      id: m.id,
+      name: m.profile?.name || "Anonymous",
+      avatar: m.profile?.name?.[0] || "?",
+      role: m.role,
+      isOnline: m.is_online,
+    })) || [],
+    maxMembers: squad.max_members,
+    momentum: squad.momentum,
+    rank: squad.rank || undefined,
+    isHiring: squad.is_hiring,
+    chatActive: true,
+    streak: squad.streak,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -150,7 +125,7 @@ export function TeamFormation({ problemId, problemTitle = "SaaS Onboarding" }: T
         
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
-            <Button variant="glow" size="sm" className="gap-2">
+            <Button variant="glow" size="sm" className="gap-2" disabled={!user}>
               <Plus className="h-4 w-4" />
               Create Squad
             </Button>
@@ -208,8 +183,13 @@ export function TeamFormation({ problemId, problemTitle = "SaaS Onboarding" }: T
                 variant="glow" 
                 className="w-full" 
                 onClick={handleCreateTeam}
+                disabled={createSquad.isPending}
               >
-                <Sparkles className="h-4 w-4 mr-2" />
+                {createSquad.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : (
+                  <Sparkles className="h-4 w-4 mr-2" />
+                )}
                 Launch Squad
               </Button>
             </div>
@@ -258,16 +238,16 @@ export function TeamFormation({ problemId, problemTitle = "SaaS Onboarding" }: T
       </motion.div>
 
       {/* Your Squad */}
-      {userTeam && (
+      {userSquad && (
         <div className="space-y-2">
           <h3 className="text-sm font-medium flex items-center gap-2">
             <Crown className="h-4 w-4 text-warning" />
             Your Squad
           </h3>
           <TeamCard
-            team={userTeam}
+            team={transformSquadForCard(userSquad)}
             isUserTeam
-            onViewChat={() => handleOpenChat(userTeam)}
+            onViewChat={() => handleOpenChat(userSquad)}
           />
         </div>
       )}
@@ -280,27 +260,46 @@ export function TeamFormation({ problemId, problemTitle = "SaaS Onboarding" }: T
             Active Squads
           </h3>
           <Badge variant="secondary" className="text-[10px]">
-            {teams.length} teams competing
+            {squads.length} teams competing
           </Badge>
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-4">
-          {teams.slice(1).map((team, index) => (
-            <TeamCard
-              key={team.id}
-              team={team}
-              delay={index * 0.1}
-              onJoin={() => handleJoinTeam(team)}
-              onViewChat={() => handleOpenChat(team)}
-            />
-          ))}
-        </div>
+        {squads.length === 0 ? (
+          <Card variant="elevated" className="p-6 text-center">
+            <Users className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+            <p className="text-sm text-muted-foreground">No squads yet. Be the first to create one!</p>
+          </Card>
+        ) : (
+          <div className="grid sm:grid-cols-2 gap-4">
+            {squads
+              .filter((squad) => squad.id !== userSquad?.id)
+              .map((squad, index) => (
+                <TeamCard
+                  key={squad.id}
+                  team={transformSquadForCard(squad)}
+                  delay={index * 0.1}
+                  onJoin={() => handleJoinTeam(squad)}
+                  onViewChat={() => handleOpenChat(squad)}
+                />
+              ))}
+          </div>
+        )}
       </div>
 
       {/* Team Chat Drawer */}
-      {selectedTeam && (
+      {selectedSquad && (
         <TeamChat
-          team={selectedTeam}
+          squadId={selectedSquad.id}
+          squadName={selectedSquad.name}
+          members={selectedSquad.members?.map((m) => ({
+            id: m.id,
+            name: m.profile?.name || "Anonymous",
+            avatar: m.profile?.name?.[0] || "?",
+            role: m.role,
+            isOnline: m.is_online,
+          })) || []}
+          momentum={selectedSquad.momentum}
+          rank={selectedSquad.rank}
           isOpen={isChatOpen}
           onClose={() => setIsChatOpen(false)}
           problemTitle={problemTitle}

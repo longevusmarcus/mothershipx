@@ -8,101 +8,48 @@ import {
   Trophy,
   Zap,
   Bot,
-  Crown,
-  MoreVertical,
   Phone,
   Video,
-  Pin
+  Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import type { Team, TeamMember } from "./TeamCard";
+import { useSquadMessages } from "@/hooks/useSquads";
+import { formatDistanceToNow } from "date-fns";
 
-interface ChatMessage {
+interface TeamMember {
   id: string;
-  senderId: string;
-  senderName: string;
-  senderAvatar: string;
-  content: string;
-  timestamp: string;
-  isAI?: boolean;
-  isPinned?: boolean;
+  name: string;
+  avatar: string;
+  role: "lead" | "member";
+  isOnline: boolean;
 }
 
 interface TeamChatProps {
-  team: Team;
+  squadId: string;
+  squadName: string;
+  members: TeamMember[];
+  momentum: number;
+  rank?: number | null;
   isOpen: boolean;
   onClose: () => void;
   problemTitle?: string;
 }
 
-const getMessagesForProblem = (problemTitle: string): ChatMessage[] => [
-  {
-    id: "1",
-    senderId: "1",
-    senderName: "Alex",
-    senderAvatar: "A",
-    content: `This "${problemTitle}" problem looks promising. The signal data is strong — anyone else thinking about tackling this?`,
-    timestamp: "10:30 AM",
-  },
-  {
-    id: "2",
-    senderId: "2",
-    senderName: "Sarah",
-    senderAvatar: "S",
-    content: "Yeah I've seen this pain point a lot. What's the competition like? Are there existing solutions?",
-    timestamp: "10:33 AM",
-  },
-  {
-    id: "3",
-    senderId: "ai",
-    senderName: "Mothership AI",
-    senderAvatar: "🤖",
-    content: `Great question! For "${problemTitle}" — there are 3 solutions in market but all target enterprise. SMB segment is wide open. Competition gap score is 72%, meaning low saturation.`,
-    timestamp: "10:35 AM",
-    isAI: true,
-    isPinned: true,
-  },
-  {
-    id: "4",
-    senderId: "3",
-    senderName: "Mike",
-    senderAvatar: "M",
-    content: "Interesting. What would an MVP look like? I could commit if we scope it tight — 2 weeks max.",
-    timestamp: "10:38 AM",
-  },
-  {
-    id: "5",
-    senderId: "ai",
-    senderName: "Mothership AI",
-    senderAvatar: "🤖",
-    content: "Based on the top 3 pain points from signals: 1) Core widget, 2) Simple dashboard, 3) One integration. That's a 2-week build for a small team.",
-    timestamp: "10:40 AM",
-    isAI: true,
-  },
-  {
-    id: "6",
-    senderId: "2",
-    senderName: "Sarah",
-    senderAvatar: "S",
-    content: "I'm interested but need a frontend dev. Anyone here with React experience want to team up? 👀",
-    timestamp: "10:42 AM",
-  },
-  {
-    id: "7",
-    senderId: "1",
-    senderName: "Alex",
-    senderAvatar: "A",
-    content: "Count me in for product/backend. If we get one more person we could seriously compete for the sprint rewards 🏆",
-    timestamp: "10:45 AM",
-  },
-];
-
-export function TeamChat({ team, isOpen, onClose, problemTitle = "SaaS Onboarding" }: TeamChatProps) {
-  const [messages, setMessages] = useState<ChatMessage[]>(() => getMessagesForProblem(problemTitle));
+export function TeamChat({ 
+  squadId, 
+  squadName, 
+  members, 
+  momentum, 
+  rank, 
+  isOpen, 
+  onClose, 
+  problemTitle = "SaaS Onboarding" 
+}: TeamChatProps) {
+  const { messages, isLoading, sendMessage, currentUser } = useSquadMessages(isOpen ? squadId : null);
   const [inputValue, setInputValue] = useState("");
   const [isAIMode, setIsAIMode] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -116,37 +63,28 @@ export function TeamChat({ team, isOpen, onClose, problemTitle = "SaaS Onboardin
   const handleSend = () => {
     if (!inputValue.trim()) return;
 
-    const newMessage: ChatMessage = {
-      id: Date.now().toString(),
-      senderId: "current-user",
-      senderName: "You",
-      senderAvatar: "Y",
-      content: inputValue,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    };
-
-    setMessages([...messages, newMessage]);
-    setInputValue("");
-
-    // Simulate AI response if in AI mode
-    if (isAIMode) {
-      setTimeout(() => {
-        const aiResponse: ChatMessage = {
-          id: (Date.now() + 1).toString(),
-          senderId: "ai",
-          senderName: "Mothership AI",
-          senderAvatar: "🤖",
-          content: `Analyzing your question about "${problemTitle}"... Based on the market data, the target demographic shows strong engagement with mobile-first solutions. Consider prioritizing responsive design in your MVP.`,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          isAI: true,
-        };
-        setMessages(prev => [...prev, aiResponse]);
-      }, 1500);
-      setIsAIMode(false);
-    }
+    sendMessage.mutate(
+      { content: inputValue, isAI: false },
+      {
+        onSuccess: () => {
+          setInputValue("");
+          
+          // Simulate AI response if in AI mode
+          if (isAIMode) {
+            setTimeout(() => {
+              sendMessage.mutate({
+                content: `Analyzing your question about "${problemTitle}"... Based on the market data, the target demographic shows strong engagement with mobile-first solutions. Consider prioritizing responsive design in your MVP.`,
+                isAI: true,
+              });
+            }, 1500);
+            setIsAIMode(false);
+          }
+        },
+      }
+    );
   };
 
-  const onlineMembers = team.members.filter(m => m.isOnline).length;
+  const onlineMembers = members.filter(m => m.isOnline).length;
 
   return (
     <AnimatePresence>
@@ -166,9 +104,9 @@ export function TeamChat({ team, isOpen, onClose, problemTitle = "SaaS Onboardin
                   <Users className="h-5 w-5 text-primary-foreground" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-sm">{team.name}</h3>
+                  <h3 className="font-semibold text-sm">{squadName}</h3>
                   <p className="text-xs text-muted-foreground">
-                    {onlineMembers} online • {team.members.length} members
+                    {onlineMembers} online • {members.length} members
                   </p>
                 </div>
               </div>
@@ -189,18 +127,18 @@ export function TeamChat({ team, isOpen, onClose, problemTitle = "SaaS Onboardin
             <div className="flex items-center gap-2">
               <Badge variant="outline" className="gap-1 text-[10px]">
                 <Trophy className="h-2.5 w-2.5" />
-                Rank #{team.rank || "—"}
+                Rank #{rank || "—"}
               </Badge>
               <Badge variant="outline" className="gap-1 text-[10px] text-warning border-warning/30">
                 <Zap className="h-2.5 w-2.5" />
-                +{team.momentum}% momentum
+                +{momentum}% momentum
               </Badge>
             </div>
 
             {/* Online Members */}
             <div className="flex items-center gap-2">
               <div className="flex -space-x-1.5">
-                {team.members.slice(0, 4).map((member) => (
+                {members.slice(0, 4).map((member) => (
                   <Avatar key={member.id} className="h-6 w-6 border-2 border-background">
                     <AvatarFallback className="text-[10px] bg-secondary">
                       {member.avatar}
@@ -209,56 +147,72 @@ export function TeamChat({ team, isOpen, onClose, problemTitle = "SaaS Onboardin
                 ))}
               </div>
               <span className="text-[10px] text-muted-foreground">
-                {team.members.map(m => m.name.split(' ')[0]).join(', ')}
+                {members.map(m => m.name.split(' ')[0]).join(', ')}
               </span>
             </div>
           </div>
 
           {/* Messages */}
           <ScrollArea className="flex-1 p-4" ref={scrollRef}>
-            <div className="space-y-4">
-              {messages.map((message, index) => (
-                <motion.div
-                  key={message.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className={`flex gap-2 ${message.senderId === "current-user" ? "flex-row-reverse" : ""}`}
-                >
-                  <Avatar className={`h-8 w-8 flex-shrink-0 ${message.isAI ? "ring-2 ring-primary/50" : ""}`}>
-                    <AvatarFallback className={`text-xs ${message.isAI ? "bg-gradient-primary text-primary-foreground" : "bg-secondary"}`}>
-                      {message.isAI ? <Bot className="h-4 w-4" /> : message.senderAvatar}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className={`space-y-1 max-w-[75%] ${message.senderId === "current-user" ? "items-end" : ""}`}>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-medium">{message.senderName}</span>
-                      {message.isAI && (
-                        <Badge variant="outline" className="text-[8px] px-1 py-0 h-4 gap-0.5">
-                          <Sparkles className="h-2 w-2" />
-                          AI
-                        </Badge>
-                      )}
-                      {message.isPinned && (
-                        <Pin className="h-2.5 w-2.5 text-primary" />
-                      )}
-                      <span className="text-[10px] text-muted-foreground">{message.timestamp}</span>
-                    </div>
-                    <div 
-                      className={`p-3 rounded-2xl text-sm ${
-                        message.senderId === "current-user" 
-                          ? "bg-primary text-primary-foreground rounded-br-md" 
-                          : message.isAI
-                          ? "bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/20 rounded-bl-md"
-                          : "bg-secondary rounded-bl-md"
-                      }`}
+            {isLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              </div>
+            ) : messages.length === 0 ? (
+              <div className="text-center py-8">
+                <Users className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">No messages yet. Start the conversation!</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {messages.map((message: any, index: number) => {
+                  const isCurrentUser = message.user_id === currentUser?.id;
+                  const senderName = message.is_ai ? "Mothership AI" : message.sender?.name || "Anonymous";
+                  const senderAvatar = message.is_ai ? "🤖" : message.sender?.name?.[0] || "?";
+                  
+                  return (
+                    <motion.div
+                      key={message.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.02 }}
+                      className={`flex gap-2 ${isCurrentUser ? "flex-row-reverse" : ""}`}
                     >
-                      {message.content}
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+                      <Avatar className={`h-8 w-8 flex-shrink-0 ${message.is_ai ? "ring-2 ring-primary/50" : ""}`}>
+                        <AvatarFallback className={`text-xs ${message.is_ai ? "bg-gradient-primary text-primary-foreground" : "bg-secondary"}`}>
+                          {message.is_ai ? <Bot className="h-4 w-4" /> : senderAvatar}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className={`space-y-1 max-w-[75%] ${isCurrentUser ? "items-end" : ""}`}>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-medium">{isCurrentUser ? "You" : senderName}</span>
+                          {message.is_ai && (
+                            <Badge variant="outline" className="text-[8px] px-1 py-0 h-4 gap-0.5">
+                              <Sparkles className="h-2 w-2" />
+                              AI
+                            </Badge>
+                          )}
+                          <span className="text-[10px] text-muted-foreground">
+                            {formatDistanceToNow(new Date(message.created_at), { addSuffix: true })}
+                          </span>
+                        </div>
+                        <div 
+                          className={`p-3 rounded-2xl text-sm ${
+                            isCurrentUser 
+                              ? "bg-primary text-primary-foreground rounded-br-md" 
+                              : message.is_ai
+                              ? "bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/20 rounded-bl-md"
+                              : "bg-secondary rounded-bl-md"
+                          }`}
+                        >
+                          {message.content}
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
           </ScrollArea>
 
           {/* Input */}
@@ -291,10 +245,14 @@ export function TeamChat({ team, isOpen, onClose, problemTitle = "SaaS Onboardin
               <Button 
                 size="icon" 
                 onClick={handleSend}
-                disabled={!inputValue.trim()}
+                disabled={!inputValue.trim() || sendMessage.isPending}
                 variant={isAIMode ? "glow" : "default"}
               >
-                <Send className="h-4 w-4" />
+                {sendMessage.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
               </Button>
             </div>
           </div>
