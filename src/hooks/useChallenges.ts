@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabaseClient";
 import { TrendSignalDB } from "@/types/database";
-import { mockChallenges, DailyChallenge, ChallengeSource } from "@/data/challengesData";
+import { DailyChallenge, ChallengeSource } from "@/data/challengesData";
 
 // DB row type from Supabase
 interface DBChallenge {
@@ -85,14 +85,10 @@ export function useChallenges(status?: DBChallenge["status"]) {
 
       if (error) {
         console.error("Error fetching challenges:", error);
-        return mockChallenges;
+        throw error;
       }
 
-      if (!data || data.length === 0) {
-        return mockChallenges;
-      }
-
-      return (data as unknown as DBChallenge[]).map(dbToChallenge);
+      return (data || []).map((c) => dbToChallenge(c as unknown as DBChallenge));
     },
     staleTime: 1000 * 60,
   });
@@ -110,12 +106,10 @@ export function useChallenge(id: string) {
 
       if (error) {
         console.error("Error fetching challenge:", error);
-        return mockChallenges.find(c => c.id === id) || null;
+        return null;
       }
 
-      if (!data) {
-        return mockChallenges.find(c => c.id === id) || null;
-      }
+      if (!data) return null;
 
       return dbToChallenge(data as unknown as DBChallenge);
     },
@@ -140,12 +134,10 @@ export function useTodayChallenge() {
 
       if (error) {
         console.error("Error fetching today's challenge:", error);
-        return mockChallenges.find(c => c.isToday) || null;
+        return null;
       }
 
-      if (!data) {
-        return mockChallenges.find(c => c.isToday) || null;
-      }
+      if (!data) return null;
 
       return dbToChallenge(data as unknown as DBChallenge);
     },
@@ -165,14 +157,10 @@ export function usePastChallenges() {
 
       if (error) {
         console.error("Error fetching past challenges:", error);
-        return mockChallenges.filter(c => !c.isToday);
+        throw error;
       }
 
-      if (!data || data.length === 0) {
-        return mockChallenges.filter(c => !c.isToday);
-      }
-
-      return (data as unknown as DBChallenge[]).map(dbToChallenge);
+      return (data || []).map((c) => dbToChallenge(c as unknown as DBChallenge));
     },
     staleTime: 1000 * 60 * 5,
   });
