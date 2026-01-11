@@ -256,7 +256,7 @@ export default function Profile() {
             <TabsTrigger value="overview" className="text-xs sm:text-sm px-2 sm:px-3">Overview</TabsTrigger>
             <TabsTrigger value="builds" className="text-xs sm:text-sm px-2 sm:px-3">Builds</TabsTrigger>
             <TabsTrigger value="achievements" className="text-xs sm:text-sm px-2 sm:px-3">Achievements</TabsTrigger>
-            <TabsTrigger value="settings" className="text-xs sm:text-sm px-2 sm:px-3">Settings</TabsTrigger>
+            <TabsTrigger value="account" className="text-xs sm:text-sm px-2 sm:px-3">Account</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
@@ -479,14 +479,14 @@ export default function Profile() {
             </Card>
           </TabsContent>
 
-          {/* Settings Tab */}
-          <TabsContent value="settings">
+          {/* Account Tab */}
+          <TabsContent value="account">
             <div className="grid gap-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <User className="h-5 w-5" />
-                    Account Settings
+                    Account
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
