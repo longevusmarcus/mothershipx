@@ -132,7 +132,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
             "relative flex items-center gap-3 px-3 py-3 md:py-2.5 rounded-lg text-sm font-medium transition-all duration-200 active:scale-[0.98] overflow-hidden",
             location.pathname === "/challenges"
               ? "bg-gradient-to-r from-warning/20 via-destructive/20 to-warning/20 text-foreground border border-warning/40"
-              : "bg-gradient-to-r from-warning/10 via-destructive/10 to-warning/10 text-foreground hover:from-warning/20 hover:via-destructive/20 hover:to-warning/20 border border-warning/20 hover:border-warning/40"
+              : "bg-gradient-to-r from-warning/10 via-destructive/10 to-warning/10 text-sidebar-foreground/50 hover:text-sidebar-foreground/80 hover:from-warning/20 hover:via-destructive/20 hover:to-warning/20 border border-warning/20 hover:border-warning/40"
           )}
         >
           {/* Animated glow effect */}
