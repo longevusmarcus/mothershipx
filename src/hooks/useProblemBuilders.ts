@@ -68,6 +68,8 @@ export function useProblemBuilders(problemId: string) {
       })) as ProblemBuilder[];
     },
     enabled: !!problemId,
+    staleTime: 1000 * 60 * 2, // Consider data fresh for 2 minutes
+    gcTime: 1000 * 60 * 10, // Keep in cache for 10 minutes
   });
 
   const isJoined = builders.some((b) => b.user_id === user?.id);

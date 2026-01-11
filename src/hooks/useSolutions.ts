@@ -101,6 +101,8 @@ export function useSolutions(problemId: string) {
       })) as Solution[];
     },
     enabled: !!problemId,
+    staleTime: 1000 * 60 * 2, // Consider data fresh for 2 minutes
+    gcTime: 1000 * 60 * 10, // Keep in cache for 10 minutes
   });
 
   const createSolution = useMutation({

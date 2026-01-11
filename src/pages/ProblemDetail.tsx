@@ -218,7 +218,7 @@ const ProblemDetail = () => {
             <TabsTrigger value="competitors" className="text-xs sm:text-sm">Competitors</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview" className="mt-4 sm:mt-6 space-y-4 sm:space-y-6">
+          <TabsContent value="overview" forceMount className={`mt-4 sm:mt-6 space-y-4 sm:space-y-6 ${activeTab !== "overview" ? "hidden" : ""}`}>
             {/* Opportunity Score Section */}
             <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
               <Card variant="elevated">
@@ -304,11 +304,11 @@ const ProblemDetail = () => {
             )}
           </TabsContent>
 
-          <TabsContent value="squads" className="mt-4 sm:mt-6">
+          <TabsContent value="squads" forceMount className={`mt-4 sm:mt-6 ${activeTab !== "squads" ? "hidden" : ""}`}>
             <TeamFormation problemId={problem.id} problemTitle={problem.title} />
           </TabsContent>
 
-          <TabsContent value="builders" className="mt-4 sm:mt-6 space-y-4 sm:space-y-6">
+          <TabsContent value="builders" forceMount className={`mt-4 sm:mt-6 space-y-4 sm:space-y-6 ${activeTab !== "builders" ? "hidden" : ""}`}>
             {/* Team Formation Banner */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -338,7 +338,7 @@ const ProblemDetail = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="solutions" className="mt-4 sm:mt-6 space-y-4 sm:space-y-6">
+          <TabsContent value="solutions" forceMount className={`mt-4 sm:mt-6 space-y-4 sm:space-y-6 ${activeTab !== "solutions" ? "hidden" : ""}`}>
             {/* Solutions Lab - Wiki-style collaborative ideas */}
             <SolutionsLab 
               problemId={problem.id} 
@@ -353,7 +353,7 @@ const ProblemDetail = () => {
             <FitVerificationPanel {...mockTopSolution} />
           </TabsContent>
 
-          <TabsContent value="competitors" className="mt-4 sm:mt-6">
+          <TabsContent value="competitors" forceMount className={`mt-4 sm:mt-6 ${activeTab !== "competitors" ? "hidden" : ""}`}>
             {/* Competitors - Coming Soon Blurred */}
             <div className="relative">
               {/* Blur Overlay */}
