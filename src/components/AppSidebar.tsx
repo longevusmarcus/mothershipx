@@ -21,8 +21,8 @@ import logo from "@/assets/logo.png";
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/" },
   { icon: Target, label: "Problems", path: "/problems" },
-  { icon: Rocket, label: "My Builds", path: "/builds" },
-  { icon: Trophy, label: "Leaderboard", path: "/leaderboard" },
+  { icon: Rocket, label: "Accelerator", path: "/builds" },
+  { icon: Trophy, label: "League", path: "/leaderboard" },
 ];
 
 const bottomItems = [
