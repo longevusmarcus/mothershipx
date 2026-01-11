@@ -36,6 +36,8 @@ interface SolutionsLabProps {
   problemTitle: string;
   problemTrend?: string;
   problemPainPoints?: string[];
+  problemCategory?: string;
+  opportunityScore?: number;
 }
 
 const statusConfig: Record<string, { label: string; color: string }> = {
@@ -45,71 +47,154 @@ const statusConfig: Record<string, { label: string; color: string }> = {
   launched: { label: "Launched", color: "bg-green-500/10 text-green-500" },
 };
 
-// Generate AI-suggested solutions based on problem data
-function generateAISuggestions(problemTitle: string, trend?: string, painPoints?: string[]): Solution[] {
-  const baseSuggestions: Partial<Solution>[] = [
+// Generate smart AI-suggested solutions based on problem data
+function generateAISuggestions(
+  problemTitle: string, 
+  trend?: string, 
+  painPoints?: string[],
+  category?: string,
+  opportunityScore?: number
+): Solution[] {
+  const mainPainPoint = painPoints?.[0] || "user frustration";
+  const secondPainPoint = painPoints?.[1] || "lack of automation";
+  const thirdPainPoint = painPoints?.[2] || "poor user experience";
+  const trendContext = trend || problemTitle;
+  const categoryContext = category || "SaaS";
+  
+  // Determine solution archetypes based on category
+  const isB2B = categoryContext.toLowerCase().includes("b2b") || categoryContext.toLowerCase().includes("enterprise");
+  const isCreator = trendContext.toLowerCase().includes("creator") || trendContext.toLowerCase().includes("content");
+  const isProductivity = categoryContext.toLowerCase().includes("productivity") || trendContext.toLowerCase().includes("workflow");
+
+  const suggestions: Partial<Solution>[] = [
     {
       id: "ai-suggestion-1",
-      title: `AI-Powered ${problemTitle} Tool`,
-      description: `Leverage AI to automatically analyze and solve ${problemTitle.toLowerCase()} issues. Smart automation that learns from user behavior.`,
-      approach: `1. Build an AI model trained on common patterns\n2. Create simple onboarding flow\n3. Integrate with existing workflows\n4. Add analytics dashboard`,
+      title: isB2B 
+        ? `${trendContext} Automation Platform for Teams`
+        : isCreator 
+          ? `AI ${trendContext} Assistant for Creators`
+          : `Smart ${trendContext} Solution`,
+      description: `Directly addresses "${mainPainPoint}" by providing an intelligent system that learns user patterns and automates repetitive tasks. Built for ${isB2B ? "teams of 5-50" : "individual users"} who struggle with ${secondPainPoint.toLowerCase()}.`,
+      approach: `**Phase 1 - Core Problem** (Week 1-2)
+• Build MVP focusing specifically on "${mainPainPoint}"
+• Simple onboarding that captures user context in <2 minutes
+• Core automation engine with ${isB2B ? "team permissions" : "personal dashboard"}
+
+**Phase 2 - Expand Value** (Week 3-4)
+• Address secondary pain point: "${secondPainPoint}"
+• Add analytics to show time/money saved
+• Implement ${isB2B ? "workspace collaboration" : "cross-device sync"}
+
+**Phase 3 - Retention** (Week 5+)
+• Build habit loops with smart notifications
+• Add ${isB2B ? "reporting for managers" : "progress tracking"}
+• Community features for user-generated templates`,
       ai_generated: true,
-      upvotes: 12,
-      forks: 3,
-      comments: 5,
+      upvotes: Math.floor(Math.random() * 15) + 8,
+      forks: Math.floor(Math.random() * 5) + 2,
+      comments: Math.floor(Math.random() * 8) + 3,
       edit_count: 1,
-      market_fit: 78,
+      market_fit: Math.min(92, (opportunityScore || 75) + Math.floor(Math.random() * 10)),
       status: "concept",
-      tech_stack: ["React", "OpenAI API", "Supabase", "Tailwind"],
+      tech_stack: isB2B 
+        ? ["Next.js", "Supabase", "Stripe", "OpenAI API"]
+        : ["React Native", "Supabase", "RevenueCat", "Gemini API"],
       contributors: [],
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     },
     {
       id: "ai-suggestion-2",
-      title: `${trend || problemTitle} Community Platform`,
-      description: `Connect people experiencing ${problemTitle.toLowerCase()} with experts and peers. Social-first approach with gamification.`,
-      approach: `1. Build community matching algorithm\n2. Add real-time chat and forums\n3. Implement reputation system\n4. Create mobile-first experience`,
+      title: `${trendContext} Copilot Chrome Extension`,
+      description: `Lightweight browser extension that tackles "${secondPainPoint}" right where users work. Zero context-switching - the solution lives inside existing workflows. Perfect for early adopters tired of juggling multiple tools.`,
+      approach: `**Why Browser Extension?**
+• Users already spend 6+ hours in browser daily
+• No new app to download = faster adoption
+• Can enhance existing tools they already use
+
+**Core Features**
+• Overlay UI that appears contextually
+• AI-powered suggestions for "${thirdPainPoint}"
+• One-click actions to save 10+ minutes daily
+• Keyboard shortcuts for power users
+
+**Monetization**
+• Freemium: 50 actions/month free
+• Pro: $9/month unlimited + advanced AI
+• Team: $7/user/month with shared templates`,
       ai_generated: true,
-      upvotes: 8,
-      forks: 2,
-      comments: 3,
+      upvotes: Math.floor(Math.random() * 12) + 5,
+      forks: Math.floor(Math.random() * 4) + 1,
+      comments: Math.floor(Math.random() * 6) + 2,
       edit_count: 1,
-      market_fit: 65,
+      market_fit: Math.min(85, (opportunityScore || 70) + Math.floor(Math.random() * 8) - 5),
       status: "concept",
-      tech_stack: ["Next.js", "Supabase", "WebSocket", "React Native"],
+      tech_stack: ["Chrome Extension", "React", "Supabase", "TailwindCSS"],
       contributors: [],
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     },
     {
       id: "ai-suggestion-3",
-      title: `${problemTitle} Analytics Dashboard`,
-      description: `Data-driven insights to track, measure, and optimize ${problemTitle.toLowerCase()}. Beautiful visualizations and actionable recommendations.`,
-      approach: `1. Define key metrics and KPIs\n2. Build data ingestion pipeline\n3. Create interactive charts\n4. Add AI-powered insights`,
+      title: isProductivity 
+        ? `${trendContext} Dashboard & Analytics`
+        : `${trendContext} Community + Marketplace`,
+      description: isProductivity
+        ? `Data-driven command center that visualizes "${mainPainPoint}" patterns and provides actionable insights. Helps users understand their blind spots and track improvement over time.`
+        : `Connect people experiencing "${mainPainPoint}" with solutions, templates, and experts. Network effects create a moat while solving "${secondPainPoint}" through peer learning.`,
+      approach: isProductivity 
+        ? `**Core Value Prop**
+Track, measure, and optimize ${trendContext.toLowerCase()} with clear metrics
+
+**Key Screens**
+• Dashboard: Daily/weekly overview with trend lines
+• Insights: AI-generated recommendations based on data patterns
+• Goals: Set targets and get notified on progress
+
+**Data Sources**
+• Manual logging (quick-add buttons)
+• Integrations (calendar, ${isB2B ? "Slack, Notion" : "health apps, browser"})
+• AI inference from connected accounts
+
+**Revenue Model**
+• Free tier with 7-day history
+• $12/month for unlimited history + AI insights
+• API access for developers: $49/month`
+        : `**Community Flywheel**
+1. Users join to solve "${mainPainPoint}"
+2. Power users share templates/solutions
+3. Marketplace emerges for premium content
+4. Network effects = defensible moat
+
+**Launch Strategy**
+• Seed with 50 high-quality templates
+• Partner with 5-10 ${trendContext} influencers
+• Weekly challenges to drive engagement
+
+**Monetization**
+• Free to browse, $15/month to create
+• 20% cut on marketplace transactions
+• Sponsored challenges from brands`,
       ai_generated: true,
-      upvotes: 5,
-      forks: 1,
-      comments: 2,
+      upvotes: Math.floor(Math.random() * 10) + 4,
+      forks: Math.floor(Math.random() * 3) + 1,
+      comments: Math.floor(Math.random() * 5) + 1,
       edit_count: 1,
-      market_fit: 58,
+      market_fit: Math.min(78, (opportunityScore || 65) + Math.floor(Math.random() * 6) - 8),
       status: "concept",
-      tech_stack: ["React", "D3.js", "PostgreSQL", "Python"],
+      tech_stack: isProductivity
+        ? ["React", "Recharts", "PostgreSQL", "OpenAI"]
+        : ["Next.js", "Supabase", "Stripe Connect", "Algolia"],
       contributors: [],
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     },
   ];
 
-  // Customize suggestions based on pain points
-  if (painPoints && painPoints.length > 0) {
-    baseSuggestions[0].description = `Solve "${painPoints[0]}" with intelligent automation. ${baseSuggestions[0].description}`;
-  }
-
-  return baseSuggestions as Solution[];
+  return suggestions as Solution[];
 }
 
-export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPainPoints }: SolutionsLabProps) => {
+export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPainPoints, problemCategory, opportunityScore }: SolutionsLabProps) => {
   const { user } = useAuth();
   const { solutions: dbSolutions, isLoading, createSolution, updateSolution, toggleUpvote, forkSolution } = useSolutions(problemId);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -162,7 +247,7 @@ export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPai
   };
 
   // Combine real solutions with AI suggestions when empty
-  const aiSuggestions = generateAISuggestions(problemTitle, problemTrend, problemPainPoints);
+  const aiSuggestions = generateAISuggestions(problemTitle, problemTrend, problemPainPoints, problemCategory, opportunityScore);
   const solutions = dbSolutions.length > 0 ? dbSolutions : aiSuggestions;
   const showingAISuggestions = dbSolutions.length === 0;
 
