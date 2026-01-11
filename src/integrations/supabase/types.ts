@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      challenge_joins: {
+        Row: {
+          challenge_id: string
+          created_at: string
+          id: string
+          join_type: Database["public"]["Enums"]["join_type"]
+          team_name: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          created_at?: string
+          id?: string
+          join_type?: Database["public"]["Enums"]["join_type"]
+          team_name?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          created_at?: string
+          id?: string
+          join_type?: Database["public"]["Enums"]["join_type"]
+          team_name?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_joins_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       challenges: {
         Row: {
           audience_size: string | null
