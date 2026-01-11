@@ -80,6 +80,8 @@ export function useSquads(problemId: string) {
       })) as Squad[];
     },
     enabled: !!problemId,
+    staleTime: 1000 * 60 * 2, // Consider data fresh for 2 minutes
+    gcTime: 1000 * 60 * 10, // Keep in cache for 10 minutes
   });
 
   const userSquad = squads.find((s) =>
@@ -214,6 +216,8 @@ export function useSquadMessages(squadId: string | null) {
       }));
     },
     enabled: !!squadId,
+    staleTime: 1000 * 30, // Messages fresh for 30 seconds
+    gcTime: 1000 * 60 * 5, // Keep in cache for 5 minutes
   });
 
   // Subscribe to realtime messages
