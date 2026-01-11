@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { AppSidebar } from "@/components/AppSidebar";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { Bell, Search, Menu, X, Settings } from "lucide-react";
+import { NotificationsDropdown } from "@/components/NotificationsDropdown";
+import { Search, Menu, X, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
@@ -77,10 +78,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                   className="w-64 pl-9 h-9 bg-secondary border-0"
                 />
               </div>
-              <Button variant="ghost" size="icon" className="h-9 w-9 relative">
-                <Bell className="h-4 w-4" />
-                <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-primary" />
-              </Button>
+              <NotificationsDropdown />
               <ThemeToggle />
               <Link to="/settings" className="md:hidden">
                 <Button variant="ghost" size="icon" className="h-9 w-9">

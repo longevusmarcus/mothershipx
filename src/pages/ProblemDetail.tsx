@@ -28,6 +28,7 @@ import { OpportunityMeter } from "@/components/OpportunityMeter";
 import { SourceSignals } from "@/components/SourceSignals";
 import { HiddenInsightCard } from "@/components/HiddenInsightCard";
 import { TeamFormation } from "@/components/TeamFormation";
+import { WaitlistForm } from "@/components/WaitlistForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -414,10 +415,7 @@ const ProblemDetail = () => {
                   <p className="text-sm text-muted-foreground max-w-sm">
                     AI-powered competitor tracking, feature gaps, and market positioning
                   </p>
-                  <Button variant="glow" className="gap-2 mt-2">
-                    <Zap className="h-4 w-4" />
-                    Join Waitlist
-                  </Button>
+                  <WaitlistForm feature="general" buttonText="Join Waitlist" />
                 </motion.div>
               </div>
 
