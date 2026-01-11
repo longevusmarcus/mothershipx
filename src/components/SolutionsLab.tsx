@@ -194,6 +194,77 @@ Track, measure, and optimize ${trendContext.toLowerCase()} with clear metrics
   return suggestions as Solution[];
 }
 
+// Render approach text with proper formatting
+function ApproachDisplay({ approach }: { approach: string | null }) {
+  if (!approach) {
+    return (
+      <p className="text-muted-foreground italic">No approach defined yet. Click Edit to add one.</p>
+    );
+  }
+
+  // Parse the approach into sections
+  const lines = approach.split('\n').filter(line => line.trim());
+  
+  return (
+    <div className="space-y-4">
+      {lines.map((line, index) => {
+        const trimmedLine = line.trim();
+        
+        // Phase headers (bold text like **Phase 1 - Core Problem**)
+        if (trimmedLine.startsWith('**') && trimmedLine.includes('**')) {
+          const headerText = trimmedLine.replace(/\*\*/g, '').replace(/\(Week.*?\)/, (match) => match);
+          const weekMatch = headerText.match(/\((Week.*?)\)/);
+          const title = headerText.replace(/\(Week.*?\)/, '').trim();
+          
+          return (
+            <div key={index} className="flex items-center gap-2 pt-2 first:pt-0">
+              <div className="h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center">
+                <Target className="h-3 w-3 text-primary" />
+              </div>
+              <h6 className="font-semibold text-sm text-foreground">{title}</h6>
+              {weekMatch && (
+                <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                  {weekMatch[1]}
+                </span>
+              )}
+            </div>
+          );
+        }
+        
+        // Bullet points (lines starting with • or -)
+        if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-')) {
+          const bulletText = trimmedLine.replace(/^[•-]\s*/, '');
+          
+          // Check for quoted pain points
+          const hasQuote = bulletText.includes('"');
+          
+          return (
+            <div key={index} className="flex items-start gap-2 pl-2">
+              <Zap className="h-3 w-3 text-primary mt-1 shrink-0" />
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {hasQuote ? (
+                  bulletText.split('"').map((part, i) => 
+                    i % 2 === 1 ? (
+                      <span key={i} className="text-foreground font-medium">"{part}"</span>
+                    ) : part
+                  )
+                ) : bulletText}
+              </p>
+            </div>
+          );
+        }
+        
+        // Regular text
+        return (
+          <p key={index} className="text-sm text-muted-foreground pl-2">
+            {trimmedLine}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
 export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPainPoints, problemCategory, opportunityScore }: SolutionsLabProps) => {
   const { user } = useAuth();
   const { solutions: dbSolutions, isLoading, createSolution, updateSolution, toggleUpvote, forkSolution } = useSolutions(problemId);
@@ -517,8 +588,8 @@ export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPai
                                 </div>
                               </div>
                             ) : (
-                              <div className="p-3 rounded-lg bg-secondary/50 text-sm">
-                                {solution.approach || "No approach defined yet. Click Edit to add one."}
+                              <div className="p-4 rounded-xl bg-secondary/30 border border-border/50">
+                                <ApproachDisplay approach={solution.approach} />
                               </div>
                             )}
                           </div>
