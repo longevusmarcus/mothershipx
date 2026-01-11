@@ -16,7 +16,8 @@ import {
   Bookmark,
   Zap,
   Calendar,
-  CheckCircle2
+  CheckCircle2,
+  Check
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { FitVerificationPanel } from "@/components/FitVerificationPanel";
@@ -36,6 +37,8 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { mockMarketProblems } from "@/data/marketIntelligence";
+import { useProblemBuilders } from "@/hooks/useProblemBuilders";
+import { useAuth } from "@/contexts/AuthContext";
 
 const mockTopSolution = {
   sentimentFitScore: 78,
@@ -53,20 +56,34 @@ const mockTopSolution = {
 const ProblemDetail = () => {
   const { id } = useParams();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
   const [isSaved, setIsSaved] = useState(false);
 
   // Find the problem from mock data
   const problem = mockMarketProblems.find(p => p.id === id) || mockMarketProblems[0];
   
+  // Use the problem builders hook for join state
+  const { isJoined, joinProblem, leaveProblem } = useProblemBuilders(problem.id);
+  
   const slotsRemaining = problem.slotsTotal - problem.slotsFilled;
   const fillPercentage = (problem.slotsFilled / problem.slotsTotal) * 100;
 
-  const handleJoinDashboard = () => {
-    toast({
-      title: "🚀 You're In!",
-      description: "You've joined this opportunity. Start building!",
-    });
+  const handleJoinToggle = () => {
+    if (!user) {
+      toast({
+        title: "Login required",
+        description: "Please sign in to start building.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (isJoined) {
+      leaveProblem.mutate();
+    } else {
+      joinProblem.mutate();
+    }
   };
 
   const handleSave = () => {
@@ -157,9 +174,24 @@ const ProblemDetail = () => {
             
             {/* Action Buttons */}
             <div className="flex flex-wrap items-center gap-3">
-              <Button variant="glow" size="lg" onClick={handleJoinDashboard} className="gap-2">
-                <Rocket className="h-4 w-4" />
-                Start Building
+              <Button 
+                variant={isJoined ? "outline" : "glow"} 
+                size="lg" 
+                onClick={handleJoinToggle} 
+                className={`gap-2 transition-all ${isJoined ? "bg-success/10 border-success/30 text-success hover:bg-success/20" : ""}`}
+                disabled={joinProblem.isPending || leaveProblem.isPending}
+              >
+                {isJoined ? (
+                  <>
+                    <Check className="h-4 w-4" />
+                    Joined
+                  </>
+                ) : (
+                  <>
+                    <Rocket className="h-4 w-4" />
+                    Start Building
+                  </>
+                )}
               </Button>
               <Button 
                 variant="outline" 
