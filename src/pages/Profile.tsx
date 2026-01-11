@@ -29,19 +29,14 @@ import {
   LogOut,
   Camera,
   Loader2,
+  Target,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabaseClient";
-
-const stats = [
-  { label: "Trends Joined", value: 0, icon: CircleDot, comingSoon: false },
-  { label: "Total Builds", value: 0, icon: Layers, comingSoon: true },
-  { label: "Fit Score Avg", value: "-", icon: BarChart3, comingSoon: true },
-  { label: "Global Rank", value: "-", icon: Hash, comingSoon: true },
-];
+import { useUserStats, getXpProgress, getLevelTitle } from "@/hooks/useUserStats";
 
 const achievements = [
   { id: 1, name: "First Build", description: "Submitted your first solution", unlocked: false, date: null },
@@ -57,6 +52,7 @@ const recentBuilds: { id: number; name: string; problem: string; fitScore: numbe
 export default function Profile() {
   const { user, profile, isAuthenticated, signOut, updateProfile } = useAuth();
   const navigate = useNavigate();
+  const { data: userStats, isLoading: statsLoading } = useUserStats();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
@@ -304,41 +300,102 @@ export default function Profile() {
               </div>
 
               {/* XP Progress */}
-              <div className="bg-muted/30 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs sm:text-sm font-medium">Builder XP</span>
-                  <span className="text-xs sm:text-sm text-muted-foreground">
-                    0 / 500
-                  </span>
-                </div>
-                <Progress value={0} className="h-1.5 sm:h-2" />
-                <p className="text-[10px] sm:text-xs text-muted-foreground mt-1.5">
-                  500 XP until next level
-                </p>
-              </div>
+              {(() => {
+                const xpProgress = userStats ? getXpProgress(userStats.totalXp) : { percentage: 0, currentLevelXp: 0, nextLevelXp: 500 };
+                const levelTitle = userStats ? getLevelTitle(userStats.currentLevel) : "Newcomer";
+                return (
+                  <div className="bg-muted/30 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs sm:text-sm font-medium">XP Progress</span>
+                        <Badge variant="secondary" className="text-[10px]">
+                          Lvl {userStats?.currentLevel || 1} • {levelTitle}
+                        </Badge>
+                      </div>
+                      <span className="text-xs sm:text-sm text-muted-foreground">
+                        {userStats?.totalXp.toLocaleString() || 0} / {xpProgress.nextLevelXp.toLocaleString()} XP
+                      </span>
+                    </div>
+                    <Progress value={xpProgress.percentage} className="h-1.5 sm:h-2" />
+                    <p className="text-[10px] sm:text-xs text-muted-foreground mt-1.5">
+                      {userStats?.xpToNextLevel.toLocaleString() || 500} XP until next level
+                    </p>
+                  </div>
+                );
+              })()}
 
               {/* Stats Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
-                {stats.map((stat, index) => (
-                  <motion.div
-                    key={stat.label}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className={`relative text-center p-3 sm:p-4 rounded-lg sm:rounded-xl bg-muted/20 border border-border/30 ${stat.comingSoon ? 'overflow-hidden' : ''}`}
-                  >
-                    {stat.comingSoon && (
-                      <div className="absolute top-1 right-1 z-20">
-                        <Badge variant="secondary" className="text-[8px] px-1.5 py-0 bg-muted/80 backdrop-blur-sm">
-                          Soon
-                        </Badge>
-                      </div>
-                    )}
-                    <stat.icon className={`h-4 w-4 sm:h-5 sm:w-5 mx-auto mb-1.5 sm:mb-2 text-muted-foreground ${stat.comingSoon ? 'opacity-40' : ''}`} />
-                    <div className={`text-lg sm:text-2xl font-bold ${stat.comingSoon ? 'opacity-40 blur-[1px]' : ''}`}>{stat.value}</div>
-                    <div className={`text-[10px] sm:text-xs text-muted-foreground leading-tight whitespace-nowrap ${stat.comingSoon ? 'opacity-60' : ''}`}>{stat.label}</div>
-                  </motion.div>
-                ))}
+                {/* Problems Joined */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0 }}
+                  className="relative text-center p-3 sm:p-4 rounded-lg sm:rounded-xl bg-muted/20 border border-border/30"
+                >
+                  <CircleDot className="h-4 w-4 sm:h-5 sm:w-5 mx-auto mb-1.5 sm:mb-2 text-muted-foreground" />
+                  <div className="text-lg sm:text-2xl font-bold">
+                    {statsLoading ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : userStats?.problemsJoined || 0}
+                  </div>
+                  <div className="text-[10px] sm:text-xs text-muted-foreground leading-tight whitespace-nowrap">Problems Joined</div>
+                </motion.div>
+
+                {/* Solutions Shipped */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="relative text-center p-3 sm:p-4 rounded-lg sm:rounded-xl bg-muted/20 border border-border/30 overflow-hidden"
+                >
+                  <div className="absolute top-1 right-1 z-20">
+                    <Badge variant="secondary" className="text-[8px] px-1.5 py-0 bg-muted/80 backdrop-blur-sm">
+                      Soon
+                    </Badge>
+                  </div>
+                  <Layers className="h-4 w-4 sm:h-5 sm:w-5 mx-auto mb-1.5 sm:mb-2 text-muted-foreground opacity-40" />
+                  <div className="text-lg sm:text-2xl font-bold opacity-40 blur-[1px]">
+                    {userStats?.solutionsShipped || 0}
+                  </div>
+                  <div className="text-[10px] sm:text-xs text-muted-foreground leading-tight whitespace-nowrap opacity-60">Solutions Shipped</div>
+                </motion.div>
+
+                {/* Global Rank */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="relative text-center p-3 sm:p-4 rounded-lg sm:rounded-xl bg-muted/20 border border-border/30 overflow-hidden"
+                >
+                  <div className="absolute top-1 right-1 z-20">
+                    <Badge variant="secondary" className="text-[8px] px-1.5 py-0 bg-muted/80 backdrop-blur-sm">
+                      Soon
+                    </Badge>
+                  </div>
+                  <Hash className="h-4 w-4 sm:h-5 sm:w-5 mx-auto mb-1.5 sm:mb-2 text-muted-foreground opacity-40" />
+                  <div className="text-lg sm:text-2xl font-bold opacity-40 blur-[1px]">
+                    #{userStats?.globalRank || 47}
+                  </div>
+                  <div className="text-[10px] sm:text-xs text-muted-foreground leading-tight whitespace-nowrap opacity-60">Global Rank</div>
+                </motion.div>
+
+                {/* Fit Score */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="relative text-center p-3 sm:p-4 rounded-lg sm:rounded-xl bg-muted/20 border border-border/30 overflow-hidden"
+                >
+                  <div className="absolute top-1 right-1 z-20">
+                    <Badge variant="secondary" className="text-[8px] px-1.5 py-0 bg-muted/80 backdrop-blur-sm">
+                      Soon
+                    </Badge>
+                  </div>
+                  <Target className="h-4 w-4 sm:h-5 sm:w-5 mx-auto mb-1.5 sm:mb-2 text-muted-foreground opacity-40" />
+                  <div className="text-lg sm:text-2xl font-bold opacity-40 blur-[1px]">
+                    {userStats?.averageFitScore ? `${userStats.averageFitScore}%` : "89%"}
+                  </div>
+                  <div className="text-[10px] sm:text-xs text-muted-foreground leading-tight whitespace-nowrap opacity-60">Fit Score</div>
+                </motion.div>
               </div>
             </CardContent>
           </Card>
