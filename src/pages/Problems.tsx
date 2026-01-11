@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Search, Filter, TrendingUp, Zap, Database, Flame, Gauge } from "lucide-react";
+import { Search, Filter, TrendingUp, Zap, Database, Flame, Gauge, Loader2 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
 import { MarketProblemCard } from "@/components/MarketProblemCard";
@@ -10,24 +10,26 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { mockMarketProblems, categories } from "@/data/marketIntelligence";
+import { categories } from "@/data/marketIntelligence";
+import { useProblems } from "@/hooks/useProblems";
 
 const Problems = () => {
   const [selectedSources, setSelectedSources] = useState<string[]>(["tiktok", "google_trends"]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredProblems = mockMarketProblems.filter((problem) => {
-    const matchesCategory = selectedCategory === "All" || problem.category === selectedCategory;
+  const { data: problems = [], isLoading } = useProblems(selectedCategory);
+
+  const filteredProblems = problems.filter((problem) => {
     const matchesSearch =
       problem.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       problem.subtitle.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
+    return matchesSearch;
   });
 
-  const viralCount = mockMarketProblems.filter((p) => p.isViral).length;
-  const explodingCount = mockMarketProblems.filter((p) => p.sentiment === "exploding").length;
-  const totalOpportunityValue = mockMarketProblems.reduce((acc, p) => {
+  const viralCount = problems.filter((p) => p.isViral).length;
+  const explodingCount = problems.filter((p) => p.sentiment === "exploding").length;
+  const totalOpportunityValue = problems.reduce((acc, p) => {
     const value = parseFloat(p.marketSize.replace(/[^0-9.]/g, ""));
     return acc + value;
   }, 0);

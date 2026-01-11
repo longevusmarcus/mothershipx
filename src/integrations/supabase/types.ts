@@ -14,6 +14,208 @@ export type Database = {
   }
   public: {
     Tables: {
+      challenges: {
+        Row: {
+          audience_size: string | null
+          created_at: string
+          description: string
+          difficulty: Database["public"]["Enums"]["challenge_difficulty"]
+          ends_at: string
+          entry_fee: number
+          example: string | null
+          id: string
+          participants: number
+          prize_pool: number
+          problem_id: string | null
+          solo_participants: number
+          sources: Json | null
+          starts_at: string
+          status: Database["public"]["Enums"]["challenge_status"]
+          tags: string[] | null
+          team_count: number
+          title: string
+          trend: string
+          trend_growth: string | null
+          updated_at: string
+          why_relevant: string | null
+          winner_prize: number
+        }
+        Insert: {
+          audience_size?: string | null
+          created_at?: string
+          description: string
+          difficulty?: Database["public"]["Enums"]["challenge_difficulty"]
+          ends_at: string
+          entry_fee?: number
+          example?: string | null
+          id?: string
+          participants?: number
+          prize_pool?: number
+          problem_id?: string | null
+          solo_participants?: number
+          sources?: Json | null
+          starts_at?: string
+          status?: Database["public"]["Enums"]["challenge_status"]
+          tags?: string[] | null
+          team_count?: number
+          title: string
+          trend: string
+          trend_growth?: string | null
+          updated_at?: string
+          why_relevant?: string | null
+          winner_prize?: number
+        }
+        Update: {
+          audience_size?: string | null
+          created_at?: string
+          description?: string
+          difficulty?: Database["public"]["Enums"]["challenge_difficulty"]
+          ends_at?: string
+          entry_fee?: number
+          example?: string | null
+          id?: string
+          participants?: number
+          prize_pool?: number
+          problem_id?: string | null
+          solo_participants?: number
+          sources?: Json | null
+          starts_at?: string
+          status?: Database["public"]["Enums"]["challenge_status"]
+          tags?: string[] | null
+          team_count?: number
+          title?: string
+          trend?: string
+          trend_growth?: string | null
+          updated_at?: string
+          why_relevant?: string | null
+          winner_prize?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenges_problem_id_fkey"
+            columns: ["problem_id"]
+            isOneToOne: false
+            referencedRelation: "problems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      problem_builders: {
+        Row: {
+          id: string
+          joined_at: string
+          last_active_at: string
+          problem_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string
+          last_active_at?: string
+          problem_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string
+          last_active_at?: string
+          problem_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "problem_builders_problem_id_fkey"
+            columns: ["problem_id"]
+            isOneToOne: false
+            referencedRelation: "problems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      problems: {
+        Row: {
+          active_builders_last_24h: number | null
+          category: string
+          competition_gap: number | null
+          created_at: string
+          demand_velocity: number | null
+          discovered_at: string
+          hidden_insight: Json | null
+          id: string
+          is_viral: boolean | null
+          market_size: string | null
+          niche: string
+          opportunity_score: number
+          pain_points: string[] | null
+          peak_prediction: string | null
+          saves: number | null
+          sentiment: Database["public"]["Enums"]["trend_sentiment"]
+          shares: number | null
+          slots_filled: number
+          slots_total: number
+          sources: Json | null
+          subtitle: string | null
+          title: string
+          trending_rank: number | null
+          updated_at: string
+          views: number | null
+        }
+        Insert: {
+          active_builders_last_24h?: number | null
+          category: string
+          competition_gap?: number | null
+          created_at?: string
+          demand_velocity?: number | null
+          discovered_at?: string
+          hidden_insight?: Json | null
+          id?: string
+          is_viral?: boolean | null
+          market_size?: string | null
+          niche: string
+          opportunity_score?: number
+          pain_points?: string[] | null
+          peak_prediction?: string | null
+          saves?: number | null
+          sentiment?: Database["public"]["Enums"]["trend_sentiment"]
+          shares?: number | null
+          slots_filled?: number
+          slots_total?: number
+          sources?: Json | null
+          subtitle?: string | null
+          title: string
+          trending_rank?: number | null
+          updated_at?: string
+          views?: number | null
+        }
+        Update: {
+          active_builders_last_24h?: number | null
+          category?: string
+          competition_gap?: number | null
+          created_at?: string
+          demand_velocity?: number | null
+          discovered_at?: string
+          hidden_insight?: Json | null
+          id?: string
+          is_viral?: boolean | null
+          market_size?: string | null
+          niche?: string
+          opportunity_score?: number
+          pain_points?: string[] | null
+          peak_prediction?: string | null
+          saves?: number | null
+          sentiment?: Database["public"]["Enums"]["trend_sentiment"]
+          shares?: number | null
+          slots_filled?: number
+          slots_total?: number
+          sources?: Json | null
+          subtitle?: string | null
+          title?: string
+          trending_rank?: number | null
+          updated_at?: string
+          views?: number | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -56,6 +258,177 @@ export type Database = {
         }
         Relationships: []
       }
+      rankings: {
+        Row: {
+          bonus_score: number | null
+          challenge_id: string
+          created_at: string
+          github_score: number | null
+          id: string
+          is_winner: boolean | null
+          previous_rank: number | null
+          prize_won: number | null
+          problem_coverage_score: number | null
+          rank: number
+          revenue_score: number | null
+          sentiment_fit_score: number | null
+          submission_id: string
+          total_score: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bonus_score?: number | null
+          challenge_id: string
+          created_at?: string
+          github_score?: number | null
+          id?: string
+          is_winner?: boolean | null
+          previous_rank?: number | null
+          prize_won?: number | null
+          problem_coverage_score?: number | null
+          rank: number
+          revenue_score?: number | null
+          sentiment_fit_score?: number | null
+          submission_id: string
+          total_score?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bonus_score?: number | null
+          challenge_id?: string
+          created_at?: string
+          github_score?: number | null
+          id?: string
+          is_winner?: boolean | null
+          previous_rank?: number | null
+          prize_won?: number | null
+          problem_coverage_score?: number | null
+          rank?: number
+          revenue_score?: number | null
+          sentiment_fit_score?: number | null
+          submission_id?: string
+          total_score?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rankings_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rankings_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      submissions: {
+        Row: {
+          adoption_velocity_score: number | null
+          ai_feedback: string | null
+          challenge_id: string | null
+          created_at: string
+          demo_url: string | null
+          github_activity_score: number | null
+          github_repo: string | null
+          has_revenue: boolean | null
+          id: string
+          join_type: Database["public"]["Enums"]["join_type"]
+          misalignment_warnings: string[] | null
+          problem_coverage_percent: number | null
+          problem_id: string | null
+          product_name: string
+          product_url: string
+          revenue_amount: number | null
+          sentiment_fit_score: number | null
+          status: Database["public"]["Enums"]["submission_status"]
+          stripe_public_key: string | null
+          supabase_project_url: string | null
+          team_name: string | null
+          total_score: number | null
+          updated_at: string
+          user_id: string
+          validated_at: string | null
+        }
+        Insert: {
+          adoption_velocity_score?: number | null
+          ai_feedback?: string | null
+          challenge_id?: string | null
+          created_at?: string
+          demo_url?: string | null
+          github_activity_score?: number | null
+          github_repo?: string | null
+          has_revenue?: boolean | null
+          id?: string
+          join_type?: Database["public"]["Enums"]["join_type"]
+          misalignment_warnings?: string[] | null
+          problem_coverage_percent?: number | null
+          problem_id?: string | null
+          product_name: string
+          product_url: string
+          revenue_amount?: number | null
+          sentiment_fit_score?: number | null
+          status?: Database["public"]["Enums"]["submission_status"]
+          stripe_public_key?: string | null
+          supabase_project_url?: string | null
+          team_name?: string | null
+          total_score?: number | null
+          updated_at?: string
+          user_id: string
+          validated_at?: string | null
+        }
+        Update: {
+          adoption_velocity_score?: number | null
+          ai_feedback?: string | null
+          challenge_id?: string | null
+          created_at?: string
+          demo_url?: string | null
+          github_activity_score?: number | null
+          github_repo?: string | null
+          has_revenue?: boolean | null
+          id?: string
+          join_type?: Database["public"]["Enums"]["join_type"]
+          misalignment_warnings?: string[] | null
+          problem_coverage_percent?: number | null
+          problem_id?: string | null
+          product_name?: string
+          product_url?: string
+          revenue_amount?: number | null
+          sentiment_fit_score?: number | null
+          status?: Database["public"]["Enums"]["submission_status"]
+          stripe_public_key?: string | null
+          supabase_project_url?: string | null
+          team_name?: string | null
+          total_score?: number | null
+          updated_at?: string
+          user_id?: string
+          validated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submissions_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "submissions_problem_id_fkey"
+            columns: ["problem_id"]
+            isOneToOne: false
+            referencedRelation: "problems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -64,7 +437,17 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      challenge_difficulty: "beginner" | "intermediate" | "advanced"
+      challenge_status: "active" | "voting" | "completed"
+      join_type: "solo" | "team"
+      submission_status: "pending" | "validated" | "ranked" | "winner"
+      trend_sentiment: "exploding" | "rising" | "stable" | "declining"
+      trend_source:
+        | "tiktok"
+        | "google_trends"
+        | "freelancer"
+        | "reddit"
+        | "hackernews"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -191,6 +574,19 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      challenge_difficulty: ["beginner", "intermediate", "advanced"],
+      challenge_status: ["active", "voting", "completed"],
+      join_type: ["solo", "team"],
+      submission_status: ["pending", "validated", "ranked", "winner"],
+      trend_sentiment: ["exploding", "rising", "stable", "declining"],
+      trend_source: [
+        "tiktok",
+        "google_trends",
+        "freelancer",
+        "reddit",
+        "hackernews",
+      ],
+    },
   },
 } as const
