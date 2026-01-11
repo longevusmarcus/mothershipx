@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Target, Rocket, Trophy, TrendingUp, Zap, Clock, ArrowRight, Lock, Sparkles, Swords } from "lucide-react";
+import { Target, Rocket, Trophy, TrendingUp, Zap, Clock, ArrowRight, Lock, Sparkles, Swords, Loader2, Hash, Layers, CircleDot } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
 import { StatCard } from "@/components/StatCard";
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/contexts/AuthContext";
 import { WaitlistForm } from "@/components/WaitlistForm";
+import { useUserStats, getXpProgress, getLevelTitle } from "@/hooks/useUserStats";
 
 const mockProblems = [
   {
@@ -62,8 +63,16 @@ const mockActivity = [
 ];
 
 const Index = () => {
-  const { profile } = useAuth();
+  const { profile, isAuthenticated } = useAuth();
+  const { data: userStats, isLoading: statsLoading } = useUserStats();
   const firstName = profile?.name?.split(" ")[0] || "Builder";
+  
+  // Calculate real XP progress
+  const xpProgress = userStats ? getXpProgress(userStats.totalXp) : { percentage: 0, currentLevelXp: 0, nextLevelXp: 500 };
+  const levelTitle = userStats ? getLevelTitle(userStats.currentLevel) : "Newcomer";
+  const currentLevel = userStats?.currentLevel || 1;
+  const totalXp = userStats?.totalXp || 0;
+  const xpToNext = userStats?.xpToNextLevel || 500;
   
   return (
     <AppLayout title="Dashboard">
@@ -85,18 +94,20 @@ const Index = () => {
               <div className="space-y-1">
                 <Badge variant="glow" className="mb-3">
                   <Zap className="h-3 w-3 mr-1" />
-                  Level 12 Builder
+                  Level {currentLevel} {levelTitle}
                 </Badge>
                 <h2 className="text-2xl font-bold tracking-tight">Welcome back, {firstName}</h2>
                 <p className="text-muted-foreground">
-                  You're making great progress. Keep solving real problems.
+                  {totalXp > 0 
+                    ? "You're making great progress. Keep solving real problems."
+                    : "Join problems and submit solutions to earn XP."}
                 </p>
               </div>
               <div className="hidden md:block">
                 <div className="flex items-center gap-4 text-sm">
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Clock className="h-4 w-4" />
-                    <span>Next milestone in 3 days</span>
+                    <span>{xpToNext.toLocaleString()} XP to next level</span>
                   </div>
                 </div>
               </div>
@@ -105,19 +116,49 @@ const Index = () => {
             <div className="mt-6 space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">XP Progress</span>
-                <span className="font-medium">2,450 / 3,000 XP</span>
+                <span className="font-medium">
+                  {statsLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin inline" />
+                  ) : (
+                    `${totalXp.toLocaleString()} / ${xpProgress.nextLevelXp.toLocaleString()} XP`
+                  )}
+                </span>
               </div>
-              <Progress value={82} size="lg" indicatorColor="gradient" />
+              <Progress value={xpProgress.percentage} size="lg" indicatorColor="gradient" />
             </div>
           </div>
         </motion.div>
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
-          <StatCard icon={Target} label="Problems Joined" value={4} delay={0.1} />
-          <StatCard icon={Rocket} label="Solutions Shipped" value={12} delay={0.2} comingSoon />
-          <StatCard icon={Trophy} label="Global Rank" value="#47" delay={0.3} comingSoon />
-          <StatCard icon={TrendingUp} label="Fit Score" value={89} suffix="%" delay={0.4} comingSoon />
+          <StatCard 
+            icon={Target} 
+            label="Problems Joined" 
+            value={statsLoading ? 0 : (userStats?.problemsJoined || 0)} 
+            delay={0.1} 
+          />
+          <StatCard 
+            icon={Rocket} 
+            label="Solutions Shipped" 
+            value={statsLoading ? 0 : (userStats?.solutionsShipped || 0)} 
+            delay={0.2} 
+            comingSoon 
+          />
+          <StatCard 
+            icon={Trophy} 
+            label="Global Rank" 
+            value={userStats?.globalRank ? `#${userStats.globalRank}` : "-"} 
+            delay={0.3} 
+            comingSoon 
+          />
+          <StatCard 
+            icon={TrendingUp} 
+            label="Fit Score" 
+            value={userStats?.averageFitScore || 0} 
+            suffix="%" 
+            delay={0.4} 
+            comingSoon 
+          />
         </div>
 
         {/* Main Grid */}

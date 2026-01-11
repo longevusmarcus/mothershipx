@@ -38,11 +38,6 @@ export const CommunityChallenges = () => {
       {/* Section Header */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-warning/10 via-background to-destructive/5 border border-border p-4 sm:p-6">
         <div className="absolute inset-0 bg-gradient-glow opacity-50" />
-        
-        {/* Animated Sparkles */}
-        <div className="absolute top-4 right-4 animate-pulse-slow">
-          <Sparkles className="h-6 w-6 text-warning/40" />
-        </div>
 
         <div className="relative z-10">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
