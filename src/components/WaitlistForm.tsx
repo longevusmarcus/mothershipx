@@ -91,7 +91,7 @@ export function WaitlistForm({
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className={`flex items-center gap-2 px-4 py-2 rounded-lg bg-success/10 border border-success/30 ${className}`}
+        className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-success/10 border border-success/30 ${className}`}
       >
         <CheckCircle2 className="h-4 w-4 text-success" />
         <span className="text-sm font-medium text-success">You're on the waitlist!</span>
