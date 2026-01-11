@@ -156,7 +156,19 @@ export default function Profile() {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                        <h1 className="text-xl sm:text-2xl font-bold">{profile?.name || "Builder"}</h1>
+                        {isEditing ? (
+                          <div className="min-w-[220px]">
+                            <Label className="sr-only">Display name</Label>
+                            <Input
+                              value={formData.name}
+                              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                              placeholder="Your name"
+                              className="h-9 text-base sm:text-lg font-bold"
+                            />
+                          </div>
+                        ) : (
+                          <h1 className="text-xl sm:text-2xl font-bold">{profile?.name || "Builder"}</h1>
+                        )}
                         <Badge variant="outline" className="text-[10px] sm:text-xs font-medium">
                           New Builder
                         </Badge>
