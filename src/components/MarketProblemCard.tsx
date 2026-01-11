@@ -10,6 +10,7 @@ import { TrendBadge } from "@/components/TrendBadge";
 import { SocialProofStats } from "@/components/SocialProofStats";
 import { OpportunityMeter } from "@/components/OpportunityMeter";
 import { AuthModal } from "@/components/AuthModal";
+import { useAuth } from "@/contexts/AuthContext";
 import type { MarketProblem } from "@/data/marketIntelligence";
 
 interface MarketProblemCardProps {
@@ -19,9 +20,20 @@ interface MarketProblemCardProps {
 
 export function MarketProblemCard({ problem, delay = 0 }: MarketProblemCardProps) {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [authOpen, setAuthOpen] = useState(false);
   const slotsRemaining = problem.slotsTotal - problem.slotsFilled;
   const fillPercentage = (problem.slotsFilled / problem.slotsTotal) * 100;
+
+  const handleCardClick = () => {
+    if (isAuthenticated) {
+      // Already signed in - go directly to problem page
+      navigate(`/problems/${problem.id}`);
+    } else {
+      // Not signed in - show auth modal
+      setAuthOpen(true);
+    }
+  };
 
   return (
     <motion.div
@@ -33,7 +45,7 @@ export function MarketProblemCard({ problem, delay = 0 }: MarketProblemCardProps
       <Card
         variant="interactive"
         className="relative overflow-hidden cursor-pointer group"
-        onClick={() => setAuthOpen(true)}
+        onClick={handleCardClick}
       >
         {/* Viral Indicator */}
         {problem.isViral && (
