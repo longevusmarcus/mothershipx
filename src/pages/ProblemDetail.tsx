@@ -345,6 +345,8 @@ const ProblemDetail = () => {
               problemTitle={problem.title}
               problemTrend={problem.niche}
               problemPainPoints={problem.painPoints}
+              problemCategory={problem.category}
+              opportunityScore={problem.opportunityScore}
             />
 
             {/* Top Solution Fit Verification */}
