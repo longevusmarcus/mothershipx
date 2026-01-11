@@ -13,7 +13,6 @@ import {
   ArrowRight,
   ArrowLeft,
   CheckCircle2,
-  AlertCircle,
   Sparkles,
   Loader2,
   Trophy,
@@ -32,6 +31,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCreateSubmission } from "@/hooks/useSubmissions";
 import {
   Form,
   FormControl,
@@ -114,10 +114,11 @@ const SubmitSolution = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const createSubmission = useCreateSubmission();
   
   const state = location.state as LocationState | null;
   const challenge = state?.challenge;
-  const joinType = state?.joinType;
+  const joinType = state?.joinType || "solo";
   
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -174,30 +175,56 @@ const SubmitSolution = () => {
     setIsSubmitting(true);
     setCurrentStep(1);
     
-    // Simulate submission & AI validation progress
-    const progressSteps = [
-      { progress: 20, delay: 600, label: "Validating product URL..." },
-      { progress: 40, delay: 800, label: "Analyzing code quality..." },
-      { progress: 60, delay: 700, label: "Checking integrations..." },
-      { progress: 80, delay: 600, label: "Scoring submission..." },
-      { progress: 100, delay: 500, label: "Finalizing entry..." },
-    ];
+    // Show progress while submitting to Supabase with AI validation
+    const progressInterval = setInterval(() => {
+      setSubmissionProgress(prev => {
+        if (prev >= 90) return prev;
+        return prev + 10;
+      });
+    }, 500);
 
-    for (const step of progressSteps) {
-      await new Promise(resolve => setTimeout(resolve, step.delay));
-      setSubmissionProgress(step.progress);
+    try {
+      await createSubmission.mutateAsync({
+        formData: {
+          productName: data.productName,
+          productUrl: data.productUrl,
+          demoUrl: data.demoUrl,
+          githubRepo: data.githubRepo,
+          stripePublicKey: data.stripePublicKey,
+          supabaseProjectUrl: data.supabaseProjectUrl,
+        },
+        challengeId: challenge?.id,
+        joinType: joinType as "solo" | "team",
+      });
+
+      clearInterval(progressInterval);
+      setSubmissionProgress(100);
+      
+      // Short delay before showing success
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      setIsSubmitting(false);
+      setIsSubmitted(true);
+      setCurrentStep(2);
+      
+      toast({
+        title: "Entry Submitted! 🎉",
+        description: challenge 
+          ? `Your build for "${challenge.title}" is now in the competition. AI will rank all entries when voting begins.`
+          : "Your solution has been submitted successfully.",
+      });
+    } catch (error) {
+      clearInterval(progressInterval);
+      setIsSubmitting(false);
+      setCurrentStep(0);
+      setSubmissionProgress(0);
+      
+      toast({
+        title: "Submission Failed",
+        description: error instanceof Error ? error.message : "Please try again.",
+        variant: "destructive",
+      });
     }
-
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    setCurrentStep(2);
-    
-    toast({
-      title: "Entry Submitted! 🎉",
-      description: challenge 
-        ? `Your build for "${challenge.title}" is now in the competition. AI will rank all entries when voting begins.`
-        : "Your solution has been submitted successfully.",
-    });
   };
 
   const handleBack = () => {

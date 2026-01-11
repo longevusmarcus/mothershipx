@@ -4,30 +4,29 @@ import {
   Trophy,
   Flame,
   Calendar,
-  TrendingUp,
   DollarSign,
   Users,
   Sparkles,
-  ChevronRight,
+  Loader2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChallengeCard } from "./ChallengeCard";
-import { mockChallenges } from "@/data/challengesData";
+import { useTodayChallenge, usePastChallenges, useChallenges } from "@/hooks/useChallenges";
 
 export const CommunityChallenges = () => {
   const [activeTab, setActiveTab] = useState("today");
 
-  const todaysChallenge = mockChallenges.find((c) => c.isToday);
-  const pastChallenges = mockChallenges.filter((c) => !c.isToday);
+  const { data: todaysChallenge, isLoading: loadingToday } = useTodayChallenge();
+  const { data: pastChallenges = [], isLoading: loadingPast } = usePastChallenges();
+  const { data: allChallenges = [] } = useChallenges();
 
-  const totalPrizesPaid = mockChallenges
+  const totalPrizesPaid = allChallenges
     .filter((c) => c.status === "completed")
     .reduce((acc, c) => acc + c.winnerPrize, 0);
 
-  const totalParticipants = mockChallenges.reduce((acc, c) => acc + c.participants, 0);
+  const totalParticipants = allChallenges.reduce((acc, c) => acc + c.participants, 0);
 
   return (
     <motion.div
@@ -113,7 +112,12 @@ export const CommunityChallenges = () => {
         </TabsList>
 
         <TabsContent value="today" className="mt-4">
-          {todaysChallenge ? (
+          {loadingToday ? (
+            <Card variant="elevated" className="p-8 text-center">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary mb-3" />
+              <p className="text-muted-foreground">Loading today's challenge...</p>
+            </Card>
+          ) : todaysChallenge ? (
             <ChallengeCard challenge={todaysChallenge} />
           ) : (
             <Card variant="elevated" className="p-8 text-center">
@@ -124,7 +128,12 @@ export const CommunityChallenges = () => {
         </TabsContent>
 
         <TabsContent value="past" className="mt-4 space-y-3">
-          {pastChallenges.length > 0 ? (
+          {loadingPast ? (
+            <Card variant="elevated" className="p-8 text-center">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary mb-3" />
+              <p className="text-muted-foreground">Loading past challenges...</p>
+            </Card>
+          ) : pastChallenges.length > 0 ? (
             pastChallenges.map((challenge, index) => (
               <ChallengeCard key={challenge.id} challenge={challenge} delay={index * 0.1} />
             ))
