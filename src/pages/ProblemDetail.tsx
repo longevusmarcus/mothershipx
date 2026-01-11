@@ -340,7 +340,12 @@ const ProblemDetail = () => {
 
           <TabsContent value="solutions" className="mt-4 sm:mt-6 space-y-4 sm:space-y-6">
             {/* Solutions Lab - Wiki-style collaborative ideas */}
-            <SolutionsLab problemId={problem.id} problemTitle={problem.title} />
+            <SolutionsLab 
+              problemId={problem.id} 
+              problemTitle={problem.title}
+              problemTrend={problem.niche}
+              problemPainPoints={problem.painPoints}
+            />
 
             {/* Top Solution Fit Verification */}
             <FitVerificationPanel {...mockTopSolution} />

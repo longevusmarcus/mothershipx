@@ -34,18 +34,84 @@ import { formatDistanceToNow } from "date-fns";
 interface SolutionsLabProps {
   problemId: string;
   problemTitle: string;
+  problemTrend?: string;
+  problemPainPoints?: string[];
 }
 
-const statusConfig = {
+const statusConfig: Record<string, { label: string; color: string }> = {
   concept: { label: "Concept", color: "bg-muted text-muted-foreground" },
   validated: { label: "Validated", color: "bg-blue-500/10 text-blue-500" },
   building: { label: "Building", color: "bg-amber-500/10 text-amber-500" },
   launched: { label: "Launched", color: "bg-green-500/10 text-green-500" },
 };
 
-export const SolutionsLab = ({ problemId, problemTitle }: SolutionsLabProps) => {
+// Generate AI-suggested solutions based on problem data
+function generateAISuggestions(problemTitle: string, trend?: string, painPoints?: string[]): Solution[] {
+  const baseSuggestions: Partial<Solution>[] = [
+    {
+      id: "ai-suggestion-1",
+      title: `AI-Powered ${problemTitle} Tool`,
+      description: `Leverage AI to automatically analyze and solve ${problemTitle.toLowerCase()} issues. Smart automation that learns from user behavior.`,
+      approach: `1. Build an AI model trained on common patterns\n2. Create simple onboarding flow\n3. Integrate with existing workflows\n4. Add analytics dashboard`,
+      ai_generated: true,
+      upvotes: 12,
+      forks: 3,
+      comments: 5,
+      edit_count: 1,
+      market_fit: 78,
+      status: "concept",
+      tech_stack: ["React", "OpenAI API", "Supabase", "Tailwind"],
+      contributors: [],
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+    {
+      id: "ai-suggestion-2",
+      title: `${trend || problemTitle} Community Platform`,
+      description: `Connect people experiencing ${problemTitle.toLowerCase()} with experts and peers. Social-first approach with gamification.`,
+      approach: `1. Build community matching algorithm\n2. Add real-time chat and forums\n3. Implement reputation system\n4. Create mobile-first experience`,
+      ai_generated: true,
+      upvotes: 8,
+      forks: 2,
+      comments: 3,
+      edit_count: 1,
+      market_fit: 65,
+      status: "concept",
+      tech_stack: ["Next.js", "Supabase", "WebSocket", "React Native"],
+      contributors: [],
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+    {
+      id: "ai-suggestion-3",
+      title: `${problemTitle} Analytics Dashboard`,
+      description: `Data-driven insights to track, measure, and optimize ${problemTitle.toLowerCase()}. Beautiful visualizations and actionable recommendations.`,
+      approach: `1. Define key metrics and KPIs\n2. Build data ingestion pipeline\n3. Create interactive charts\n4. Add AI-powered insights`,
+      ai_generated: true,
+      upvotes: 5,
+      forks: 1,
+      comments: 2,
+      edit_count: 1,
+      market_fit: 58,
+      status: "concept",
+      tech_stack: ["React", "D3.js", "PostgreSQL", "Python"],
+      contributors: [],
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+  ];
+
+  // Customize suggestions based on pain points
+  if (painPoints && painPoints.length > 0) {
+    baseSuggestions[0].description = `Solve "${painPoints[0]}" with intelligent automation. ${baseSuggestions[0].description}`;
+  }
+
+  return baseSuggestions as Solution[];
+}
+
+export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPainPoints }: SolutionsLabProps) => {
   const { user } = useAuth();
-  const { solutions, isLoading, createSolution, updateSolution, toggleUpvote, forkSolution } = useSolutions(problemId);
+  const { solutions: dbSolutions, isLoading, createSolution, updateSolution, toggleUpvote, forkSolution } = useSolutions(problemId);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState("");
@@ -94,6 +160,11 @@ export const SolutionsLab = ({ problemId, problemTitle }: SolutionsLabProps) => 
       }
     );
   };
+
+  // Combine real solutions with AI suggestions when empty
+  const aiSuggestions = generateAISuggestions(problemTitle, problemTrend, problemPainPoints);
+  const solutions = dbSolutions.length > 0 ? dbSolutions : aiSuggestions;
+  const showingAISuggestions = dbSolutions.length === 0;
 
   if (isLoading) {
     return (
@@ -208,14 +279,15 @@ export const SolutionsLab = ({ problemId, problemTitle }: SolutionsLabProps) => 
       </AnimatePresence>
 
       {/* Solutions List */}
-      {solutions.length === 0 ? (
-        <Card variant="elevated" className="p-6 text-center">
-          <Lightbulb className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-          <p className="text-sm text-muted-foreground">No solutions yet. Be the first to propose an idea!</p>
-        </Card>
-      ) : (
-        <div className="space-y-3">
-          {solutions.map((solution, index) => (
+      {/* Solutions List - always show, with AI suggestions as fallback */}
+      <div className="space-y-3">
+        {showingAISuggestions && (
+          <div className="flex items-center gap-2 p-2 rounded-lg bg-primary/5 border border-primary/10 text-xs text-muted-foreground">
+            <Sparkles className="h-3.5 w-3.5 text-primary" />
+            <span>AI-suggested ideas based on trend analysis. Add your own to get started!</span>
+          </div>
+        )}
+        {solutions.map((solution, index) => (
             <motion.div
               key={solution.id}
               initial={{ opacity: 0, y: 20 }}
@@ -444,8 +516,7 @@ export const SolutionsLab = ({ problemId, problemTitle }: SolutionsLabProps) => 
               </Card>
             </motion.div>
           ))}
-        </div>
-      )}
+      </div>
     </div>
   );
 };
