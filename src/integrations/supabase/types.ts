@@ -429,6 +429,69 @@ export type Database = {
           },
         ]
       }
+      user_settings: {
+        Row: {
+          allow_collab_requests: boolean
+          build_verification: boolean
+          created_at: string
+          email_digest: boolean
+          id: string
+          in_app_notifications: boolean
+          leaderboard_updates: boolean
+          marketing_emails: boolean
+          new_problems: boolean
+          profile_visibility: string
+          push_notifications: boolean
+          show_builds: boolean
+          show_email: boolean
+          show_on_leaderboard: boolean
+          show_stats: boolean
+          updated_at: string
+          user_id: string
+          weekly_report: boolean
+        }
+        Insert: {
+          allow_collab_requests?: boolean
+          build_verification?: boolean
+          created_at?: string
+          email_digest?: boolean
+          id?: string
+          in_app_notifications?: boolean
+          leaderboard_updates?: boolean
+          marketing_emails?: boolean
+          new_problems?: boolean
+          profile_visibility?: string
+          push_notifications?: boolean
+          show_builds?: boolean
+          show_email?: boolean
+          show_on_leaderboard?: boolean
+          show_stats?: boolean
+          updated_at?: string
+          user_id: string
+          weekly_report?: boolean
+        }
+        Update: {
+          allow_collab_requests?: boolean
+          build_verification?: boolean
+          created_at?: string
+          email_digest?: boolean
+          id?: string
+          in_app_notifications?: boolean
+          leaderboard_updates?: boolean
+          marketing_emails?: boolean
+          new_problems?: boolean
+          profile_visibility?: string
+          push_notifications?: boolean
+          show_builds?: boolean
+          show_email?: boolean
+          show_on_leaderboard?: boolean
+          show_stats?: boolean
+          updated_at?: string
+          user_id?: string
+          weekly_report?: boolean
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
