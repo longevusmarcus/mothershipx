@@ -1,7 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
-import { JoinType } from "@/types/database";
+import type { Database } from "@/integrations/supabase/types";
+
+type JoinType = Database["public"]["Enums"]["join_type"];
 
 interface ChallengeJoin {
   id: string;
