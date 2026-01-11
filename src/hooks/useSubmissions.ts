@@ -95,6 +95,7 @@ export function useCreateSubmission() {
           github_repo: formData.githubRepo || null,
           stripe_public_key: formData.stripePublicKey || null,
           supabase_project_url: formData.supabaseProjectUrl || null,
+          payment_info: formData.paymentInfo || null,
           join_type: joinType,
           team_name: teamName || null,
           status: "pending",

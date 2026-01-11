@@ -22,6 +22,8 @@ import {
   Zap,
   Award,
   BarChart3,
+  Wallet,
+  Mail,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -76,6 +78,12 @@ const submissionSchema = z.object({
     .string()
     .trim()
     .max(200, "URL must be less than 200 characters")
+    .optional()
+    .or(z.literal("")),
+  paymentInfo: z
+    .string()
+    .trim()
+    .max(100, "Payment info must be less than 100 characters")
     .optional()
     .or(z.literal("")),
 });
@@ -134,6 +142,7 @@ const SubmitSolution = () => {
       githubRepo: "",
       stripePublicKey: "",
       supabaseProjectUrl: "",
+      paymentInfo: "",
     },
     mode: "onBlur",
   });
@@ -192,6 +201,7 @@ const SubmitSolution = () => {
           githubRepo: data.githubRepo,
           stripePublicKey: data.stripePublicKey,
           supabaseProjectUrl: data.supabaseProjectUrl,
+          paymentInfo: data.paymentInfo,
         },
         challengeId: challenge?.id,
         joinType: joinType as "solo" | "team",
@@ -531,6 +541,29 @@ const SubmitSolution = () => {
                               </FormItem>
                             )}
                           />
+                          
+                          <FormField
+                            control={form.control}
+                            name="paymentInfo"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="flex items-center gap-2">
+                                  <Wallet className="h-4 w-4" />
+                                  Payment Info (IBAN or Stripe Payment Link)
+                                </FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    placeholder="IBAN: DE89... or https://pay.stripe.com/..." 
+                                    {...field} 
+                                  />
+                                </FormControl>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  How you want to receive prize money if you win
+                                </p>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
                         </div>
                       </div>
 
@@ -557,6 +590,10 @@ const SubmitSolution = () => {
                                 <DollarSign className="h-3 w-3 text-primary" />
                                 Revenue & Traction Signals
                               </div>
+                            </div>
+                            <div className="flex items-center gap-1 mt-3 pt-3 border-t border-warning/20 text-xs">
+                              <Mail className="h-3 w-3 text-primary" />
+                              <span>Winners will receive results via email when judging ends</span>
                             </div>
                           </div>
                         </div>
