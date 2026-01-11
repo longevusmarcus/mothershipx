@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/contexts/AuthContext";
+import { WaitlistForm } from "@/components/WaitlistForm";
 
 const mockProblems = [
   {
@@ -158,10 +159,7 @@ const Index = () => {
                   <p className="text-xs text-muted-foreground max-w-[180px]">
                     Hackathon Arena coming soon
                   </p>
-                  <Button variant="outline" size="sm" className="gap-1 text-xs">
-                    <Swords className="h-3 w-3" />
-                    Join Waitlist
-                  </Button>
+                  <WaitlistForm feature="leaderboard" buttonText="Join Waitlist" />
                 </motion.div>
               </div>
               
@@ -212,10 +210,7 @@ const Index = () => {
                 <p className="text-xs text-muted-foreground max-w-[180px]">
                   Launch Lab coming soon
                 </p>
-                <Button variant="outline" size="sm" className="gap-1 text-xs">
-                  <Sparkles className="h-3 w-3" />
-                  Join Waitlist
-                </Button>
+                <WaitlistForm feature="builds" buttonText="Join Waitlist" />
               </motion.div>
             </div>
             

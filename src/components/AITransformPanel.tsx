@@ -3,6 +3,7 @@ import { ArrowRight, MessageSquare, Target, TrendingUp, Tags, FileText, BarChart
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { WaitlistForm } from "@/components/WaitlistForm";
 
 interface AICapability {
   id: string;
@@ -65,10 +66,7 @@ export function AITransformPanel({ selectedSources, isAdmin = false }: AITransfo
                 Co-Build
               </Badge>
             </div>
-            <Button variant="glow" size="sm" className="mt-2">
-              <Sparkles className="h-4 w-4 mr-2" />
-              Join Waitlist
-            </Button>
+            <WaitlistForm feature="general" buttonText="Join Waitlist" />
           </motion.div>
         </div>
       )}
