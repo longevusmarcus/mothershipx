@@ -27,11 +27,14 @@ import {
   CheckCircle2,
   Award,
   LogOut,
+  Camera,
+  Loader2,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabaseClient";
 
 const stats = [
   { label: "Trends Joined", value: 0, icon: CircleDot, comingSoon: false },
@@ -56,6 +59,8 @@ export default function Profile() {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     name: "",
     bio: "",
@@ -108,6 +113,68 @@ export default function Profile() {
     }
   };
 
+  const handleAvatarClick = () => {
+    if (isEditing) {
+      fileInputRef.current?.click();
+    }
+  };
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be less than 5MB");
+      return;
+    }
+
+    setIsUploadingAvatar(true);
+
+    try {
+      // Create file path: userId/avatar.ext
+      const fileExt = file.name.split(".").pop();
+      const filePath = `${user.id}/avatar.${fileExt}`;
+
+      // Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(filePath);
+
+      // Add cache-busting param
+      const avatarUrl = `${publicUrl}?t=${Date.now()}`;
+
+      // Update profile with new avatar URL
+      const { error: updateError } = await updateProfile({ avatar_url: avatarUrl });
+
+      if (updateError) throw updateError;
+
+      toast.success("Avatar updated!");
+    } catch (error) {
+      console.error("Error uploading avatar:", error);
+      toast.error("Failed to upload avatar");
+    } finally {
+      setIsUploadingAvatar(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
   const handleSignOut = async () => {
     await signOut();
     navigate("/");
@@ -146,11 +213,38 @@ export default function Profile() {
             <CardContent className="relative pt-0 pb-4 sm:pb-6 px-4 sm:px-6">
               {/* Avatar */}
               <div className="flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-4 -mt-10 sm:-mt-14 mb-4 sm:mb-6">
-                <Avatar className="h-20 w-20 sm:h-28 sm:w-28 border-4 border-background shadow-lg">
-                  <AvatarFallback className="text-xl sm:text-2xl font-bold bg-gradient-primary text-primary-foreground">
-                    {initials}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="relative group">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleAvatarUpload}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                  <Avatar 
+                    className={`h-20 w-20 sm:h-28 sm:w-28 border-4 border-background shadow-lg ${
+                      isEditing ? "cursor-pointer" : ""
+                    }`}
+                    onClick={handleAvatarClick}
+                  >
+                    <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.name || "Avatar"} />
+                    <AvatarFallback className="text-xl sm:text-2xl font-bold bg-gradient-primary text-primary-foreground">
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
+                  {isEditing && (
+                    <div 
+                      className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                      onClick={handleAvatarClick}
+                    >
+                      {isUploadingAvatar ? (
+                        <Loader2 className="h-6 w-6 text-white animate-spin" />
+                      ) : (
+                        <Camera className="h-6 w-6 text-white" />
+                      )}
+                    </div>
+                  )}
+                </div>
                 
                 <div className="flex-1 pt-2 sm:pt-0">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
