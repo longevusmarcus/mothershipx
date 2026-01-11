@@ -633,6 +633,7 @@ export type Database = {
           id: string
           join_type: Database["public"]["Enums"]["join_type"]
           misalignment_warnings: string[] | null
+          payment_info: string | null
           problem_coverage_percent: number | null
           problem_id: string | null
           product_name: string
@@ -660,6 +661,7 @@ export type Database = {
           id?: string
           join_type?: Database["public"]["Enums"]["join_type"]
           misalignment_warnings?: string[] | null
+          payment_info?: string | null
           problem_coverage_percent?: number | null
           problem_id?: string | null
           product_name: string
@@ -687,6 +689,7 @@ export type Database = {
           id?: string
           join_type?: Database["public"]["Enums"]["join_type"]
           misalignment_warnings?: string[] | null
+          payment_info?: string | null
           problem_coverage_percent?: number | null
           problem_id?: string | null
           product_name?: string

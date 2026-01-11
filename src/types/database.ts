@@ -97,6 +97,7 @@ export interface Submission {
   github_repo: string | null;
   stripe_public_key: string | null;
   supabase_project_url: string | null;
+  payment_info: string | null;
   
   join_type: JoinType;
   team_name: string | null;
@@ -159,6 +160,7 @@ export interface SubmissionFormData {
   githubRepo?: string;
   stripePublicKey?: string;
   supabaseProjectUrl?: string;
+  paymentInfo?: string;
 }
 
 export interface ChallengeContext {
