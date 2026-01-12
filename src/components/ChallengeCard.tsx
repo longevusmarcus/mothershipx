@@ -445,7 +445,11 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
               Voting in Progress
             </Button>
           ) : (
-            <Button variant="ghost" className="w-full gap-2 text-muted-foreground">
+            <Button 
+              variant="ghost" 
+              className="w-full gap-2 text-muted-foreground hover:text-foreground"
+              onClick={() => navigate(`/challenges/${challenge.id}/results`)}
+            >
               <CheckCircle2 className="h-4 w-4" />
               View Results
               <ChevronRight className="h-4 w-4" />
