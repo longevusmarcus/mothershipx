@@ -121,25 +121,43 @@ export function useTodayChallenge() {
   return useQuery({
     queryKey: ["challenge", "today"],
     queryFn: async () => {
-      const now = new Date();
-      
-      const { data, error } = await supabase
+      // First try to get an active challenge
+      const { data: activeData, error: activeError } = await supabase
         .from("challenges")
         .select("*")
         .eq("status", "active")
-        .gt("ends_at", now.toISOString())
         .order("ends_at", { ascending: true })
         .limit(1)
         .maybeSingle();
 
-      if (error) {
-        console.error("Error fetching today's challenge:", error);
+      if (activeError) {
+        console.error("Error fetching active challenge:", activeError);
         return null;
       }
 
-      if (!data) return null;
+      if (activeData) {
+        return dbToChallenge(activeData as unknown as DBChallenge);
+      }
 
-      return dbToChallenge(data as unknown as DBChallenge);
+      // If no active challenge, get the most recent voting challenge
+      const { data: votingData, error: votingError } = await supabase
+        .from("challenges")
+        .select("*")
+        .eq("status", "voting")
+        .order("ends_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (votingError) {
+        console.error("Error fetching voting challenge:", votingError);
+        return null;
+      }
+
+      if (votingData) {
+        return dbToChallenge(votingData as unknown as DBChallenge);
+      }
+
+      return null;
     },
     staleTime: 1000 * 60,
   });

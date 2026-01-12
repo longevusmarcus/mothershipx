@@ -13,8 +13,8 @@ const navItems = [
   { icon: LayoutDashboard, label: "Home", path: "/" },
   { icon: Target, label: "Problems", path: "/problems" },
   { icon: null, label: "Fight", path: "/challenges", isCenter: true },
-  { icon: Layers, label: "Builds", path: "/builds" },
-  { icon: Trophy, label: "Rank", path: "/leaderboard" },
+  { icon: Layers, label: "Accelerator", path: "/builds" },
+  { icon: Trophy, label: "League", path: "/leaderboard" },
 ];
 
 export function MobileBottomNav() {
