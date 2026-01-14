@@ -55,141 +55,826 @@ function generateAISuggestions(
   category?: string,
   opportunityScore?: number
 ): Solution[] {
+  // Extract key themes from problem data
   const mainPainPoint = painPoints?.[0] || "user frustration";
   const secondPainPoint = painPoints?.[1] || "lack of automation";
   const thirdPainPoint = painPoints?.[2] || "poor user experience";
+  const fourthPainPoint = painPoints?.[3] || "time constraints";
   const trendContext = trend || problemTitle;
   const categoryContext = category || "SaaS";
   
-  // Determine solution archetypes based on category
-  const isB2B = categoryContext.toLowerCase().includes("b2b") || categoryContext.toLowerCase().includes("enterprise");
-  const isCreator = trendContext.toLowerCase().includes("creator") || trendContext.toLowerCase().includes("content");
-  const isProductivity = categoryContext.toLowerCase().includes("productivity") || trendContext.toLowerCase().includes("workflow");
+  // Determine solution archetypes based on category and problem context
+  const problemLower = problemTitle.toLowerCase();
+  const categoryLower = categoryContext.toLowerCase();
+  
+  // Category-specific solution templates
+  const isMentalHealth = categoryLower.includes("mental") || problemLower.includes("anxiety") || problemLower.includes("adhd");
+  const isWeight = categoryLower.includes("weight") || categoryLower.includes("fitness") || problemLower.includes("glp") || problemLower.includes("ozempic");
+  const isSkin = categoryLower.includes("skin") || categoryLower.includes("beauty") || problemLower.includes("ingredient");
+  const isGut = categoryLower.includes("gut") || problemLower.includes("gut") || problemLower.includes("probiotic");
+  const isProductivity = categoryLower.includes("productivity") || problemLower.includes("focus") || problemLower.includes("context");
+  const isCareer = categoryLower.includes("career") || problemLower.includes("pivot") || problemLower.includes("career");
+  const isConnections = categoryLower.includes("connection") || problemLower.includes("dating") || problemLower.includes("connection");
 
-  const suggestions: Partial<Solution>[] = [
-    {
-      id: "ai-suggestion-1",
-      title: isB2B 
-        ? `${trendContext} Automation Platform for Teams`
-        : isCreator 
-          ? `AI ${trendContext} Assistant for Creators`
-          : `Smart ${trendContext} Solution`,
-      description: `Directly addresses "${mainPainPoint}" by providing an intelligent system that learns user patterns and automates repetitive tasks. Built for ${isB2B ? "teams of 5-50" : "individual users"} who struggle with ${secondPainPoint.toLowerCase()}.`,
-      approach: `**Phase 1 - Core Problem** (Week 1-2)
-• Build MVP focusing specifically on "${mainPainPoint}"
-• Simple onboarding that captures user context in <2 minutes
-• Core automation engine with ${isB2B ? "team permissions" : "personal dashboard"}
+  // Generate unique solutions based on problem type
+  let suggestions: Partial<Solution>[] = [];
+
+  if (isMentalHealth) {
+    const isADHD = problemLower.includes("adhd");
+    suggestions = [
+      {
+        id: "ai-suggestion-1",
+        title: isADHD ? "Emotional Co-Regulation Companion" : "Vibe-Based Mood Resets",
+        description: isADHD 
+          ? `AI-powered emotional support system that provides real-time co-regulation for ADHD brains. Addresses "${mainPainPoint}" with body doubling features and rejection sensitivity support.`
+          : `Aesthetic-first wellness moments that match your energy. Forget clinical CBT—this is "${mainPainPoint}" solved with 2-minute vibe shifts and sensory resets.`,
+        approach: isADHD
+          ? `**Phase 1 - Emotional First Aid** (Week 1-2)
+• Build panic button for rejection sensitivity spirals
+• AI voice companion for real-time emotional grounding
+• Virtual body doubling rooms available 24/7
+
+**Phase 2 - Pattern Recognition** (Week 3-4)
+• Track emotional triggers and energy patterns
+• Proactive alerts before burnout hits
+• "${secondPainPoint}" - medication + mood correlation insights
+
+**Phase 3 - Community** (Week 5+)
+• Matching system for accountability buddies
+• Shared body doubling sessions
+• Expert Q&As with ADHD coaches`
+          : `**Phase 1 - Vibe Library** (Week 1-2)
+• Curate 50+ aesthetic mood reset videos (2 min each)
+• Match content to current energy state with AI
+• "${mainPainPoint}" - no homework, just vibes
+
+**Phase 2 - Personalization** (Week 3-4)
+• Learn user's aesthetic preferences and triggers
+• Create personalized wellness playlists
+• Add quick breathing exercises with visual flair
+
+**Phase 3 - Social** (Week 5+)
+• Share your resets with friends
+• Trending vibes leaderboard
+• Creator tools for user-generated content`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 15) + 12,
+        forks: Math.floor(Math.random() * 5) + 3,
+        comments: Math.floor(Math.random() * 8) + 4,
+        edit_count: 1,
+        market_fit: Math.min(94, (opportunityScore || 75) + Math.floor(Math.random() * 10)),
+        status: "concept",
+        tech_stack: ["React Native", "Supabase", "ElevenLabs", "OpenAI"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: "ai-suggestion-2",
+        title: isADHD ? "ADHD Task Gamification Engine" : "Anxiety Pocket Companion",
+        description: isADHD
+          ? `Turn overwhelming tasks into dopamine-friendly micro-wins. Not another to-do app—this gamifies "${secondPainPoint}" with streaks, rewards, and ADHD-friendly task chunking.`
+          : `Your pocket friend for anxious moments. Quick grounding exercises, breathing patterns, and comfort scripts for when "${thirdPainPoint}" hits hard.`,
+        approach: isADHD
+          ? `**Core Mechanic**
+• Break any task into 5-min "quests"
+• Earn XP and unlock cosmetics
+• Body doubling mode with live players
+
+**ADHD-Specific Features**
+• Visual progress bars (dopamine hits)
+• Random reward drops to maintain interest
+• "${thirdPainPoint}" - no guilt for skipped days
+
+**Monetization**
+• Free tier with basic gamification
+• $8/month for premium cosmetics + features
+• Family plans for ADHD households`
+          : `**Core Features**
+• SOS button for panic moments
+• AI-generated comfort messages
+• Haptic breathing patterns on Apple Watch
+
+**Personalization**
+• Learn what calms YOU specifically
+• Track anxiety patterns over time
+• Export insights for therapists
+
+**Why This Works**
+• "${fourthPainPoint}" - ultra-quick interventions
+• No login required in crisis moments
+• Works offline for reliability`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 12) + 8,
+        forks: Math.floor(Math.random() * 4) + 2,
+        comments: Math.floor(Math.random() * 6) + 3,
+        edit_count: 1,
+        market_fit: Math.min(88, (opportunityScore || 70) + Math.floor(Math.random() * 8)),
+        status: "concept",
+        tech_stack: isADHD ? ["Unity", "Supabase", "RevenueCat"] : ["Swift", "HealthKit", "Supabase"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: "ai-suggestion-3",
+        title: isADHD ? "Neural Buddy Matching" : "Wellness Content Curator",
+        description: isADHD
+          ? `Match with other ADHD brains for mutual support. Addresses "${fourthPainPoint}" through structured peer connections and shared experiences.`
+          : `AI that curates mental wellness content from TikTok, YouTube, and podcasts that actually resonates. No clinical stuff—just "${mainPainPoint}" content that gets you.`,
+        approach: isADHD
+          ? `**Matching Algorithm**
+• Pair users by ADHD subtype and interests
+• Scheduled check-ins with matched buddies
+• Group sessions for common struggles
+
+**Features**
+• Async voice messages for support
+• Shared wins celebration board
+• "${secondPainPoint}" - peer medication experiences
+
+**Safety**
+• AI moderation for crisis detection
+• Professional escalation paths
+• Community guidelines enforcement`
+          : `**Content Engine**
+• Scrape trending wellness content daily
+• AI filters for aesthetic match + actual helpfulness
+• Personalized daily digest
+
+**Discovery**
+• Swipe interface for content
+• Save to mood-specific playlists
+• Share with wellness circles
+
+**Creator Side**
+• Analytics for wellness creators
+• Trend predictions for content planning`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 10) + 5,
+        forks: Math.floor(Math.random() * 3) + 1,
+        comments: Math.floor(Math.random() * 5) + 2,
+        edit_count: 1,
+        market_fit: Math.min(82, (opportunityScore || 65) + Math.floor(Math.random() * 6)),
+        status: "concept",
+        tech_stack: isADHD ? ["Next.js", "Supabase", "Stream Chat"] : ["React", "TikTok API", "YouTube API", "Gemini"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    ];
+  } else if (isWeight) {
+    suggestions = [
+      {
+        id: "ai-suggestion-1",
+        title: "GLP-1 Habit Stacking Coach",
+        description: `Personal AI coach for GLP-1 users rebuilding their relationship with food. Tackles "${mainPainPoint}" with gentle, sustainable habit formation during and after treatment.`,
+        approach: `**Phase 1 - Foundation** (Week 1-2)
+• Onboarding that captures current medication phase
+• Daily micro-habits tailored to energy levels
+• "${mainPainPoint}" - focus on protein-first eating
+
+**Phase 2 - Movement** (Week 3-4)
+• Low-effort movement library (walks, stretches)
+• Energy-based workout suggestions
+• "${secondPainPoint}" - no gym required
+
+**Phase 3 - Food Joy** (Week 5+)
+• Rediscover foods you love in smaller portions
+• Recipe suggestions for reduced appetite
+• Community recipes from other GLP-1 users`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 18) + 15,
+        forks: Math.floor(Math.random() * 6) + 4,
+        comments: Math.floor(Math.random() * 10) + 6,
+        edit_count: 1,
+        market_fit: Math.min(95, (opportunityScore || 80) + Math.floor(Math.random() * 8)),
+        status: "concept",
+        tech_stack: ["React Native", "Supabase", "OpenAI", "HealthKit"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: "ai-suggestion-2",
+        title: "Metabolic Rehabilitation Tracker",
+        description: `Track your metabolic journey beyond the scale. Addresses "${thirdPainPoint}" by focusing on NSVs (non-scale victories) and sustainable lifestyle metrics.`,
+        approach: `**Core Tracking**
+• Weight + measurements + photos
+• Energy levels and mood correlation
+• Sleep quality impact on hunger
+
+**GLP-1 Specific**
+• Medication dose tracking
+• Side effect logging
+• "${fourthPainPoint}" - tapering guidance
+
+**Insights**
+• AI-generated weekly summaries
+• Predict plateau phases
+• Celebrate NSVs automatically`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 12) + 8,
+        forks: Math.floor(Math.random() * 4) + 2,
+        comments: Math.floor(Math.random() * 6) + 3,
+        edit_count: 1,
+        market_fit: Math.min(89, (opportunityScore || 75) + Math.floor(Math.random() * 7)),
+        status: "concept",
+        tech_stack: ["Flutter", "Supabase", "RevenueCat", "Charts"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: "ai-suggestion-3",
+        title: "Post-GLP-1 Maintenance Community",
+        description: `Community platform for users transitioning off or maintaining after GLP-1. Tackles "${fourthPainPoint}" with peer support and evidence-based maintenance strategies.`,
+        approach: `**Community Features**
+• Success stories from maintainers
+• Anonymous Q&A with doctors
+• Weekly challenges for habit building
+
+**Education**
+• Why regain happens (science-backed)
+• Maintenance calorie calculators
+• Exercise for weight maintenance
+
+**Monetization**
+• Free community access
+• $15/month for dietitian chat
+• $49 one-time for maintenance course`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 10) + 6,
+        forks: Math.floor(Math.random() * 3) + 1,
+        comments: Math.floor(Math.random() * 5) + 2,
+        edit_count: 1,
+        market_fit: Math.min(84, (opportunityScore || 70) + Math.floor(Math.random() * 6)),
+        status: "concept",
+        tech_stack: ["Next.js", "Supabase", "Stripe", "Stream"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    ];
+  } else if (isSkin) {
+    suggestions = [
+      {
+        id: "ai-suggestion-1",
+        title: "Instant Ingredient Scanner",
+        description: `Point your camera at any skincare product and get instant ingredient analysis. Solves "${mainPainPoint}" in seconds with AI-powered safety ratings and conflict detection.`,
+        approach: `**Core Feature**
+• Camera scan → instant breakdown
+• Ingredient conflict warnings
+• Personalized safety scores
+
+**Personalization**
+• Set your skin type + concerns
+• Flag allergens and irritants
+• "${secondPainPoint}" - remember your routine
+
+**Database**
+• 50,000+ ingredient profiles
+• User-reported reactions
+• Dermatologist-verified ratings`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 16) + 12,
+        forks: Math.floor(Math.random() * 5) + 3,
+        comments: Math.floor(Math.random() * 8) + 5,
+        edit_count: 1,
+        market_fit: Math.min(92, (opportunityScore || 78) + Math.floor(Math.random() * 8)),
+        status: "concept",
+        tech_stack: ["React Native", "Google Vision", "Supabase", "OpenAI"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: "ai-suggestion-2",
+        title: "Evidence-Based Product Curator",
+        description: `Cut through influencer noise with science-backed product recommendations. Addresses "${thirdPainPoint}" by only suggesting products with clinical evidence.`,
+        approach: `**Curation Engine**
+• Only products with clinical studies
+• Transparent ingredient sourcing
+• Price-to-efficacy ratings
+
+**Discovery**
+• Quiz → personalized recs
+• Compare products side-by-side
+• "${fourthPainPoint}" - seasonal routine adjustments
+
+**Trust**
+• No paid placements
+• Revenue from affiliate (disclosed)
+• Community reviews from verified buyers`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 11) + 7,
+        forks: Math.floor(Math.random() * 4) + 2,
+        comments: Math.floor(Math.random() * 6) + 3,
+        edit_count: 1,
+        market_fit: Math.min(86, (opportunityScore || 72) + Math.floor(Math.random() * 7)),
+        status: "concept",
+        tech_stack: ["Next.js", "PostgreSQL", "Algolia", "Stripe"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: "ai-suggestion-3",
+        title: "Skincare Routine Builder",
+        description: `AI that builds your complete routine step-by-step. Tackles "${secondPainPoint}" by ensuring ingredients work together and are applied in the right order.`,
+        approach: `**Routine Engine**
+• Input what you own → get order
+• Flag conflicts automatically
+• AM vs PM optimization
+
+**Education**
+• Why this order matters (video)
+• Ingredient deep-dives
+• When to add new products
+
+**Sharing**
+• Share routines with friends
+• "Shop my routine" affiliate links
+• Before/after progress tracking`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 9) + 5,
+        forks: Math.floor(Math.random() * 3) + 1,
+        comments: Math.floor(Math.random() * 5) + 2,
+        edit_count: 1,
+        market_fit: Math.min(80, (opportunityScore || 68) + Math.floor(Math.random() * 6)),
+        status: "concept",
+        tech_stack: ["React", "Supabase", "OpenAI", "TailwindCSS"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    ];
+  } else if (isGut) {
+    suggestions = [
+      {
+        id: "ai-suggestion-1",
+        title: "Gut-Brain Pattern Tracker",
+        description: `Finally understand your gut with AI-powered pattern recognition. Tackles "${mainPainPoint}" by correlating food, stress, sleep, and symptoms automatically.`,
+        approach: `**Smart Logging**
+• Photo-based meal logging (AI identifies foods)
+• Symptom quick-log with severity
+• "${secondPainPoint}" - auto-track from calendar/health apps
+
+**Pattern AI**
+• Find hidden triggers in 2 weeks
+• Stress-gut correlation insights
+• Sleep impact on digestion
+
+**Recommendations**
+• Personalized food suggestions
+• Optimal eating windows
+• When to see a specialist`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 14) + 10,
+        forks: Math.floor(Math.random() * 5) + 3,
+        comments: Math.floor(Math.random() * 7) + 4,
+        edit_count: 1,
+        market_fit: Math.min(88, (opportunityScore || 75) + Math.floor(Math.random() * 8)),
+        status: "concept",
+        tech_stack: ["React Native", "TensorFlow Lite", "Supabase", "HealthKit"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: "ai-suggestion-2",
+        title: "Probiotic Match Engine",
+        description: `Stop the probiotic lottery. AI matches you with the right strains based on your symptoms and goals. Solves "${fourthPainPoint}" with evidence-based recommendations.`,
+        approach: `**Matching Quiz**
+• Symptoms + goals + history
+• Current diet and lifestyle
+• Previous probiotic experiences
+
+**Recommendations**
+• Top 3 products with reasoning
+• Strain-by-strain breakdown
+• "${thirdPainPoint}" - dosing protocols
+
+**Tracking**
+• Log your experience
+• Compare with similar users
+• Suggest adjustments over time`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 11) + 7,
+        forks: Math.floor(Math.random() * 4) + 2,
+        comments: Math.floor(Math.random() * 5) + 3,
+        edit_count: 1,
+        market_fit: Math.min(83, (opportunityScore || 70) + Math.floor(Math.random() * 7)),
+        status: "concept",
+        tech_stack: ["Next.js", "Supabase", "OpenAI", "Stripe"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: "ai-suggestion-3",
+        title: "Elimination Diet Coach",
+        description: `Guided elimination protocols without the guesswork. Addresses "${thirdPainPoint}" with structured phases and AI-powered reintroduction tracking.`,
+        approach: `**Protocol Builder**
+• Choose from proven protocols
+• Customize based on preferences
+• Meal plans for each phase
+
+**Tracking**
+• Daily check-ins
+• Symptom severity over time
+• Reintroduction reactions
+
+**Support**
+• Community of others in protocol
+• Dietitian Q&A access
+• Recipe database per phase`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 9) + 5,
+        forks: Math.floor(Math.random() * 3) + 1,
+        comments: Math.floor(Math.random() * 4) + 2,
+        edit_count: 1,
+        market_fit: Math.min(79, (opportunityScore || 65) + Math.floor(Math.random() * 6)),
+        status: "concept",
+        tech_stack: ["React Native", "Supabase", "RevenueCat"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    ];
+  } else if (isProductivity) {
+    suggestions = [
+      {
+        id: "ai-suggestion-1",
+        title: "Context Switch Guardian",
+        description: `Protect your focus from interruptions intelligently. Solves "${mainPainPoint}" by understanding work context and filtering disruptions accordingly.`,
+        approach: `**Smart Blocking**
+• Learns your focus patterns
+• Allows truly urgent messages through
+• "${secondPainPoint}" - calendar-aware blocking
+
+**Integration**
+• Slack/Teams status sync
+• Calendar deep integration
+• Auto-respond with ETA
+
+**Analytics**
+• Focus time reports
+• Interruption patterns
+• Cost of context switching`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 13) + 9,
+        forks: Math.floor(Math.random() * 5) + 3,
+        comments: Math.floor(Math.random() * 7) + 4,
+        edit_count: 1,
+        market_fit: Math.min(90, (opportunityScore || 76) + Math.floor(Math.random() * 8)),
+        status: "concept",
+        tech_stack: ["Electron", "React", "Supabase", "Slack API"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: "ai-suggestion-2",
+        title: "Energy-First Scheduler",
+        description: `Schedule work around your energy, not just time. Tackles "${fourthPainPoint}" by matching task difficulty to your biological rhythms.`,
+        approach: `**Energy Tracking**
+• Quick 3x daily energy check-ins
+• Learn your chronotype patterns
+• "${thirdPainPoint}" - predict low-energy windows
+
+**Smart Scheduling**
+• Suggest when to do deep work
+• Auto-move meetings from peak hours
+• Buffer time recommendations
+
+**Team Features**
+• Shared energy patterns
+• Optimal meeting time finder
+• Async-first culture tools`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 11) + 7,
+        forks: Math.floor(Math.random() * 4) + 2,
+        comments: Math.floor(Math.random() * 6) + 3,
+        edit_count: 1,
+        market_fit: Math.min(85, (opportunityScore || 72) + Math.floor(Math.random() * 7)),
+        status: "concept",
+        tech_stack: ["Next.js", "Google Calendar API", "Supabase", "OpenAI"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: "ai-suggestion-3",
+        title: "Creative Work Timer",
+        description: `Timer built for non-linear work. Forget Pomodoro—this adapts to "${mainPainPoint}" with flexible sessions for creative and knowledge work.`,
+        approach: `**Flexible Sessions**
+• No fixed intervals
+• "Flow lock" mode when you're in it
+• Gentle nudges, not hard stops
+
+**Work Types**
+• Different modes for creative/admin/meetings
+• Track time by project automatically
+• "${secondPainPoint}" - no guilt for long sessions
+
+**Insights**
+• When you do your best work
+• Session patterns over time
+• Shareable focus summaries`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 9) + 5,
+        forks: Math.floor(Math.random() * 3) + 1,
+        comments: Math.floor(Math.random() * 5) + 2,
+        edit_count: 1,
+        market_fit: Math.min(81, (opportunityScore || 68) + Math.floor(Math.random() * 6)),
+        status: "concept",
+        tech_stack: ["React", "Electron", "Supabase", "TailwindCSS"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    ];
+  } else if (isCareer) {
+    suggestions = [
+      {
+        id: "ai-suggestion-1",
+        title: "Skills Translation Engine",
+        description: `AI that translates your experience into new career paths. Solves "${mainPainPoint}" by showing transferable skills you didn't know you had.`,
+        approach: `**Profile Builder**
+• Import LinkedIn + resume
+• AI extracts hidden skills
+• "${secondPainPoint}" - translate to new industries
+
+**Career Paths**
+• Show realistic pivot options
+• Salary comparisons
+• Skills gap analysis
+
+**Action Plan**
+• Learning roadmap
+• Portfolio suggestions
+• Network introductions`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 14) + 10,
+        forks: Math.floor(Math.random() * 5) + 3,
+        comments: Math.floor(Math.random() * 7) + 4,
+        edit_count: 1,
+        market_fit: Math.min(87, (opportunityScore || 74) + Math.floor(Math.random() * 8)),
+        status: "concept",
+        tech_stack: ["Next.js", "OpenAI", "LinkedIn API", "Supabase"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: "ai-suggestion-2",
+        title: "Career Pivot Community",
+        description: `Connect with others who've made the leap. Tackles "${thirdPainPoint}" with real stories from successful career changers in your target field.`,
+        approach: `**Story Database**
+• Filter by origin → destination career
+• Salary journey transparency
+• Time to transition data
+
+**Mentorship**
+• Match with successful pivoters
+• Paid 1:1 sessions
+• "${fourthPainPoint}" - honest advice on salary cuts
+
+**Resources**
+• Industry-specific guides
+• Resume before/after examples
+• Interview prep by field`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 11) + 7,
+        forks: Math.floor(Math.random() * 4) + 2,
+        comments: Math.floor(Math.random() * 6) + 3,
+        edit_count: 1,
+        market_fit: Math.min(83, (opportunityScore || 70) + Math.floor(Math.random() * 7)),
+        status: "concept",
+        tech_stack: ["Next.js", "Supabase", "Stripe Connect", "Cal.com"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: "ai-suggestion-3",
+        title: "Portfolio Project Generator",
+        description: `AI generates portfolio projects that prove your new skills. Addresses "${secondPainPoint}" by creating tangible proof for hiring managers.`,
+        approach: `**Project Briefs**
+• Industry-specific project ideas
+• Clear learning outcomes
+• Estimated time to complete
+
+**Build Support**
+• Step-by-step guides
+• Code templates to start
+• Peer review matching
+
+**Showcase**
+• Beautiful project pages
+• Shareable links for applications
+• Track views and interest`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 9) + 5,
+        forks: Math.floor(Math.random() * 3) + 1,
+        comments: Math.floor(Math.random() * 5) + 2,
+        edit_count: 1,
+        market_fit: Math.min(79, (opportunityScore || 66) + Math.floor(Math.random() * 6)),
+        status: "concept",
+        tech_stack: ["Next.js", "Supabase", "OpenAI", "Vercel"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    ];
+  } else if (isConnections) {
+    suggestions = [
+      {
+        id: "ai-suggestion-1",
+        title: "Structured Serendipity App",
+        description: `Create organic connections through curated IRL activities. Solves "${mainPainPoint}" by matching people for low-pressure group experiences, not dates.`,
+        approach: `**Activity Matching**
+• Interest-based group activities
+• 4-8 person optimal group sizes
+• "${secondPainPoint}" - no 1:1 pressure
+
+**Event Types**
+• Coffee walks, museum trips, game nights
+• Skill-sharing sessions
+• Neighborhood exploration
+
+**Connection Flow**
+• Activity first, connection second
+• Post-event optional chat unlock
+• Repeat attendance builds familiarity`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 16) + 12,
+        forks: Math.floor(Math.random() * 6) + 4,
+        comments: Math.floor(Math.random() * 9) + 5,
+        edit_count: 1,
+        market_fit: Math.min(93, (opportunityScore || 80) + Math.floor(Math.random() * 8)),
+        status: "concept",
+        tech_stack: ["React Native", "Supabase", "Mapbox", "Stripe"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: "ai-suggestion-2",
+        title: "Third Place Finder",
+        description: `Discover and create community spaces in your area. Tackles "${thirdPainPoint}" by mapping and rating venues for connection potential.`,
+        approach: `**Venue Discovery**
+• Community-rated "vibe" scores
+• Best times for solo visitors
+• "${fourthPainPoint}" - connection-friendly venues
+
+**Regular Events**
+• Weekly recurring meetups
+• Become a "regular" digitally
+• Host your own gatherings
+
+**Gamification**
+• Check-in streaks
+• Meet X new people challenges
+• Neighborhood connection scores`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 12) + 8,
+        forks: Math.floor(Math.random() * 4) + 2,
+        comments: Math.floor(Math.random() * 6) + 3,
+        edit_count: 1,
+        market_fit: Math.min(86, (opportunityScore || 74) + Math.floor(Math.random() * 7)),
+        status: "concept",
+        tech_stack: ["React Native", "Supabase", "Google Places API", "Mapbox"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: "ai-suggestion-3",
+        title: "Friend-Making Accountability",
+        description: `Weekly challenges to expand your social circle. Addresses "${fourthPainPoint}" with structured prompts and peer accountability for adult friend-making.`,
+        approach: `**Weekly Challenges**
+• Small, doable social actions
+• Report back to accountability group
+• Progressive difficulty
+
+**Accountability Groups**
+• 5-person pods
+• Weekly check-ins
+• "${secondPainPoint}" - celebrate small wins
+
+**Content**
+• Scripts for starting conversations
+• Venue suggestions by challenge
+• Success stories for motivation`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 10) + 6,
+        forks: Math.floor(Math.random() * 3) + 1,
+        comments: Math.floor(Math.random() * 5) + 2,
+        edit_count: 1,
+        market_fit: Math.min(81, (opportunityScore || 68) + Math.floor(Math.random() * 6)),
+        status: "concept",
+        tech_stack: ["React Native", "Supabase", "Push Notifications"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    ];
+  } else {
+    // Fallback generic solutions using the actual problem data
+    suggestions = [
+      {
+        id: "ai-suggestion-1",
+        title: `${trendContext} AI Assistant`,
+        description: `Directly addresses "${mainPainPoint}" with intelligent automation tailored for ${categoryContext} users.`,
+        approach: `**Phase 1 - Core Problem** (Week 1-2)
+• Build MVP focusing on "${mainPainPoint}"
+• Simple onboarding capturing user context
+• Core AI engine for personalized recommendations
 
 **Phase 2 - Expand Value** (Week 3-4)
-• Address secondary pain point: "${secondPainPoint}"
-• Add analytics to show time/money saved
-• Implement ${isB2B ? "workspace collaboration" : "cross-device sync"}
+• Address "${secondPainPoint}"
+• Add analytics and progress tracking
+• Implement sharing features
 
 **Phase 3 - Retention** (Week 5+)
-• Build habit loops with smart notifications
-• Add ${isB2B ? "reporting for managers" : "progress tracking"}
-• Community features for user-generated templates`,
-      ai_generated: true,
-      upvotes: Math.floor(Math.random() * 15) + 8,
-      forks: Math.floor(Math.random() * 5) + 2,
-      comments: Math.floor(Math.random() * 8) + 3,
-      edit_count: 1,
-      market_fit: Math.min(92, (opportunityScore || 75) + Math.floor(Math.random() * 10)),
-      status: "concept",
-      tech_stack: isB2B 
-        ? ["Next.js", "Supabase", "Stripe", "OpenAI API"]
-        : ["React Native", "Supabase", "RevenueCat", "Gemini API"],
-      contributors: [],
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    },
-    {
-      id: "ai-suggestion-2",
-      title: `${trendContext} Copilot Chrome Extension`,
-      description: `Lightweight browser extension that tackles "${secondPainPoint}" right where users work. Zero context-switching - the solution lives inside existing workflows. Perfect for early adopters tired of juggling multiple tools.`,
-      approach: `**Why Browser Extension?**
-• Users already spend 6+ hours in browser daily
-• No new app to download = faster adoption
-• Can enhance existing tools they already use
+• Smart notifications and reminders
+• Community features
+• Premium tier with advanced AI`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 12) + 8,
+        forks: Math.floor(Math.random() * 5) + 2,
+        comments: Math.floor(Math.random() * 7) + 3,
+        edit_count: 1,
+        market_fit: Math.min(88, (opportunityScore || 72) + Math.floor(Math.random() * 8)),
+        status: "concept",
+        tech_stack: ["React", "Supabase", "OpenAI", "TailwindCSS"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: "ai-suggestion-2",
+        title: `${trendContext} Chrome Extension`,
+        description: `Browser-based solution for "${secondPainPoint}". Works where users already spend time.`,
+        approach: `**Why Browser Extension?**
+• Zero friction adoption
+• Enhance existing workflows
+• "${thirdPainPoint}" - contextual help
 
 **Core Features**
-• Overlay UI that appears contextually
-• AI-powered suggestions for "${thirdPainPoint}"
-• One-click actions to save 10+ minutes daily
-• Keyboard shortcuts for power users
+• Overlay UI for quick actions
+• Keyboard shortcuts
+• Cross-site functionality
 
 **Monetization**
-• Freemium: 50 actions/month free
-• Pro: $9/month unlimited + advanced AI
-• Team: $7/user/month with shared templates`,
-      ai_generated: true,
-      upvotes: Math.floor(Math.random() * 12) + 5,
-      forks: Math.floor(Math.random() * 4) + 1,
-      comments: Math.floor(Math.random() * 6) + 2,
-      edit_count: 1,
-      market_fit: Math.min(85, (opportunityScore || 70) + Math.floor(Math.random() * 8) - 5),
-      status: "concept",
-      tech_stack: ["Chrome Extension", "React", "Supabase", "TailwindCSS"],
-      contributors: [],
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    },
-    {
-      id: "ai-suggestion-3",
-      title: isProductivity 
-        ? `${trendContext} Dashboard & Analytics`
-        : `${trendContext} Community + Marketplace`,
-      description: isProductivity
-        ? `Data-driven command center that visualizes "${mainPainPoint}" patterns and provides actionable insights. Helps users understand their blind spots and track improvement over time.`
-        : `Connect people experiencing "${mainPainPoint}" with solutions, templates, and experts. Network effects create a moat while solving "${secondPainPoint}" through peer learning.`,
-      approach: isProductivity 
-        ? `**Core Value Prop**
-Track, measure, and optimize ${trendContext.toLowerCase()} with clear metrics
+• Freemium model
+• $9/month Pro tier`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 10) + 5,
+        forks: Math.floor(Math.random() * 4) + 1,
+        comments: Math.floor(Math.random() * 5) + 2,
+        edit_count: 1,
+        market_fit: Math.min(82, (opportunityScore || 68) + Math.floor(Math.random() * 6)),
+        status: "concept",
+        tech_stack: ["Chrome Extension", "React", "Supabase"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: "ai-suggestion-3",
+        title: `${trendContext} Community Platform`,
+        description: `Connect people solving "${mainPainPoint}" together. Network effects create defensibility.`,
+        approach: `**Community Features**
+• Discussion forums by topic
+• Resource sharing
+• Expert AMAs
 
-**Key Screens**
-• Dashboard: Daily/weekly overview with trend lines
-• Insights: AI-generated recommendations based on data patterns
-• Goals: Set targets and get notified on progress
+**Marketplace**
+• Templates and tools
+• Paid consulting connections
+• "${fourthPainPoint}" - peer learning
 
-**Data Sources**
-• Manual logging (quick-add buttons)
-• Integrations (calendar, ${isB2B ? "Slack, Notion" : "health apps, browser"})
-• AI inference from connected accounts
-
-**Revenue Model**
-• Free tier with 7-day history
-• $12/month for unlimited history + AI insights
-• API access for developers: $49/month`
-        : `**Community Flywheel**
-1. Users join to solve "${mainPainPoint}"
-2. Power users share templates/solutions
-3. Marketplace emerges for premium content
-4. Network effects = defensible moat
-
-**Launch Strategy**
-• Seed with 50 high-quality templates
-• Partner with 5-10 ${trendContext} influencers
-• Weekly challenges to drive engagement
-
-**Monetization**
-• Free to browse, $15/month to create
-• 20% cut on marketplace transactions
-• Sponsored challenges from brands`,
-      ai_generated: true,
-      upvotes: Math.floor(Math.random() * 10) + 4,
-      forks: Math.floor(Math.random() * 3) + 1,
-      comments: Math.floor(Math.random() * 5) + 1,
-      edit_count: 1,
-      market_fit: Math.min(78, (opportunityScore || 65) + Math.floor(Math.random() * 6) - 8),
-      status: "concept",
-      tech_stack: isProductivity
-        ? ["React", "Recharts", "PostgreSQL", "OpenAI"]
-        : ["Next.js", "Supabase", "Stripe Connect", "Algolia"],
-      contributors: [],
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    },
-  ];
+**Revenue**
+• Free to browse
+• $15/month creator tier
+• Transaction fees`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 8) + 4,
+        forks: Math.floor(Math.random() * 3) + 1,
+        comments: Math.floor(Math.random() * 4) + 2,
+        edit_count: 1,
+        market_fit: Math.min(76, (opportunityScore || 64) + Math.floor(Math.random() * 5)),
+        status: "concept",
+        tech_stack: ["Next.js", "Supabase", "Stripe Connect"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    ];
+  }
 
   return suggestions as Solution[];
 }
