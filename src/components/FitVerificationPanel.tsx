@@ -54,18 +54,18 @@ export function FitVerificationPanel({
       <div className="absolute inset-0 bg-gradient-glow opacity-50 pointer-events-none" />
       
       <CardHeader className="relative z-10 pb-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-primary flex items-center justify-center">
+            <div className="h-10 w-10 rounded-xl bg-gradient-primary flex items-center justify-center shrink-0">
               <Sparkles className="h-5 w-5 text-primary-foreground" />
             </div>
-            <div>
+            <div className="min-w-0">
               <CardTitle className="text-base">Problem-Solution Fit</CardTitle>
               <p className="text-xs text-muted-foreground mt-0.5">AI-powered verification</p>
             </div>
           </div>
-          <div className="text-right">
-            <p className={`text-3xl font-bold ${getScoreColor(overallScore)}`}>{overallScore}%</p>
+          <div className="flex items-center gap-2 sm:flex-col sm:items-end">
+            <p className={`text-2xl sm:text-3xl font-bold ${getScoreColor(overallScore)}`}>{overallScore}%</p>
             <Badge variant={overallScore >= 60 ? "success" : "warning"} className="text-xs">
               {getScoreLabel(overallScore)}
             </Badge>
@@ -75,24 +75,24 @@ export function FitVerificationPanel({
 
       <CardContent className="relative z-10 space-y-6">
         {/* Core AI Metrics */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="p-4 rounded-lg bg-secondary/50 space-y-2"
+            className="p-3 sm:p-4 rounded-lg bg-secondary/50 space-y-2"
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Target className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium">Sentiment Fit</span>
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <Target className="h-4 w-4 text-primary shrink-0" />
+                <span className="text-xs sm:text-sm font-medium truncate">Sentiment Fit</span>
               </div>
-              <span className={`text-lg font-bold ${getScoreColor(sentimentFitScore)}`}>
+              <span className={`text-base sm:text-lg font-bold shrink-0 ${getScoreColor(sentimentFitScore)}`}>
                 {sentimentFitScore}%
               </span>
             </div>
             <Progress value={sentimentFitScore} size="sm" indicatorColor={sentimentFitScore >= 60 ? "success" : "default"} />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-[10px] sm:text-xs text-muted-foreground">
               Semantic alignment with pain points
             </p>
           </motion.div>
@@ -101,19 +101,19 @@ export function FitVerificationPanel({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="p-4 rounded-lg bg-secondary/50 space-y-2"
+            className="p-3 sm:p-4 rounded-lg bg-secondary/50 space-y-2"
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Gauge className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium">Problem Coverage</span>
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <Gauge className="h-4 w-4 text-primary shrink-0" />
+                <span className="text-xs sm:text-sm font-medium truncate">Problem Coverage</span>
               </div>
-              <span className={`text-lg font-bold ${getScoreColor(problemCoverage)}`}>
+              <span className={`text-base sm:text-lg font-bold shrink-0 ${getScoreColor(problemCoverage)}`}>
                 {problemCoverage}%
               </span>
             </div>
             <Progress value={problemCoverage} size="sm" indicatorColor={problemCoverage >= 60 ? "success" : "default"} />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-[10px] sm:text-xs text-muted-foreground">
               How much of the problem is addressed
             </p>
           </motion.div>
