@@ -13,16 +13,18 @@ import {
   X,
   Swords,
   Flame,
+  Lock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { toast } from "@/hooks/use-toast";
 import logo from "@/assets/logo.png";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/" },
   { icon: Target, label: "Problems", path: "/problems" },
-  { icon: Rocket, label: "Accelerator", path: "/builds" },
-  { icon: Trophy, label: "League", path: "/leaderboard" },
+  { icon: Rocket, label: "Accelerator", path: "/builds", disabled: true },
+  { icon: Trophy, label: "League", path: "/leaderboard", disabled: true },
 ];
 
 const bottomItems = [
@@ -181,6 +183,35 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
 
         {navItems.slice(2).map((item) => {
           const isActive = location.pathname === item.path;
+          
+          if (item.disabled) {
+            return (
+              <button
+                key={item.path}
+                onClick={() => toast({ description: "Soon available", duration: 2000 })}
+                className={cn(
+                  "flex items-center gap-3 px-3 py-3 md:py-2.5 rounded-lg text-sm font-medium transition-all duration-200 active:scale-[0.98] w-full text-left",
+                  "text-sidebar-foreground/40 hover:text-sidebar-foreground/60 cursor-pointer"
+                )}
+              >
+                <item.icon className="h-5 w-5 shrink-0 text-sidebar-foreground/40" />
+                <AnimatePresence mode="wait">
+                  {(!collapsed || isMobile) && (
+                    <motion.div
+                      initial={{ opacity: 0, width: 0 }}
+                      animate={{ opacity: 1, width: "auto" }}
+                      exit={{ opacity: 0, width: 0 }}
+                      className="flex items-center gap-2 overflow-hidden whitespace-nowrap"
+                    >
+                      <span>{item.label}</span>
+                      <Lock className="h-3 w-3" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </button>
+            );
+          }
+          
           return (
             <NavLink
               key={item.path}

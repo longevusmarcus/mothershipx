@@ -6,15 +6,17 @@ import {
   Trophy,
   Layers,
   Swords,
+  Lock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "@/hooks/use-toast";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Home", path: "/" },
   { icon: Target, label: "Problems", path: "/problems" },
   { icon: null, label: "Fight", path: "/challenges", isCenter: true },
-  { icon: Layers, label: "Accelerator", path: "/builds" },
-  { icon: Trophy, label: "League", path: "/leaderboard" },
+  { icon: Layers, label: "Accelerator", path: "/builds", disabled: true },
+  { icon: Trophy, label: "League", path: "/leaderboard", disabled: true },
 ];
 
 export function MobileBottomNav() {
@@ -60,6 +62,34 @@ export function MobileBottomNav() {
                     }}
                   />
                 </NavLink>
+              );
+            }
+
+            if (item.disabled) {
+              return (
+                <button
+                  key={item.path}
+                  onClick={() => toast({ description: "Soon available", duration: 2000 })}
+                  className={cn(
+                    "flex flex-col items-center justify-center flex-1 h-full gap-1 transition-all duration-200 relative",
+                    "text-muted-foreground/50"
+                  )}
+                >
+                  <motion.div
+                    whileTap={{ scale: 0.9 }}
+                    className="flex flex-col items-center gap-1"
+                  >
+                    {item.icon && (
+                      <item.icon 
+                        className="h-5 w-5 transition-colors text-muted-foreground/50"
+                        strokeWidth={1.5}
+                      />
+                    )}
+                    <span className="text-[10px] font-medium">
+                      {item.label}
+                    </span>
+                  </motion.div>
+                </button>
               );
             }
 
