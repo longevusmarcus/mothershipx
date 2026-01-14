@@ -157,49 +157,6 @@ interface BuildersListProps {
   problemId: string;
 }
 
-// Fake builders for FOMO - these appear when no real builders exist
-const MOCK_BUILDERS = [
-  {
-    id: "mock-1",
-    name: "Alex Chen",
-    avatar: null,
-    stage: "building" as const,
-    skills: ["React", "Node.js", "AI/ML"],
-    solutionName: "Working on MVP",
-    fitScore: 82,
-    isLookingForTeam: true,
-  },
-  {
-    id: "mock-2",
-    name: "Sarah K.",
-    avatar: null,
-    stage: "idea" as const,
-    skills: ["Python", "Data Science", "Product"],
-    isLookingForTeam: true,
-  },
-  {
-    id: "mock-3",
-    name: "Mike R.",
-    avatar: null,
-    stage: "launched" as const,
-    skills: ["Flutter", "Firebase", "Growth"],
-    solutionName: "Beta testing now",
-    fitScore: 71,
-    productUrl: "#",
-    isLookingForTeam: false,
-  },
-  {
-    id: "mock-4",
-    name: "Emma D.",
-    avatar: null,
-    stage: "building" as const,
-    skills: ["Vue.js", "Supabase", "UX"],
-    solutionName: "Just started",
-    fitScore: 54,
-    githubUrl: "#",
-    isLookingForTeam: true,
-  },
-];
 
 export function BuildersList({ problemId }: BuildersListProps) {
   const { user } = useAuth();
@@ -217,8 +174,7 @@ export function BuildersList({ problemId }: BuildersListProps) {
     );
   }
 
-  // Combine real builders with mock builders for FOMO
-  const realBuilders = builders.map((builder) => ({
+  const displayBuilders = builders.map((builder) => ({
     id: builder.user_id,
     name: builder.profile?.name || "Anonymous",
     avatar: builder.profile?.avatar_url,
@@ -227,13 +183,15 @@ export function BuildersList({ problemId }: BuildersListProps) {
     githubUrl: builder.profile?.github ? `https://github.com/${builder.profile.github}` : undefined,
     productUrl: builder.profile?.website || undefined,
     isLookingForTeam: builder.isLookingForTeam,
-    isReal: true,
   }));
 
-  // Show mock builders if no real builders exist, blended in for FOMO
-  const displayBuilders = realBuilders.length > 0 
-    ? realBuilders 
-    : MOCK_BUILDERS.map(b => ({ ...b, isReal: false }));
+  if (displayBuilders.length === 0) {
+    return (
+      <div className="text-center py-8 text-muted-foreground">
+        <p>No builders yet. Be the first to join!</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3">
@@ -241,15 +199,10 @@ export function BuildersList({ problemId }: BuildersListProps) {
         <BuilderCard
           key={builder.id}
           builder={builder}
-          onRequestCollab={user && builder.isReal ? handleRequestCollab : undefined}
+          onRequestCollab={user ? handleRequestCollab : undefined}
           delay={index * 0.1}
         />
       ))}
-      {realBuilders.length === 0 && (
-        <p className="text-center text-xs text-muted-foreground pt-2">
-          🔥 Join now to connect with these builders!
-        </p>
-      )}
     </div>
   );
 }
