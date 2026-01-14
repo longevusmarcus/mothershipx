@@ -16,7 +16,6 @@ import {
   Pencil,
   Check,
   Layers,
-  BarChart3,
   Hash,
   CircleDot,
   User,
@@ -30,6 +29,7 @@ import {
   Camera,
   Loader2,
   Target,
+  Settings,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -277,24 +277,35 @@ export default function Profile() {
                       </div>
                     </div>
                     
-                    <Button
-                      variant={isEditing ? "default" : "outline"}
-                      size="sm"
-                      onClick={isEditing ? handleSave : () => setIsEditing(true)}
-                      className="gap-1.5 h-8 sm:h-9 text-xs sm:text-sm"
-                    >
-                      {isEditing ? (
-                        <>
-                          <Check className="h-3.5 w-3.5" />
-                          Save
-                        </>
-                      ) : (
-                        <>
-                          <Pencil className="h-3.5 w-3.5" />
-                          Edit
-                        </>
-                      )}
-                    </Button>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <Button
+                        variant={isEditing ? "default" : "outline"}
+                        size="sm"
+                        onClick={isEditing ? handleSave : () => setIsEditing(true)}
+                        className="gap-1.5 h-8 sm:h-9 text-xs sm:text-sm"
+                      >
+                        {isEditing ? (
+                          <>
+                            <Check className="h-3.5 w-3.5" />
+                            Save
+                          </>
+                        ) : (
+                          <>
+                            <Pencil className="h-3.5 w-3.5" />
+                            Edit
+                          </>
+                        )}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => navigate("/settings")}
+                        className="gap-1.5 h-8 sm:h-9 text-xs sm:text-sm md:hidden"
+                      >
+                        <Settings className="h-3.5 w-3.5" />
+                        Settings
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
