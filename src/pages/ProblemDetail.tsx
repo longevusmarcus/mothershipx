@@ -5,10 +5,7 @@ import {
   ArrowLeft, 
   Users, 
   TrendingUp, 
-  Clock,
   Rocket,
-  UserPlus,
-  Filter,
   ExternalLink,
   Flame,
   Target,
@@ -18,12 +15,11 @@ import {
   Calendar,
   CheckCircle2,
   Check,
-  Loader2
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { FitVerificationPanel } from "@/components/FitVerificationPanel";
 import { SolutionsLab } from "@/components/SolutionsLab";
-import { BuildersList } from "@/components/BuilderCard";
+
 import { TrendBadge } from "@/components/TrendBadge";
 import { SocialProofStats } from "@/components/SocialProofStats";
 import { OpportunityMeter } from "@/components/OpportunityMeter";
@@ -275,13 +271,10 @@ const ProblemDetail = () => {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="w-full sm:w-auto grid grid-cols-5 sm:inline-flex overflow-x-auto">
+          <TabsList className="w-full sm:w-auto grid grid-cols-4 sm:inline-flex overflow-x-auto">
             <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
             <TabsTrigger value="squads" className="text-xs sm:text-sm">
               🔥 Squads
-            </TabsTrigger>
-            <TabsTrigger value="builders" className="text-xs sm:text-sm">
-              Builders
             </TabsTrigger>
             <TabsTrigger value="solutions" className="text-xs sm:text-sm">Solutions</TabsTrigger>
             <TabsTrigger value="competitors" className="text-xs sm:text-sm">Competitors</TabsTrigger>
@@ -377,35 +370,6 @@ const ProblemDetail = () => {
             <TeamFormation problemId={dbProblemId} problemTitle={problem.title} />
           </TabsContent>
 
-          <TabsContent value="builders" forceMount className={`mt-4 sm:mt-6 space-y-4 sm:space-y-6 ${activeTab !== "builders" ? "hidden" : ""}`}>
-            {/* Team Formation Banner */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl bg-primary/5 border border-primary/20"
-            >
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <UserPlus className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <p className="font-medium">Looking for collaborators?</p>
-                  <p className="text-sm text-muted-foreground">
-                    Find builders open to teaming up on this problem
-                  </p>
-                </div>
-              </div>
-              <Button variant="outline" size="sm">
-                <Filter className="h-4 w-4 mr-2" />
-                Filter
-              </Button>
-            </motion.div>
-
-            {/* Builders Grid */}
-            <div className="grid md:grid-cols-2 gap-4">
-              <BuildersList problemId={dbProblemId} />
-            </div>
-          </TabsContent>
 
           <TabsContent value="solutions" forceMount className={`mt-4 sm:mt-6 space-y-4 sm:space-y-6 ${activeTab !== "solutions" ? "hidden" : ""}`}>
             {/* Solutions Lab - Wiki-style collaborative ideas */}
