@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Mail, Lock, User } from "lucide-react";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { ArrowRight, Loader2, X } from "lucide-react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import logoIcon from "@/assets/logo-icon.png";
 
 interface AuthModalProps {
   open: boolean;
@@ -26,7 +27,6 @@ export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     if (mode === "signin") {
@@ -50,120 +50,118 @@ export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md p-0 gap-0 overflow-hidden border-border/50 bg-card">
-        <DialogTitle className="sr-only">
-          {mode === "signin" ? "Sign in to your account" : "Create your account"}
-        </DialogTitle>
-        
-        {/* Header */}
-        <div className="px-8 pt-8 pb-6">
+      <DialogContent className="sm:max-w-sm p-0 gap-0 border-border bg-card overflow-hidden">
+        {/* Close button */}
+        <button
+          onClick={() => onOpenChange(false)}
+          className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-secondary transition-colors z-10"
+        >
+          <X className="h-4 w-4 text-muted-foreground" />
+        </button>
+
+        <div className="p-8">
+          {/* Logo */}
+          <div className="flex justify-center mb-6">
+            <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+              <img src={logoIcon} alt="" className="h-6 w-6 object-contain" />
+            </div>
+          </div>
+
+          {/* Title */}
           <motion.div
             key={mode}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center mb-8"
           >
-            <h2 className="text-xl font-semibold tracking-tight">
+            <h2 className="text-xl font-semibold tracking-tight mb-1">
               {mode === "signin" ? "Welcome back" : "Create account"}
             </h2>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-sm text-muted-foreground">
               {mode === "signin"
-                ? "Sign in to access the dashboard"
-                : "Join to explore opportunities"}
+                ? "Sign in to continue"
+                : "Get started with MothershipX"}
             </p>
           </motion.div>
-        </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="px-8 pb-8 space-y-5">
-          <AnimatePresence mode="wait">
-            {mode === "signup" && (
-              <motion.div
-                key="name-field"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <div className="space-y-2">
-                  <Label htmlFor="name" className="text-xs font-medium text-muted-foreground">
-                    Name
-                  </Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <AnimatePresence mode="wait">
+              {mode === "signup" && (
+                <motion.div
+                  key="name-field"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.15 }}
+                >
+                  <div className="space-y-1.5 mb-4">
+                    <Label htmlFor="name" className="text-xs text-muted-foreground">
+                      Name
+                    </Label>
                     <Input
                       id="name"
                       type="text"
                       placeholder="Your name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="pl-10 h-11 bg-secondary/50 border-0 focus-visible:ring-1"
+                      className="h-10 bg-secondary/50 border-0 focus-visible:ring-1"
                       required={mode === "signup"}
                     />
                   </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-xs font-medium text-muted-foreground">
-              Email
-            </Label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="text-xs text-muted-foreground">
+                Email
+              </Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="pl-10 h-11 bg-secondary/50 border-0 focus-visible:ring-1"
+                className="h-10 bg-secondary/50 border-0 focus-visible:ring-1"
                 required
               />
             </div>
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password" className="text-xs font-medium text-muted-foreground">
-              Password
-            </Label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <div className="space-y-1.5">
+              <Label htmlFor="password" className="text-xs text-muted-foreground">
+                Password
+              </Label>
               <Input
                 id="password"
                 type="password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="pl-10 h-11 bg-secondary/50 border-0 focus-visible:ring-1"
+                className="h-10 bg-secondary/50 border-0 focus-visible:ring-1"
                 required
                 minLength={8}
               />
             </div>
-          </div>
 
-          <Button
-            type="submit"
-            className="w-full h-11 font-medium"
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <motion.div
-                className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              />
-            ) : (
-              <>
-                <span>{mode === "signin" ? "Sign in" : "Create account"}</span>
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </>
-            )}
-          </Button>
+            <Button
+              type="submit"
+              className="w-full h-10 mt-6"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  {mode === "signin" ? "Sign in" : "Create account"}
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </>
+              )}
+            </Button>
+          </form>
 
           {/* Toggle */}
-          <div className="pt-2 text-center">
+          <div className="mt-6 text-center">
             <button
               type="button"
               onClick={toggleMode}
@@ -182,7 +180,7 @@ export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
               )}
             </button>
           </div>
-        </form>
+        </div>
       </DialogContent>
     </Dialog>
   );
