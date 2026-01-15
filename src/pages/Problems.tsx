@@ -5,7 +5,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
 import { MarketProblemCard } from "@/components/MarketProblemCard";
 import { DataSourceSelector } from "@/components/DataSourceSelector";
-import { AITransformPanel } from "@/components/AITransformPanel";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -93,15 +93,6 @@ const Problems = () => {
               <DataSourceSelector onSelectionChange={setSelectedSources} />
             </CardContent>
           </Card>
-        </motion.div>
-
-        {/* AI Transform Panel - Locked for non-founders */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.15 }}
-        >
-          <AITransformPanel selectedSources={selectedSources} isAdmin={false} />
         </motion.div>
 
         {/* Search & Filters */}
