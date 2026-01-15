@@ -7,19 +7,15 @@ import {
   Users,
   User,
   Zap,
-  Sparkles,
   DollarSign,
   ChevronRight,
   Crown,
   Vote,
   CheckCircle2,
   TrendingUp,
-  Eye,
-  Target,
   LogIn,
   Send,
 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -57,7 +53,6 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
   const isVoting = challenge.status === "voting";
   const isCompleted = challenge.status === "completed";
 
-  // Check if user has already joined this challenge
   const existingJoin = myChallengeJoins.find(j => j.challenge_id === challenge.id);
   const hasJoined = !!existingJoin;
 
@@ -67,31 +62,23 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
 
   const handleConfirmJoin = async () => {
     if (!joinType) return;
-    
-    // Close join dialog and open paywall
     setIsJoinDialogOpen(false);
     setIsPaywallOpen(true);
   };
 
   const handlePaymentSuccess = async () => {
     if (!joinType) return;
-    
     setIsProcessing(true);
     
     try {
-      // Store the join in the database after successful payment
       await joinChallengeMutation.mutateAsync({
         challengeId: challenge.id,
         joinType,
       });
       
-      toast.success(`Joined challenge as ${joinType}! $2 entry fee processed.`, {
-        description: "Redirecting to submission page...",
-      });
-      
+      toast.success(`Joined challenge as ${joinType}!`);
       setIsPaywallOpen(false);
       
-      // Navigate to submit page with challenge context
       navigate("/submit", {
         state: {
           challenge: {
@@ -122,359 +109,276 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
     navigate("/auth", { state: { returnTo: "/challenges" } });
   };
 
-  const statusIcon = isActive ? (
-    <Zap className="h-3.5 w-3.5" />
-  ) : isVoting ? (
-    <Vote className="h-3.5 w-3.5" />
-  ) : (
-    <CheckCircle2 className="h-3.5 w-3.5" />
-  );
-
-  const statusLabel = isActive ? "Live Now" : isVoting ? "Voting" : "Completed";
-  const statusColor = isActive
-    ? "bg-success/10 text-success border-success/30"
-    : isVoting
-    ? "bg-warning/10 text-warning border-warning/30"
-    : "bg-muted text-muted-foreground border-border";
+  const statusLabel = isActive ? "Live" : isVoting ? "Voting" : "Completed";
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.4 }}
+      transition={{ delay, duration: 0.3 }}
     >
-      <Card
-        variant="elevated"
-        className={`relative overflow-hidden transition-all duration-300 hover:shadow-lg ${
-          challenge.isToday ? "ring-2 ring-primary/50" : ""
-        }`}
-      >
-        {/* Today's Challenge Ribbon */}
-        {challenge.isToday && (
-          <div className="absolute top-0 right-0 z-10">
-            <div className="bg-gradient-primary text-primary-foreground text-[10px] font-bold px-3 py-1 rounded-bl-lg flex items-center gap-1">
-              <Sparkles className="h-3 w-3" />
-              TODAY
-            </div>
-          </div>
-        )}
-
-        {/* Glow effect for active challenges */}
-        {isActive && (
-          <div className="absolute inset-0 bg-gradient-to-br from-success/5 via-transparent to-transparent pointer-events-none" />
-        )}
-
-        <CardContent className="p-4 sm:p-5">
-          {/* Header */}
-          <div className="flex items-start justify-between gap-3 mb-3">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1.5">
-                <Badge variant="outline" className={`text-[10px] gap-1 ${statusColor}`}>
-                  {statusIcon}
+      <div className="rounded-lg border border-border bg-card p-5">
+        {/* Header Row */}
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-2">
+              {isActive && (
+                <span className="flex items-center gap-1 text-xs text-success font-medium">
+                  <Zap className="h-3 w-3" />
                   {statusLabel}
-                </Badge>
-                <Badge
-                  variant="outline"
-                  className={`text-[10px] ${getDifficultyColor(challenge.difficulty)}`}
-                >
-                  {challenge.difficulty}
-                </Badge>
-              </div>
-              <h3 className="font-bold text-base sm:text-lg leading-tight truncate">
-                {challenge.title}
-              </h3>
-              <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
-                <span className="text-primary font-medium">Trend:</span>
-                {challenge.trend}
-              </p>
+                </span>
+              )}
+              {isVoting && (
+                <span className="flex items-center gap-1 text-xs text-warning font-medium">
+                  <Vote className="h-3 w-3" />
+                  {statusLabel}
+                </span>
+              )}
+              {isCompleted && (
+                <span className="flex items-center gap-1 text-xs text-muted-foreground font-medium">
+                  <CheckCircle2 className="h-3 w-3" />
+                  {statusLabel}
+                </span>
+              )}
+              <span className={`text-xs px-1.5 py-0.5 rounded ${getDifficultyColor(challenge.difficulty)}`}>
+                {challenge.difficulty}
+              </span>
+              {challenge.isToday && (
+                <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded font-medium">
+                  TODAY
+                </span>
+              )}
             </div>
-
-            {/* Prize Pool */}
-            <div className="flex-shrink-0 text-right">
-              <div className="flex items-center gap-1 text-success font-bold text-lg sm:text-xl">
-                <DollarSign className="h-4 w-4 sm:h-5 sm:w-5" />
-                {challenge.prizePool}
-              </div>
-              <p className="text-[10px] text-muted-foreground">prize pool</p>
-            </div>
-          </div>
-
-          {/* Why This Challenge - Relevance Section */}
-          <div className="bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 rounded-lg p-3 mb-3 border border-primary/20">
-            <div className="flex items-start gap-2 mb-2">
-              <Target className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-[10px] uppercase tracking-wider text-primary font-semibold mb-1">
-                  Why This Challenge?
-                </p>
-                <p className="text-xs text-foreground/80 leading-relaxed">
-                  {challenge.whyRelevant}
-                </p>
-              </div>
-            </div>
-            
-            {/* Data Sources */}
-            <div className="flex flex-wrap gap-2 mt-2">
-              {challenge.sources.map((src, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center gap-1.5 bg-background/60 rounded-md px-2 py-1 border border-border/50"
-                >
-                  <span className="text-sm">{getSourceIcon(src.source)}</span>
-                  <span className="text-[10px] text-muted-foreground">{src.metric}:</span>
-                  <span className="text-[10px] font-semibold text-foreground">{src.value}</span>
-                </div>
-              ))}
-            </div>
-            
-            {/* Trend Stats */}
-            <div className="flex items-center gap-4 mt-2 pt-2 border-t border-primary/10">
-              <div className="flex items-center gap-1 text-xs">
-                <TrendingUp className="h-3 w-3 text-success" />
-                <span className="text-success font-medium">{challenge.trendGrowth}</span>
-                <span className="text-muted-foreground">growth</span>
-              </div>
-              <div className="flex items-center gap-1 text-xs">
-                <Eye className="h-3 w-3 text-muted-foreground" />
-                <span className="text-muted-foreground">{challenge.audienceSize}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Description */}
-          <p className="text-xs sm:text-sm text-muted-foreground mb-3 line-clamp-2">
-            {challenge.description}
-          </p>
-
-          {/* Example Prompt */}
-          <div className="bg-secondary/50 rounded-lg p-3 mb-4 border border-border/50">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1 font-medium">
-              Example Build
+            <h3 className="font-semibold text-base">{challenge.title}</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Trend: <span className="text-foreground">{challenge.trend}</span>
             </p>
-            <p className="text-xs sm:text-sm italic">"{challenge.example}"</p>
           </div>
 
-          {/* Stats Row */}
-          <div className="grid grid-cols-3 gap-2 mb-4">
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center">
-                <Users className="h-3 w-3 text-primary" />
-              </div>
-              <span>{challenge.participants} joined</span>
+          <div className="text-right shrink-0">
+            <div className="flex items-center gap-1 text-success font-semibold text-lg">
+              <DollarSign className="h-4 w-4" />
+              {challenge.prizePool}
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center">
-                <User className="h-3 w-3" />
-              </div>
-              <span>{challenge.soloParticipants} solo</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center">
-                <Users className="h-3 w-3" />
-              </div>
-              <span>{challenge.teamCount} teams</span>
-            </div>
+            <p className="text-[10px] text-muted-foreground">prize pool</p>
           </div>
+        </div>
 
-          {/* Time & Prize Distribution */}
-          <div className="flex items-center justify-between text-xs mb-4">
-            <div className="flex items-center gap-1.5">
-              <Clock className="h-3.5 w-3.5 text-muted-foreground" />
-              <span className={isActive ? "text-success font-medium" : "text-muted-foreground"}>
-                {timeRemaining}
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Crown className="h-3.5 w-3.5 text-warning" />
-              <span className="text-muted-foreground">
-                Winner takes <span className="text-success font-medium">${challenge.winnerPrize.toFixed(0)}</span>
-              </span>
-            </div>
-          </div>
-
-          {/* Tags */}
-          <div className="flex flex-wrap gap-1.5 mb-4">
-            {challenge.tags.map((tag) => (
-              <Badge key={tag} variant="secondary" className="text-[10px] px-2 py-0.5">
-                {tag}
-              </Badge>
+        {/* Why This Challenge */}
+        <div className="bg-secondary/30 rounded-md p-3 mb-4">
+          <p className="text-xs text-muted-foreground mb-1">Why this challenge?</p>
+          <p className="text-sm">{challenge.whyRelevant}</p>
+          
+          {/* Sources */}
+          <div className="flex flex-wrap gap-2 mt-3">
+            {challenge.sources.map((src, idx) => (
+              <div
+                key={idx}
+                className="flex items-center gap-1.5 text-xs bg-background rounded px-2 py-1"
+              >
+                <span>{getSourceIcon(src.source)}</span>
+                <span className="text-muted-foreground">{src.metric}:</span>
+                <span className="font-medium">{src.value}</span>
+              </div>
             ))}
           </div>
+          
+          <div className="flex items-center gap-4 mt-3 pt-2 border-t border-border/50 text-xs">
+            <span className="flex items-center gap-1 text-success">
+              <TrendingUp className="h-3 w-3" />
+              {challenge.trendGrowth} growth
+            </span>
+            <span className="text-muted-foreground">{challenge.audienceSize}</span>
+          </div>
+        </div>
 
-          {/* Action Buttons */}
-          {isActive ? (
-            isAuthenticated ? (
-              hasJoined ? (
-                // User has already joined - show Joined status + Submit button
-                <div className="space-y-2">
-                  <div className="flex items-center justify-center gap-2 py-2 px-4 bg-success/10 rounded-lg border border-success/30">
-                    <CheckCircle2 className="h-4 w-4 text-success" />
-                    <span className="text-sm font-medium text-success">
-                      Joined as {existingJoin?.join_type === "team" ? "Team" : "Solo"}
-                    </span>
-                  </div>
-                  <Button 
-                    className="w-full gap-2 bg-gradient-primary hover:opacity-90"
-                    onClick={() => navigate("/submit", {
-                      state: {
-                        challenge: {
-                          id: challenge.id,
-                          title: challenge.title,
-                          trend: challenge.trend,
-                          description: challenge.description,
-                          example: challenge.example,
-                          prizePool: challenge.prizePool,
-                          winnerPrize: challenge.winnerPrize,
-                          endsAt: challenge.endsAt.toISOString(),
-                          difficulty: challenge.difficulty,
-                          tags: challenge.tags,
-                        },
-                        joinType: existingJoin?.join_type || "solo",
-                        entryFee: 2,
-                      },
-                    })}
-                  >
-                    <Send className="h-4 w-4" />
-                    Submit Your Build
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
+        {/* Description */}
+        <p className="text-sm text-muted-foreground mb-3">{challenge.description}</p>
+
+        {/* Example */}
+        <div className="bg-secondary/30 rounded-md p-3 mb-4">
+          <p className="text-xs text-muted-foreground mb-1">Example build</p>
+          <p className="text-sm italic">"{challenge.example}"</p>
+        </div>
+
+        {/* Stats */}
+        <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
+          <span className="flex items-center gap-1">
+            <Users className="h-3.5 w-3.5" />
+            {challenge.participants} joined
+          </span>
+          <span className="flex items-center gap-1">
+            <User className="h-3.5 w-3.5" />
+            {challenge.soloParticipants} solo
+          </span>
+          <span className="flex items-center gap-1">
+            <Users className="h-3.5 w-3.5" />
+            {challenge.teamCount} teams
+          </span>
+        </div>
+
+        {/* Time & Prize */}
+        <div className="flex items-center justify-between text-xs mb-4">
+          <span className={`flex items-center gap-1 ${isActive ? "text-success" : "text-muted-foreground"}`}>
+            <Clock className="h-3.5 w-3.5" />
+            {timeRemaining}
+          </span>
+          <span className="flex items-center gap-1 text-muted-foreground">
+            <Crown className="h-3.5 w-3.5 text-warning" />
+            Winner takes <span className="text-success font-medium ml-1">${challenge.winnerPrize.toFixed(0)}</span>
+          </span>
+        </div>
+
+        {/* Tags */}
+        <div className="flex flex-wrap gap-1.5 mb-4">
+          {challenge.tags.map((tag) => (
+            <Badge key={tag} variant="secondary" className="text-[10px] px-2 py-0.5 font-normal">
+              {tag}
+            </Badge>
+          ))}
+        </div>
+
+        {/* Actions */}
+        {isActive ? (
+          isAuthenticated ? (
+            hasJoined ? (
+              <div className="space-y-2">
+                <div className="flex items-center justify-center gap-2 py-2 text-sm text-success">
+                  <CheckCircle2 className="h-4 w-4" />
+                  Joined as {existingJoin?.join_type === "team" ? "Team" : "Solo"}
                 </div>
-              ) : (
-                // User hasn't joined yet - show Join dialog
-                <Dialog open={isJoinDialogOpen} onOpenChange={setIsJoinDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button className="w-full gap-2 bg-gradient-primary hover:opacity-90">
-                      <Trophy className="h-4 w-4" />
-                      Join Challenge - $2 Entry
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                      <DialogTitle className="flex items-center gap-2">
-                        <Trophy className="h-5 w-5 text-primary" />
-                        Join "{challenge.title}"
-                      </DialogTitle>
-                      <DialogDescription>
-                        Choose how you want to compete. Entry fee: $2.
-                      </DialogDescription>
-                    </DialogHeader>
-
-                    <div className="space-y-4 py-4">
-                      {/* Join Type Selection */}
-                      <div className="grid grid-cols-2 gap-3">
-                        <button
-                          onClick={() => handleJoin("solo")}
-                          className={`p-4 rounded-xl border-2 transition-all ${
-                            joinType === "solo"
-                              ? "border-primary bg-primary/10"
-                              : "border-border hover:border-primary/50"
-                          }`}
-                        >
-                          <User className="h-8 w-8 mx-auto mb-2 text-primary" />
-                          <p className="font-semibold">Solo</p>
-                          <p className="text-xs text-muted-foreground">Build alone</p>
-                        </button>
-                        <button
-                          onClick={() => handleJoin("team")}
-                          className={`p-4 rounded-xl border-2 transition-all ${
-                            joinType === "team"
-                              ? "border-primary bg-primary/10"
-                              : "border-border hover:border-primary/50"
-                          }`}
-                        >
-                          <Users className="h-8 w-8 mx-auto mb-2 text-primary" />
-                          <p className="font-semibold">Team</p>
-                          <p className="text-xs text-muted-foreground">Up to 4 members</p>
-                        </button>
-                      </div>
-
-                      {/* Prize Info */}
-                      <div className="bg-secondary rounded-lg p-4 space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Entry Fee</span>
-                          <span className="font-medium">$2.00</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Current Pool</span>
-                          <span className="font-medium text-success">${challenge.prizePool}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Winner Prize (90%)</span>
-                          <span className="font-bold text-success">${challenge.winnerPrize.toFixed(2)}</span>
-                        </div>
-                        <div className="pt-2 border-t border-border">
-                          <p className="text-[10px] text-muted-foreground">
-                            🤖 Winner selected by AI analysis: code quality, aesthetics, and creativity.
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Build Time */}
-                      <div className="flex items-center gap-2 p-3 bg-warning/10 rounded-lg border border-warning/30">
-                        <Clock className="h-5 w-5 text-warning" />
-                        <div>
-                          <p className="text-sm font-medium">24 Hour Build Sprint</p>
-                          <p className="text-xs text-muted-foreground">
-                            Submit before time runs out to be eligible.
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Confirm Button */}
-                      <Button
-                        className="w-full"
-                        disabled={!joinType || isProcessing}
-                        onClick={handleConfirmJoin}
-                      >
-                        {joinType ? (
-                          `Continue as ${joinType === "solo" ? "Solo" : "Team"} →`
-                        ) : (
-                          "Select Solo or Team"
-                        )}
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              )
+                <Button 
+                  className="w-full"
+                  onClick={() => navigate("/submit", {
+                    state: {
+                      challenge: {
+                        id: challenge.id,
+                        title: challenge.title,
+                        trend: challenge.trend,
+                        description: challenge.description,
+                        example: challenge.example,
+                        prizePool: challenge.prizePool,
+                        winnerPrize: challenge.winnerPrize,
+                        endsAt: challenge.endsAt.toISOString(),
+                        difficulty: challenge.difficulty,
+                        tags: challenge.tags,
+                      },
+                      joinType: existingJoin?.join_type || "solo",
+                      entryFee: 2,
+                    },
+                  })}
+                >
+                  <Send className="h-4 w-4 mr-2" />
+                  Submit Your Build
+                </Button>
+              </div>
             ) : (
-              <Button 
-                className="w-full gap-2" 
-                variant="outline"
-                onClick={handleAuthRedirect}
-              >
-                <LogIn className="h-4 w-4" />
-                Sign in to Join Challenge
-              </Button>
-            )
-          ) : isVoting ? (
-            <Button variant="outline" className="w-full gap-2" disabled>
-              <Vote className="h-4 w-4" />
-              Voting in Progress
-            </Button>
-          ) : (
-            <Button 
-              variant="ghost" 
-              className="w-full gap-2 text-muted-foreground hover:text-foreground"
-              onClick={() => navigate(`/challenges/${challenge.id}/results`)}
-            >
-              <CheckCircle2 className="h-4 w-4" />
-              View Results
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          )}
-        </CardContent>
+              <Dialog open={isJoinDialogOpen} onOpenChange={setIsJoinDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="w-full">
+                    <Trophy className="h-4 w-4 mr-2" />
+                    Join Challenge – $2 Entry
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Join "{challenge.title}"</DialogTitle>
+                    <DialogDescription>
+                      Choose how you want to compete. Entry fee: $2
+                    </DialogDescription>
+                  </DialogHeader>
 
-        {/* Paywall Modal for payment processing */}
-        <PaywallModal
-          open={isPaywallOpen}
-          onOpenChange={setIsPaywallOpen}
-          onPaymentSuccess={handlePaymentSuccess}
-          challengeTitle={challenge.title}
-          prizePool={challenge.prizePool}
-          winnerPrize={challenge.winnerPrize}
-        />
-      </Card>
+                  <div className="space-y-4 py-4">
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        onClick={() => handleJoin("solo")}
+                        className={`p-4 rounded-lg border-2 transition-all ${
+                          joinType === "solo"
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-primary/50"
+                        }`}
+                      >
+                        <User className="h-6 w-6 mx-auto mb-2" />
+                        <p className="font-medium text-sm">Solo</p>
+                        <p className="text-xs text-muted-foreground">Build alone</p>
+                      </button>
+                      <button
+                        onClick={() => handleJoin("team")}
+                        className={`p-4 rounded-lg border-2 transition-all ${
+                          joinType === "team"
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-primary/50"
+                        }`}
+                      >
+                        <Users className="h-6 w-6 mx-auto mb-2" />
+                        <p className="font-medium text-sm">Team</p>
+                        <p className="text-xs text-muted-foreground">Up to 4 members</p>
+                      </button>
+                    </div>
+
+                    <div className="bg-secondary/50 rounded-lg p-4 space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Entry Fee</span>
+                        <span>$2.00</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Current Pool</span>
+                        <span className="text-success">${challenge.prizePool}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Winner Prize</span>
+                        <span className="font-medium text-success">${challenge.winnerPrize.toFixed(2)}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 p-3 bg-warning/10 rounded-lg text-sm">
+                      <Clock className="h-4 w-4 text-warning shrink-0" />
+                      <span>24 hour build sprint</span>
+                    </div>
+
+                    <Button
+                      className="w-full"
+                      disabled={!joinType || isProcessing}
+                      onClick={handleConfirmJoin}
+                    >
+                      {joinType ? `Continue as ${joinType === "solo" ? "Solo" : "Team"}` : "Select Solo or Team"}
+                      <ChevronRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )
+          ) : (
+            <Button variant="outline" className="w-full" onClick={handleAuthRedirect}>
+              <LogIn className="h-4 w-4 mr-2" />
+              Sign in to Join
+            </Button>
+          )
+        ) : isVoting ? (
+          <Button variant="outline" className="w-full" disabled>
+            <Vote className="h-4 w-4 mr-2" />
+            Voting in Progress
+          </Button>
+        ) : (
+          <Button 
+            variant="ghost" 
+            className="w-full text-muted-foreground"
+            onClick={() => navigate(`/challenges/${challenge.id}/results`)}
+          >
+            View Results
+            <ChevronRight className="h-4 w-4 ml-1" />
+          </Button>
+        )}
+      </div>
+
+      <PaywallModal
+        open={isPaywallOpen}
+        onOpenChange={setIsPaywallOpen}
+        onPaymentSuccess={handlePaymentSuccess}
+        challengeTitle={challenge.title}
+        prizePool={challenge.prizePool}
+        winnerPrize={challenge.winnerPrize}
+      />
     </motion.div>
   );
 };
