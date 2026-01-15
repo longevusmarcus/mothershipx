@@ -137,11 +137,9 @@ export function DataSourceSelector({ onSelectionChange }: DataSourceSelectorProp
         ))}
       </div>
       
-      {selected.length > 0 && (
-        <p className="text-xs text-muted-foreground">
-          {selected.length} source{selected.length !== 1 ? "s" : ""} selected for AI analysis
-        </p>
-      )}
+      <p className="text-xs text-muted-foreground">
+        Connect 10+ data sources to discover real problems and trends. Then build solutions together with our community of builders.
+      </p>
     </div>
   );
 }
