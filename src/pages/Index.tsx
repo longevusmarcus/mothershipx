@@ -113,8 +113,8 @@ const Index = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="search problems, trends..."
-                className="w-full px-4 py-5 text-sm bg-transparent border-0 focus:outline-none focus:ring-0 placeholder:text-muted-foreground/60 placeholder:font-light placeholder:tracking-wide placeholder:lowercase"
+                placeholder="Search problems, niches, opportunities..."
+                className="w-full px-4 py-5 bg-transparent border-0 focus:outline-none focus:ring-0 placeholder:text-muted-foreground"
               />
 
               {/* Bottom Bar */}
