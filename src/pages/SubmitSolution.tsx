@@ -5,28 +5,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { 
-  ExternalLink, 
-  Github, 
-  CreditCard, 
-  Database, 
-  Rocket,
   ArrowRight,
   ArrowLeft,
   CheckCircle2,
-  Sparkles,
   Loader2,
-  Trophy,
   Clock,
-  DollarSign,
-  Target,
-  Zap,
-  Award,
-  BarChart3,
-  Wallet,
-  Mail,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -43,7 +28,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-// Validation schema
 const submissionSchema = z.object({
   productName: z
     .string()
@@ -109,14 +93,6 @@ interface LocationState {
   entryFee?: number;
 }
 
-interface SubmissionStep {
-  id: string;
-  title: string;
-  description: string;
-  icon: React.ElementType;
-  completed: boolean;
-}
-
 const SubmitSolution = () => {
   const { toast } = useToast();
   const location = useLocation();
@@ -147,7 +123,6 @@ const SubmitSolution = () => {
     mode: "onBlur",
   });
 
-  // Redirect if not authenticated
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       toast({
@@ -159,7 +134,6 @@ const SubmitSolution = () => {
     }
   }, [isAuthenticated, authLoading, navigate, toast]);
 
-  // Calculate time remaining for challenge
   const getTimeRemaining = () => {
     if (!challenge?.endsAt) return null;
     const now = new Date();
@@ -171,20 +145,19 @@ const SubmitSolution = () => {
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     
-    return `${hours}h ${minutes}m remaining`;
+    return `${hours}h ${minutes}m`;
   };
 
-  const steps: SubmissionStep[] = [
-    { id: "details", title: "Build Details", description: "Product URL & integrations", icon: Database, completed: currentStep > 0 },
-    { id: "submitting", title: "Submitting", description: "AI validation in progress", icon: Sparkles, completed: currentStep > 1 },
-    { id: "confirmed", title: "Confirmed", description: "Entry submitted", icon: CheckCircle2, completed: currentStep > 2 },
+  const steps = [
+    { id: "details", label: "Build Details" },
+    { id: "submitting", label: "Submitting" },
+    { id: "confirmed", label: "Confirmed" },
   ];
 
   const handleSubmit = async (data: SubmissionFormData) => {
     setIsSubmitting(true);
     setCurrentStep(1);
     
-    // Show progress while submitting to Supabase with AI validation
     const progressInterval = setInterval(() => {
       setSubmissionProgress(prev => {
         if (prev >= 90) return prev;
@@ -210,7 +183,6 @@ const SubmitSolution = () => {
       clearInterval(progressInterval);
       setSubmissionProgress(100);
       
-      // Short delay before showing success
       await new Promise(resolve => setTimeout(resolve, 500));
 
       setIsSubmitting(false);
@@ -218,9 +190,9 @@ const SubmitSolution = () => {
       setCurrentStep(2);
       
       toast({
-        title: "Entry Submitted! 🎉",
+        title: "Entry Submitted!",
         description: challenge 
-          ? `Your build for "${challenge.title}" is now in the competition. AI will rank all entries when voting begins.`
+          ? `Your build for "${challenge.title}" is now in the competition.`
           : "Your solution has been submitted successfully.",
       });
     } catch (error) {
@@ -245,17 +217,11 @@ const SubmitSolution = () => {
     }
   };
 
-  const handleViewChallenge = () => {
-    navigate("/challenges");
-  };
-
-  const progressValue = ((currentStep + 1) / steps.length) * 100;
-
   if (authLoading) {
     return (
       <AppLayout>
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         </div>
       </AppLayout>
     );
@@ -263,133 +229,100 @@ const SubmitSolution = () => {
 
   return (
     <AppLayout>
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-2xl mx-auto">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center space-y-2"
+          className="mb-8"
         >
-          <Badge variant="glow" className="mb-2">
-            {challenge ? (
-              <>
-                <Trophy className="h-3 w-3 mr-1" />
-                Challenge Entry
-              </>
-            ) : (
-              <>
-                <Rocket className="h-3 w-3 mr-1" />
-                New Build
-              </>
-            )}
-          </Badge>
-          <h1 className="text-2xl font-bold">
-            {challenge ? `Submit to "${challenge.title}"` : "Submit Your Build"}
+          <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">
+            {challenge ? "Submit Entry" : "Submit Build"}
           </h1>
-          <p className="text-muted-foreground max-w-lg mx-auto">
+          <p className="text-sm text-muted-foreground mt-1">
             {challenge 
-              ? `Submit your build and compete for $${challenge.winnerPrize.toFixed(0)}. AI will validate and rank all entries.`
-              : "Submit your solution and let AI validate your problem-solution fit."
+              ? `Compete for $${challenge.winnerPrize.toFixed(0)} in "${challenge.title}"`
+              : "Submit your solution for AI validation"
             }
           </p>
         </motion.div>
 
-        {/* Challenge Context Banner */}
+        {/* Challenge Context */}
         {challenge && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+            transition={{ delay: 0.05 }}
+            className="mb-6 p-4 rounded-lg border border-border bg-card"
           >
-            <Card variant="glow" className="border-primary/30">
-              <CardContent className="py-4">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="h-12 w-12 rounded-xl bg-gradient-primary flex items-center justify-center">
-                      <Trophy className="h-6 w-6 text-primary-foreground" />
-                    </div>
-                    <div>
-                      <p className="font-semibold">{challenge.title}</p>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <Badge variant="secondary" className="text-[10px]">
-                          {joinType === "solo" ? "Solo" : "Team"}
-                        </Badge>
-                        <span>•</span>
-                        <span className="text-primary font-medium">{challenge.trend}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-right">
-                      <div className="flex items-center gap-1 text-success font-bold">
-                        <DollarSign className="h-4 w-4" />
-                        {challenge.winnerPrize.toFixed(0)}
-                      </div>
-                      <p className="text-[10px] text-muted-foreground">winner prize</p>
-                    </div>
-                    <div className="text-right">
-                      <div className="flex items-center gap-1 text-warning font-medium text-sm">
-                        <Clock className="h-4 w-4" />
-                        {getTimeRemaining()}
-                      </div>
-                      <p className="text-[10px] text-muted-foreground">to submit</p>
-                    </div>
-                  </div>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="font-medium">{challenge.title}</p>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  <Badge variant="secondary" className="text-[10px] mr-2">
+                    {joinType === "solo" ? "Solo" : "Team"}
+                  </Badge>
+                  {challenge.trend}
+                </p>
+              </div>
+              <div className="flex items-center gap-4 text-sm">
+                <div className="text-right">
+                  <span className="text-success font-medium">${challenge.winnerPrize.toFixed(0)}</span>
+                  <p className="text-[10px] text-muted-foreground">winner prize</p>
                 </div>
-                
-                {/* Example Build Hint */}
-                <div className="mt-3 p-3 bg-secondary/50 rounded-lg border border-border/50">
-                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1 font-medium">
-                    💡 Example Build Idea
-                  </p>
-                  <p className="text-xs italic">"{challenge.example}"</p>
+                <div className="text-right">
+                  <span className={`font-medium ${getTimeRemaining() === "Ended" ? "text-destructive" : "text-warning"}`}>
+                    {getTimeRemaining()}
+                  </span>
+                  <p className="text-[10px] text-muted-foreground">to submit</p>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
+            
+            <div className="mt-3 pt-3 border-t border-border">
+              <p className="text-xs text-muted-foreground">Example build idea</p>
+              <p className="text-sm italic mt-1">"{challenge.example}"</p>
+            </div>
           </motion.div>
         )}
 
         {/* Progress Steps */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
+          transition={{ delay: 0.1 }}
+          className="mb-6 p-4 rounded-lg border border-border bg-card"
         >
-          <Card variant="elevated">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between mb-4">
-                {steps.map((step, index) => (
-                  <div key={step.id} className="flex items-center">
-                    <div className={`flex items-center gap-2 ${index <= currentStep ? 'text-foreground' : 'text-muted-foreground'}`}>
-                      <div className={`h-10 w-10 rounded-full flex items-center justify-center transition-all ${
-                        index < currentStep 
-                          ? 'bg-success text-success-foreground' 
-                          : index === currentStep 
-                            ? 'bg-primary text-primary-foreground' 
-                            : 'bg-secondary text-muted-foreground'
-                      }`}>
-                        {index < currentStep ? (
-                          <CheckCircle2 className="h-5 w-5" />
-                        ) : index === 1 && isSubmitting ? (
-                          <Loader2 className="h-5 w-5 animate-spin" />
-                        ) : (
-                          <step.icon className="h-5 w-5" />
-                        )}
-                      </div>
-                      <div className="hidden md:block">
-                        <p className="text-sm font-medium">{step.title}</p>
-                        <p className="text-xs text-muted-foreground">{step.description}</p>
-                      </div>
-                    </div>
-                    {index < steps.length - 1 && (
-                      <div className={`w-12 lg:w-24 h-0.5 mx-2 ${index < currentStep ? 'bg-success' : 'bg-border'}`} />
+          <div className="flex items-center justify-between mb-3">
+            {steps.map((step, index) => (
+              <div key={step.id} className="flex items-center">
+                <div className="flex items-center gap-2">
+                  <div className={`h-6 w-6 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
+                    index < currentStep 
+                      ? 'bg-foreground text-background' 
+                      : index === currentStep 
+                        ? 'bg-foreground text-background' 
+                        : 'bg-secondary text-muted-foreground'
+                  }`}>
+                    {index < currentStep ? (
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                    ) : index === 1 && isSubmitting ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      index + 1
                     )}
                   </div>
-                ))}
+                  <span className={`text-sm hidden sm:block ${index <= currentStep ? 'text-foreground' : 'text-muted-foreground'}`}>
+                    {step.label}
+                  </span>
+                </div>
+                {index < steps.length - 1 && (
+                  <div className={`w-8 sm:w-16 h-px mx-2 ${index < currentStep ? 'bg-foreground' : 'bg-border'}`} />
+                )}
               </div>
-              <Progress value={progressValue} size="sm" indicatorColor="gradient" />
-            </CardContent>
-          </Card>
+            ))}
+          </div>
+          <Progress value={((currentStep + 1) / steps.length) * 100} className="h-1" />
         </motion.div>
 
         {/* Step Content */}
@@ -397,388 +330,272 @@ const SubmitSolution = () => {
           {currentStep === 0 && (
             <motion.div
               key="details"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="rounded-lg border border-border bg-card p-5"
             >
-              <Card variant="elevated">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Database className="h-5 w-5 text-primary" />
-                    Build Details
-                  </CardTitle>
-                  <CardDescription>
-                    Provide your build details. More integrations = higher scores from AI judges.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-                      {/* Required Fields */}
-                      <div className="space-y-4">
-                        <FormField
-                          control={form.control}
-                          name="productName"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Build Name *</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Couple Conflict AI" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name="productUrl"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Live URL *</FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <ExternalLink className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                  <Input 
-                                    placeholder="https://my-build.lovable.app" 
-                                    className="pl-10" 
-                                    {...field} 
-                                  />
-                                </div>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name="demoUrl"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Demo Video (optional)</FormLabel>
-                              <FormControl>
-                                <Input placeholder="https://loom.com/share/..." {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5">
+                  {/* Required Fields */}
+                  <div className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="productName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm">Build Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="My Awesome App" className="h-10" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="productUrl"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm">Live URL</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="https://my-app.lovable.app" 
+                              className="h-10"
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="demoUrl"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm text-muted-foreground">Demo Video (optional)</FormLabel>
+                          <FormControl>
+                            <Input placeholder="https://loom.com/share/..." className="h-10" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-                      {/* Integration Fields - Scoring Boost */}
-                      <div className="pt-4 border-t border-border">
-                        <div className="p-4 rounded-lg bg-primary/5 border border-primary/20 mb-4">
-                          <div className="flex items-start gap-3">
-                            <Award className="h-5 w-5 text-primary mt-0.5" />
-                            <div>
-                              <p className="text-sm font-medium">Boost Your Score</p>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                Connect integrations for higher AI ranking. Revenue signals & active repos = higher scores.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
+                  {/* Integration Fields */}
+                  <div className="pt-4 border-t border-border">
+                    <p className="text-sm font-medium mb-1">Boost Your Score</p>
+                    <p className="text-xs text-muted-foreground mb-4">
+                      Connect integrations for higher AI ranking
+                    </p>
 
-                        <div className="grid gap-4">
-                          <FormField
-                            control={form.control}
-                            name="githubRepo"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="flex items-center gap-2">
-                                  <Github className="h-4 w-4" />
-                                  GitHub Repository
-                                  <Badge variant="secondary" className="text-[10px] ml-auto">+15 pts</Badge>
-                                </FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    placeholder="https://github.com/username/repo" 
-                                    {...field} 
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
+                    <div className="space-y-4">
+                      <FormField
+                        control={form.control}
+                        name="githubRepo"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm flex items-center justify-between">
+                              GitHub Repository
+                              <span className="text-xs text-muted-foreground font-normal">+15 pts</span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="https://github.com/username/repo"
+                                className="h-10"
+                                {...field} 
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                          <FormField
-                            control={form.control}
-                            name="stripePublicKey"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="flex items-center gap-2">
-                                  <CreditCard className="h-4 w-4" />
-                                  Stripe Publishable Key
-                                  <Badge variant="secondary" className="text-[10px] ml-auto">+20 pts</Badge>
-                                </FormLabel>
-                                <FormControl>
-                                  <Input placeholder="pk_live_..." {...field} />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
+                      <FormField
+                        control={form.control}
+                        name="stripePublicKey"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm flex items-center justify-between">
+                              Stripe Publishable Key
+                              <span className="text-xs text-muted-foreground font-normal">+20 pts</span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input placeholder="pk_live_..." className="h-10" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                          <FormField
-                            control={form.control}
-                            name="supabaseProjectUrl"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="flex items-center gap-2">
-                                  <Database className="h-4 w-4" />
-                                  Supabase Project URL
-                                  <Badge variant="secondary" className="text-[10px] ml-auto">+10 pts</Badge>
-                                </FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    placeholder="https://xyzcompany.supabase.co" 
-                                    {...field} 
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          
-                          <FormField
-                            control={form.control}
-                            name="paymentInfo"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="flex items-center gap-2">
-                                  <Wallet className="h-4 w-4" />
-                                  Payment Info (IBAN or Stripe Payment Link)
-                                </FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    placeholder="IBAN: DE89... or https://pay.stripe.com/..." 
-                                    {...field} 
-                                  />
-                                </FormControl>
-                                <p className="text-xs text-muted-foreground mt-1">
-                                  How you want to receive prize money if you win
-                                </p>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                      </div>
+                      <FormField
+                        control={form.control}
+                        name="supabaseProjectUrl"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm flex items-center justify-between">
+                              Supabase Project URL
+                              <span className="text-xs text-muted-foreground font-normal">+10 pts</span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="https://xyzcompany.supabase.co"
+                                className="h-10"
+                                {...field} 
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="paymentInfo"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm">Payment Info</FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="IBAN or Stripe Payment Link" 
+                                className="h-10"
+                                {...field} 
+                              />
+                            </FormControl>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              How you want to receive prize money if you win
+                            </p>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
 
-                      {/* AI Judging Info */}
-                      <div className="p-4 rounded-lg bg-warning/10 border border-warning/30">
-                        <div className="flex items-start gap-3">
-                          <BarChart3 className="h-5 w-5 text-warning mt-0.5" />
-                          <div>
-                            <p className="text-sm font-medium">How AI Judges Your Build</p>
-                            <div className="grid grid-cols-2 gap-2 mt-2 text-xs text-muted-foreground">
-                              <div className="flex items-center gap-1">
-                                <Zap className="h-3 w-3 text-primary" />
-                                Code Quality & Aesthetics
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <Target className="h-3 w-3 text-primary" />
-                                Problem-Solution Fit
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <Sparkles className="h-3 w-3 text-primary" />
-                                Creativity & Innovation
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <DollarSign className="h-3 w-3 text-primary" />
-                                Revenue & Traction Signals
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-1 mt-3 pt-3 border-t border-warning/20 text-xs">
-                              <Mail className="h-3 w-3 text-primary" />
-                              <span>Winners will receive results via email when judging ends</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                  {/* AI Judging Info */}
+                  <div className="p-4 rounded-lg bg-secondary/30 text-sm">
+                    <p className="font-medium mb-2">How AI judges your build</p>
+                    <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                      <span>• Code quality & aesthetics</span>
+                      <span>• Problem-solution fit</span>
+                      <span>• Creativity & innovation</span>
+                      <span>• Revenue & traction signals</span>
+                    </div>
+                  </div>
 
-                      {/* Action Buttons */}
-                      <div className="flex items-center justify-between pt-4 border-t border-border">
-                        <Button type="button" variant="ghost" onClick={handleBack}>
-                          <ArrowLeft className="h-4 w-4 mr-2" />
-                          Back
-                        </Button>
-                        <Button 
-                          type="submit" 
-                          variant="glow" 
-                          disabled={!form.formState.isValid || form.formState.isSubmitting}
-                        >
-                          <Rocket className="h-4 w-4 mr-2" />
-                          Submit Entry
-                          <ArrowRight className="h-4 w-4 ml-2" />
-                        </Button>
-                      </div>
-                    </form>
-                  </Form>
-                </CardContent>
-              </Card>
+                  {/* Action Buttons */}
+                  <div className="flex items-center justify-between pt-4 border-t border-border">
+                    <Button type="button" variant="ghost" size="sm" onClick={handleBack}>
+                      <ArrowLeft className="h-4 w-4 mr-1" />
+                      Back
+                    </Button>
+                    <Button 
+                      type="submit" 
+                      size="sm"
+                      disabled={!form.formState.isValid || form.formState.isSubmitting}
+                    >
+                      Submit Entry
+                      <ArrowRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  </div>
+                </form>
+              </Form>
             </motion.div>
           )}
 
           {currentStep === 1 && isSubmitting && (
             <motion.div
               key="submitting"
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.3 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.2 }}
+              className="rounded-lg border border-border bg-card p-8"
             >
-              <Card variant="glow">
-                <CardContent className="py-12">
-                  <div className="text-center space-y-6">
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                      className="h-16 w-16 rounded-full bg-gradient-primary mx-auto flex items-center justify-center"
-                    >
-                      <Sparkles className="h-8 w-8 text-primary-foreground" />
-                    </motion.div>
-                    
-                    <div className="space-y-2">
-                      <h3 className="text-xl font-bold">Submitting Your Entry</h3>
-                      <p className="text-muted-foreground">
-                        AI is validating your build and preparing for ranking...
-                      </p>
-                    </div>
+              <div className="text-center space-y-6">
+                <div className="h-12 w-12 rounded-full bg-secondary mx-auto flex items-center justify-center">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                </div>
+                
+                <div>
+                  <h3 className="font-medium">Submitting your entry</h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    AI is validating your build...
+                  </p>
+                </div>
 
-                    <div className="max-w-md mx-auto space-y-3">
-                      <Progress value={submissionProgress} size="lg" indicatorColor="gradient" />
-                      <div className="flex flex-wrap justify-center gap-2">
-                        <Badge variant={submissionProgress >= 20 ? "success" : "secondary"} className="text-xs">
-                          <ExternalLink className="h-3 w-3 mr-1" />
-                          Validating URL
-                        </Badge>
-                        <Badge variant={submissionProgress >= 40 ? "success" : "secondary"} className="text-xs">
-                          <Zap className="h-3 w-3 mr-1" />
-                          Code Analysis
-                        </Badge>
-                        <Badge variant={submissionProgress >= 60 ? "success" : "secondary"} className="text-xs">
-                          <Database className="h-3 w-3 mr-1" />
-                          Integrations
-                        </Badge>
-                        <Badge variant={submissionProgress >= 80 ? "success" : "secondary"} className="text-xs">
-                          <BarChart3 className="h-3 w-3 mr-1" />
-                          Scoring
-                        </Badge>
-                      </div>
-                    </div>
+                <div className="max-w-xs mx-auto">
+                  <Progress value={submissionProgress} className="h-1" />
+                  <div className="flex justify-between text-xs text-muted-foreground mt-2">
+                    <span>Validating</span>
+                    <span>{submissionProgress}%</span>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </motion.div>
           )}
 
           {currentStep === 2 && isSubmitted && (
             <motion.div
               key="confirmed"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-              className="space-y-6"
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-4"
             >
-              {/* Success Card */}
-              <Card variant="glow" className="border-success/30">
-                <CardContent className="py-8">
-                  <div className="text-center space-y-4">
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ type: "spring", duration: 0.5 }}
-                      className="h-20 w-20 rounded-full bg-success/20 mx-auto flex items-center justify-center"
-                    >
-                      <CheckCircle2 className="h-10 w-10 text-success" />
-                    </motion.div>
-                    
-                    <div className="space-y-2">
-                      <h3 className="text-2xl font-bold">Entry Submitted! 🎉</h3>
-                      <p className="text-muted-foreground max-w-md mx-auto">
-                        {challenge 
-                          ? `Your build is now competing in "${challenge.title}". AI will rank all entries when the challenge ends.`
-                          : "Your solution has been submitted successfully."
-                        }
-                      </p>
-                    </div>
+              <div className="rounded-lg border border-border bg-card p-8 text-center">
+                <div className="h-12 w-12 rounded-full bg-success/10 mx-auto flex items-center justify-center mb-4">
+                  <CheckCircle2 className="h-5 w-5 text-success" />
+                </div>
+                
+                <h3 className="font-medium text-lg">Entry Submitted</h3>
+                <p className="text-sm text-muted-foreground mt-1 max-w-sm mx-auto">
+                  {challenge 
+                    ? `Your build is now competing. AI will rank all entries when the challenge ends.`
+                    : "Your solution has been submitted successfully."
+                  }
+                </p>
 
-                    {challenge && (
-                      <div className="flex items-center justify-center gap-6 pt-4">
-                        <div className="text-center">
-                          <div className="flex items-center gap-1 text-success font-bold text-xl">
-                            <DollarSign className="h-5 w-5" />
-                            {challenge.winnerPrize.toFixed(0)}
-                          </div>
-                          <p className="text-xs text-muted-foreground">potential prize</p>
-                        </div>
-                        <div className="h-10 w-px bg-border" />
-                        <div className="text-center">
-                          <div className="flex items-center gap-1 text-warning font-bold text-xl">
-                            <Clock className="h-5 w-5" />
-                            {getTimeRemaining()?.replace(" remaining", "")}
-                          </div>
-                          <p className="text-xs text-muted-foreground">until voting</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* What Happens Next */}
-              <Card variant="elevated">
-                <CardHeader>
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-primary" />
-                    What Happens Next
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid sm:grid-cols-3 gap-4">
-                    <div className="p-4 rounded-lg bg-secondary/50 text-center">
-                      <div className="h-10 w-10 rounded-full bg-primary/10 mx-auto mb-2 flex items-center justify-center">
-                        <Clock className="h-5 w-5 text-primary" />
-                      </div>
-                      <p className="font-medium text-sm">Challenge Ends</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Submissions close when timer hits zero
-                      </p>
+                {challenge && (
+                  <div className="flex items-center justify-center gap-6 mt-6 pt-6 border-t border-border">
+                    <div>
+                      <span className="text-success font-medium">${challenge.winnerPrize.toFixed(0)}</span>
+                      <p className="text-xs text-muted-foreground">potential prize</p>
                     </div>
-                    <div className="p-4 rounded-lg bg-secondary/50 text-center">
-                      <div className="h-10 w-10 rounded-full bg-primary/10 mx-auto mb-2 flex items-center justify-center">
-                        <BarChart3 className="h-5 w-5 text-primary" />
-                      </div>
-                      <p className="font-medium text-sm">AI Ranks Entries</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        All builds scored on code, creativity & fit
-                      </p>
-                    </div>
-                    <div className="p-4 rounded-lg bg-secondary/50 text-center">
-                      <div className="h-10 w-10 rounded-full bg-success/10 mx-auto mb-2 flex items-center justify-center">
-                        <Trophy className="h-5 w-5 text-success" />
-                      </div>
-                      <p className="font-medium text-sm">Winner Announced</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Top builder takes 90% of the pool
-                      </p>
+                    <div className="h-8 w-px bg-border" />
+                    <div>
+                      <span className="font-medium flex items-center gap-1">
+                        <Clock className="h-3.5 w-3.5" />
+                        {getTimeRemaining()}
+                      </span>
+                      <p className="text-xs text-muted-foreground">until voting</p>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                )}
+              </div>
+
+              {/* What's Next */}
+              <div className="rounded-lg border border-border bg-card p-5">
+                <p className="text-sm font-medium mb-3">What happens next</p>
+                <div className="space-y-2 text-sm text-muted-foreground">
+                  <p>1. Submissions close when timer hits zero</p>
+                  <p>2. AI ranks all builds on code, creativity & fit</p>
+                  <p>3. Winner takes 90% of the prize pool</p>
+                </div>
+              </div>
 
               {/* Actions */}
-              <div className="flex items-center justify-center gap-3">
-                <Button variant="outline" onClick={handleViewChallenge}>
-                  <Trophy className="h-4 w-4 mr-2" />
+              <div className="flex items-center justify-center gap-3 pt-2">
+                <Button variant="outline" size="sm" onClick={() => navigate("/challenges")}>
                   View Challenge
                 </Button>
-                <Button variant="glow" onClick={() => navigate("/")}>
-                  <Rocket className="h-4 w-4 mr-2" />
+                <Button size="sm" onClick={() => navigate("/")}>
                   Explore More
                 </Button>
               </div>
