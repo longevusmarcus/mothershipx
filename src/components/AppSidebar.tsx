@@ -11,6 +11,7 @@ import {
   ChevronUp,
   Settings,
   LogOut,
+  ExternalLink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
@@ -206,13 +207,19 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
               </AnimatePresence>
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-48">
+          <DropdownMenuContent align="start" className="w-48 bg-popover">
             <DropdownMenuItem onClick={() => navigate("/profile")}>
               Profile
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate("/settings")}>
               <Settings className="h-4 w-4 mr-2" />
               Settings
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <a href="https://mothership.io" target="_blank" rel="noopener noreferrer" className="flex items-center">
+                <ExternalLink className="h-4 w-4 mr-2" />
+                About
+              </a>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
