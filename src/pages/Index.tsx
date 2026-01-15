@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Search, Zap, LayoutGrid, ArrowUp, ArrowUpRight, X, Sparkles } from "lucide-react";
+import { Search, Zap, LayoutGrid, ArrowUp, ArrowUpRight, X, Sparkles, ChevronRight } from "lucide-react";
 import logoIcon from "@/assets/logo-icon.png";
 import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
@@ -13,6 +13,11 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const WELCOME_SHOWN_KEY = "mothershipx_welcome_shown";
 
+const WELCOME_STEPS = [
+  "Welcome to MothershipX, a social market intelligence platform and hackathon arena empowering builders to ship useful products and win prizes every day.",
+  "Mothership (SuperLovable) = insight + people + incentives\nLovable = execution.\n\nWe supercharge your Lovable experience so you know what to build, with who and get rewarded every day."
+];
+
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMode, setSearchMode] = useState<"search" | "neural" | "grid">("search");
@@ -21,6 +26,7 @@ const Index = () => {
   const [submittedQuery, setSubmittedQuery] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
+  const [welcomeStep, setWelcomeStep] = useState(0);
   const navigate = useNavigate();
   const { user, profile } = useAuth();
 
@@ -38,7 +44,16 @@ const Index = () => {
 
   const handleDismissWelcome = () => {
     setShowWelcome(false);
+    setWelcomeStep(0);
     localStorage.setItem(WELCOME_SHOWN_KEY, "true");
+  };
+
+  const handleNextStep = () => {
+    if (welcomeStep < WELCOME_STEPS.length - 1) {
+      setWelcomeStep(welcomeStep + 1);
+    } else {
+      handleDismissWelcome();
+    }
   };
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -107,12 +122,42 @@ const Index = () => {
                   <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center shrink-0 overflow-hidden">
                     <img src={logoIcon} alt="MothershipX" className="h-5 w-5 object-contain" />
                   </div>
-                  <div>
-                    <p className="text-sm leading-relaxed text-foreground">
-                      Welcome to MothershipX, a social market intelligence platform and hackathon arena empowering builders to ship useful products and win prizes every day.
-                    </p>
+                  <div className="flex-1">
+                    <motion.p
+                      key={welcomeStep}
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="text-sm leading-relaxed text-foreground whitespace-pre-line"
+                    >
+                      {WELCOME_STEPS[welcomeStep]}
+                    </motion.p>
                   </div>
                 </div>
+              </div>
+              
+              {/* Step indicator and continue button */}
+              <div className="px-5 pb-4 flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  {WELCOME_STEPS.map((_, index) => (
+                    <div
+                      key={index}
+                      className={cn(
+                        "h-1.5 rounded-full transition-all duration-200",
+                        index === welcomeStep 
+                          ? "w-4 bg-foreground/70" 
+                          : "w-1.5 bg-muted-foreground/30"
+                      )}
+                    />
+                  ))}
+                </div>
+                <button
+                  onClick={handleNextStep}
+                  className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {welcomeStep < WELCOME_STEPS.length - 1 ? "Continue" : "Got it"}
+                  <ChevronRight className="h-3 w-3" />
+                </button>
               </div>
               
               {/* Subtle bottom accent */}
