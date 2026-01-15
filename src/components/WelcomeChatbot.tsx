@@ -66,7 +66,7 @@ export function WelcomeChatbot() {
         
         {/* Description */}
         <p className="text-sm leading-relaxed text-foreground pt-1">
-          We supercharge your Lovable experience so you know what to build, with who and get rewarded every day.
+          We supercharge your Lovable experience so you know what to build, with whom, and get rewarded every day.
         </p>
       </div>
     );
