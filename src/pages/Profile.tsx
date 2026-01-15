@@ -179,7 +179,7 @@ export default function Profile() {
 
   if (!isAuthenticated || !user) {
     return (
-      <AppLayout title="Profile">
+      <AppLayout>
         <SEO title="Profile" description="View your builder profile." />
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
           <User className="h-16 w-16 text-muted-foreground/30 mb-4" />
@@ -192,7 +192,7 @@ export default function Profile() {
   }
 
   return (
-    <AppLayout title="Profile">
+    <AppLayout>
       <SEO title="Profile" description="View your builder profile, achievements, and build history." />
       <div className="space-y-4 sm:space-y-6 max-w-6xl mx-auto">
         {/* Profile Header */}

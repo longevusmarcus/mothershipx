@@ -96,7 +96,7 @@ const Builds = () => {
   const { data: waitlistCount = 0 } = useWaitlistCount("builds");
 
   return (
-    <AppLayout title="My Builds">
+    <AppLayout>
       <div className="space-y-6">
         {/* Coming Soon Hero */}
         <motion.div

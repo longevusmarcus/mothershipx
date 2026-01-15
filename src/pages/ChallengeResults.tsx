@@ -31,7 +31,7 @@ const ChallengeResults = () => {
 
   if (loadingChallenge || loadingRankings) {
     return (
-      <AppLayout title="Challenge Results">
+      <AppLayout>
         <div className="flex items-center justify-center min-h-[60vh]">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
@@ -41,7 +41,7 @@ const ChallengeResults = () => {
 
   if (!challenge) {
     return (
-      <AppLayout title="Challenge Not Found">
+      <AppLayout>
         <div className="text-center py-12">
           <Trophy className="h-12 w-12 mx-auto text-muted-foreground/30 mb-4" />
           <h2 className="text-xl font-bold mb-2">Challenge not found</h2>
@@ -86,7 +86,7 @@ const ChallengeResults = () => {
   };
 
   return (
-    <AppLayout title="Challenge Results">
+    <AppLayout>
       <SEO
         title={`Results: ${challenge.title}`}
         description={`View the results and winners of the ${challenge.title} challenge.`}

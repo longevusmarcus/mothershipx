@@ -71,7 +71,7 @@ const ProblemDetail = () => {
   // Loading state
   if (isLoading) {
     return (
-      <AppLayout title="">
+      <AppLayout>
         <div className="space-y-6">
           <Skeleton className="h-8 w-48" />
           <Skeleton className="h-64 w-full rounded-2xl" />
@@ -87,7 +87,7 @@ const ProblemDetail = () => {
   // Not found state
   if (!problem) {
     return (
-      <AppLayout title="">
+      <AppLayout>
         <div className="flex flex-col items-center justify-center py-20">
           <h2 className="text-xl font-semibold mb-2">Problem not found</h2>
           <p className="text-muted-foreground mb-4">This opportunity doesn't exist or has been removed.</p>
@@ -136,7 +136,7 @@ const ProblemDetail = () => {
   };
 
   return (
-    <AppLayout title="">
+    <AppLayout>
       <div className="space-y-4 sm:space-y-6">
         {/* Back Navigation */}
         <Link 
