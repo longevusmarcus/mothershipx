@@ -4,9 +4,6 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { NotificationsDropdown } from "@/components/NotificationsDropdown";
-import { Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import logo from "@/assets/logo.png";
@@ -66,13 +63,6 @@ export function AppLayout({ children }: AppLayoutProps) {
               </div>
             </div>
             <div className="flex items-center gap-2 md:gap-3">
-              <div className="relative hidden lg:block">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search problems..."
-                  className="w-64 pl-9 h-9 bg-secondary border-0"
-                />
-              </div>
               <NotificationsDropdown />
               <ThemeToggle />
               <Link to="/profile" className="h-8 w-8 md:h-9 md:w-9 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground text-xs md:text-sm font-bold hover:opacity-90 transition-opacity">
