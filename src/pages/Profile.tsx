@@ -33,6 +33,7 @@ import {
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { AuthModal } from "@/components/AuthModal";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabaseClient";
 import { useUserStats, getXpProgress, getLevelTitle } from "@/hooks/useUserStats";
@@ -167,6 +168,8 @@ export default function Profile() {
     navigate("/");
   };
 
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
   if (!isAuthenticated || !user) {
     return (
       <AppLayout>
@@ -188,11 +191,12 @@ export default function Profile() {
             <p className="text-sm text-muted-foreground mb-6 max-w-sm mx-auto">
               Sign in to view your profile, track your progress, and manage your builds.
             </p>
-            <Button onClick={() => navigate("/auth")} size="sm">
+            <Button onClick={() => setShowAuthModal(true)} size="sm">
               Sign In
             </Button>
           </div>
         </div>
+        <AuthModal open={showAuthModal} onOpenChange={setShowAuthModal} />
       </AppLayout>
     );
   }

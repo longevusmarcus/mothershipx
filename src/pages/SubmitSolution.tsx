@@ -27,6 +27,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { AuthModal } from "@/components/AuthModal";
 
 const submissionSchema = z.object({
   productName: z
@@ -108,6 +109,7 @@ const SubmitSolution = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionProgress, setSubmissionProgress] = useState(0);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const form = useForm<SubmissionFormData>({
     resolver: zodResolver(submissionSchema),
@@ -125,14 +127,9 @@ const SubmitSolution = () => {
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      toast({
-        title: "Authentication Required",
-        description: "Please sign in to submit your entry.",
-        variant: "destructive",
-      });
-      navigate("/auth", { state: { returnTo: "/submit" } });
+      setShowAuthModal(true);
     }
-  }, [isAuthenticated, authLoading, navigate, toast]);
+  }, [isAuthenticated, authLoading]);
 
   const getTimeRemaining = () => {
     if (!challenge?.endsAt) return null;
@@ -603,6 +600,7 @@ const SubmitSolution = () => {
           )}
         </AnimatePresence>
       </div>
+      <AuthModal open={showAuthModal} onOpenChange={setShowAuthModal} />
     </AppLayout>
   );
 };
