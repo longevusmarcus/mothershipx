@@ -27,10 +27,18 @@ const Index = () => {
   useEffect(() => {
     const hasSeenWelcome = localStorage.getItem(WELCOME_SHOWN_KEY);
     if (!hasSeenWelcome) {
-      setShowWelcome(true);
-      localStorage.setItem(WELCOME_SHOWN_KEY, "true");
+      // Delay the welcome message slightly for better UX
+      const timer = setTimeout(() => {
+        setShowWelcome(true);
+      }, 800);
+      return () => clearTimeout(timer);
     }
   }, []);
+
+  const handleDismissWelcome = () => {
+    setShowWelcome(false);
+    localStorage.setItem(WELCOME_SHOWN_KEY, "true");
+  };
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,24 +80,48 @@ const Index = () => {
         title="Mothership Search" 
         description="Discover real problems and trends from 10+ data sources. Build solutions together with our community of builders."
       />
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)]">
-        {/* Welcome Message */}
-        <AnimatePresence>
-          {showWelcome && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.4 }}
-              className="mb-8 max-w-lg text-center px-4"
-            >
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Welcome to MothershipX, a social market intelligence platform and hackathon arena empowering builders to ship useful products and win prizes every day.
-              </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
+      
+      {/* Floating Welcome Chatbot */}
+      <AnimatePresence>
+        {showWelcome && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="fixed bottom-6 right-6 z-50 max-w-sm"
+          >
+            <div className="relative bg-card border border-border rounded-2xl shadow-lg overflow-hidden">
+              {/* Close button */}
+              <button
+                onClick={handleDismissWelcome}
+                className="absolute top-3 right-3 p-1 rounded-full hover:bg-secondary/80 transition-colors"
+              >
+                <X className="h-3.5 w-3.5 text-muted-foreground" />
+              </button>
+              
+              {/* Message content */}
+              <div className="p-5 pr-10">
+                <div className="flex items-start gap-3">
+                  <div className="h-8 w-8 rounded-full bg-gradient-primary flex items-center justify-center shrink-0">
+                    <Sparkles className="h-4 w-4 text-primary-foreground" />
+                  </div>
+                  <div>
+                    <p className="text-sm leading-relaxed text-foreground">
+                      Welcome to MothershipX, a social market intelligence platform and hackathon arena empowering builders to ship useful products and win prizes every day.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Subtle bottom accent */}
+              <div className="h-0.5 bg-gradient-to-r from-transparent via-border to-transparent" />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)]">
         {/* Title */}
         <motion.h1
           initial={{ opacity: 0, y: -20 }}
