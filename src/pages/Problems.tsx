@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Search, TrendingUp, Flame } from "lucide-react";
+import { Search } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
 import { MarketProblemCard } from "@/components/MarketProblemCard";
@@ -31,7 +31,7 @@ const Problems = () => {
     return matchesSearch;
   });
 
-  const explodingCount = problems.filter((p) => p.sentiment === "exploding").length;
+  
 
   return (
     <AppLayout>
@@ -44,20 +44,11 @@ const Problems = () => {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
         >
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Library</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              {filteredProblems.length} problems discovered
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="gap-1 bg-destructive/10 text-destructive border-destructive/30">
-              <Flame className="h-3 w-3" />
-              {explodingCount} Exploding
-            </Badge>
-          </div>
+          <h1 className="text-2xl font-bold tracking-tight">Library</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {filteredProblems.length} problems discovered
+          </p>
         </motion.div>
 
         {/* Search */}
