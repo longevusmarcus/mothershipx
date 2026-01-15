@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Search, Zap, LayoutGrid, ArrowUp } from "lucide-react";
+import { Search, Zap, LayoutGrid, ArrowUp, ArrowUpRight } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
 import { DataSourceSelector } from "@/components/DataSourceSelector";
@@ -142,7 +142,7 @@ const Index = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-8"
+          className="mt-8 flex flex-col items-center gap-3"
         >
           <Button
             variant="outline"
@@ -153,6 +153,16 @@ const Index = () => {
             Browse Library
             <span className="text-xs">↗</span>
           </Button>
+          
+          <a
+            href="https://drive.google.com/file/d/1cRqz_GYzouxZ5OQQGYnmPwz6IX0y5v_V/view?usp=sharing"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors px-4 py-2 rounded-full border border-border/50 hover:border-border"
+          >
+            What we're working on
+            <ArrowUpRight className="h-3.5 w-3.5" />
+          </a>
         </motion.div>
       </div>
     </AppLayout>
