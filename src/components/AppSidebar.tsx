@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  LayoutDashboard,
-  Target,
-  Trophy,
-  Rocket,
+  Plus,
+  Search,
+  Globe,
+  Code,
   User,
   Settings,
   ChevronLeft,
@@ -13,6 +13,7 @@ import {
   X,
   Swords,
   Flame,
+  Trophy,
   Lock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -21,9 +22,9 @@ import { toast } from "@/hooks/use-toast";
 import logo from "@/assets/logo.png";
 
 const navItems = [
-  { icon: LayoutDashboard, label: "Dashboard", path: "/" },
-  { icon: Target, label: "Problems", path: "/problems" },
-  { icon: Rocket, label: "Accelerator", path: "/builds", disabled: true },
+  { icon: Plus, label: "New Search", path: "/" },
+  { icon: Search, label: "Past Searches", path: "/searches", disabled: true },
+  { icon: Globe, label: "Library", path: "/problems" },
   { icon: Trophy, label: "League", path: "/leaderboard", disabled: true },
 ];
 
@@ -95,10 +96,38 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
         )}
       </div>
 
-      {/* Main Nav */}
       <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
-        {navItems.slice(0, 2).map((item) => {
+        {navItems.map((item) => {
           const isActive = location.pathname === item.path;
+          
+          if (item.disabled) {
+            return (
+              <button
+                key={item.path}
+                onClick={() => toast({ description: "Soon available", duration: 2000 })}
+                className={cn(
+                  "flex items-center gap-3 px-3 py-3 md:py-2.5 rounded-lg text-sm font-medium transition-all duration-200 active:scale-[0.98] w-full text-left",
+                  "text-sidebar-foreground/40 hover:text-sidebar-foreground/60 cursor-pointer"
+                )}
+              >
+                <item.icon className="h-5 w-5 shrink-0 text-sidebar-foreground/40" />
+                <AnimatePresence mode="wait">
+                  {(!collapsed || isMobile) && (
+                    <motion.div
+                      initial={{ opacity: 0, width: 0 }}
+                      animate={{ opacity: 1, width: "auto" }}
+                      exit={{ opacity: 0, width: 0 }}
+                      className="flex items-center gap-2 overflow-hidden whitespace-nowrap"
+                    >
+                      <span>{item.label}</span>
+                      <Lock className="h-3 w-3" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </button>
+            );
+          }
+          
           return (
             <NavLink
               key={item.path}
@@ -180,65 +209,6 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
             </AnimatePresence>
           </div>
         </NavLink>
-
-        {navItems.slice(2).map((item) => {
-          const isActive = location.pathname === item.path;
-          
-          if (item.disabled) {
-            return (
-              <button
-                key={item.path}
-                onClick={() => toast({ description: "Soon available", duration: 2000 })}
-                className={cn(
-                  "flex items-center gap-3 px-3 py-3 md:py-2.5 rounded-lg text-sm font-medium transition-all duration-200 active:scale-[0.98] w-full text-left",
-                  "text-sidebar-foreground/40 hover:text-sidebar-foreground/60 cursor-pointer"
-                )}
-              >
-                <item.icon className="h-5 w-5 shrink-0 text-sidebar-foreground/40" />
-                <AnimatePresence mode="wait">
-                  {(!collapsed || isMobile) && (
-                    <motion.div
-                      initial={{ opacity: 0, width: 0 }}
-                      animate={{ opacity: 1, width: "auto" }}
-                      exit={{ opacity: 0, width: 0 }}
-                      className="flex items-center gap-2 overflow-hidden whitespace-nowrap"
-                    >
-                      <span>{item.label}</span>
-                      <Lock className="h-3 w-3" />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </button>
-            );
-          }
-          
-          return (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={cn(
-                "flex items-center gap-3 px-3 py-3 md:py-2.5 rounded-lg text-sm font-medium transition-all duration-200 active:scale-[0.98]",
-                isActive
-                  ? "text-foreground"
-                  : "text-sidebar-foreground/50 hover:text-sidebar-foreground/80"
-              )}
-            >
-              <item.icon className={cn("h-5 w-5 shrink-0", isActive ? "text-foreground" : "text-sidebar-foreground/50")} />
-              <AnimatePresence mode="wait">
-                {(!collapsed || isMobile) && (
-                  <motion.span
-                    initial={{ opacity: 0, width: 0 }}
-                    animate={{ opacity: 1, width: "auto" }}
-                    exit={{ opacity: 0, width: 0 }}
-                    className="overflow-hidden whitespace-nowrap"
-                  >
-                    {item.label}
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </NavLink>
-          );
-        })}
       </nav>
 
       {/* Bottom Nav */}
