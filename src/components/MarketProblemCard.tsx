@@ -47,14 +47,6 @@ export function MarketProblemCard({ problem, delay = 0 }: MarketProblemCardProps
         className="relative overflow-hidden cursor-pointer group"
         onClick={handleCardClick}
       >
-        {/* Viral Indicator */}
-        {problem.isViral && (
-          <div className="absolute top-0 right-0 w-24 h-24 overflow-hidden">
-            <div className="absolute top-4 right-[-32px] w-32 bg-gradient-to-r from-orange-500 to-red-500 text-white text-[10px] font-bold py-1 text-center transform rotate-45">
-              🔥 VIRAL
-            </div>
-          </div>
-        )}
 
         <CardHeader className="pb-2 space-y-3">
           {/* Top Row: Category + Trend Badge */}
