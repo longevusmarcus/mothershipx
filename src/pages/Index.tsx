@@ -40,7 +40,7 @@ const Index = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="font-display text-3xl sm:text-4xl md:text-5xl font-medium tracking-tight text-center mb-10"
+          className="font-display text-2xl sm:text-3xl font-normal tracking-tight text-center mb-8"
         >
           Mothership Search
         </motion.h1>
