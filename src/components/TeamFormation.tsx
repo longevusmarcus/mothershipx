@@ -1,19 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { 
-  Plus, 
-  Users, 
-  Zap, 
-  Trophy, 
-  Rocket, 
-  Gift,
-  Crown,
-  Sparkles,
-  AlertCircle,
-  Loader2
-} from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Plus, Users, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -104,7 +91,7 @@ export function TeamFormation({ problemId, problemTitle = "SaaS Onboarding" }: T
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -114,10 +101,7 @@ export function TeamFormation({ problemId, problemTitle = "SaaS Onboarding" }: T
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <Users className="h-5 w-5 text-primary" />
-            Squad Arena
-          </h2>
+          <h2 className="font-serif text-lg">Squad Arena</h2>
           <p className="text-sm text-muted-foreground">
             Form teams, compete, and win acceleration rewards
           </p>
@@ -125,17 +109,14 @@ export function TeamFormation({ problemId, problemTitle = "SaaS Onboarding" }: T
         
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
-            <Button variant="glow" size="sm" className="gap-2" disabled={!user}>
-              <Plus className="h-4 w-4" />
+            <Button variant="outline" size="sm" className="gap-2" disabled={!user}>
+              <Plus className="h-3.5 w-3.5" />
               Create Squad
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <Rocket className="h-5 w-5 text-primary" />
-                Create Your Squad
-              </DialogTitle>
+              <DialogTitle>Create Your Squad</DialogTitle>
               <DialogDescription>
                 Assemble a team of 2-4 builders. Compete with other squads and win acceleration rewards.
               </DialogDescription>
@@ -180,16 +161,11 @@ export function TeamFormation({ problemId, problemTitle = "SaaS Onboarding" }: T
                 )}
               </div>
               <Button 
-                variant="glow" 
                 className="w-full" 
                 onClick={handleCreateTeam}
                 disabled={createSquad.isPending}
               >
-                {createSquad.isPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                ) : (
-                  <Sparkles className="h-4 w-4 mr-2" />
-                )}
+                {createSquad.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
                 Launch Squad
               </Button>
             </div>
@@ -199,51 +175,32 @@ export function TeamFormation({ problemId, problemTitle = "SaaS Onboarding" }: T
 
       {/* Rewards Banner */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-xl border border-warning/20 bg-gradient-to-r from-warning/5 via-background to-warning/5 p-4"
+        className="p-4 rounded-lg border border-border/50 bg-secondary/20"
       >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-xl bg-warning/10 flex items-center justify-center">
-              <Trophy className="h-6 w-6 text-warning" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm flex items-center gap-2">
-                Sprint Rewards
-                <Badge variant="outline" className="text-[10px] bg-warning/10 text-warning border-warning/30">
-                  Active
-                </Badge>
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                Top 3 squads win acceleration & distribution for their solution
-              </p>
-            </div>
+          <div>
+            <h3 className="text-sm font-medium flex items-center gap-2">
+              Sprint Rewards
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-foreground/10 text-foreground/70">Active</span>
+            </h3>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Top 3 squads win acceleration & distribution for their solution
+            </p>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="text-center">
-              <Gift className="h-5 w-5 text-warning mx-auto mb-1" />
-              <p className="text-[10px] text-muted-foreground">🥇 $5K + Launch</p>
-            </div>
-            <div className="text-center">
-              <Gift className="h-5 w-5 text-muted-foreground mx-auto mb-1" />
-              <p className="text-[10px] text-muted-foreground">🥈 $2K + Feature</p>
-            </div>
-            <div className="text-center">
-              <Gift className="h-5 w-5 text-muted-foreground mx-auto mb-1" />
-              <p className="text-[10px] text-muted-foreground">🥉 $1K + Shoutout</p>
-            </div>
+          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+            <span>🥇 $5K + Launch</span>
+            <span>🥈 $2K + Feature</span>
+            <span>🥉 $1K + Shoutout</span>
           </div>
         </div>
       </motion.div>
 
       {/* Your Squad */}
       {userSquad && (
-        <div className="space-y-2">
-          <h3 className="text-sm font-medium flex items-center gap-2">
-            <Crown className="h-4 w-4 text-warning" />
-            Your Squad
-          </h3>
+        <div className="space-y-3">
+          <h3 className="text-sm text-muted-foreground uppercase tracking-wide">Your Squad</h3>
           <TeamCard
             team={transformSquadForCard(userSquad)}
             isUserTeam
@@ -255,29 +212,24 @@ export function TeamFormation({ problemId, problemTitle = "SaaS Onboarding" }: T
       {/* All Squads */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-medium flex items-center gap-2">
-            <Zap className="h-4 w-4 text-warning" />
-            Active Squads
-          </h3>
-          <Badge variant="secondary" className="text-[10px]">
-            {squads.length} teams competing
-          </Badge>
+          <h3 className="text-sm text-muted-foreground uppercase tracking-wide">Active Squads</h3>
+          <span className="text-xs text-muted-foreground">{squads.length} teams</span>
         </div>
 
         {squads.length === 0 ? (
-          <Card variant="elevated" className="p-6 text-center">
-            <Users className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+          <div className="p-8 rounded-lg border border-dashed border-border/50 text-center">
+            <Users className="h-6 w-6 text-muted-foreground mx-auto mb-2" />
             <p className="text-sm text-muted-foreground">No squads yet. Be the first to create one!</p>
-          </Card>
+          </div>
         ) : (
-          <div className="grid sm:grid-cols-2 gap-4">
+          <div className="grid sm:grid-cols-2 gap-3">
             {squads
               .filter((squad) => squad.id !== userSquad?.id)
               .map((squad, index) => (
                 <TeamCard
                   key={squad.id}
                   team={transformSquadForCard(squad)}
-                  delay={index * 0.1}
+                  delay={index * 0.05}
                   onJoin={() => handleJoinTeam(squad)}
                   onViewChat={() => handleOpenChat(squad)}
                 />

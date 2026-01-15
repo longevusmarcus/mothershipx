@@ -1,18 +1,5 @@
 import { motion } from "framer-motion";
-import { 
-  TrendingUp, 
-  AlertTriangle, 
-  CheckCircle2, 
-  Target,
-  Users,
-  DollarSign,
-  GitBranch,
-  Gauge,
-  Sparkles
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+import { AlertTriangle, CheckCircle2 } from "lucide-react";
 
 interface FitVerificationPanelProps {
   sentimentFitScore: number;
@@ -34,13 +21,6 @@ export function FitVerificationPanel({
   misalignments,
 }: FitVerificationPanelProps) {
   const overallScore = Math.round((sentimentFitScore + problemCoverage + buildMomentum) / 3);
-  
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return "text-success";
-    if (score >= 60) return "text-primary";
-    if (score >= 40) return "text-warning";
-    return "text-destructive";
-  };
 
   const getScoreLabel = (score: number) => {
     if (score >= 80) return "Excellent";
@@ -50,162 +30,110 @@ export function FitVerificationPanel({
   };
 
   return (
-    <Card variant="glow" className="relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-glow opacity-50 pointer-events-none" />
-      
-      <CardHeader className="relative z-10 pb-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-primary flex items-center justify-center shrink-0">
-              <Sparkles className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <div className="min-w-0">
-              <CardTitle className="text-base">Problem-Solution Fit</CardTitle>
-              <p className="text-xs text-muted-foreground mt-0.5">AI-powered verification</p>
-            </div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="p-6 rounded-lg border border-border/50 bg-background space-y-6"
+    >
+      {/* Header */}
+      <div className="flex items-start justify-between">
+        <div>
+          <h3 className="font-serif text-lg">Problem-Solution Fit</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">AI-powered verification</p>
+        </div>
+        <div className="text-right">
+          <p className="text-2xl font-semibold">{overallScore}%</p>
+          <p className="text-xs text-muted-foreground">{getScoreLabel(overallScore)}</p>
+        </div>
+      </div>
+
+      {/* Core Metrics */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="p-4 rounded-lg bg-secondary/30 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">Sentiment Fit</span>
+            <span className="text-sm font-semibold">{sentimentFitScore}%</span>
           </div>
-          <div className="flex items-center gap-2 sm:flex-col sm:items-end">
-            <p className={`text-2xl sm:text-3xl font-bold ${getScoreColor(overallScore)}`}>{overallScore}%</p>
-            <Badge variant={overallScore >= 60 ? "success" : "warning"} className="text-xs">
-              {getScoreLabel(overallScore)}
-            </Badge>
+          <div className="h-1 bg-secondary rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${sentimentFitScore}%` }}
+              transition={{ duration: 0.6 }}
+              className="h-full bg-foreground rounded-full"
+            />
+          </div>
+          <p className="text-[10px] text-muted-foreground">Semantic alignment with pain points</p>
+        </div>
+
+        <div className="p-4 rounded-lg bg-secondary/30 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">Problem Coverage</span>
+            <span className="text-sm font-semibold">{problemCoverage}%</span>
+          </div>
+          <div className="h-1 bg-secondary rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${problemCoverage}%` }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="h-full bg-foreground rounded-full"
+            />
+          </div>
+          <p className="text-[10px] text-muted-foreground">How much of the problem is addressed</p>
+        </div>
+      </div>
+
+      {/* Quantitative Signals */}
+      <div className="space-y-3">
+        <p className="text-xs text-muted-foreground uppercase tracking-wide">Quantitative Signals</p>
+        <div className="grid grid-cols-3 gap-3">
+          <div className="p-3 rounded-lg bg-secondary/20 text-center">
+            <p className="text-lg font-semibold">{adoptionVelocity}</p>
+            <p className="text-[10px] text-muted-foreground">Users/week</p>
+          </div>
+          <div className="p-3 rounded-lg bg-secondary/20 text-center">
+            <p className="text-lg font-semibold">{revenuePresent ? revenueAmount : "—"}</p>
+            <p className="text-[10px] text-muted-foreground">{revenuePresent ? "Revenue" : "No revenue"}</p>
+          </div>
+          <div className="p-3 rounded-lg bg-secondary/20 text-center">
+            <p className="text-lg font-semibold">{buildMomentum}%</p>
+            <p className="text-[10px] text-muted-foreground">Build momentum</p>
           </div>
         </div>
-      </CardHeader>
+      </div>
 
-      <CardContent className="relative z-10 space-y-6">
-        {/* Core AI Metrics */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="p-3 sm:p-4 rounded-lg bg-secondary/50 space-y-2"
-          >
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 min-w-0">
-                <Target className="h-4 w-4 text-primary shrink-0" />
-                <span className="text-xs sm:text-sm font-medium truncate">Sentiment Fit</span>
+      {/* Warnings */}
+      {misalignments.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-xs text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+            <AlertTriangle className="h-3 w-3" />
+            Misalignment Warnings
+          </p>
+          <div className="space-y-1.5">
+            {misalignments.map((warning, index) => (
+              <div
+                key={index}
+                className="flex items-start gap-2 p-2.5 rounded-lg bg-warning/5 border border-warning/20"
+              >
+                <AlertTriangle className="h-3 w-3 text-warning mt-0.5 shrink-0" />
+                <p className="text-xs text-muted-foreground">{warning}</p>
               </div>
-              <span className={`text-base sm:text-lg font-bold shrink-0 ${getScoreColor(sentimentFitScore)}`}>
-                {sentimentFitScore}%
-              </span>
-            </div>
-            <Progress value={sentimentFitScore} size="sm" indicatorColor={sentimentFitScore >= 60 ? "success" : "default"} />
-            <p className="text-[10px] sm:text-xs text-muted-foreground">
-              Semantic alignment with pain points
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="p-3 sm:p-4 rounded-lg bg-secondary/50 space-y-2"
-          >
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 min-w-0">
-                <Gauge className="h-4 w-4 text-primary shrink-0" />
-                <span className="text-xs sm:text-sm font-medium truncate">Problem Coverage</span>
-              </div>
-              <span className={`text-base sm:text-lg font-bold shrink-0 ${getScoreColor(problemCoverage)}`}>
-                {problemCoverage}%
-              </span>
-            </div>
-            <Progress value={problemCoverage} size="sm" indicatorColor={problemCoverage >= 60 ? "success" : "default"} />
-            <p className="text-[10px] sm:text-xs text-muted-foreground">
-              How much of the problem is addressed
-            </p>
-          </motion.div>
-        </div>
-
-        {/* Quantitative Signals */}
-        <div className="space-y-3">
-          <h4 className="text-sm font-medium flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            Quantitative Signals
-          </h4>
-          
-          <div className="grid grid-cols-3 gap-3">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3 }}
-              className="p-3 rounded-lg bg-secondary/30 text-center"
-            >
-              <Users className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
-              <p className="text-lg font-bold">{adoptionVelocity}</p>
-              <p className="text-[10px] text-muted-foreground">Users/week</p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4 }}
-              className="p-3 rounded-lg bg-secondary/30 text-center"
-            >
-              <DollarSign className={`h-4 w-4 mx-auto mb-1 ${revenuePresent ? 'text-success' : 'text-muted-foreground'}`} />
-              <p className="text-lg font-bold">{revenuePresent ? revenueAmount : "—"}</p>
-              <p className="text-[10px] text-muted-foreground">{revenuePresent ? "Revenue" : "No revenue"}</p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.5 }}
-              className="p-3 rounded-lg bg-secondary/30 text-center"
-            >
-              <GitBranch className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
-              <p className="text-lg font-bold">{buildMomentum}%</p>
-              <p className="text-[10px] text-muted-foreground">Build momentum</p>
-            </motion.div>
+            ))}
           </div>
         </div>
+      )}
 
-        {/* Misalignment Warnings */}
-        {misalignments.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="space-y-2"
-          >
-            <h4 className="text-sm font-medium flex items-center gap-2 text-warning">
-              <AlertTriangle className="h-4 w-4" />
-              Misalignment Warnings
-            </h4>
-            <div className="space-y-2">
-              {misalignments.map((warning, index) => (
-                <div
-                  key={index}
-                  className="flex items-start gap-2 p-2 rounded-lg bg-warning/10 border border-warning/20"
-                >
-                  <AlertTriangle className="h-3.5 w-3.5 text-warning mt-0.5 shrink-0" />
-                  <p className="text-xs text-muted-foreground">{warning}</p>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-
-        {/* Strengths */}
-        {overallScore >= 60 && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-            className="flex items-start gap-2 p-3 rounded-lg bg-success/10 border border-success/20"
-          >
-            <CheckCircle2 className="h-4 w-4 text-success mt-0.5 shrink-0" />
-            <div>
-              <p className="text-sm font-medium text-success">Strong Fit Detected</p>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Your solution shows strong alignment with the identified pain points.
-              </p>
-            </div>
-          </motion.div>
-        )}
-      </CardContent>
-    </Card>
+      {/* Strengths */}
+      {overallScore >= 60 && (
+        <div className="flex items-start gap-2 p-3 rounded-lg bg-success/5 border border-success/20">
+          <CheckCircle2 className="h-4 w-4 text-success mt-0.5 shrink-0" />
+          <div>
+            <p className="text-sm font-medium">Strong Fit Detected</p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Your solution shows strong alignment with the identified pain points.
+            </p>
+          </div>
+        </div>
+      )}
+    </motion.div>
   );
 }

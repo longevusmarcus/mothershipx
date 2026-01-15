@@ -1,6 +1,4 @@
 import { motion } from "framer-motion";
-import { Zap, Target, Users, TrendingUp } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
 
 interface OpportunityMeterProps {
   score: number;
@@ -17,17 +15,17 @@ export function OpportunityMeter({
   competitionGap,
   size = "full",
 }: OpportunityMeterProps) {
-  const getScoreColor = (score: number) => {
-    if (score >= 85) return "from-green-500 to-emerald-400";
-    if (score >= 70) return "from-yellow-500 to-orange-400";
-    return "from-orange-500 to-red-400";
+  const getScoreLabel = (score: number) => {
+    if (score >= 85) return "High Potential";
+    if (score >= 70) return "Promising";
+    return "Emerging";
   };
 
   if (size === "compact") {
     return (
-      <div className="flex items-center gap-2">
-        <div className={`h-8 w-8 rounded-lg bg-gradient-to-br ${getScoreColor(score)} flex items-center justify-center`}>
-          <span className="text-xs font-bold text-white">{score}</span>
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 rounded-lg bg-foreground flex items-center justify-center">
+          <span className="text-sm font-semibold text-background">{score}</span>
         </div>
         <div className="text-xs">
           <p className="font-medium">{marketSize}</p>
@@ -39,64 +37,56 @@ export function OpportunityMeter({
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="space-y-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="space-y-6"
     >
       {/* Main Score */}
       <div className="flex items-center gap-4">
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: "spring", bounce: 0.5 }}
-          className={`h-16 w-16 rounded-2xl bg-gradient-to-br ${getScoreColor(score)} flex items-center justify-center shadow-lg`}
-        >
-          <span className="text-2xl font-bold text-white">{score}</span>
-        </motion.div>
+        <div className="h-14 w-14 rounded-lg bg-foreground flex items-center justify-center">
+          <span className="text-xl font-semibold text-background">{score}</span>
+        </div>
         <div>
-          <p className="text-sm text-muted-foreground">Opportunity Score</p>
-          <p className="text-lg font-semibold">
-            {score >= 85 ? "🔥 High Potential" : score >= 70 ? "📈 Promising" : "⚡ Emerging"}
-          </p>
+          <p className="text-xs text-muted-foreground uppercase tracking-wide">Opportunity Score</p>
+          <p className="text-sm font-medium mt-0.5">{getScoreLabel(score)}</p>
         </div>
       </div>
 
-      {/* Metric Bars */}
-      <div className="space-y-3">
-        <div className="space-y-1.5">
-          <div className="flex items-center justify-between text-xs">
-            <span className="flex items-center gap-1.5 text-muted-foreground">
-              <Target className="h-3 w-3" />
-              Market Size
-            </span>
-            <span className="font-semibold">{marketSize}</span>
+      {/* Metrics */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between py-2 border-b border-border/50">
+          <span className="text-sm text-muted-foreground">Market Size</span>
+          <span className="text-sm font-medium">{marketSize}</span>
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">Demand Velocity</span>
+            <span className="text-sm font-medium text-success">+{demandVelocity}%</span>
+          </div>
+          <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${Math.min(demandVelocity, 100)}%` }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="h-full bg-foreground rounded-full"
+            />
           </div>
         </div>
 
-        <div className="space-y-1.5">
-          <div className="flex items-center justify-between text-xs">
-            <span className="flex items-center gap-1.5 text-muted-foreground">
-              <TrendingUp className="h-3 w-3" />
-              Demand Velocity
-            </span>
-            <span className="font-semibold text-success">+{demandVelocity}%</span>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">Competition Gap</span>
+            <span className="text-sm font-medium">{competitionGap}%</span>
           </div>
-          <Progress value={Math.min(demandVelocity, 100)} size="sm" indicatorColor="default" />
-        </div>
-
-        <div className="space-y-1.5">
-          <div className="flex items-center justify-between text-xs">
-            <span className="flex items-center gap-1.5 text-muted-foreground">
-              <Users className="h-3 w-3" />
-              Competition Gap
-            </span>
-            <span className="font-semibold">{competitionGap}%</span>
+          <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${competitionGap}%` }}
+              transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
+              className="h-full bg-muted-foreground/50 rounded-full"
+            />
           </div>
-          <Progress 
-            value={competitionGap} 
-            size="sm" 
-            indicatorColor={competitionGap > 70 ? "default" : competitionGap > 50 ? "warning" : "default"} 
-          />
         </div>
       </div>
     </motion.div>
