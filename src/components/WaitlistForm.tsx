@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, CheckCircle2, Mail, Loader2 } from "lucide-react";
+import { CheckCircle2, ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
@@ -9,14 +9,14 @@ import { toast } from "sonner";
 
 interface WaitlistFormProps {
   feature: "builds" | "leaderboard" | "general";
-  variant?: "default" | "glow";
+  variant?: "default" | "glow" | "minimal";
   buttonText?: string;
   className?: string;
 }
 
 export function WaitlistForm({ 
   feature, 
-  variant = "glow",
+  variant = "minimal",
   buttonText = "Join Waitlist",
   className = "" 
 }: WaitlistFormProps) {
@@ -91,19 +91,19 @@ export function WaitlistForm({
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-success/10 border border-success/30 ${className}`}
+        className={`inline-flex items-center gap-2 text-sm text-muted-foreground ${className}`}
       >
-        <CheckCircle2 className="h-4 w-4 text-success" />
-        <span className="text-sm font-medium text-success">You're on the waitlist!</span>
+        <CheckCircle2 className="h-3.5 w-3.5 text-success" />
+        <span className="font-light tracking-wide">on the waitlist</span>
       </motion.div>
     );
   }
 
   if (isCheckingStatus) {
     return (
-      <Button variant={variant} disabled className={className}>
-        <Loader2 className="h-4 w-4 animate-spin" />
-      </Button>
+      <div className={`inline-flex items-center justify-center ${className}`}>
+        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+      </div>
     );
   }
 
@@ -118,33 +118,37 @@ export function WaitlistForm({
           onSubmit={handleSubmit}
           className={`flex gap-2 ${className}`}
         >
-          <div className="relative flex-1">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="pl-9"
-              autoFocus
-            />
-          </div>
-          <Button type="submit" variant={variant} disabled={isPending}>
+          <Input
+            type="email"
+            placeholder="your@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="h-9 text-sm border-border/50 bg-background/50 placeholder:text-muted-foreground/50 placeholder:font-light"
+            autoFocus
+          />
+          <Button 
+            type="submit" 
+            size="sm"
+            disabled={isPending}
+            className="h-9 px-4 font-normal tracking-wide"
+          >
             {isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
             ) : (
-              "Join"
+              "join"
             )}
           </Button>
           <Button 
             type="button" 
             variant="ghost" 
+            size="sm"
+            className="h-9 px-3 font-normal text-muted-foreground"
             onClick={() => {
               setShowInput(false);
               reset();
             }}
           >
-            Cancel
+            cancel
           </Button>
         </motion.form>
       ) : (
@@ -154,21 +158,29 @@ export function WaitlistForm({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
         >
-          <Button 
-            variant={variant} 
-            className={`gap-2 ${className}`}
+          <button 
             onClick={handleButtonClick}
             disabled={isPending}
+            className={`
+              group inline-flex items-center gap-2 
+              px-5 py-2.5 rounded-full
+              bg-foreground/90 text-background
+              text-sm font-normal tracking-wide
+              transition-all duration-300
+              hover:bg-foreground hover:gap-3
+              disabled:opacity-50 disabled:cursor-not-allowed
+              ${className}
+            `}
           >
             {isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
             ) : (
               <>
-                <Sparkles className="h-4 w-4" />
-                {buttonText}
+                <span>{buttonText}</span>
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
               </>
             )}
-          </Button>
+          </button>
         </motion.div>
       )}
     </AnimatePresence>
