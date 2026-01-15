@@ -13,10 +13,9 @@ import logo from "@/assets/logo.png";
 
 interface AppLayoutProps {
   children: ReactNode;
-  title?: string;
 }
 
-export function AppLayout({ children, title }: AppLayoutProps) {
+export function AppLayout({ children }: AppLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { profile } = useAuth();
 
@@ -65,10 +64,6 @@ export function AppLayout({ children, title }: AppLayoutProps) {
                 <img src={logo} alt="Mothership" className="h-7 w-7 object-contain" />
                 <span className="font-bold text-sm tracking-tight">Mothership</span>
               </div>
-
-              {title && (
-                <h1 className="hidden md:block text-xl font-semibold tracking-tight">{title}</h1>
-              )}
             </div>
             <div className="flex items-center gap-2 md:gap-3">
               <div className="relative hidden lg:block">

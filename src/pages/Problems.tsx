@@ -34,7 +34,7 @@ const Problems = () => {
   const explodingCount = problems.filter((p) => p.sentiment === "exploding").length;
 
   return (
-    <AppLayout title="Library">
+    <AppLayout>
       <SEO
         title="Library"
         description="Discover real problems and trends from 10+ data sources. Find market opportunities and build solutions."

@@ -168,7 +168,7 @@ export default function Settings() {
 
   if (!isAuthenticated) {
     return (
-      <AppLayout title="Settings">
+      <AppLayout>
         <div className="p-4 sm:p-6 max-w-4xl mx-auto">
           <Card className="text-center py-12">
             <CardContent className="space-y-4">
@@ -190,7 +190,7 @@ export default function Settings() {
   }
 
   return (
-    <AppLayout title="Settings">
+    <AppLayout>
       <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

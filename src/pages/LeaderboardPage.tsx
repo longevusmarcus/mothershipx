@@ -100,7 +100,7 @@ const LeaderboardPage = () => {
   };
 
   return (
-    <AppLayout title="Leaderboard">
+    <AppLayout>
       <div className="space-y-4 sm:space-y-6 max-w-5xl mx-auto">
         {/* Mother League Hero */}
         <motion.div

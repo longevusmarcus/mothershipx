@@ -253,7 +253,7 @@ const SubmitSolution = () => {
 
   if (authLoading) {
     return (
-      <AppLayout title="Loading...">
+      <AppLayout>
         <div className="flex items-center justify-center py-20">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
@@ -262,7 +262,7 @@ const SubmitSolution = () => {
   }
 
   return (
-    <AppLayout title={challenge ? "Submit Entry" : "New Build"}>
+    <AppLayout>
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <motion.div
