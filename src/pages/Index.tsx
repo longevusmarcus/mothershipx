@@ -7,17 +7,37 @@ import { SEO } from "@/components/SEO";
 import { DataSourceSelector } from "@/components/DataSourceSelector";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/lib/supabaseClient";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMode, setSearchMode] = useState<"search" | "neural" | "grid">("search");
   const [selectedSources, setSelectedSources] = useState<string[]>(["tiktok", "google_trends", "freelancer"]);
   const [showWaitlistModal, setShowWaitlistModal] = useState(false);
+  const [submittedQuery, setSubmittedQuery] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
   const navigate = useNavigate();
+  const { user, profile } = useAuth();
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
+      setSubmittedQuery(searchQuery.trim());
+      setIsSaving(true);
+      
+      // Save the search interest to the database
+      try {
+        await supabase.from("search_interests").insert({
+          query: searchQuery.trim(),
+          user_id: user?.id || null,
+          email: profile?.email || user?.email || null,
+        });
+      } catch (error) {
+        console.error("Failed to save search interest:", error);
+      }
+      
+      setIsSaving(false);
       setShowWaitlistModal(true);
     }
   };
@@ -27,6 +47,11 @@ const Index = () => {
       e.preventDefault();
       handleSearch(e);
     }
+  };
+
+  const handleCloseModal = () => {
+    setShowWaitlistModal(false);
+    setSearchQuery("");
   };
 
   return (
@@ -106,7 +131,7 @@ const Index = () => {
                   type="submit"
                   size="icon"
                   className="h-9 w-9 rounded-lg"
-                  disabled={!searchQuery.trim()}
+                  disabled={!searchQuery.trim() || isSaving}
                 >
                   <ArrowUp className="h-4 w-4" />
                 </Button>
@@ -166,7 +191,7 @@ const Index = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setShowWaitlistModal(false)}
+              onClick={handleCloseModal}
               className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50"
             />
             
@@ -178,10 +203,10 @@ const Index = () => {
               transition={{ duration: 0.2, ease: "easeOut" }}
               className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md px-4"
             >
-              <div className="bg-card border border-border rounded-2xl p-8 shadow-lg">
+              <div className="bg-card border border-border rounded-2xl p-8 shadow-lg relative">
                 {/* Close button */}
                 <button
-                  onClick={() => setShowWaitlistModal(false)}
+                  onClick={handleCloseModal}
                   className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-secondary transition-colors"
                 >
                   <X className="h-4 w-4 text-muted-foreground" />
@@ -193,17 +218,23 @@ const Index = () => {
                     <Sparkles className="h-5 w-5 text-foreground/70" />
                   </div>
                   
-                  <h2 className="font-display text-xl mb-2">You're on the list</h2>
-                  <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+                  <h2 className="font-display text-xl mb-3">You're on the list</h2>
+                  
+                  <p className="text-sm text-muted-foreground mb-1">
+                    You're interested in
+                  </p>
+                  <p className="text-sm font-medium mb-4 px-3 py-1.5 bg-secondary/50 rounded-lg inline-block">
+                    "{submittedQuery}"
+                  </p>
+                  
+                  <p className="text-sm text-muted-foreground mb-6">
                     Search is coming soon. We'll notify you when it's ready.
-                    <br />
-                    In the meantime, explore what's already available.
                   </p>
 
                   <div className="flex flex-col gap-2">
                     <Button
                       onClick={() => {
-                        setShowWaitlistModal(false);
+                        handleCloseModal();
                         navigate("/problems");
                       }}
                       className="w-full"
@@ -211,7 +242,7 @@ const Index = () => {
                       Browse Library
                     </Button>
                     <button
-                      onClick={() => setShowWaitlistModal(false)}
+                      onClick={handleCloseModal}
                       className="text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
                     >
                       Maybe later
