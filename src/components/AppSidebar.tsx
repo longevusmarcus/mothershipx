@@ -13,7 +13,7 @@ import {
   LogOut,
   ExternalLink,
 } from "lucide-react";
-import logoIcon from "@/assets/logo-icon.png";
+
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -81,25 +81,18 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
     >
       {/* Header */}
       <div className="h-14 flex items-center justify-between px-4">
-        <div className="flex items-center gap-2">
-          <img 
-            src={logoIcon} 
-            alt="MothershipX" 
-            className="h-5 w-5 object-contain shrink-0"
-          />
-          <AnimatePresence mode="wait">
-            {(!collapsed || isMobile) && (
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="font-semibold text-base tracking-tight"
-              >
-                Mothership
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </div>
+        <AnimatePresence mode="wait">
+          {(!collapsed || isMobile) && (
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="font-semibold text-base tracking-tight"
+            >
+              Mothership
+            </motion.span>
+          )}
+        </AnimatePresence>
         
         {isMobile ? (
           <button
