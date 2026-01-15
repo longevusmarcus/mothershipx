@@ -27,14 +27,14 @@ const Index = () => {
     e.preventDefault();
     if (searchQuery.trim()) {
       const query = searchQuery.trim();
-      
+
       // If user is not logged in, show auth modal first
       if (!user) {
         setPendingQuery(query);
         setShowAuthModal(true);
         return;
       }
-      
+
       // User is logged in, proceed with saving and showing waitlist
       await saveSearchAndShowWaitlist(query);
     }
@@ -43,7 +43,7 @@ const Index = () => {
   const saveSearchAndShowWaitlist = async (query: string) => {
     setSubmittedQuery(query);
     setIsSaving(true);
-    
+
     // Save the search interest to the database
     try {
       await supabase.from("search_interests").insert({
@@ -54,7 +54,7 @@ const Index = () => {
     } catch (error) {
       console.error("Failed to save search interest:", error);
     }
-    
+
     setIsSaving(false);
     setShowWaitlistModal(true);
   };
@@ -82,11 +82,11 @@ const Index = () => {
 
   return (
     <AppLayout>
-      <SEO 
-        title="Mothership Search" 
+      <SEO
+        title="MothershipX Search"
         description="Discover real problems and trends from 10+ data sources. Build solutions together with our community of builders."
       />
-      
+
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)]">
         {/* Title */}
         <motion.h1
@@ -95,7 +95,7 @@ const Index = () => {
           transition={{ duration: 0.5 }}
           className="font-display text-2xl sm:text-3xl font-normal tracking-tight text-center mb-8"
         >
-          Mothership Search
+          MothershipX Search
         </motion.h1>
 
         {/* Search Box */}
@@ -116,7 +116,7 @@ const Index = () => {
                 placeholder="Search problems, trends, opportunities..."
                 className="w-full px-4 py-4 text-base bg-transparent border-0 focus:outline-none focus:ring-0 placeholder:text-muted-foreground"
               />
-              
+
               {/* Bottom Bar */}
               <div className="flex items-center justify-between px-3 py-2 border-t border-border">
                 {/* Mode Toggles */}
@@ -126,7 +126,7 @@ const Index = () => {
                     onClick={() => setSearchMode("search")}
                     className={cn(
                       "p-2 rounded-md transition-colors",
-                      searchMode === "search" ? "bg-background shadow-sm" : "hover:bg-background/50"
+                      searchMode === "search" ? "bg-background shadow-sm" : "hover:bg-background/50",
                     )}
                   >
                     <Search className="h-4 w-4" />
@@ -136,7 +136,7 @@ const Index = () => {
                     onClick={() => setSearchMode("neural")}
                     className={cn(
                       "p-2 rounded-md transition-colors",
-                      searchMode === "neural" ? "bg-background shadow-sm" : "hover:bg-background/50"
+                      searchMode === "neural" ? "bg-background shadow-sm" : "hover:bg-background/50",
                     )}
                   >
                     <Zap className="h-4 w-4" />
@@ -146,7 +146,7 @@ const Index = () => {
                     onClick={() => setSearchMode("grid")}
                     className={cn(
                       "p-2 rounded-md transition-colors",
-                      searchMode === "grid" ? "bg-background shadow-sm" : "hover:bg-background/50"
+                      searchMode === "grid" ? "bg-background shadow-sm" : "hover:bg-background/50",
                     )}
                   >
                     <LayoutGrid className="h-4 w-4" />
@@ -181,9 +181,7 @@ const Index = () => {
               </div>
               <div>
                 <p className="text-sm font-medium">Data Sources</p>
-                <p className="text-xs text-muted-foreground">
-                  Scraping TikTok, Google Trends, Freelancer & more
-                </p>
+                <p className="text-xs text-muted-foreground">Scraping TikTok, Google Trends, Freelancer & more</p>
               </div>
             </div>
             <DataSourceSelector onSelectionChange={setSelectedSources} />
@@ -221,7 +219,7 @@ const Index = () => {
               onClick={handleCloseModal}
               className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50"
             />
-            
+
             {/* Modal */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -244,16 +242,14 @@ const Index = () => {
                   <div className="h-12 w-12 rounded-full bg-secondary/50 flex items-center justify-center mx-auto mb-5">
                     <Sparkles className="h-5 w-5 text-foreground/70" />
                   </div>
-                  
+
                   <h2 className="font-display text-xl mb-3">You're on the list</h2>
-                  
-                  <p className="text-sm text-muted-foreground mb-1">
-                    You're interested in
-                  </p>
+
+                  <p className="text-sm text-muted-foreground mb-1">You're interested in</p>
                   <p className="text-sm font-medium mb-4 px-3 py-1.5 bg-secondary/50 rounded-lg inline-block">
                     "{submittedQuery}"
                   </p>
-                  
+
                   <p className="text-sm text-muted-foreground mb-6">
                     Search is coming soon. We'll notify you when it's ready.
                   </p>
@@ -283,11 +279,7 @@ const Index = () => {
       </AnimatePresence>
 
       {/* Auth Modal for logged out users */}
-      <AuthModal
-        open={showAuthModal}
-        onOpenChange={setShowAuthModal}
-        onSuccess={handleAuthSuccess}
-      />
+      <AuthModal open={showAuthModal} onOpenChange={setShowAuthModal} onSuccess={handleAuthSuccess} />
     </AppLayout>
   );
 };
