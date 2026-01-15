@@ -37,6 +37,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabaseClient";
 import { useUserStats, getXpProgress, getLevelTitle } from "@/hooks/useUserStats";
+import { MyChallenges } from "@/components/MyChallenges";
 
 const achievements = [
   { id: 1, name: "First Build", description: "Submitted your first solution", unlocked: false, date: null },
@@ -531,6 +532,15 @@ export default function Profile() {
                 </Card>
               </motion.div>
             </div>
+
+            {/* My Challenges Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 }}
+            >
+              <MyChallenges />
+            </motion.div>
 
             {/* Recent Activity */}
             <motion.div
