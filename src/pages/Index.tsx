@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Search, Zap, LayoutGrid, ArrowUp, ArrowUpRight, X, Sparkles } from "lucide-react";
+import logoIcon from "@/assets/logo-icon.png";
 import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
 import { DataSourceSelector } from "@/components/DataSourceSelector";
@@ -103,8 +104,8 @@ const Index = () => {
               {/* Message content */}
               <div className="p-5 pr-10">
                 <div className="flex items-start gap-3">
-                  <div className="h-8 w-8 rounded-full bg-gradient-primary flex items-center justify-center shrink-0">
-                    <Sparkles className="h-4 w-4 text-primary-foreground" />
+                  <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center shrink-0 overflow-hidden">
+                    <img src={logoIcon} alt="MothershipX" className="h-5 w-5 object-contain" />
                   </div>
                   <div>
                     <p className="text-sm leading-relaxed text-foreground">
