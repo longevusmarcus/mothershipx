@@ -9,15 +9,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
 import {
   MapPin,
   Calendar,
   Pencil,
   Check,
   Layers,
-  Hash,
-  CircleDot,
   User,
   Link as LinkIcon,
   Github,
@@ -174,17 +171,27 @@ export default function Profile() {
     return (
       <AppLayout>
         <SEO title="Profile" description="View your builder profile." />
-        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-          <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-6">
-            <User className="h-8 w-8 text-muted-foreground/50" />
+        <div className="space-y-6">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">Profile</h1>
+            <p className="text-sm text-muted-foreground mt-1">View and manage your profile</p>
+          </motion.div>
+          
+          <div className="py-16 text-center">
+            <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-6">
+              <User className="h-8 w-8 text-muted-foreground/50" />
+            </div>
+            <h2 className="text-lg font-medium mb-2">Not signed in</h2>
+            <p className="text-sm text-muted-foreground mb-6 max-w-sm mx-auto">
+              Sign in to view your profile, track your progress, and manage your builds.
+            </p>
+            <Button onClick={() => navigate("/auth")} size="sm">
+              Sign In
+            </Button>
           </div>
-          <h2 className="text-xl font-medium mb-2">Not signed in</h2>
-          <p className="text-sm text-muted-foreground mb-8 max-w-sm">
-            Sign in to view your profile, track your progress, and manage your builds.
-          </p>
-          <Button onClick={() => navigate("/auth")} className="rounded-full px-6">
-            Sign In
-          </Button>
         </div>
       </AppLayout>
     );
@@ -196,21 +203,23 @@ export default function Profile() {
   return (
     <AppLayout>
       <SEO title="Profile" description="View your builder profile, achievements, and build history." />
-      <div className="max-w-4xl mx-auto">
-        {/* Profile Header Section */}
+      <div className="space-y-6">
+        {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mb-8"
+          className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4"
         >
-          {/* Top Actions */}
-          <div className="flex justify-end gap-2 mb-6">
+          <div>
+            <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">Profile</h1>
+            <p className="text-sm text-muted-foreground mt-1">Manage your profile and track progress</p>
+          </div>
+          <div className="flex gap-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate("/settings")}
-              className="text-muted-foreground hover:text-foreground h-8 px-3 rounded-full"
+              className="text-muted-foreground hover:text-foreground h-8 px-3"
             >
               <Settings className="h-4 w-4 mr-1.5" />
               Settings
@@ -220,7 +229,7 @@ export default function Profile() {
               size="sm"
               onClick={isEditing ? handleSave : () => setIsEditing(true)}
               disabled={isLoading}
-              className="h-8 px-4 rounded-full"
+              className="h-8 px-4"
             >
               {isLoading ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -237,10 +246,18 @@ export default function Profile() {
               )}
             </Button>
           </div>
+        </motion.div>
 
-          {/* Avatar & Name */}
-          <div className="flex flex-col items-center text-center mb-8">
-            <div className="relative group mb-4">
+        {/* Profile Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="rounded-xl border border-border bg-card p-6"
+        >
+          <div className="flex flex-col sm:flex-row gap-6">
+            {/* Avatar */}
+            <div className="relative group shrink-0">
               <input
                 type="file"
                 ref={fileInputRef}
@@ -249,13 +266,11 @@ export default function Profile() {
                 className="hidden"
               />
               <Avatar 
-                className={`h-24 w-24 sm:h-28 sm:w-28 ring-4 ring-background shadow-lg ${
-                  isEditing ? "cursor-pointer" : ""
-                }`}
+                className={`h-20 w-20 sm:h-24 sm:w-24 ${isEditing ? "cursor-pointer" : ""}`}
                 onClick={handleAvatarClick}
               >
                 <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.name || "Avatar"} />
-                <AvatarFallback className="text-2xl font-semibold bg-gradient-primary text-primary-foreground">
+                <AvatarFallback className="text-xl font-semibold bg-gradient-primary text-primary-foreground">
                   {initials}
                 </AvatarFallback>
               </Avatar>
@@ -265,170 +280,96 @@ export default function Profile() {
                   onClick={handleAvatarClick}
                 >
                   {isUploadingAvatar ? (
-                    <Loader2 className="h-6 w-6 text-background animate-spin" />
+                    <Loader2 className="h-5 w-5 text-background animate-spin" />
                   ) : (
-                    <Camera className="h-6 w-6 text-background" />
+                    <Camera className="h-5 w-5 text-background" />
                   )}
                 </div>
               )}
             </div>
 
-            <div className="space-y-2">
-              {isEditing ? (
-                <Input
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Your name"
-                  className="text-center text-xl font-semibold h-10 max-w-[240px] mx-auto"
-                />
-              ) : (
-                <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">
-                  {profile?.name || "Builder"}
-                </h1>
-              )}
+            {/* Info */}
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+                {isEditing ? (
+                  <Input
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    placeholder="Your name"
+                    className="text-lg font-semibold h-9 max-w-[240px]"
+                  />
+                ) : (
+                  <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">
+                    {profile?.name || "Builder"}
+                  </h2>
+                )}
+                <Badge variant="secondary" className="w-fit text-xs">
+                  {levelTitle}
+                </Badge>
+              </div>
               
-              <div className="flex items-center justify-center gap-3 text-sm text-muted-foreground">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground mb-4">
                 {formData.location && (
-                  <>
-                    <span className="flex items-center gap-1">
-                      <MapPin className="h-3.5 w-3.5" />
-                      {formData.location}
-                    </span>
-                    <span className="text-border">•</span>
-                  </>
+                  <span className="flex items-center gap-1">
+                    <MapPin className="h-3.5 w-3.5" />
+                    {formData.location}
+                  </span>
                 )}
                 <span className="flex items-center gap-1">
                   <Calendar className="h-3.5 w-3.5" />
                   Joined {joinedDate}
                 </span>
               </div>
-            </div>
-          </div>
 
-          {/* Level & XP Progress */}
-          <div className="max-w-md mx-auto mb-8">
-            <div className="flex items-center justify-between text-sm mb-2">
-              <div className="flex items-center gap-2">
-                <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold">
-                  {userStats?.currentLevel || 1}
+              {/* XP Progress */}
+              <div className="max-w-sm">
+                <div className="flex items-center justify-between text-xs mb-1.5">
+                  <span className="text-muted-foreground">Level {userStats?.currentLevel || 1}</span>
+                  <span className="text-muted-foreground">
+                    {userStats?.totalXp.toLocaleString() || 0} / {xpProgress.nextLevelXp.toLocaleString()} XP
+                  </span>
                 </div>
-                <span className="font-medium">{levelTitle}</span>
+                <Progress value={xpProgress.percentage} className="h-1.5" />
               </div>
-              <span className="text-muted-foreground text-xs">
-                {userStats?.totalXp.toLocaleString() || 0} / {xpProgress.nextLevelXp.toLocaleString()} XP
-              </span>
             </div>
-            <Progress value={xpProgress.percentage} className="h-1.5" />
-            <p className="text-xs text-muted-foreground mt-1.5 text-center">
-              {userStats?.xpToNextLevel.toLocaleString() || 500} XP until next level
-            </p>
-          </div>
 
-          {/* Stats Row */}
-          <div className="grid grid-cols-4 gap-3 sm:gap-6 max-w-lg mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-center"
-            >
-              <div className="text-2xl sm:text-3xl font-semibold tabular-nums">
-                {statsLoading ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : userStats?.problemsJoined || 0}
+            {/* Stats */}
+            <div className="flex sm:flex-col gap-6 sm:gap-4 sm:border-l sm:border-border sm:pl-6">
+              <div className="text-center sm:text-right">
+                <div className="text-2xl font-semibold tabular-nums">
+                  {statsLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : userStats?.problemsJoined || 0}
+                </div>
+                <div className="text-xs text-muted-foreground">Problems Joined</div>
               </div>
-              <div className="text-[11px] sm:text-xs text-muted-foreground mt-1">Problems</div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 }}
-              className="text-center relative"
-            >
-              <Badge variant="secondary" className="absolute -top-1 -right-1 text-[8px] px-1.5 py-0 hidden sm:flex">
-                Soon
-              </Badge>
-              <div className="text-2xl sm:text-3xl font-semibold tabular-nums opacity-40">
-                {userStats?.solutionsShipped || 0}
+              <div className="text-center sm:text-right opacity-50">
+                <div className="text-2xl font-semibold tabular-nums">{userStats?.solutionsShipped || 0}</div>
+                <div className="text-xs text-muted-foreground">Solutions</div>
               </div>
-              <div className="text-[11px] sm:text-xs text-muted-foreground mt-1 opacity-60">Solutions</div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-center relative"
-            >
-              <Badge variant="secondary" className="absolute -top-1 -right-1 text-[8px] px-1.5 py-0 hidden sm:flex">
-                Soon
-              </Badge>
-              <div className="text-2xl sm:text-3xl font-semibold tabular-nums opacity-40">
-                #{userStats?.globalRank || 47}
-              </div>
-              <div className="text-[11px] sm:text-xs text-muted-foreground mt-1 opacity-60">Rank</div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25 }}
-              className="text-center relative"
-            >
-              <Badge variant="secondary" className="absolute -top-1 -right-1 text-[8px] px-1.5 py-0 hidden sm:flex">
-                Soon
-              </Badge>
-              <div className="text-2xl sm:text-3xl font-semibold tabular-nums opacity-40">
-                {userStats?.averageFitScore ? `${userStats.averageFitScore}%` : "89%"}
-              </div>
-              <div className="text-[11px] sm:text-xs text-muted-foreground mt-1 opacity-60">Fit Score</div>
-            </motion.div>
+            </div>
           </div>
         </motion.div>
 
-        <Separator className="mb-8" />
-
-        {/* Tabs Section */}
+        {/* Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="w-full max-w-md mx-auto bg-transparent border-b border-border rounded-none h-auto p-0 gap-6 justify-center">
-            <TabsTrigger 
-              value="overview" 
-              className="data-[state=active]:border-b-2 data-[state=active]:border-foreground data-[state=active]:bg-transparent rounded-none pb-3 px-1 text-sm font-medium"
-            >
-              Overview
-            </TabsTrigger>
-            <TabsTrigger 
-              value="builds" 
-              className="data-[state=active]:border-b-2 data-[state=active]:border-foreground data-[state=active]:bg-transparent rounded-none pb-3 px-1 text-sm font-medium"
-            >
-              Builds
-            </TabsTrigger>
-            <TabsTrigger 
-              value="achievements" 
-              className="data-[state=active]:border-b-2 data-[state=active]:border-foreground data-[state=active]:bg-transparent rounded-none pb-3 px-1 text-sm font-medium"
-            >
-              Achievements
-            </TabsTrigger>
-            <TabsTrigger 
-              value="account" 
-              className="data-[state=active]:border-b-2 data-[state=active]:border-foreground data-[state=active]:bg-transparent rounded-none pb-3 px-1 text-sm font-medium"
-            >
-              Account
-            </TabsTrigger>
+          <TabsList className="bg-muted/50 p-1 h-auto">
+            <TabsTrigger value="overview" className="text-xs sm:text-sm px-3">Overview</TabsTrigger>
+            <TabsTrigger value="builds" className="text-xs sm:text-sm px-3">Builds</TabsTrigger>
+            <TabsTrigger value="achievements" className="text-xs sm:text-sm px-3">Achievements</TabsTrigger>
+            <TabsTrigger value="account" className="text-xs sm:text-sm px-3">Account</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-8">
+          <TabsContent value="overview" className="space-y-6">
             {/* Bio & Links */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="grid md:grid-cols-2 gap-8"
-            >
+            <div className="grid md:grid-cols-2 gap-6">
               {/* Bio */}
-              <div>
-                <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
-                  <User className="h-3.5 w-3.5" />
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-xl border border-border bg-card p-5"
+              >
+                <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
+                  <User className="h-4 w-4 text-muted-foreground" />
                   About
                 </h3>
                 {isEditing ? (
@@ -444,12 +385,17 @@ export default function Profile() {
                     {formData.bio || "No bio added yet. Click Edit to add your bio."}
                   </p>
                 )}
-              </div>
+              </motion.div>
 
               {/* Links */}
-              <div>
-                <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
-                  <LinkIcon className="h-3.5 w-3.5" />
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.05 }}
+                className="rounded-xl border border-border bg-card p-5"
+              >
+                <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
+                  <LinkIcon className="h-4 w-4 text-muted-foreground" />
                   Links
                 </h3>
                 {isEditing ? (
@@ -460,7 +406,7 @@ export default function Profile() {
                         value={formData.website}
                         onChange={(e) => setFormData({ ...formData, website: e.target.value })}
                         placeholder="yoursite.com"
-                        className="h-9 text-sm"
+                        className="h-9 text-sm mt-1"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-3">
@@ -470,7 +416,7 @@ export default function Profile() {
                           value={formData.github}
                           onChange={(e) => setFormData({ ...formData, github: e.target.value })}
                           placeholder="username"
-                          className="h-9 text-sm"
+                          className="h-9 text-sm mt-1"
                         />
                       </div>
                       <div>
@@ -479,7 +425,7 @@ export default function Profile() {
                           value={formData.twitter}
                           onChange={(e) => setFormData({ ...formData, twitter: e.target.value })}
                           placeholder="username"
-                          className="h-9 text-sm"
+                          className="h-9 text-sm mt-1"
                         />
                       </div>
                     </div>
@@ -493,11 +439,10 @@ export default function Profile() {
                             href={`https://${formData.website}`} 
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group"
+                            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
                           >
                             <ExternalLink className="h-3.5 w-3.5" />
                             {formData.website}
-                            <span className="opacity-0 group-hover:opacity-100 transition-opacity">↗</span>
                           </a>
                         )}
                         {formData.github && (
@@ -505,7 +450,7 @@ export default function Profile() {
                             href={`https://github.com/${formData.github}`} 
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group"
+                            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
                           >
                             <Github className="h-3.5 w-3.5" />
                             {formData.github}
@@ -516,7 +461,7 @@ export default function Profile() {
                             href={`https://twitter.com/${formData.twitter}`} 
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group"
+                            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
                           >
                             <Twitter className="h-3.5 w-3.5" />
                             @{formData.twitter}
@@ -528,14 +473,14 @@ export default function Profile() {
                     )}
                   </div>
                 )}
-              </div>
-            </motion.div>
+              </motion.div>
+            </div>
 
             {/* My Challenges */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
+              transition={{ delay: 0.1 }}
             >
               <MyChallenges />
             </motion.div>
@@ -544,14 +489,15 @@ export default function Profile() {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.15 }}
+              className="rounded-xl border border-border bg-card p-5"
             >
-              <h3 className="text-sm font-medium text-muted-foreground mb-4 flex items-center gap-2">
-                <Layers className="h-3.5 w-3.5" />
+              <h3 className="text-sm font-medium mb-4 flex items-center gap-2">
+                <Layers className="h-4 w-4 text-muted-foreground" />
                 Recent Builds
               </h3>
               {recentBuilds.length === 0 ? (
-                <div className="text-center py-12 border border-dashed border-border rounded-xl">
+                <div className="text-center py-8">
                   <Layers className="h-8 w-8 mx-auto mb-3 text-muted-foreground/30" />
                   <p className="text-sm text-muted-foreground">No builds yet</p>
                   <p className="text-xs text-muted-foreground/70 mt-1">Join a challenge to start building</p>
@@ -561,7 +507,7 @@ export default function Profile() {
                   {recentBuilds.map((build) => (
                     <div
                       key={build.id}
-                      className="flex items-center justify-between p-4 rounded-xl border border-border/50 hover:border-border transition-colors"
+                      className="flex items-center justify-between p-3 rounded-lg border border-border/50 hover:border-border transition-colors"
                     >
                       <div className="min-w-0 flex-1">
                         <div className="font-medium text-sm truncate">{build.name}</div>
@@ -586,127 +532,131 @@ export default function Profile() {
 
           {/* Builds Tab */}
           <TabsContent value="builds">
-            <div className="text-center py-16">
-              <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-4">
-                <Layers className="h-8 w-8 text-muted-foreground/50" />
+            <div className="rounded-xl border border-border bg-card p-5">
+              <div className="text-center py-12">
+                <Layers className="h-10 w-10 mx-auto mb-4 text-muted-foreground/30" />
+                <h3 className="font-medium mb-2">Your Builds</h3>
+                <p className="text-sm text-muted-foreground max-w-sm mx-auto mb-4">
+                  View all your submitted builds and their verification status.
+                </p>
+                <Button variant="outline" size="sm">
+                  View All Builds
+                </Button>
               </div>
-              <h3 className="font-medium mb-2">Your Builds</h3>
-              <p className="text-sm text-muted-foreground max-w-sm mx-auto mb-6">
-                View all your submitted builds and their verification status.
-              </p>
-              <Button variant="outline" size="sm" className="rounded-full px-5">
-                View All Builds
-              </Button>
             </div>
           </TabsContent>
 
           {/* Achievements Tab */}
           <TabsContent value="achievements">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Award className="h-3.5 w-3.5" />
-                Achievements
-              </h3>
-              <Badge variant="secondary" className="text-xs">
-                {achievements.filter(a => a.unlocked).length}/{achievements.length} Unlocked
-              </Badge>
-            </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {achievements.map((achievement, index) => {
-                const Icon = achievement.icon;
-                return (
-                  <motion.div
-                    key={achievement.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className={`flex items-start gap-3 p-4 rounded-xl border transition-colors ${
-                      achievement.unlocked
-                        ? "border-border bg-muted/20"
-                        : "border-border/50 opacity-50"
-                    }`}
-                  >
-                    <div className={`p-2 rounded-lg shrink-0 ${
-                      achievement.unlocked ? "bg-primary/10" : "bg-muted"
-                    }`}>
-                      <Icon className={`h-4 w-4 ${
-                        achievement.unlocked ? "text-primary" : "text-muted-foreground"
-                      }`} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-sm truncate">{achievement.name}</span>
-                        {achievement.unlocked && (
-                          <CheckCircle2 className="h-3.5 w-3.5 text-success shrink-0" />
-                        )}
+            <div className="rounded-xl border border-border bg-card p-5">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-medium flex items-center gap-2">
+                  <Award className="h-4 w-4 text-muted-foreground" />
+                  Achievements
+                </h3>
+                <Badge variant="secondary" className="text-xs">
+                  {achievements.filter(a => a.unlocked).length}/{achievements.length} Unlocked
+                </Badge>
+              </div>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {achievements.map((achievement, index) => {
+                  const Icon = achievement.icon;
+                  return (
+                    <motion.div
+                      key={achievement.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      className={`flex items-start gap-3 p-4 rounded-lg border transition-colors ${
+                        achievement.unlocked
+                          ? "border-border bg-muted/20"
+                          : "border-border/50 opacity-50"
+                      }`}
+                    >
+                      <div className={`p-2 rounded-lg shrink-0 ${
+                        achievement.unlocked ? "bg-primary/10" : "bg-muted"
+                      }`}>
+                        <Icon className={`h-4 w-4 ${
+                          achievement.unlocked ? "text-primary" : "text-muted-foreground"
+                        }`} />
                       </div>
-                      <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
-                        {achievement.description}
-                      </p>
-                      {achievement.unlocked && achievement.date && (
-                        <p className="text-xs text-primary mt-1">{achievement.date}</p>
-                      )}
-                    </div>
-                  </motion.div>
-                );
-              })}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-sm truncate">{achievement.name}</span>
+                          {achievement.unlocked && (
+                            <CheckCircle2 className="h-3.5 w-3.5 text-success shrink-0" />
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+                          {achievement.description}
+                        </p>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
             </div>
           </TabsContent>
 
           {/* Account Tab */}
           <TabsContent value="account">
-            <div className="max-w-lg mx-auto space-y-6">
-              <div>
-                <Label className="text-xs text-muted-foreground">Display Name</Label>
-                <Input 
-                  value={formData.name} 
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Your display name"
-                  className="mt-1.5"
-                />
-              </div>
-              
-              <div>
-                <Label className="text-xs text-muted-foreground">Email</Label>
-                <Input 
-                  value={profile?.email || user?.email || ""} 
-                  type="email" 
-                  disabled 
-                  className="mt-1.5 bg-muted/30"
-                />
-              </div>
+            <div className="rounded-xl border border-border bg-card p-5">
+              <h3 className="text-sm font-medium mb-4 flex items-center gap-2">
+                <User className="h-4 w-4 text-muted-foreground" />
+                Account Settings
+              </h3>
+              <div className="space-y-4 max-w-lg">
+                <div>
+                  <Label className="text-xs text-muted-foreground">Display Name</Label>
+                  <Input 
+                    value={formData.name} 
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    placeholder="Your display name"
+                    className="mt-1"
+                  />
+                </div>
+                
+                <div>
+                  <Label className="text-xs text-muted-foreground">Email</Label>
+                  <Input 
+                    value={profile?.email || user?.email || ""} 
+                    type="email" 
+                    disabled 
+                    className="mt-1 bg-muted/30"
+                  />
+                </div>
 
-              <div>
-                <Label className="text-xs text-muted-foreground">Location</Label>
-                <Input 
-                  value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  placeholder="City, Country"
-                  className="mt-1.5"
-                />
-              </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Location</Label>
+                  <Input 
+                    value={formData.location}
+                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                    placeholder="City, Country"
+                    className="mt-1"
+                  />
+                </div>
 
-              <Separator />
-
-              <div className="flex items-center justify-between">
-                <Button onClick={handleSave} disabled={isLoading} className="rounded-full px-6">
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    "Save Changes"
-                  )}
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  onClick={handleSignOut} 
-                  className="text-muted-foreground hover:text-destructive rounded-full"
-                >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Sign Out
-                </Button>
+                <div className="flex items-center justify-between pt-4 border-t border-border">
+                  <Button onClick={handleSave} disabled={isLoading} size="sm">
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      "Save Changes"
+                    )}
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    onClick={handleSignOut} 
+                    size="sm"
+                    className="text-muted-foreground hover:text-destructive"
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </Button>
+                </div>
               </div>
             </div>
           </TabsContent>
