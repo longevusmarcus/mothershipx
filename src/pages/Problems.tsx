@@ -47,7 +47,7 @@ const Problems = () => {
         >
           <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">Library</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            {filteredProblems.length} problems discovered
+            {filteredProblems.length} problems and trends discovered
           </p>
         </motion.div>
 
