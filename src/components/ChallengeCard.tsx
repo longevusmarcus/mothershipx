@@ -35,6 +35,7 @@ import { DailyChallenge, getTimeRemaining, getDifficultyColor } from "@/data/cha
 import { getSourceIcon } from "@/data/marketIntelligence";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMyChallengeJoins, useJoinChallenge } from "@/hooks/useChallengeJoins";
+import { PaywallModal } from "@/components/PaywallModal";
 
 interface ChallengeCardProps {
   challenge: DailyChallenge;
@@ -47,6 +48,7 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
   const { data: myChallengeJoins = [] } = useMyChallengeJoins();
   const joinChallengeMutation = useJoinChallenge();
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
+  const [isPaywallOpen, setIsPaywallOpen] = useState(false);
   const [joinType, setJoinType] = useState<"solo" | "team" | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -66,10 +68,18 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
   const handleConfirmJoin = async () => {
     if (!joinType) return;
     
+    // Close join dialog and open paywall
+    setIsJoinDialogOpen(false);
+    setIsPaywallOpen(true);
+  };
+
+  const handlePaymentSuccess = async () => {
+    if (!joinType) return;
+    
     setIsProcessing(true);
     
     try {
-      // Store the join in the database
+      // Store the join in the database after successful payment
       await joinChallengeMutation.mutateAsync({
         challengeId: challenge.id,
         joinType,
@@ -79,7 +89,7 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
         description: "Redirecting to submission page...",
       });
       
-      setIsJoinDialogOpen(false);
+      setIsPaywallOpen(false);
       
       // Navigate to submit page with challenge context
       navigate("/submit", {
@@ -417,10 +427,8 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
                         disabled={!joinType || isProcessing}
                         onClick={handleConfirmJoin}
                       >
-                        {isProcessing ? (
-                          "Processing..."
-                        ) : joinType ? (
-                          `Join as ${joinType === "solo" ? "Solo Builder" : "Team"} - Pay $2`
+                        {joinType ? (
+                          `Continue as ${joinType === "solo" ? "Solo" : "Team"} →`
                         ) : (
                           "Select Solo or Team"
                         )}
@@ -456,6 +464,16 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
             </Button>
           )}
         </CardContent>
+
+        {/* Paywall Modal for payment processing */}
+        <PaywallModal
+          open={isPaywallOpen}
+          onOpenChange={setIsPaywallOpen}
+          onPaymentSuccess={handlePaymentSuccess}
+          challengeTitle={challenge.title}
+          prizePool={challenge.prizePool}
+          winnerPrize={challenge.winnerPrize}
+        />
       </Card>
     </motion.div>
   );
