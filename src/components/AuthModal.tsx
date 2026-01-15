@@ -89,14 +89,6 @@ export function AuthModal({ open, onOpenChange, onSuccess }: AuthModalProps) {
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-sm p-0 gap-0 border-border bg-card overflow-hidden">
-        {/* Close button */}
-        <button
-          onClick={handleClose}
-          className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-secondary transition-colors z-10"
-        >
-          <X className="h-4 w-4 text-muted-foreground" />
-        </button>
-
         <div className="p-8">
           {/* Logo */}
           <div className="flex justify-center mb-6">
