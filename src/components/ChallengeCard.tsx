@@ -32,6 +32,7 @@ import { getSourceIcon } from "@/data/marketIntelligence";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMyChallengeJoins, useJoinChallenge } from "@/hooks/useChallengeJoins";
 import { PaywallModal } from "@/components/PaywallModal";
+import { AuthModal } from "@/components/AuthModal";
 
 interface ChallengeCardProps {
   challenge: DailyChallenge;
@@ -45,6 +46,7 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
   const joinChallengeMutation = useJoinChallenge();
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
   const [isPaywallOpen, setIsPaywallOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [joinType, setJoinType] = useState<"solo" | "team" | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -105,8 +107,8 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
     }
   };
 
-  const handleAuthRedirect = () => {
-    navigate("/auth", { state: { returnTo: "/challenges" } });
+  const handleAuthClick = () => {
+    setIsAuthModalOpen(true);
   };
 
   const statusLabel = isActive ? "Live" : isVoting ? "Voting" : "Completed";
@@ -349,7 +351,7 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
               </Dialog>
             )
           ) : (
-            <Button variant="outline" className="w-full" onClick={handleAuthRedirect}>
+            <Button variant="outline" className="w-full" onClick={handleAuthClick}>
               <LogIn className="h-4 w-4 mr-2" />
               Sign in to Join
             </Button>
@@ -379,6 +381,8 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
         prizePool={challenge.prizePool}
         winnerPrize={challenge.winnerPrize}
       />
+
+      <AuthModal open={isAuthModalOpen} onOpenChange={setIsAuthModalOpen} />
     </motion.div>
   );
 };

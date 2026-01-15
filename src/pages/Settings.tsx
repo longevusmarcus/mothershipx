@@ -55,6 +55,7 @@ import { useUserSettings } from "@/hooks/useUserSettings";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AuthModal } from "@/components/AuthModal";
 
 const integrations = [
   {
@@ -166,6 +167,8 @@ export default function Settings() {
     });
   };
 
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
   if (!isAuthenticated) {
     return (
       <AppLayout>
@@ -179,12 +182,13 @@ export default function Settings() {
               <p className="text-muted-foreground">
                 Please sign in to access your settings.
               </p>
-              <Button onClick={() => navigate("/auth")}>
+              <Button onClick={() => setShowAuthModal(true)}>
                 Sign In
               </Button>
             </CardContent>
           </Card>
         </div>
+        <AuthModal open={showAuthModal} onOpenChange={setShowAuthModal} />
       </AppLayout>
     );
   }
