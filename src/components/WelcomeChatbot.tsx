@@ -6,10 +6,9 @@ import { cn } from "@/lib/utils";
 
 const WELCOME_SHOWN_KEY = "mothershipx_welcome_shown";
 
-const WELCOME_STEPS = [
-  "Welcome to MothershipX, a social market intelligence platform and hackathon arena empowering builders to ship useful products and win prizes every day.",
-  "Mothership (SuperLovable) = insight + people + incentives\nLovable = execution.\n\nWe supercharge your Lovable experience so you know what to build, with who and get rewarded every day."
-];
+const WELCOME_STEP_1 = "Welcome to MothershipX, a social market intelligence platform and hackathon arena empowering builders to ship useful products and win prizes every day.";
+
+const TOTAL_STEPS = 2;
 
 export function WelcomeChatbot() {
   const [showWelcome, setShowWelcome] = useState(false);
@@ -32,11 +31,45 @@ export function WelcomeChatbot() {
   };
 
   const handleNextStep = () => {
-    if (welcomeStep < WELCOME_STEPS.length - 1) {
+    if (welcomeStep < TOTAL_STEPS - 1) {
       setWelcomeStep(welcomeStep + 1);
     } else {
       handleDismissWelcome();
     }
+  };
+
+  const renderStepContent = () => {
+    if (welcomeStep === 0) {
+      return (
+        <p className="text-sm leading-relaxed text-foreground">
+          {WELCOME_STEP_1}
+        </p>
+      );
+    }
+    
+    return (
+      <div className="space-y-3">
+        {/* Comparison table */}
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2 text-sm">
+            <span className="font-medium">Mothership</span>
+            <span className="text-muted-foreground text-xs">(SuperLovable)</span>
+            <span className="text-muted-foreground">=</span>
+            <span className="text-foreground">insight + people + incentives</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm">
+            <span className="font-medium">Lovable</span>
+            <span className="text-muted-foreground">=</span>
+            <span className="text-foreground">execution.</span>
+          </div>
+        </div>
+        
+        {/* Description */}
+        <p className="text-sm leading-relaxed text-foreground pt-1">
+          We supercharge your Lovable experience so you know what to build, with who and get rewarded every day.
+        </p>
+      </div>
+    );
   };
 
   return (
@@ -65,15 +98,14 @@ export function WelcomeChatbot() {
                   <img src={logoIcon} alt="MothershipX" className="h-5 w-5 object-contain" />
                 </div>
                 <div className="flex-1">
-                  <motion.p
+                  <motion.div
                     key={welcomeStep}
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.2 }}
-                    className="text-sm leading-relaxed text-foreground whitespace-pre-line"
                   >
-                    {WELCOME_STEPS[welcomeStep]}
-                  </motion.p>
+                    {renderStepContent()}
+                  </motion.div>
                 </div>
               </div>
             </div>
@@ -81,7 +113,7 @@ export function WelcomeChatbot() {
             {/* Step indicator and continue button */}
             <div className="px-5 pb-4 flex items-center justify-between">
               <div className="flex items-center gap-1.5">
-                {WELCOME_STEPS.map((_, index) => (
+                {Array.from({ length: TOTAL_STEPS }).map((_, index) => (
                   <div
                     key={index}
                     className={cn(
@@ -97,7 +129,7 @@ export function WelcomeChatbot() {
                 onClick={handleNextStep}
                 className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
-                {welcomeStep < WELCOME_STEPS.length - 1 ? "Continue" : "Got it"}
+                {welcomeStep < TOTAL_STEPS - 1 ? "Continue" : "Got it"}
                 <ChevronRight className="h-3 w-3" />
               </button>
             </div>
