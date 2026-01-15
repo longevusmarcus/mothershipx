@@ -1,8 +1,3 @@
-@import "@fontsource/sora/400.css";
-@import "@fontsource/sora/500.css";
-@import "@fontsource/sora/600.css";
-@import "@fontsource/sora/700.css";
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -134,7 +129,7 @@
   }
 
   html {
-    font-family: "Sora", system-ui, sans-serif;
+    font-family: "Inter", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     scroll-behavior: smooth;

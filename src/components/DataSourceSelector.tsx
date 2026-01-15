@@ -117,21 +117,18 @@ export function DataSourceSelector({ onSelectionChange }: DataSourceSelectorProp
             <TooltipTrigger asChild>
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 0.5, scale: 1 }}
+                animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.2, delay: index * 0.03 }}
                 className={cn(
-                  "relative h-14 w-14 rounded-xl flex items-center justify-center text-lg",
-                  "border border-border/30 bg-secondary/30 cursor-not-allowed"
+                  "relative h-14 w-14 rounded-xl flex items-center justify-center",
+                  "border border-border/20 bg-secondary/20 cursor-not-allowed"
                 )}
               >
-                <span className="text-xl opacity-40">{source.icon}</span>
-                <div className="absolute inset-0 rounded-xl bg-background/50 flex items-center justify-center">
-                  <Lock className="h-3 w-3 text-muted-foreground" />
-                </div>
+                <Lock className="h-4 w-4 text-muted-foreground/40" />
               </motion.div>
             </TooltipTrigger>
             <TooltipContent>
-              <p>{source.name} - Coming Soon</p>
+              <p className="text-xs">{source.name} - Coming Soon</p>
             </TooltipContent>
           </Tooltip>
         ))}
