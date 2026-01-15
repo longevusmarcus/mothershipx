@@ -4,6 +4,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { NotificationsDropdown } from "@/components/NotificationsDropdown";
+import { WelcomeChatbot } from "@/components/WelcomeChatbot";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import logo from "@/assets/logo.png";
@@ -80,6 +81,9 @@ export function AppLayout({ children }: AppLayoutProps) {
         {/* Mobile Bottom Nav */}
         <MobileBottomNav />
       </div>
+
+      {/* Welcome Chatbot - shows on all pages for first-time visitors */}
+      <WelcomeChatbot />
     </div>
   );
 }
