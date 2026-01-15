@@ -32,7 +32,7 @@ export const CommunityChallenges = () => {
     >
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Arena</h1>
+        <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">Arena</h1>
         <p className="text-sm text-muted-foreground mt-1">
           Daily build sprints • $2 entry • Win 90% of the pool
         </p>
