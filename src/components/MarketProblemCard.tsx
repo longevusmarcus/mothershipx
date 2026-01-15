@@ -1,14 +1,12 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Users, ArrowRight, Zap } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { TrendBadge } from "@/components/TrendBadge";
 import { SocialProofStats } from "@/components/SocialProofStats";
-import { OpportunityMeter } from "@/components/OpportunityMeter";
 import { AuthModal } from "@/components/AuthModal";
 import { useAuth } from "@/contexts/AuthContext";
 import type { MarketProblem } from "@/data/marketIntelligence";
@@ -22,8 +20,6 @@ export function MarketProblemCard({ problem, delay = 0 }: MarketProblemCardProps
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const [authOpen, setAuthOpen] = useState(false);
-  const slotsRemaining = problem.slotsTotal - problem.slotsFilled;
-  const fillPercentage = (problem.slotsFilled / problem.slotsTotal) * 100;
 
   const handleCardClick = () => {
     if (isAuthenticated) {
@@ -77,52 +73,6 @@ export function MarketProblemCard({ problem, delay = 0 }: MarketProblemCardProps
             trendingRank={problem.trendingRank}
             size="sm"
           />
-
-          {/* Opportunity Score + Market Size */}
-          <div className="flex items-center justify-between">
-            <OpportunityMeter
-              score={problem.opportunityScore}
-              marketSize={problem.marketSize}
-              demandVelocity={problem.demandVelocity}
-              competitionGap={problem.competitionGap}
-              size="compact"
-            />
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Zap className="h-3 w-3 text-warning" />
-              <span>+{problem.demandVelocity}%</span>
-            </div>
-          </div>
-
-          {/* Builder Capacity */}
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between text-xs">
-              <span className="flex items-center gap-1 text-muted-foreground">
-                <Users className="h-3 w-3" />
-                Builders
-              </span>
-              <span className="font-medium">
-                {problem.slotsFilled}/{problem.slotsTotal}
-                {slotsRemaining <= 5 && (
-                  <span className="text-warning ml-1">• {slotsRemaining} left</span>
-                )}
-              </span>
-            </div>
-            <Progress 
-              value={fillPercentage} 
-              size="sm" 
-              indicatorColor={fillPercentage > 80 ? "warning" : "default"} 
-            />
-          </div>
-
-          {/* Active Builders */}
-          {problem.activeBuildersLast24h > 0 && (
-            <div className="flex items-center gap-1.5 text-xs">
-              <div className="h-2 w-2 rounded-full bg-success animate-pulse" />
-              <span className="text-muted-foreground">
-                {problem.activeBuildersLast24h} active in last 24h
-              </span>
-            </div>
-          )}
 
           {/* CTA */}
           <Button 
