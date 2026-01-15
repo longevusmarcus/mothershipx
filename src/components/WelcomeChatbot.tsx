@@ -6,7 +6,8 @@ import { cn } from "@/lib/utils";
 
 const WELCOME_SHOWN_KEY = "mothershipx_welcome_shown";
 
-const WELCOME_STEP_1 = "Welcome to MothershipX, a social market intelligence platform and hackathon arena empowering builders to ship useful products and win prizes every day.";
+const WELCOME_STEP_1 =
+  "Welcome to MothershipX, a social market intelligence platform and hackathon arena empowering builders to ship useful products and win prizes every day.";
 
 const TOTAL_STEPS = 2;
 
@@ -40,13 +41,9 @@ export function WelcomeChatbot() {
 
   const renderStepContent = () => {
     if (welcomeStep === 0) {
-      return (
-        <p className="text-sm leading-relaxed text-foreground">
-          {WELCOME_STEP_1}
-        </p>
-      );
+      return <p className="text-sm leading-relaxed text-foreground">{WELCOME_STEP_1}</p>;
     }
-    
+
     return (
       <div className="space-y-3">
         {/* Comparison table */}
@@ -55,7 +52,7 @@ export function WelcomeChatbot() {
             <span className="font-medium">Mothership</span>
             <span className="text-muted-foreground text-xs">(SuperLovable)</span>
             <span className="text-muted-foreground">=</span>
-            <span className="text-foreground">insight + people + incentives</span>
+            <span className="text-foreground">insights + people + prizes</span>
           </div>
           <div className="flex items-center gap-2 text-sm">
             <span className="font-medium">Lovable</span>
@@ -63,7 +60,7 @@ export function WelcomeChatbot() {
             <span className="text-foreground">execution.</span>
           </div>
         </div>
-        
+
         {/* Description */}
         <p className="text-sm leading-relaxed text-foreground pt-1">
           We supercharge your Lovable experience so you know what to build, with whom, and get rewarded every day.
@@ -90,7 +87,7 @@ export function WelcomeChatbot() {
             >
               <X className="h-3.5 w-3.5 text-muted-foreground" />
             </button>
-            
+
             {/* Message content */}
             <div className="p-5 pr-10">
               <div className="flex items-start gap-3">
@@ -109,7 +106,7 @@ export function WelcomeChatbot() {
                 </div>
               </div>
             </div>
-            
+
             {/* Step indicator and continue button */}
             <div className="px-5 pb-4 flex items-center justify-between">
               <div className="flex items-center gap-1.5">
@@ -118,9 +115,7 @@ export function WelcomeChatbot() {
                     key={index}
                     className={cn(
                       "h-1.5 rounded-full transition-all duration-200",
-                      index === welcomeStep 
-                        ? "w-4 bg-foreground/70" 
-                        : "w-1.5 bg-muted-foreground/30"
+                      index === welcomeStep ? "w-4 bg-foreground/70" : "w-1.5 bg-muted-foreground/30",
                     )}
                   />
                 ))}
@@ -133,7 +128,7 @@ export function WelcomeChatbot() {
                 <ChevronRight className="h-3 w-3" />
               </button>
             </div>
-            
+
             {/* Subtle bottom accent */}
             <div className="h-0.5 bg-gradient-to-r from-transparent via-border to-transparent" />
           </div>
