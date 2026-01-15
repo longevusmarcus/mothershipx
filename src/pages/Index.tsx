@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Search, Zap, LayoutGrid, ArrowUp, ArrowUpRight } from "lucide-react";
+import { Search, Zap, LayoutGrid, ArrowUp, ArrowUpRight, X, Sparkles } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
 import { DataSourceSelector } from "@/components/DataSourceSelector";
@@ -12,12 +12,13 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMode, setSearchMode] = useState<"search" | "neural" | "grid">("search");
   const [selectedSources, setSelectedSources] = useState<string[]>(["tiktok", "google_trends", "freelancer"]);
+  const [showWaitlistModal, setShowWaitlistModal] = useState(false);
   const navigate = useNavigate();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/problems?q=${encodeURIComponent(searchQuery.trim())}`);
+      setShowWaitlistModal(true);
     }
   };
 
@@ -155,6 +156,73 @@ const Index = () => {
           </a>
         </motion.div>
       </div>
+
+      {/* Waitlist Modal */}
+      <AnimatePresence>
+        {showWaitlistModal && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowWaitlistModal(false)}
+              className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50"
+            />
+            
+            {/* Modal */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md px-4"
+            >
+              <div className="bg-card border border-border rounded-2xl p-8 shadow-lg">
+                {/* Close button */}
+                <button
+                  onClick={() => setShowWaitlistModal(false)}
+                  className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-secondary transition-colors"
+                >
+                  <X className="h-4 w-4 text-muted-foreground" />
+                </button>
+
+                {/* Content */}
+                <div className="text-center">
+                  <div className="h-12 w-12 rounded-full bg-secondary/50 flex items-center justify-center mx-auto mb-5">
+                    <Sparkles className="h-5 w-5 text-foreground/70" />
+                  </div>
+                  
+                  <h2 className="font-display text-xl mb-2">You're on the list</h2>
+                  <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+                    Search is coming soon. We'll notify you when it's ready.
+                    <br />
+                    In the meantime, explore what's already available.
+                  </p>
+
+                  <div className="flex flex-col gap-2">
+                    <Button
+                      onClick={() => {
+                        setShowWaitlistModal(false);
+                        navigate("/problems");
+                      }}
+                      className="w-full"
+                    >
+                      Browse Library
+                    </Button>
+                    <button
+                      onClick={() => setShowWaitlistModal(false)}
+                      className="text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
+                    >
+                      Maybe later
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </AppLayout>
   );
 };
