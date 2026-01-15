@@ -142,18 +142,8 @@ const Index = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-8 flex flex-col items-center gap-3"
+          className="mt-8"
         >
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigate("/problems")}
-            className="gap-2 text-muted-foreground hover:text-foreground border-border"
-          >
-            Browse Library
-            <span className="text-xs">↗</span>
-          </Button>
-          
           <a
             href="https://drive.google.com/file/d/1cRqz_GYzouxZ5OQQGYnmPwz6IX0y5v_V/view?usp=sharing"
             target="_blank"
