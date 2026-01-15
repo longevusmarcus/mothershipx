@@ -113,7 +113,7 @@ const Index = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="search problems, trends..."
+                placeholder="Find pain points and 30-day trends in mental health on TikTok"
                 className="w-full px-4 py-5 text-sm bg-transparent border-0 focus:outline-none focus:ring-0 placeholder:text-muted-foreground/60 placeholder:font-light placeholder:tracking-wide placeholder:lowercase"
               />
 
