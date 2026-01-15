@@ -89,7 +89,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
               exit={{ opacity: 0 }}
               className="font-semibold text-base tracking-tight"
             >
-              Mothership
+              Mothership<span className="font-accent italic text-lg">X</span>
             </motion.span>
           )}
         </AnimatePresence>
