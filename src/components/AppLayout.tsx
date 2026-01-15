@@ -1,5 +1,5 @@
 import { ReactNode, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AppSidebar } from "@/components/AppSidebar";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -7,6 +7,14 @@ import { NotificationsDropdown } from "@/components/NotificationsDropdown";
 import { WelcomeChatbot } from "@/components/WelcomeChatbot";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
+import { User, Settings, Info, LogOut } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import logo from "@/assets/logo.png";
 
 interface AppLayoutProps {
@@ -15,11 +23,17 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { profile } = useAuth();
+  const { profile, user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const initials = profile?.name
     ? profile.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
     : "?";
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
 
   return (
     <div className="flex min-h-screen w-full bg-background">
@@ -57,18 +71,51 @@ export function AppLayout({ children }: AppLayoutProps) {
         <header className="h-14 md:h-16 border-b border-border bg-background/80 backdrop-blur-lg sticky top-0 z-40">
           <div className="h-full px-4 md:px-6 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              {/* Mobile Logo */}
-              <div className="flex md:hidden items-center gap-2">
+              {/* Mobile Logo - only icon */}
+              <div className="flex md:hidden items-center">
                 <img src={logo} alt="Mothership" className="h-7 w-7 object-contain" />
-                <span className="font-bold text-sm tracking-tight">Mothership</span>
               </div>
             </div>
             <div className="flex items-center gap-2 md:gap-3">
               <NotificationsDropdown />
               <ThemeToggle />
-              <Link to="/profile" className="h-8 w-8 md:h-9 md:w-9 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground text-xs md:text-sm font-bold hover:opacity-90 transition-opacity">
+              
+              {/* Desktop - simple link */}
+              <Link to="/profile" className="hidden md:flex h-9 w-9 rounded-full bg-gradient-primary items-center justify-center text-primary-foreground text-sm font-bold hover:opacity-90 transition-opacity">
                 {initials}
               </Link>
+              
+              {/* Mobile - dropdown menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="md:hidden h-8 w-8 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground text-xs font-bold hover:opacity-90 transition-opacity">
+                    {initials}
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem onClick={() => navigate("/profile")} className="gap-2">
+                    <User className="h-4 w-4" />
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/settings")} className="gap-2">
+                    <Settings className="h-4 w-4" />
+                    Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => window.open("https://docs.lovable.dev", "_blank")} className="gap-2">
+                    <Info className="h-4 w-4" />
+                    About
+                  </DropdownMenuItem>
+                  {user && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={handleSignOut} className="gap-2 text-destructive focus:text-destructive">
+                        <LogOut className="h-4 w-4" />
+                        Sign Out
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </header>
