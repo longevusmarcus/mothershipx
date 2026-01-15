@@ -368,6 +368,30 @@ export type Database = {
           },
         ]
       }
+      search_interests: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          query: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          query: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          query?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       solution_contributors: {
         Row: {
           contributed_at: string
