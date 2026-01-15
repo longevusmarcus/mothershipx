@@ -9,12 +9,15 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
+import { AuthModal } from "@/components/AuthModal";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMode, setSearchMode] = useState<"search" | "neural" | "grid">("search");
   const [selectedSources, setSelectedSources] = useState<string[]>(["tiktok", "google_trends", "freelancer"]);
   const [showWaitlistModal, setShowWaitlistModal] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [pendingQuery, setPendingQuery] = useState("");
   const [submittedQuery, setSubmittedQuery] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const navigate = useNavigate();
@@ -23,22 +26,45 @@ const Index = () => {
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      setSubmittedQuery(searchQuery.trim());
-      setIsSaving(true);
+      const query = searchQuery.trim();
       
-      // Save the search interest to the database
-      try {
-        await supabase.from("search_interests").insert({
-          query: searchQuery.trim(),
-          user_id: user?.id || null,
-          email: profile?.email || user?.email || null,
-        });
-      } catch (error) {
-        console.error("Failed to save search interest:", error);
+      // If user is not logged in, show auth modal first
+      if (!user) {
+        setPendingQuery(query);
+        setShowAuthModal(true);
+        return;
       }
       
-      setIsSaving(false);
-      setShowWaitlistModal(true);
+      // User is logged in, proceed with saving and showing waitlist
+      await saveSearchAndShowWaitlist(query);
+    }
+  };
+
+  const saveSearchAndShowWaitlist = async (query: string) => {
+    setSubmittedQuery(query);
+    setIsSaving(true);
+    
+    // Save the search interest to the database
+    try {
+      await supabase.from("search_interests").insert({
+        query: query,
+        user_id: user?.id || null,
+        email: profile?.email || user?.email || null,
+      });
+    } catch (error) {
+      console.error("Failed to save search interest:", error);
+    }
+    
+    setIsSaving(false);
+    setShowWaitlistModal(true);
+  };
+
+  const handleAuthSuccess = () => {
+    // After successful auth, save the search and show waitlist
+    if (pendingQuery) {
+      saveSearchAndShowWaitlist(pendingQuery);
+      setPendingQuery("");
+      setSearchQuery("");
     }
   };
 
@@ -255,6 +281,13 @@ const Index = () => {
           </>
         )}
       </AnimatePresence>
+
+      {/* Auth Modal for logged out users */}
+      <AuthModal
+        open={showAuthModal}
+        onOpenChange={setShowAuthModal}
+        onSuccess={handleAuthSuccess}
+      />
     </AppLayout>
   );
 };
