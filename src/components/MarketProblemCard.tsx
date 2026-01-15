@@ -1,12 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { ArrowRight, TrendingUp, Eye, Bookmark, Share2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { TrendBadge } from "@/components/TrendBadge";
-import { SocialProofStats } from "@/components/SocialProofStats";
 import { AuthModal } from "@/components/AuthModal";
 import { useAuth } from "@/contexts/AuthContext";
 import type { MarketProblem } from "@/data/marketIntelligence";
@@ -16,6 +12,25 @@ interface MarketProblemCardProps {
   delay?: number;
 }
 
+const formatNumber = (num: number): string => {
+  if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+  if (num >= 1000) return `${(num / 1000).toFixed(0)}K`;
+  return num.toString();
+};
+
+const getSentimentLabel = (sentiment: string): { label: string; className: string } => {
+  switch (sentiment) {
+    case "exploding":
+      return { label: "Exploding", className: "text-destructive" };
+    case "rising":
+      return { label: "Rising", className: "text-success" };
+    case "stable":
+      return { label: "Stable", className: "text-muted-foreground" };
+    default:
+      return { label: "Declining", className: "text-muted-foreground" };
+  }
+};
+
 export function MarketProblemCard({ problem, delay = 0 }: MarketProblemCardProps) {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
@@ -23,75 +38,82 @@ export function MarketProblemCard({ problem, delay = 0 }: MarketProblemCardProps
 
   const handleCardClick = () => {
     if (isAuthenticated) {
-      // Already signed in - go directly to problem page
       navigate(`/problems/${problem.id}`);
     } else {
-      // Not signed in - show auth modal
       setAuthOpen(true);
     }
   };
 
+  const sentiment = getSentimentLabel(problem.sentiment);
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay }}
-      whileHover={{ y: -4 }}
+      transition={{ duration: 0.3, delay }}
     >
-      <Card
-        variant="interactive"
-        className="relative overflow-hidden cursor-pointer group"
+      <div
         onClick={handleCardClick}
+        className="rounded-lg border border-border bg-card p-4 cursor-pointer hover:border-foreground/20 transition-colors"
       >
+        {/* Top Row */}
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-xs text-muted-foreground">{problem.category}</span>
+          <span className={`text-xs font-medium ${sentiment.className}`}>
+            {sentiment.label}
+          </span>
+          {problem.trendingRank && (
+            <span className="text-xs text-muted-foreground flex items-center gap-1">
+              <TrendingUp className="h-3 w-3" />
+              #{problem.trendingRank}
+            </span>
+          )}
+        </div>
 
-        <CardHeader className="pb-2 space-y-3">
-          {/* Top Row: Category + Trend Badge */}
-          <div className="flex items-center justify-between gap-2">
-            <Badge variant="outline" className="text-[10px] font-medium">
-              {problem.category}
-            </Badge>
-            <TrendBadge sentiment={problem.sentiment} size="sm" animated={problem.isViral} />
-          </div>
+        {/* Title */}
+        <h3 className="font-medium text-sm mb-1 line-clamp-2">
+          {problem.title}
+        </h3>
+        
+        {/* Subtitle */}
+        <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
+          {problem.subtitle}
+        </p>
 
-          {/* Title */}
-          <h3 className="text-sm font-semibold leading-tight line-clamp-2 group-hover:text-primary transition-colors">
-            {problem.title}
-          </h3>
-          
-          {/* Subtitle */}
-          <p className="text-xs text-muted-foreground line-clamp-2">
-            {problem.subtitle}
-          </p>
-        </CardHeader>
+        {/* Stats Row */}
+        <div className="flex items-center gap-4 text-xs text-muted-foreground mb-3">
+          {problem.views && (
+            <span className="flex items-center gap-1">
+              <Eye className="h-3 w-3" />
+              {formatNumber(problem.views)}
+            </span>
+          )}
+          {problem.saves && (
+            <span className="flex items-center gap-1">
+              <Bookmark className="h-3 w-3" />
+              {formatNumber(problem.saves)}
+            </span>
+          )}
+          {problem.shares && (
+            <span className="flex items-center gap-1">
+              <Share2 className="h-3 w-3" />
+              {formatNumber(problem.shares)}
+            </span>
+          )}
+        </div>
 
-        <CardContent className="space-y-4 pt-0">
-          {/* Social Proof Row */}
-          <SocialProofStats
-            views={problem.views}
-            saves={problem.saves}
-            shares={problem.shares}
-            trendingRank={problem.trendingRank}
-            size="sm"
-          />
+        {/* CTA */}
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-muted-foreground">Explore opportunity</span>
+          <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
+        </div>
+      </div>
 
-          {/* CTA */}
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="w-full justify-between mt-1 group-hover:bg-primary/10"
-          >
-            <span>Explore Opportunity</span>
-            <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-          </Button>
-        </CardContent>
-
-        {/* Auth Modal */}
-        <AuthModal
-          open={authOpen}
-          onOpenChange={setAuthOpen}
-          onSuccess={() => navigate(`/problems/${problem.id}`)}
-        />
-      </Card>
+      <AuthModal
+        open={authOpen}
+        onOpenChange={setAuthOpen}
+        onSuccess={() => navigate(`/problems/${problem.id}`)}
+      />
     </motion.div>
   );
 }
