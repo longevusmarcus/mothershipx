@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
-import { Lightbulb, ArrowRight, Sparkles } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowDown } from "lucide-react";
 import type { HiddenInsight } from "@/data/marketIntelligence";
 
 interface HiddenInsightCardProps {
@@ -10,58 +9,36 @@ interface HiddenInsightCardProps {
 export function HiddenInsightCard({ insight }: HiddenInsightCardProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.3 }}
+      transition={{ delay: 0.2 }}
+      className="space-y-4"
     >
-      <Card variant="glow" className="overflow-hidden relative">
-        <div className="absolute inset-0 bg-gradient-glow" />
-        <CardHeader className="relative z-10 pb-2">
-          <CardTitle className="text-base flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Lightbulb className="h-4 w-4 text-primary" />
-            </div>
-            Hidden Signal
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="relative z-10 space-y-4">
-          {/* Surface Ask → Real Problem */}
-          <div className="space-y-3">
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-secondary/50">
-              <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs">💬</span>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">What they say</p>
-                <p className="text-sm italic">"{insight.surfaceAsk}"</p>
-              </div>
-            </div>
-            
-            <div className="flex justify-center">
-              <ArrowRight className="h-4 w-4 text-muted-foreground" />
-            </div>
-            
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
-              <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs">🎯</span>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">What they mean</p>
-                <p className="text-sm font-medium">"{insight.realProblem}"</p>
-              </div>
-            </div>
-          </div>
-          
-          {/* Hidden Signal */}
-          <div className="flex items-start gap-3 p-4 rounded-xl bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20">
-            <Sparkles className="h-5 w-5 text-primary flex-shrink-0" />
-            <div>
-              <p className="text-xs font-medium text-primary mb-1">Strategic Insight</p>
-              <p className="text-sm">{insight.hiddenSignal}</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <h3 className="font-serif text-lg">Hidden Signal</h3>
+      
+      <div className="space-y-3">
+        {/* Surface Ask */}
+        <div className="p-4 rounded-lg border border-border/50 bg-secondary/30">
+          <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">What they say</p>
+          <p className="text-sm italic text-foreground/80">"{insight.surfaceAsk}"</p>
+        </div>
+        
+        <div className="flex justify-center">
+          <ArrowDown className="h-4 w-4 text-muted-foreground/50" />
+        </div>
+        
+        {/* Real Problem */}
+        <div className="p-4 rounded-lg border border-border bg-background">
+          <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">What they mean</p>
+          <p className="text-sm font-medium">"{insight.realProblem}"</p>
+        </div>
+      </div>
+      
+      {/* Strategic Insight */}
+      <div className="p-4 rounded-lg bg-secondary/50 border border-border/50">
+        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Strategic Insight</p>
+        <p className="text-sm text-foreground/90">{insight.hiddenSignal}</p>
+      </div>
     </motion.div>
   );
 }
