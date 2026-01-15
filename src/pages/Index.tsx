@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Search, Zap, LayoutGrid, ArrowUp, ArrowUpRight, X, Sparkles } from "lucide-react";
@@ -10,6 +10,8 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 
+const WELCOME_SHOWN_KEY = "mothershipx_welcome_shown";
+
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMode, setSearchMode] = useState<"search" | "neural" | "grid">("search");
@@ -17,8 +19,18 @@ const Index = () => {
   const [showWaitlistModal, setShowWaitlistModal] = useState(false);
   const [submittedQuery, setSubmittedQuery] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(false);
   const navigate = useNavigate();
   const { user, profile } = useAuth();
+
+  // Check if first visit
+  useEffect(() => {
+    const hasSeenWelcome = localStorage.getItem(WELCOME_SHOWN_KEY);
+    if (!hasSeenWelcome) {
+      setShowWelcome(true);
+      localStorage.setItem(WELCOME_SHOWN_KEY, "true");
+    }
+  }, []);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,6 +73,23 @@ const Index = () => {
         description="Discover real problems and trends from 10+ data sources. Build solutions together with our community of builders."
       />
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)]">
+        {/* Welcome Message */}
+        <AnimatePresence>
+          {showWelcome && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.4 }}
+              className="mb-8 max-w-lg text-center px-4"
+            >
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Welcome to MothershipX, a social market intelligence platform and hackathon arena empowering builders to ship useful products and win prizes every day.
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Title */}
         <motion.h1
           initial={{ opacity: 0, y: -20 }}
