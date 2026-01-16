@@ -91,7 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signUp = async (name: string, email: string, password: string) => {
     const redirectUrl = `${window.location.origin}/`;
     
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -101,6 +101,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         },
       },
     });
+    
+    // Handle edge case where user already exists (Supabase returns empty session)
+    if (!error && data?.user && !data?.session) {
+      // User may already exist or email confirmation is required
+      return { error: null };
+    }
+    
     return { error };
   };
 
