@@ -62,7 +62,7 @@ const Problems = () => {
             <input
               type="text"
               placeholder="search problems, niches, opportunities..."
-              className="w-full pl-9 pr-4 py-3 text-sm bg-card border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/60 placeholder:font-light placeholder:tracking-wide placeholder:lowercase"
+              className="w-full pl-9 pr-4 py-3 text-sm bg-card border border-border rounded-lg focus:outline-none focus:ring-0 focus:border-border placeholder:text-muted-foreground/60 placeholder:font-light placeholder:tracking-wide placeholder:lowercase"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
