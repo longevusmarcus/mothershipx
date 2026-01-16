@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Search, Zap, LayoutGrid, ArrowUp, ArrowUpRight, X, Sparkles } from "lucide-react";
+import { Search, Zap, LayoutGrid, ArrowUp, ArrowUpRight, X, CheckCircle2 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
 import { DataSourceSelector } from "@/components/DataSourceSelector";
@@ -239,8 +239,8 @@ const Index = () => {
 
                 {/* Content */}
                 <div className="text-center">
-                  <div className="h-12 w-12 rounded-full bg-secondary/50 flex items-center justify-center mx-auto mb-5">
-                    <Sparkles className="h-5 w-5 text-foreground/70" />
+                  <div className="h-12 w-12 rounded-full bg-secondary/30 border border-border/50 flex items-center justify-center mx-auto mb-5">
+                    <CheckCircle2 className="h-5 w-5 text-foreground/60" />
                   </div>
 
                   <h2 className="font-display text-xl mb-3">You're on the list</h2>
