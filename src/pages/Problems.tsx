@@ -58,10 +58,11 @@ const Problems = () => {
           transition={{ delay: 0.1 }}
         >
           <div className="relative max-w-xl">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search problems, niches, opportunities..."
-              className="pl-9 bg-card border-border h-11"
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
+            <input
+              type="text"
+              placeholder="search problems, niches, opportunities..."
+              className="w-full pl-9 pr-4 py-3 text-sm bg-card border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary/30 placeholder:text-muted-foreground/60 placeholder:font-light placeholder:tracking-wide placeholder:lowercase"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
