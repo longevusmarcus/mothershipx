@@ -5,9 +5,10 @@ import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { NotificationsDropdown } from "@/components/NotificationsDropdown";
 import { WelcomeChatbot } from "@/components/WelcomeChatbot";
+import { AuthModal } from "@/components/AuthModal";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
-import { User, Settings, Info, LogOut } from "lucide-react";
+import { User, Settings, Info, LogOut, LogIn } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,7 +24,8 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { profile, user, signOut } = useAuth();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const { profile, user, signOut, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const initials = profile?.name
@@ -80,42 +82,49 @@ export function AppLayout({ children }: AppLayoutProps) {
               <NotificationsDropdown />
               <ThemeToggle />
               
-              {/* Desktop - simple link */}
-              <Link to="/profile" className="hidden md:flex h-9 w-9 rounded-full bg-gradient-primary items-center justify-center text-primary-foreground text-sm font-bold hover:opacity-90 transition-opacity">
-                {initials}
-              </Link>
-              
-              {/* Mobile - dropdown menu */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="md:hidden h-8 w-8 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground text-xs font-bold hover:opacity-90 transition-opacity">
+              {isAuthenticated ? (
+                <>
+                  {/* Desktop - simple link */}
+                  <Link to="/profile" className="hidden md:flex h-9 w-9 rounded-full bg-gradient-primary items-center justify-center text-primary-foreground text-sm font-bold hover:opacity-90 transition-opacity">
                     {initials}
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem onClick={() => navigate("/profile")} className="gap-2">
-                    <User className="h-4 w-4" />
-                    Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/settings")} className="gap-2">
-                    <Settings className="h-4 w-4" />
-                    Settings
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.open("https://docs.lovable.dev", "_blank")} className="gap-2">
-                    <Info className="h-4 w-4" />
-                    About
-                  </DropdownMenuItem>
-                  {user && (
-                    <>
+                  </Link>
+                  
+                  {/* Mobile - dropdown menu */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="md:hidden h-8 w-8 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground text-xs font-bold hover:opacity-90 transition-opacity">
+                        {initials}
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuItem onClick={() => navigate("/profile")} className="gap-2">
+                        <User className="h-4 w-4" />
+                        Profile
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate("/settings")} className="gap-2">
+                        <Settings className="h-4 w-4" />
+                        Settings
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => window.open("https://docs.lovable.dev", "_blank")} className="gap-2">
+                        <Info className="h-4 w-4" />
+                        About
+                      </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={handleSignOut} className="gap-2 text-destructive focus:text-destructive">
                         <LogOut className="h-4 w-4" />
                         Sign Out
                       </DropdownMenuItem>
-                    </>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </>
+              ) : (
+                <button
+                  onClick={() => setShowAuthModal(true)}
+                  className="h-8 w-8 md:h-9 md:w-9 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors"
+                >
+                  <LogIn className="h-4 w-4 text-muted-foreground" />
+                </button>
+              )}
             </div>
           </div>
         </header>
@@ -131,6 +140,8 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       {/* Welcome Chatbot - shows on all pages for first-time visitors */}
       <WelcomeChatbot />
+
+      <AuthModal open={showAuthModal} onOpenChange={setShowAuthModal} />
     </div>
   );
 }
