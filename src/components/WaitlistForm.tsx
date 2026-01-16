@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, CheckCircle2, Mail, Loader2 } from "lucide-react";
+import { CheckCircle2, Mail, Loader2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
@@ -9,14 +9,14 @@ import { toast } from "sonner";
 
 interface WaitlistFormProps {
   feature: "builds" | "leaderboard" | "general";
-  variant?: "default" | "glow";
+  variant?: "default" | "outline" | "ghost";
   buttonText?: string;
   className?: string;
 }
 
 export function WaitlistForm({ 
   feature, 
-  variant = "glow",
+  variant = "outline",
   buttonText = "Join Waitlist",
   className = "" 
 }: WaitlistFormProps) {
@@ -91,18 +91,18 @@ export function WaitlistForm({
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-success/10 border border-success/30 ${className}`}
+        className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-secondary/50 border border-border ${className}`}
       >
-        <CheckCircle2 className="h-4 w-4 text-success" />
-        <span className="text-sm font-medium text-success">You're on the waitlist!</span>
+        <CheckCircle2 className="h-3.5 w-3.5 text-foreground/70" />
+        <span className="text-sm font-light tracking-wide text-foreground/80">On the waitlist</span>
       </motion.div>
     );
   }
 
   if (isCheckingStatus) {
     return (
-      <Button variant={variant} disabled className={className}>
-        <Loader2 className="h-4 w-4 animate-spin" />
+      <Button variant={variant} disabled className={`font-light tracking-wide ${className}`}>
+        <Loader2 className="h-3.5 w-3.5 animate-spin" />
       </Button>
     );
   }
@@ -119,19 +119,19 @@ export function WaitlistForm({
           className={`flex gap-2 ${className}`}
         >
           <div className="relative flex-1">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/60" />
             <Input
               type="email"
-              placeholder="Enter your email"
+              placeholder="your@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="pl-9"
+              className="pl-9 font-light text-sm"
               autoFocus
             />
           </div>
-          <Button type="submit" variant={variant} disabled={isPending}>
+          <Button type="submit" variant="default" disabled={isPending} className="font-light tracking-wide">
             {isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
             ) : (
               "Join"
             )}
@@ -139,6 +139,7 @@ export function WaitlistForm({
           <Button 
             type="button" 
             variant="ghost" 
+            className="font-light"
             onClick={() => {
               setShowInput(false);
               reset();
@@ -156,16 +157,16 @@ export function WaitlistForm({
         >
           <Button 
             variant={variant} 
-            className={`gap-2 ${className}`}
+            className={`group gap-2 font-light tracking-wide ${className}`}
             onClick={handleButtonClick}
             disabled={isPending}
           >
             {isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
             ) : (
               <>
-                <Sparkles className="h-4 w-4" />
                 {buttonText}
+                <ArrowRight className="h-3.5 w-3.5 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
               </>
             )}
           </Button>
