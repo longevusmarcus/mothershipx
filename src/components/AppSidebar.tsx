@@ -12,10 +12,12 @@ import {
   Settings,
   LogOut,
   ExternalLink,
+  LogIn,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
+import { AuthModal } from "@/components/AuthModal";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,10 +40,11 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
     const saved = localStorage.getItem("sidebar-collapsed");
     return saved === "true";
   });
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const isMobile = onClose !== undefined;
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, signOut, isAuthenticated } = useAuth();
 
   useEffect(() => {
     localStorage.setItem("sidebar-collapsed", String(collapsed));
@@ -187,49 +190,74 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
 
       {/* Profile Section */}
       <div className="px-3 py-3 border-t border-sidebar-border">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="w-full flex items-center gap-3 px-2 py-2 rounded-md hover:bg-sidebar-accent transition-colors text-left">
-              <div className="h-7 w-7 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-medium shrink-0">
-                {initials}
-              </div>
-              <AnimatePresence mode="wait">
-                {(!collapsed || isMobile) && (
-                  <motion.div
-                    initial={{ opacity: 0, width: 0 }}
-                    animate={{ opacity: 1, width: "auto" }}
-                    exit={{ opacity: 0, width: 0 }}
-                    className="flex-1 flex items-center justify-between overflow-hidden"
-                  >
-                    <span className="text-sm truncate">{displayName}</span>
-                    <ChevronUp className="h-4 w-4 text-muted-foreground shrink-0" />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-48 bg-popover">
-            <DropdownMenuItem onClick={() => navigate("/profile")}>
-              Profile
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate("/settings")}>
-              <Settings className="h-4 w-4 mr-2" />
-              Settings
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <a href="https://mothership.io" target="_blank" rel="noopener noreferrer" className="flex items-center">
-                <ExternalLink className="h-4 w-4 mr-2" />
-                About
-              </a>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {isAuthenticated ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="w-full flex items-center gap-3 px-2 py-2 rounded-md hover:bg-sidebar-accent transition-colors text-left">
+                <div className="h-7 w-7 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-medium shrink-0">
+                  {initials}
+                </div>
+                <AnimatePresence mode="wait">
+                  {(!collapsed || isMobile) && (
+                    <motion.div
+                      initial={{ opacity: 0, width: 0 }}
+                      animate={{ opacity: 1, width: "auto" }}
+                      exit={{ opacity: 0, width: 0 }}
+                      className="flex-1 flex items-center justify-between overflow-hidden"
+                    >
+                      <span className="text-sm truncate">{displayName}</span>
+                      <ChevronUp className="h-4 w-4 text-muted-foreground shrink-0" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-48 bg-popover">
+              <DropdownMenuItem onClick={() => navigate("/profile")}>
+                Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/settings")}>
+                <Settings className="h-4 w-4 mr-2" />
+                Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <a href="https://mothership.io" target="_blank" rel="noopener noreferrer" className="flex items-center">
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  About
+                </a>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <button
+            onClick={() => setShowAuthModal(true)}
+            className="w-full flex items-center gap-3 px-2 py-2 rounded-md hover:bg-sidebar-accent transition-colors text-left"
+          >
+            <div className="h-7 w-7 rounded-full bg-muted flex items-center justify-center shrink-0">
+              <LogIn className="h-3.5 w-3.5 text-muted-foreground" />
+            </div>
+            <AnimatePresence mode="wait">
+              {(!collapsed || isMobile) && (
+                <motion.span
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: "auto" }}
+                  exit={{ opacity: 0, width: 0 }}
+                  className="text-sm text-muted-foreground overflow-hidden whitespace-nowrap"
+                >
+                  Sign in
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </button>
+        )}
       </div>
+
+      <AuthModal open={showAuthModal} onOpenChange={setShowAuthModal} />
     </motion.aside>
   );
 }
