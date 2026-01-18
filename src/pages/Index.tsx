@@ -181,7 +181,7 @@ const Index = () => {
               </div>
               <div>
                 <p className="text-sm font-medium">Data Sources</p>
-                <p className="text-xs text-muted-foreground">Scraping TikTok, Google Trends, Freelancer & more</p>
+                <p className="text-xs text-muted-foreground">Scraping TikTok, Reddit, YouTube & Freelancer</p>
               </div>
             </div>
             <DataSourceSelector onSelectionChange={setSelectedSources} />
