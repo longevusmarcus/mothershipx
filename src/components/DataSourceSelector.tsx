@@ -6,7 +6,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 
 // Import logos
 import logoTiktok from "@/assets/logo-tiktok.png";
-import logoGoogleTrends from "@/assets/logo-google-trends.png";
+import logoReddit from "@/assets/logo-reddit.png";
+import logoYoutube from "@/assets/logo-youtube.png";
 import logoFreelancer from "@/assets/logo-freelancer.png";
 
 interface DataSource {
@@ -18,17 +19,17 @@ interface DataSource {
   isLocked?: boolean;
 }
 
-// Only TikTok, Google Trends, and Freelancer are unlocked
+// Unlocked sources: TikTok, Reddit, YouTube, and Freelancer
 const dataSources: DataSource[] = [
   { id: "tiktok", name: "TikTok", logo: logoTiktok, color: "bg-foreground/10", isLocked: false },
-  { id: "google_trends", name: "Google Trends", logo: logoGoogleTrends, color: "bg-blue-500/20", isLocked: false },
+  { id: "reddit", name: "Reddit", logo: logoReddit, color: "bg-orange-500/20", isLocked: false },
+  { id: "youtube", name: "YouTube", logo: logoYoutube, color: "bg-red-500/20", isLocked: false },
   { id: "freelancer", name: "Freelancer", logo: logoFreelancer, color: "bg-blue-600/20", isLocked: false },
   // Locked sources - coming soon
-  { id: "reddit", name: "Reddit", icon: "🔴", color: "bg-orange-500/20", isLocked: true },
+  { id: "google_trends", name: "Google Trends", icon: "📈", color: "bg-blue-500/20", isLocked: true },
   { id: "hackernews", name: "Hacker News", icon: "🔥", color: "bg-orange-400/20", isLocked: true },
   { id: "twitter", name: "X", icon: "𝕏", color: "bg-foreground/10", isLocked: true },
   { id: "linkedin", name: "LinkedIn", icon: "in", color: "bg-blue-600/20", isLocked: true },
-  { id: "youtube", name: "YouTube", icon: "▶️", color: "bg-red-500/20", isLocked: true },
   { id: "producthunt", name: "Product Hunt", icon: "🚀", color: "bg-orange-400/20", isLocked: true },
 ];
 
@@ -37,7 +38,7 @@ interface DataSourceSelectorProps {
 }
 
 export function DataSourceSelector({ onSelectionChange }: DataSourceSelectorProps) {
-  const [selected, setSelected] = useState<string[]>(["tiktok", "google_trends", "freelancer"]);
+  const [selected, setSelected] = useState<string[]>(["tiktok", "reddit", "youtube", "freelancer"]);
 
   const toggleSource = (source: DataSource) => {
     if (source.isLocked) return;
