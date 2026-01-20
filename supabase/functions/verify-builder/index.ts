@@ -110,15 +110,19 @@ function verifyStripeKey(key: string): VerificationResult["stripe"] {
 }
 
 function verifySupabaseKey(key: string): VerificationResult["supabase"] {
-  // Supabase anon keys are JWTs
+  // Supabase keys can be:
+  // 1. JWT format (anon key): eyJ...
+  // 2. Publishable key format: sb_publishable_...
   const isJWT = /^eyJ[a-zA-Z0-9_-]+\.eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+$/.test(key);
+  const isPublishableKey = /^sb_publishable_[a-zA-Z0-9_-]+$/.test(key);
+  const isValidFormat = isJWT || isPublishableKey;
   
   return {
-    valid: isJWT,
-    keyFormat: isJWT,
-    message: isJWT 
+    valid: isValidFormat,
+    keyFormat: isValidFormat,
+    message: isValidFormat 
       ? "Valid Supabase project key detected"
-      : "Invalid Supabase key format",
+      : "Invalid Supabase key format (expected JWT or sb_publishable_* format)",
   };
 }
 
