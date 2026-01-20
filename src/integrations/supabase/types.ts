@@ -62,6 +62,7 @@ export type Database = {
           entry_fee: number
           example: string | null
           id: string
+          max_participants: number
           participants: number
           prize_pool: number
           problem_id: string | null
@@ -87,6 +88,7 @@ export type Database = {
           entry_fee?: number
           example?: string | null
           id?: string
+          max_participants?: number
           participants?: number
           prize_pool?: number
           problem_id?: string | null
@@ -112,6 +114,7 @@ export type Database = {
           entry_fee?: number
           example?: string | null
           id?: string
+          max_participants?: number
           participants?: number
           prize_pool?: number
           problem_id?: string | null
