@@ -36,22 +36,6 @@ export function PaywallModal({
     }
   }, [open]);
 
-  // Listen for payment success via URL params
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const paymentStatus = urlParams.get("payment");
-    
-    if (paymentStatus === "success") {
-      // Clear the URL params
-      window.history.replaceState({}, "", window.location.pathname);
-      onPaymentSuccess();
-      toast.success("Payment successful! You've joined the challenge.");
-    } else if (paymentStatus === "cancelled") {
-      window.history.replaceState({}, "", window.location.pathname);
-      toast.info("Payment cancelled.");
-    }
-  }, [onPaymentSuccess]);
-
   const handlePaymentClick = async () => {
     setIsProcessing(true);
 
