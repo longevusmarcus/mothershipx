@@ -29,6 +29,7 @@ import {
   Sparkles,
   Trophy,
   ExternalLink,
+  ShieldCheck,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -38,6 +39,8 @@ import { toast } from "sonner";
 import { supabase } from "@/lib/supabaseClient";
 import { useUserStats, getXpProgress, getLevelTitle } from "@/hooks/useUserStats";
 import { MyChallenges } from "@/components/MyChallenges";
+import { useIsBuilderVerified } from "@/hooks/useBuilderVerification";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const achievements = [
   { id: 1, name: "First Build", description: "Submitted your first solution", unlocked: false, date: null, icon: Layers },
@@ -54,6 +57,7 @@ export default function Profile() {
   const { user, profile, isAuthenticated, signOut, updateProfile } = useAuth();
   const navigate = useNavigate();
   const { data: userStats, isLoading: statsLoading } = useUserStats();
+  const { isVerified, verification } = useIsBuilderVerified();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
@@ -307,9 +311,34 @@ export default function Profile() {
                     {profile?.name || "Builder"}
                   </h2>
                 )}
-                <Badge variant="secondary" className="w-fit text-xs">
-                  {levelTitle}
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="w-fit text-xs">
+                    {levelTitle}
+                  </Badge>
+                  {isVerified && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Badge 
+                          variant="default" 
+                          className="w-fit text-xs bg-primary/90 hover:bg-primary text-primary-foreground gap-1"
+                        >
+                          <ShieldCheck className="h-3 w-3" />
+                          Verified Builder
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="max-w-[200px]">
+                        <p className="text-xs">
+                          This builder has verified their GitHub, Stripe, and Supabase credentials.
+                          {verification?.verification_result?.overall?.score && (
+                            <span className="block mt-1 text-muted-foreground">
+                              Verification score: {verification.verification_result.overall.score}%
+                            </span>
+                          )}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
+                </div>
               </div>
               
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground mb-4">
