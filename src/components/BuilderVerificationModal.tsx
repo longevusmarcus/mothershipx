@@ -51,11 +51,23 @@ interface VerificationResult {
   };
 }
 
+// Helper to extract GitHub username from URL or username input
+function extractGitHubUsername(input: string): string {
+  const trimmed = input.trim();
+  // Match github.com URLs: https://github.com/username, github.com/username, etc.
+  const urlMatch = trimmed.match(/(?:https?:\/\/)?(?:www\.)?github\.com\/([a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)\/?/i);
+  if (urlMatch) {
+    return urlMatch[1];
+  }
+  // Otherwise treat as raw username
+  return trimmed;
+}
+
 const verificationSchema = z.object({
   githubUsername: z
     .string()
     .trim()
-    .min(1, "GitHub username is required")
+    .min(1, "GitHub username or URL is required")
     .max(200, "GitHub value is too long"),
   stripePublicKey: z
     .string()
@@ -66,9 +78,13 @@ const verificationSchema = z.object({
   supabaseProjectKey: z
     .string()
     .trim()
-    .min(1, "Supabase key is required")
-    .regex(/^(eyJ|sb_publishable_)/, "Must be a valid Supabase key (anon JWT or sb_publishable_...)")
-    .max(500, "Supabase key is too long"),
+    .max(500, "Supabase public key is too long")
+    .refine(
+      (val) => !val || /^(eyJ|sb_publishable_)/.test(val),
+      "Must be a valid Supabase public key"
+    )
+    .optional()
+    .or(z.literal("")),
 });
 
 export function BuilderVerificationModal({
@@ -147,8 +163,14 @@ export function BuilderVerificationModal({
     setStep("verifying");
 
     try {
+      // Extract username from GitHub URL if provided
+      const normalizedGithubUsername = extractGitHubUsername(formData.githubUsername);
+      
       const response = await supabase.functions.invoke("verify-builder", {
-        body: formData,
+        body: {
+          ...formData,
+          githubUsername: normalizedGithubUsername,
+        },
       });
 
       if (response.error) {
@@ -208,11 +230,11 @@ export function BuilderVerificationModal({
               <div className="space-y-2">
                 <Label htmlFor="github" className="flex items-center gap-2">
                   <Github className="h-4 w-4" />
-                  GitHub Username
+                  GitHub Username or URL
                 </Label>
                 <Input
                   id="github"
-                  placeholder="your-username"
+                  placeholder="username or https://github.com/username"
                   value={formData.githubUsername}
                   onChange={(e) => handleInputChange("githubUsername", e.target.value)}
                   className={errors.githubUsername ? "border-destructive" : ""}
@@ -250,7 +272,7 @@ export function BuilderVerificationModal({
               <div className="space-y-2">
                 <Label htmlFor="supabase" className="flex items-center gap-2">
                   <Database className="h-4 w-4" />
-                  Supabase Project Key
+                  Supabase Public Key <span className="text-muted-foreground font-normal">(optional)</span>
                 </Label>
                 <Input
                   id="supabase"
@@ -263,7 +285,7 @@ export function BuilderVerificationModal({
                   <p className="text-xs text-destructive">{errors.supabaseProjectKey}</p>
                 )}
                 <p className="text-xs text-muted-foreground">
-                  Your anon/public key from project settings
+                  Your public key from project settings
                 </p>
               </div>
 
