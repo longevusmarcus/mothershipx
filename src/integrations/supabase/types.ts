@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      builder_verifications: {
+        Row: {
+          created_at: string
+          github_username: string | null
+          id: string
+          stripe_public_key: string | null
+          supabase_project_key: string | null
+          updated_at: string
+          user_id: string
+          verification_result: Json | null
+          verification_status: string
+          verified_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          github_username?: string | null
+          id?: string
+          stripe_public_key?: string | null
+          supabase_project_key?: string | null
+          updated_at?: string
+          user_id: string
+          verification_result?: Json | null
+          verification_status?: string
+          verified_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          github_username?: string | null
+          id?: string
+          stripe_public_key?: string | null
+          supabase_project_key?: string | null
+          updated_at?: string
+          user_id?: string
+          verification_result?: Json | null
+          verification_status?: string
+          verified_at?: string | null
+        }
+        Relationships: []
+      }
       challenge_joins: {
         Row: {
           challenge_id: string

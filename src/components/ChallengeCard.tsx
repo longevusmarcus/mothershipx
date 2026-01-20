@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -15,6 +15,7 @@ import {
   TrendingUp,
   LogIn,
   Send,
+  Shield,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useMyChallengeJoins, useJoinChallenge } from "@/hooks/useChallengeJoins";
 import { PaywallModal } from "@/components/PaywallModal";
 import { AuthModal } from "@/components/AuthModal";
+import { BuilderVerificationModal } from "@/components/BuilderVerificationModal";
+import { supabase } from "@/lib/supabaseClient";
 
 interface ChallengeCardProps {
   challenge: DailyChallenge;
@@ -41,14 +44,35 @@ interface ChallengeCardProps {
 
 export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { data: myChallengeJoins = [] } = useMyChallengeJoins();
   const joinChallengeMutation = useJoinChallenge();
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
+  const [isVerificationOpen, setIsVerificationOpen] = useState(false);
   const [isPaywallOpen, setIsPaywallOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [joinType, setJoinType] = useState<"solo" | "team" | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
+
+  // Check if user is already verified
+  useEffect(() => {
+    if (user?.id) {
+      checkVerificationStatus();
+    }
+  }, [user?.id]);
+
+  const checkVerificationStatus = async () => {
+    if (!user?.id) return;
+    
+    const { data } = await supabase
+      .from("builder_verifications")
+      .select("verification_status")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    
+    setIsVerified(data?.verification_status === "verified");
+  };
 
   const timeRemaining = getTimeRemaining(challenge.endsAt);
   const isActive = challenge.status === "active";
@@ -65,6 +89,19 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
   const handleConfirmJoin = async () => {
     if (!joinType) return;
     setIsJoinDialogOpen(false);
+    
+    // Check if user is verified first
+    if (!isVerified) {
+      setIsVerificationOpen(true);
+    } else {
+      setIsPaywallOpen(true);
+    }
+  };
+
+  const handleVerificationComplete = () => {
+    setIsVerified(true);
+    setIsVerificationOpen(false);
+    // After verification, open paywall
     setIsPaywallOpen(true);
   };
 
@@ -277,8 +314,12 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
             ) : (
               <Dialog open={isJoinDialogOpen} onOpenChange={setIsJoinDialogOpen}>
                 <DialogTrigger asChild>
-                <Button className="w-full">
-                    <Trophy className="h-4 w-4 mr-2" />
+                  <Button className="w-full">
+                    {isVerified ? (
+                      <Shield className="h-4 w-4 mr-2 text-success" />
+                    ) : (
+                      <Trophy className="h-4 w-4 mr-2" />
+                    )}
                     Join Challenge – $5 Entry
                   </Button>
                 </DialogTrigger>
@@ -286,7 +327,9 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
                   <DialogHeader>
                     <DialogTitle>Join "{challenge.title}"</DialogTitle>
                     <DialogDescription>
-                      Choose how you want to compete. Entry fee: $5
+                      {isVerified 
+                        ? "You're a verified builder! Choose how you want to compete."
+                        : "Choose how to compete. You'll need to verify your builder status first."}
                     </DialogDescription>
                   </DialogHeader>
 
@@ -372,6 +415,12 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
           </Button>
         )}
       </div>
+
+      <BuilderVerificationModal
+        open={isVerificationOpen}
+        onOpenChange={setIsVerificationOpen}
+        onVerified={handleVerificationComplete}
+      />
 
       <PaywallModal
         open={isPaywallOpen}
