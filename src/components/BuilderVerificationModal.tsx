@@ -52,9 +52,23 @@ interface VerificationResult {
 }
 
 const verificationSchema = z.object({
-  githubUsername: z.string().min(1, "GitHub username is required").max(39, "Invalid GitHub username"),
-  stripePublicKey: z.string().min(1, "Stripe key is required").regex(/^pk_(live|test)_/, "Must be a Stripe publishable key (pk_...)"),
-  supabaseProjectKey: z.string().min(1, "Supabase key is required").regex(/^eyJ/, "Must be a valid Supabase anon key"),
+  githubUsername: z
+    .string()
+    .trim()
+    .min(1, "GitHub username is required")
+    .max(200, "GitHub value is too long"),
+  stripePublicKey: z
+    .string()
+    .trim()
+    .min(1, "Stripe key is required")
+    .regex(/^pk_(live|test)_/, "Must be a Stripe publishable key (pk_...)")
+    .max(200, "Stripe key is too long"),
+  supabaseProjectKey: z
+    .string()
+    .trim()
+    .min(1, "Supabase key is required")
+    .regex(/^(eyJ|sb_publishable_)/, "Must be a valid Supabase key (anon JWT or sb_publishable_...)")
+    .max(500, "Supabase key is too long"),
 });
 
 export function BuilderVerificationModal({
@@ -240,7 +254,7 @@ export function BuilderVerificationModal({
                 </Label>
                 <Input
                   id="supabase"
-                  placeholder="eyJ..."
+                  placeholder="eyJ... or sb_publishable_..."
                   value={formData.supabaseProjectKey}
                   onChange={(e) => handleInputChange("supabaseProjectKey", e.target.value)}
                   className={errors.supabaseProjectKey ? "border-destructive" : ""}
