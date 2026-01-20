@@ -44,7 +44,7 @@ const Challenges = () => {
     <AppLayout>
       <SEO
         title="Hackathon Arena"
-        description="Join daily build sprints, compete solo or in teams, and win 90% of the prize pool. AI judges your code quality and aesthetics."
+        description="Join weekly build challenges, compete solo or in teams, and win 90% of the prize pool. AI judges your code quality and aesthetics."
       />
       
       {/* Payment Verification Overlay */}
