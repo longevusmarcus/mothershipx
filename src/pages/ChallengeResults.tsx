@@ -20,14 +20,20 @@ import { SEO } from "@/components/SEO";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { useChallenge } from "@/hooks/useChallenges";
 import { useRankings } from "@/hooks/useRankings";
+import { useVerifiedBuilders } from "@/hooks/useVerifiedBuilders";
 import { cn } from "@/lib/utils";
 
 const ChallengeResults = () => {
   const { id } = useParams<{ id: string }>();
   const { data: challenge, isLoading: loadingChallenge } = useChallenge(id || "");
   const { data: rankings = [], isLoading: loadingRankings } = useRankings(id);
+  
+  // Get verified status for all ranked users
+  const rankedUserIds = rankings.map((r) => r.user_id).filter((id): id is string => !!id);
+  const { data: verifiedBuilders } = useVerifiedBuilders(rankedUserIds);
 
   if (loadingChallenge || loadingRankings) {
     return (
@@ -191,6 +197,9 @@ const ChallengeResults = () => {
                           <p className="font-semibold truncate">
                             {ranking.submission?.product_name || "Submission"}
                           </p>
+                          {verifiedBuilders?.has(ranking.user_id) && (
+                            <VerifiedBadge size="xs" />
+                          )}
                           {ranking.is_winner && (
                             <Badge className="bg-warning/10 text-warning border-warning/30 text-[10px]">
                               Winner

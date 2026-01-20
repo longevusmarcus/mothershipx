@@ -16,6 +16,7 @@ import { TeamCard } from "./TeamCard";
 import { TeamChat } from "./TeamChat";
 import { createSquadSchema } from "@/lib/validations";
 import { useSquads, type Squad } from "@/hooks/useSquads";
+import { useVerifiedBuilders } from "@/hooks/useVerifiedBuilders";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface TeamFormationProps {
@@ -32,6 +33,12 @@ export function TeamFormation({ problemId, problemTitle = "SaaS Onboarding" }: T
   const [teamName, setTeamName] = useState("");
   const [teamTagline, setTeamTagline] = useState("");
   const [formErrors, setFormErrors] = useState<{ name?: string; tagline?: string }>({});
+
+  // Collect all squad member user IDs for verification check
+  const allMemberIds = squads
+    .flatMap((s) => s.members?.map((m) => m.user_id) || [])
+    .filter((id): id is string => !!id);
+  const { data: verifiedBuilders } = useVerifiedBuilders(allMemberIds);
 
   const handleJoinTeam = (squad: Squad) => {
     joinSquad.mutate(squad.id);
@@ -79,6 +86,7 @@ export function TeamFormation({ problemId, problemTitle = "SaaS Onboarding" }: T
       avatar: m.profile?.name?.[0] || "?",
       role: m.role,
       isOnline: m.is_online,
+      isVerified: verifiedBuilders?.has(m.user_id) || false,
     })) || [],
     maxMembers: squad.max_members,
     momentum: squad.momentum,

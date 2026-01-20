@@ -4,7 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { useProblemBuilders, type ProblemBuilder } from "@/hooks/useProblemBuilders";
+import { useVerifiedBuilders } from "@/hooks/useVerifiedBuilders";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface BuilderCardProps {
@@ -19,6 +21,7 @@ interface BuilderCardProps {
     githubUrl?: string;
     productUrl?: string;
     isLookingForTeam?: boolean;
+    isVerified?: boolean;
   };
   onRequestCollab?: (builderId: string) => void;
   delay?: number;
@@ -68,6 +71,7 @@ export function BuilderCard({ builder, onRequestCollab, delay = 0 }: BuilderCard
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <h4 className="font-semibold truncate">{builder.name}</h4>
+            {builder.isVerified && <VerifiedBadge size="xs" />}
             <Badge className={`text-[10px] ${stageColors[builder.stage]}`}>
               {stageLabels[builder.stage]}
             </Badge>
@@ -161,6 +165,10 @@ interface BuildersListProps {
 export function BuildersList({ problemId }: BuildersListProps) {
   const { user } = useAuth();
   const { builders, isLoading, requestCollab } = useProblemBuilders(problemId);
+  
+  // Get verified status for all builders
+  const builderUserIds = builders.map((b) => b.user_id);
+  const { data: verifiedBuilders } = useVerifiedBuilders(builderUserIds);
 
   const handleRequestCollab = (userId: string) => {
     requestCollab.mutate(userId);
@@ -183,6 +191,7 @@ export function BuildersList({ problemId }: BuildersListProps) {
     githubUrl: builder.profile?.github ? `https://github.com/${builder.profile.github}` : undefined,
     productUrl: builder.profile?.website || undefined,
     isLookingForTeam: builder.isLookingForTeam,
+    isVerified: verifiedBuilders?.has(builder.user_id) || false,
   }));
 
   if (displayBuilders.length === 0) {
