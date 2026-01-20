@@ -21,7 +21,10 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 import { useSolutions, type Solution } from "@/hooks/useSolutions";
+import { useVerifiedBuilders } from "@/hooks/useVerifiedBuilders";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatDistanceToNow } from "date-fns";
 
@@ -953,6 +956,12 @@ export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPai
   const [showNewIdea, setShowNewIdea] = useState(false);
   const [newIdea, setNewIdea] = useState({ title: "", description: "", approach: "" });
 
+  // Collect all contributor user IDs for verification check
+  const allContributorIds = dbSolutions
+    .flatMap((s) => s.contributors?.map((c) => c.user_id) || [])
+    .filter((id): id is string => !!id);
+  const { data: verifiedBuilders } = useVerifiedBuilders(allContributorIds);
+
   const handleUpvote = (solution: Solution) => {
     if (!user) return;
     toggleUpvote.mutate({ solutionId: solution.id, hasUpvoted: solution.has_upvoted || false });
@@ -1255,13 +1264,32 @@ export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPai
                           </h5>
                           <div className="flex items-center gap-2">
                             <div className="flex -space-x-2">
-                              {solution.contributors.slice(0, 5).map((contributor) => (
-                                <Avatar key={contributor.id} className="h-7 w-7 border-2 border-background">
-                                  <AvatarFallback className="text-[10px] bg-secondary">
-                                    {contributor.profile?.name?.[0] || "?"}
-                                  </AvatarFallback>
-                                </Avatar>
-                              ))}
+                              {solution.contributors.slice(0, 5).map((contributor) => {
+                                const isVerified = verifiedBuilders?.has(contributor.user_id || "");
+                                return (
+                                  <TooltipProvider key={contributor.id} delayDuration={200}>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <div className="relative">
+                                          <Avatar className="h-7 w-7 border-2 border-background">
+                                            <AvatarFallback className="text-[10px] bg-secondary">
+                                              {contributor.profile?.name?.[0] || "?"}
+                                            </AvatarFallback>
+                                          </Avatar>
+                                          {isVerified && (
+                                            <div className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-background flex items-center justify-center">
+                                              <VerifiedBadge size="xs" showTooltip={false} />
+                                            </div>
+                                          )}
+                                        </div>
+                                      </TooltipTrigger>
+                                      <TooltipContent side="top" className="text-xs">
+                                        <p>{contributor.profile?.name || "Anonymous"}{isVerified ? " ✓ Verified" : ""}</p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </TooltipProvider>
+                                );
+                              })}
                             </div>
                             {solution.contributors.length > 5 && (
                               <span className="text-xs text-muted-foreground">

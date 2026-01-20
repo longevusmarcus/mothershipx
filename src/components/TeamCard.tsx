@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 import { Crown, MessageCircle, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 
 export interface TeamMember {
   id: string;
@@ -9,6 +11,7 @@ export interface TeamMember {
   avatar: string;
   role: "lead" | "member";
   isOnline?: boolean;
+  isVerified?: boolean;
 }
 
 export interface Team {
@@ -72,19 +75,33 @@ export function TeamCard({ team, onJoin, onViewChat, isUserTeam, delay = 0 }: Te
         <div className="flex items-center justify-between">
           <div className="flex -space-x-2">
             {team.members.map((member) => (
-              <div key={member.id} className="relative">
-                <Avatar className={`h-7 w-7 border-2 ${isUserTeam ? "border-foreground/10" : "border-background"}`}>
-                  <AvatarFallback className={`text-[10px] ${member.role === "lead" ? "bg-foreground text-background" : "bg-secondary"}`}>
-                    {member.avatar}
-                  </AvatarFallback>
-                </Avatar>
-                {member.role === "lead" && (
-                  <Crown className="absolute -top-1 left-1/2 -translate-x-1/2 h-2.5 w-2.5 text-foreground/60" />
-                )}
-                {member.isOnline && (
-                  <div className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-success border border-background" />
-                )}
-              </div>
+              <TooltipProvider key={member.id} delayDuration={200}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="relative">
+                      <Avatar className={`h-7 w-7 border-2 ${isUserTeam ? "border-foreground/10" : "border-background"}`}>
+                        <AvatarFallback className={`text-[10px] ${member.role === "lead" ? "bg-foreground text-background" : "bg-secondary"}`}>
+                          {member.avatar}
+                        </AvatarFallback>
+                      </Avatar>
+                      {member.role === "lead" && (
+                        <Crown className="absolute -top-1 left-1/2 -translate-x-1/2 h-2.5 w-2.5 text-foreground/60" />
+                      )}
+                      {member.isOnline && (
+                        <div className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-success border border-background" />
+                      )}
+                      {member.isVerified && (
+                        <div className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-background flex items-center justify-center">
+                          <VerifiedBadge size="xs" showTooltip={false} />
+                        </div>
+                      )}
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="text-xs">
+                    <p>{member.name}{member.isVerified ? " ✓ Verified" : ""}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             ))}
             
             {/* Empty Slots */}
