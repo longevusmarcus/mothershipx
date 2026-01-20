@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Loader2, ArrowRight } from "lucide-react";
+import { Loader2, ArrowRight } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabaseClient";
@@ -79,14 +79,6 @@ export function PaywallModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md p-0 gap-0 border-border bg-card overflow-hidden">
-        {/* Close button */}
-        <button
-          onClick={() => onOpenChange(false)}
-          className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-secondary transition-colors z-10"
-        >
-          <X className="h-4 w-4 text-muted-foreground" />
-        </button>
-
         <div className="p-8">
           <AnimatePresence mode="wait">
             <motion.div
