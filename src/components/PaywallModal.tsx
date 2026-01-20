@@ -14,7 +14,7 @@ interface PaywallModalProps {
   winnerPrize: number;
 }
 
-const STRIPE_PAYMENT_LINK = "https://buy.stripe.com/28E14g3ng0It5wD1gYgIo04";
+const STRIPE_PAYMENT_LINK = "https://buy.stripe.com/9AQbMU7Dw2QBfbdcNA";
 
 export function PaywallModal({
   open,
@@ -166,7 +166,7 @@ export function PaywallModal({
                 {/* Price */}
                 <div className="text-center mb-8">
                   <div className="inline-flex items-baseline">
-                    <span className="text-4xl font-semibold tracking-tight">$2</span>
+                    <span className="text-4xl font-semibold tracking-tight">$5</span>
                   </div>
                   <p className="text-xs text-muted-foreground mt-2">
                     One-time entry fee
