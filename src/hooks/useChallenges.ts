@@ -14,6 +14,7 @@ interface DBChallenge {
   prize_pool: number;
   winner_prize: number;
   participants: number;
+  max_participants: number;
   solo_participants: number;
   team_count: number;
   starts_at: string;
@@ -53,6 +54,7 @@ function dbToChallenge(dbChallenge: DBChallenge): DailyChallenge {
     example: dbChallenge.example || "",
     prizePool: dbChallenge.prize_pool,
     participants: dbChallenge.participants,
+    maxParticipants: dbChallenge.max_participants || 200,
     soloParticipants: dbChallenge.solo_participants,
     teamCount: dbChallenge.team_count,
     endsAt: endsAt,

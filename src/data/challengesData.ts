@@ -14,6 +14,7 @@ export interface DailyChallenge {
   example: string;
   prizePool: number;
   participants: number;
+  maxParticipants: number;
   soloParticipants: number;
   teamCount: number;
   endsAt: Date;
@@ -39,16 +40,17 @@ export const mockChallenges: DailyChallenge[] = [
     trend: "Relationship Arguments",
     description: "Build an app that helps couples settle disputes fairly. Who's right? Let AI decide!",
     example: "Build a 'Couple Who Wins' app where each partner presents their case and AI picks a winner based on logic & fairness.",
-    prizePool: 350 * ENTRY_FEE, // $700
-    participants: 350,
-    soloParticipants: 245,
-    teamCount: 35,
+    prizePool: 1000,
+    participants: 10,
+    maxParticipants: 200,
+    soloParticipants: 7,
+    teamCount: 1,
     endsAt: new Date(Date.now() + 8 * 60 * 60 * 1000),
     difficulty: "beginner",
     tags: ["AI", "Relationships", "Fun"],
     isToday: true,
     status: "active",
-    winnerPrize: 350 * ENTRY_FEE * WINNER_PERCENTAGE, // $630
+    winnerPrize: 900,
     whyRelevant: "Couples arguing about chores & decisions is trending on TikTok. 'Who's right' videos get millions of views. People want a neutral AI judge.",
     sources: [
       { source: "tiktok", metric: "Views this week", value: "12.4M" },
@@ -63,16 +65,17 @@ export const mockChallenges: DailyChallenge[] = [
     trend: "Screen Time Anxiety",
     description: "Create a tool that breaks the infinite scroll addiction with creative interventions.",
     example: "An app that detects doom scrolling and interrupts with breathing exercises or reality checks.",
-    prizePool: 189 * ENTRY_FEE, // $378
-    participants: 189,
-    soloParticipants: 132,
-    teamCount: 19,
+    prizePool: 1000,
+    participants: 10,
+    maxParticipants: 200,
+    soloParticipants: 7,
+    teamCount: 1,
     endsAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
     difficulty: "intermediate",
     tags: ["Wellness", "Productivity", "Mobile"],
     isToday: false,
     status: "voting",
-    winnerPrize: 189 * ENTRY_FEE * WINNER_PERCENTAGE, // $340.20
+    winnerPrize: 900,
     whyRelevant: "Screen time guilt is at an all-time high. Gen Z actively seeking dopamine detox solutions. Huge viral potential.",
     sources: [
       { source: "tiktok", metric: "Hashtag views", value: "8.2M" },
@@ -88,16 +91,17 @@ export const mockChallenges: DailyChallenge[] = [
     trend: "Fashion Insecurity",
     description: "Build an AI that honestly rates outfits before leaving the house.",
     example: "Upload a mirror selfie, get brutal AI fashion advice with suggestions from your own wardrobe.",
-    prizePool: 278 * ENTRY_FEE, // $556
-    participants: 278,
-    soloParticipants: 195,
-    teamCount: 28,
+    prizePool: 1000,
+    participants: 10,
+    maxParticipants: 200,
+    soloParticipants: 7,
+    teamCount: 1,
     endsAt: new Date(Date.now() - 26 * 60 * 60 * 1000),
     difficulty: "advanced",
     tags: ["Fashion", "AI Vision", "Social"],
     isToday: false,
     status: "completed",
-    winnerPrize: 278 * ENTRY_FEE * WINNER_PERCENTAGE, // $500.40
+    winnerPrize: 900,
     whyRelevant: "'Rate my outfit' posts dominate social. AI fashion tools are exploding. People want honest feedback without asking friends.",
     sources: [
       { source: "tiktok", metric: "Creator videos", value: "45K" },
@@ -112,16 +116,17 @@ export const mockChallenges: DailyChallenge[] = [
     trend: "Passive Income FOMO",
     description: "Create a reality-check tool for viral 'get rich' schemes.",
     example: "Paste a TikTok side hustle idea, get AI analysis of actual ROI, time investment, and success probability.",
-    prizePool: 412 * ENTRY_FEE, // $824
-    participants: 412,
-    soloParticipants: 288,
-    teamCount: 41,
+    prizePool: 1000,
+    participants: 10,
+    maxParticipants: 200,
+    soloParticipants: 7,
+    teamCount: 1,
     endsAt: new Date(Date.now() - 50 * 60 * 60 * 1000),
     difficulty: "intermediate",
     tags: ["Finance", "AI", "Viral"],
     isToday: false,
     status: "completed",
-    winnerPrize: 412 * ENTRY_FEE * WINNER_PERCENTAGE, // $741.60
+    winnerPrize: 900,
     whyRelevant: "Fake 'get rich' content floods TikTok. Users are desperate to know what's real. Scam-busting content goes viral.",
     sources: [
       { source: "tiktok", metric: "Related hashtags", value: "28M views" },
