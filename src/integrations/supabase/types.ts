@@ -20,6 +20,8 @@ export type Database = {
           created_at: string
           id: string
           join_type: Database["public"]["Enums"]["join_type"]
+          payment_id: string | null
+          payment_status: string | null
           team_name: string | null
           updated_at: string
           user_id: string
@@ -29,6 +31,8 @@ export type Database = {
           created_at?: string
           id?: string
           join_type?: Database["public"]["Enums"]["join_type"]
+          payment_id?: string | null
+          payment_status?: string | null
           team_name?: string | null
           updated_at?: string
           user_id: string
@@ -38,6 +42,8 @@ export type Database = {
           created_at?: string
           id?: string
           join_type?: Database["public"]["Enums"]["join_type"]
+          payment_id?: string | null
+          payment_status?: string | null
           team_name?: string | null
           updated_at?: string
           user_id?: string
@@ -45,6 +51,57 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "challenge_joins_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "challenge_joins_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "challenge_payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      challenge_payments: {
+        Row: {
+          amount: number
+          challenge_id: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          status: string
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string | null
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          challenge_id: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          challenge_id?: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_payments_challenge_id_fkey"
             columns: ["challenge_id"]
             isOneToOne: false
             referencedRelation: "challenges"
