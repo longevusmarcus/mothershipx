@@ -22,6 +22,7 @@ interface VerificationResult {
   stripe: {
     valid: boolean;
     keyFormat: boolean;
+    hasRevenue?: boolean;
     message: string;
   };
   supabase: {
@@ -91,11 +92,19 @@ function verifyStripeKey(key: string): VerificationResult["stripe"] {
   const isValidFormat = /^pk_(live|test)_[a-zA-Z0-9]+$/.test(key);
   const isLiveKey = key.startsWith("pk_live_");
 
+  // Note: To verify actual payment volume, we would need Stripe Connect OAuth
+  // to access the user's Stripe account. Publishable keys alone cannot be used
+  // to query payment history. For now, we validate the key format and prefer live keys.
+  // Future enhancement: Implement Stripe Connect OAuth flow for revenue verification.
+
   return {
     valid: isValidFormat,
     keyFormat: isValidFormat,
+    hasRevenue: isLiveKey, // Assume live keys indicate production usage
     message: isValidFormat 
-      ? (isLiveKey ? "Valid live Stripe key detected" : "Valid test Stripe key (live key preferred)")
+      ? (isLiveKey 
+          ? "Valid live Stripe key detected - production ready!" 
+          : "Valid test Stripe key (live key preferred for higher verification score)")
       : "Invalid Stripe publishable key format",
   };
 }
@@ -150,7 +159,11 @@ serve(async (req) => {
     let score = 0;
     if (githubResult.valid && githubResult.hasStarredRepos) score += 40;
     else if (githubResult.valid) score += 20;
-    if (stripeResult.valid) score += 30;
+    
+    // Give bonus points for live Stripe keys (indicates production usage)
+    if (stripeResult.valid) {
+      score += stripeResult.hasRevenue ? 35 : 25;
+    }
     if (supabaseResult.valid) score += 30;
 
     const verified = score >= 70; // Require at least 70% to be verified
