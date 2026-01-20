@@ -132,7 +132,7 @@ export const CommunityChallenges = () => {
       {/* How it Works */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { icon: Calendar, label: "Daily Challenge", desc: "New trend daily" },
+          { icon: Calendar, label: "Weekly Challenges", desc: "2 challenges/week" },
           { label: "$5 Entry", desc: "Verified builders only" },
           { icon: Flame, label: "48h Sprint", desc: "Build & submit" },
           { icon: Trophy, label: "AI Judges", desc: "Win 90% pool" },
