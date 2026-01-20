@@ -37,7 +37,20 @@ interface VerificationResult {
   };
 }
 
-async function verifyGitHub(username: string): Promise<VerificationResult["github"]> {
+// Extract GitHub username from URL or raw username
+function extractGitHubUsername(input: string): string {
+  const trimmed = input.trim();
+  // Match github.com URLs: https://github.com/username, github.com/username, etc.
+  const urlMatch = trimmed.match(/(?:https?:\/\/)?(?:www\.)?github\.com\/([a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)\/?/i);
+  if (urlMatch) {
+    return urlMatch[1];
+  }
+  return trimmed;
+}
+
+async function verifyGitHub(rawInput: string): Promise<VerificationResult["github"]> {
+  const username = extractGitHubUsername(rawInput);
+  
   try {
     // Fetch user repos
     const response = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=stars`, {
@@ -109,7 +122,16 @@ function verifyStripeKey(key: string): VerificationResult["stripe"] {
   };
 }
 
-function verifySupabaseKey(key: string): VerificationResult["supabase"] {
+function verifySupabaseKey(key: string | undefined | null): VerificationResult["supabase"] {
+  // Supabase key is optional
+  if (!key || key.trim() === "") {
+    return {
+      valid: false,
+      keyFormat: false,
+      message: "Supabase public key not provided (optional)",
+    };
+  }
+  
   // Supabase keys can be:
   // 1. JWT format (anon key): eyJ...
   // 2. Publishable key format: sb_publishable_...
@@ -121,8 +143,8 @@ function verifySupabaseKey(key: string): VerificationResult["supabase"] {
     valid: isValidFormat,
     keyFormat: isValidFormat,
     message: isValidFormat 
-      ? "Valid Supabase project key detected"
-      : "Invalid Supabase key format (expected JWT or sb_publishable_* format)",
+      ? "Valid Supabase public key detected"
+      : "Invalid Supabase public key format",
   };
 }
 
@@ -159,16 +181,18 @@ serve(async (req) => {
     const stripeResult = verifyStripeKey(stripePublicKey);
     const supabaseResult = verifySupabaseKey(supabaseProjectKey);
 
-    // Calculate overall score
+    // Calculate overall score (Supabase is optional, so adjust max score)
     let score = 0;
-    if (githubResult.valid && githubResult.hasStarredRepos) score += 40;
-    else if (githubResult.valid) score += 20;
+    if (githubResult.valid && githubResult.hasStarredRepos) score += 50;
+    else if (githubResult.valid) score += 25;
     
     // Give bonus points for live Stripe keys (indicates production usage)
     if (stripeResult.valid) {
-      score += stripeResult.hasRevenue ? 35 : 25;
+      score += stripeResult.hasRevenue ? 50 : 35;
     }
-    if (supabaseResult.valid) score += 30;
+    
+    // Supabase is optional bonus points
+    if (supabaseResult.valid) score += 15;
 
     const verified = score >= 70; // Require at least 70% to be verified
 
@@ -178,7 +202,7 @@ serve(async (req) => {
       supabase: supabaseResult,
       overall: {
         verified,
-        score,
+        score: Math.min(score, 100), // Cap at 100
         message: verified 
           ? "You're a verified builder! Welcome to the Arena."
           : "Verification incomplete. Please provide valid credentials.",
