@@ -377,7 +377,9 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
         open={isPaywallOpen}
         onOpenChange={setIsPaywallOpen}
         onPaymentSuccess={handlePaymentSuccess}
+        challengeId={challenge.id}
         challengeTitle={challenge.title}
+        joinType={joinType || "solo"}
         prizePool={challenge.prizePool}
         winnerPrize={challenge.winnerPrize}
       />
