@@ -96,7 +96,7 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
             tags: challenge.tags,
           },
           joinType,
-          entryFee: 2,
+          entryFee: 5,
         },
       });
     } catch (error) {
@@ -266,7 +266,7 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
                         tags: challenge.tags,
                       },
                       joinType: existingJoin?.join_type || "solo",
-                      entryFee: 2,
+                      entryFee: 5,
                     },
                   })}
                 >
@@ -277,16 +277,16 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
             ) : (
               <Dialog open={isJoinDialogOpen} onOpenChange={setIsJoinDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="w-full">
+                <Button className="w-full">
                     <Trophy className="h-4 w-4 mr-2" />
-                    Join Challenge – $2 Entry
+                    Join Challenge – $5 Entry
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-md">
                   <DialogHeader>
                     <DialogTitle>Join "{challenge.title}"</DialogTitle>
                     <DialogDescription>
-                      Choose how you want to compete. Entry fee: $2
+                      Choose how you want to compete. Entry fee: $5
                     </DialogDescription>
                   </DialogHeader>
 
@@ -321,7 +321,7 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
                     <div className="bg-secondary/50 rounded-lg p-4 space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Entry Fee</span>
-                        <span>$2.00</span>
+                        <span>$5.00</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Current Pool</span>

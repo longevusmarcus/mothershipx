@@ -34,7 +34,7 @@ export const CommunityChallenges = () => {
       <div>
         <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">Arena</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Daily build sprints • $2 entry • Win 90% of the pool
+          Daily build sprints • $5 entry • Win 90% of the pool
         </p>
       </div>
 
@@ -54,7 +54,7 @@ export const CommunityChallenges = () => {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           { icon: Calendar, label: "Daily Challenge", desc: "New trend daily" },
-          { label: "$2 Entry", desc: "Join solo or team" },
+          { label: "$5 Entry", desc: "Join solo or team" },
           { icon: Flame, label: "24h Sprint", desc: "Build & submit" },
           { icon: Trophy, label: "AI Judges", desc: "Win 90% pool" },
         ].map((step, i) => (
