@@ -376,9 +376,14 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 p-3 bg-warning/10 rounded-lg text-sm">
-                      <Clock className="h-4 w-4 text-warning shrink-0" />
-                      <span>24 hour build sprint</span>
+                    <div className="p-3 bg-secondary/30 rounded-lg text-sm space-y-1">
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
+                        <span className="font-medium">48h Build Sprint</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground pl-6">
+                        Ship what you can. Finished or not—just show progress.
+                      </p>
                     </div>
 
                     <Button
