@@ -134,7 +134,7 @@ export const CommunityChallenges = () => {
         {[
           { icon: Calendar, label: "Daily Challenge", desc: "New trend daily" },
           { label: "$5 Entry", desc: "Verified builders only" },
-          { icon: Flame, label: "24h Sprint", desc: "Build & submit" },
+          { icon: Flame, label: "48h Sprint", desc: "Build & submit" },
           { icon: Trophy, label: "AI Judges", desc: "Win 90% pool" },
         ].map((step, i) => (
           <div
