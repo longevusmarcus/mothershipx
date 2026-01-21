@@ -78,6 +78,124 @@ function generateHiddenInsight(title: string, category: string, painPoints: stri
   };
 }
 
+// Generate AI solution suggestions based on problem context
+function generateSolutionSuggestions(problem: {
+  id: string;
+  title: string;
+  category: string;
+  pain_points: string[] | null;
+  opportunity_score: number;
+}): { title: string; description: string; approach: string; tech_stack: string[]; market_fit: number }[] {
+  const painPoints = problem.pain_points || [];
+  const mainPainPoint = painPoints[0] || "core user challenge";
+  const secondPainPoint = painPoints[1] || "efficiency needs";
+  const category = problem.category.toLowerCase();
+  const title = problem.title;
+  
+  const isBusiness = category.includes("business") || category.includes("entrepreneur") || title.toLowerCase().includes("startup") || title.toLowerCase().includes("saas");
+  const isProductivity = category.includes("productivity");
+  const isHealth = category.includes("health") || category.includes("mental") || category.includes("fitness");
+  
+  if (isBusiness) {
+    return [
+      {
+        title: "AI-Powered Revenue Intelligence",
+        description: `Predict revenue outcomes and identify growth levers. Tackles "${mainPainPoint}" with ML-driven insights and automated reporting.`,
+        approach: `**Phase 1 - Data Integration** (Week 1-2)\n• Connect billing, CRM, and analytics\n• Build revenue forecasting models\n• Identify churn risk signals\n\n**Phase 2 - Intelligence** (Week 3-4)\n• Cohort analysis automation\n• Pricing optimization suggestions\n• "${secondPainPoint}" - competitor benchmarking\n\n**Phase 3 - Action** (Week 5+)\n• Automated playbooks for growth\n• A/B test recommendations\n• ROI tracking dashboard`,
+        tech_stack: ["Python", "FastAPI", "PostgreSQL", "React", "Stripe API"],
+        market_fit: Math.min(94, problem.opportunity_score + Math.floor(Math.random() * 8)),
+      },
+      {
+        title: "Customer Success Automation Hub",
+        description: `Turn reactive support into proactive success. Addresses "${secondPainPoint}" by predicting customer needs before they ask.`,
+        approach: `**Core Features**\n• Health score tracking across touchpoints\n• Automated check-in triggers\n• Expansion opportunity alerts\n\n**Intelligence**\n• NLP analysis of support tickets\n• Usage pattern anomaly detection\n• "${mainPainPoint}" - early warning system\n\n**Team Tools**\n• CSM workload balancing\n• Playbook recommendations\n• Impact attribution`,
+        tech_stack: ["Next.js", "Supabase", "OpenAI", "Intercom API"],
+        market_fit: Math.min(90, problem.opportunity_score + Math.floor(Math.random() * 6)),
+      },
+      {
+        title: "Startup Metrics Command Center",
+        description: `One dashboard for founder-critical metrics. Solves "${mainPainPoint}" with real-time visibility into what actually matters.`,
+        approach: `**Key Metrics**\n• MRR, ARR, and growth rate\n• CAC/LTV by acquisition channel\n• Runway and burn rate\n\n**Automation**\n• Weekly investor update generator\n• Board deck auto-population\n• "${secondPainPoint}" - anomaly alerts\n\n**Monetization**\n• Free for early-stage\n• $99/mo for growth stage\n• Enterprise custom pricing`,
+        tech_stack: ["React", "Supabase", "Stripe", "Plaid", "ChartJS"],
+        market_fit: Math.min(86, problem.opportunity_score + Math.floor(Math.random() * 5)),
+      },
+    ];
+  } else if (isProductivity) {
+    return [
+      {
+        title: "Deep Work Session Manager",
+        description: `Protect focus time with intelligent scheduling. Tackles "${mainPainPoint}" by blocking distractions and optimizing your calendar.`,
+        approach: `**Smart Blocking**\n• Learn your focus patterns\n• Auto-decline meeting conflicts\n• "${secondPainPoint}" - sync across all devices\n\n**Integration**\n• Slack/Teams status sync\n• Calendar optimization\n• Distraction analytics\n\n**Premium**\n• Team focus coordination\n• Manager visibility tools`,
+        tech_stack: ["Electron", "React", "Google Calendar API", "Supabase"],
+        market_fit: Math.min(92, problem.opportunity_score + Math.floor(Math.random() * 7)),
+      },
+      {
+        title: "Context Switching Defender",
+        description: `Reduce cognitive load from task switching. Addresses "${secondPainPoint}" with smart context preservation and quick-resume features.`,
+        approach: `**Core Features**\n• Capture context before switching\n• Instant context restoration\n• "${mainPainPoint}" - browser tab management\n\n**Analytics**\n• Context switch frequency tracking\n• Cost of interruptions calculated\n• Focus improvement trends`,
+        tech_stack: ["Chrome Extension", "React", "Supabase"],
+        market_fit: Math.min(88, problem.opportunity_score + Math.floor(Math.random() * 6)),
+      },
+      {
+        title: "Energy-Based Task Scheduler",
+        description: `Match tasks to your energy levels. Solves "${mainPainPoint}" by scheduling hard work when you're at peak capacity.`,
+        approach: `**Energy Tracking**\n• Quick daily energy check-ins\n• Learn your biological patterns\n• Predict low-energy windows\n\n**Smart Scheduling**\n• Auto-suggest task timing\n• Meeting optimization\n• "${secondPainPoint}" - recovery time blocks`,
+        tech_stack: ["React Native", "Supabase", "HealthKit", "OpenAI"],
+        market_fit: Math.min(85, problem.opportunity_score + Math.floor(Math.random() * 5)),
+      },
+    ];
+  } else if (isHealth) {
+    return [
+      {
+        title: "Personalized Wellness Coach",
+        description: `AI companion that adapts to your unique health journey. Tackles "${mainPainPoint}" with empathetic, science-backed guidance.`,
+        approach: `**Personalization**\n• Comprehensive health profile\n• Daily adaptive recommendations\n• "${secondPainPoint}" - progress celebration\n\n**Features**\n• Voice-based check-ins\n• Mood and energy correlation\n• Provider-friendly reports`,
+        tech_stack: ["React Native", "Supabase", "OpenAI", "HealthKit"],
+        market_fit: Math.min(93, problem.opportunity_score + Math.floor(Math.random() * 7)),
+      },
+      {
+        title: "Habit Stacking Assistant",
+        description: `Build lasting habits by connecting them to existing routines. Addresses "${secondPainPoint}" with behavioral science techniques.`,
+        approach: `**Habit Engine**\n• Identify existing routine anchors\n• Suggest habit stack opportunities\n• "${mainPainPoint}" - no guilt tracking\n\n**Motivation**\n• Streak mechanics that forgive\n• Community accountability\n• Celebrating small wins`,
+        tech_stack: ["React Native", "Supabase", "Push Notifications"],
+        market_fit: Math.min(89, problem.opportunity_score + Math.floor(Math.random() * 6)),
+      },
+      {
+        title: "Sleep Optimization System",
+        description: `Data-driven sleep improvement without expensive hardware. Solves "${mainPainPoint}" with actionable insights from your phone.`,
+        approach: `**Tracking**\n• Phone-based sleep detection\n• Environment factor correlation\n• "${secondPainPoint}" - circadian rhythm mapping\n\n**Optimization**\n• Personalized bedtime suggestions\n• Wind-down routine builder\n• Wake window optimization`,
+        tech_stack: ["React Native", "TensorFlow Lite", "Supabase", "HealthKit"],
+        market_fit: Math.min(87, problem.opportunity_score + Math.floor(Math.random() * 5)),
+      },
+    ];
+  }
+  
+  // Default fallback for other categories
+  return [
+    {
+      title: `${problem.title} AI Assistant`,
+      description: `Directly addresses "${mainPainPoint}" with intelligent automation tailored for ${problem.category} users.`,
+      approach: `**Phase 1 - Core Problem** (Week 1-2)\n• Build MVP focusing on "${mainPainPoint}"\n• Simple onboarding capturing user context\n• Core AI engine for personalized recommendations\n\n**Phase 2 - Expand Value** (Week 3-4)\n• Address "${secondPainPoint}"\n• Add analytics and progress tracking\n• Implement sharing features`,
+      tech_stack: ["React", "Supabase", "OpenAI", "TailwindCSS"],
+      market_fit: Math.min(88, problem.opportunity_score + Math.floor(Math.random() * 8)),
+    },
+    {
+      title: `${problem.title} Chrome Extension`,
+      description: `Browser-based solution for "${secondPainPoint}". Works where users already spend time.`,
+      approach: `**Why Browser Extension?**\n• Zero friction adoption\n• Enhance existing workflows\n• Contextual help when needed\n\n**Core Features**\n• Overlay UI for quick actions\n• Keyboard shortcuts\n• Cross-site functionality`,
+      tech_stack: ["Chrome Extension", "React", "Supabase"],
+      market_fit: Math.min(82, problem.opportunity_score + Math.floor(Math.random() * 6)),
+    },
+    {
+      title: `${problem.title} Community Platform`,
+      description: `Connect people solving "${mainPainPoint}" together. Network effects create defensibility.`,
+      approach: `**Community Features**\n• Discussion forums by topic\n• Resource sharing\n• Expert AMAs\n\n**Marketplace**\n• Templates and tools\n• Paid consulting connections\n• Peer learning`,
+      tech_stack: ["Next.js", "Supabase", "Stripe Connect"],
+      market_fit: Math.min(76, problem.opportunity_score + Math.floor(Math.random() * 5)),
+    },
+  ];
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -194,6 +312,44 @@ serve(async (req) => {
       } else {
         updatedCount++;
         console.log(`Updated: ${problem.title} (demand: ${demandVelocity}%, gap: ${competitionGap}%)`);
+      }
+
+      // Check if AI solutions exist for this problem
+      const { data: existingSolutions, error: solutionsError } = await supabase
+        .from('solutions')
+        .select('id')
+        .eq('problem_id', problem.id)
+        .eq('ai_generated', true)
+        .limit(1);
+
+      // If no AI solutions exist, create them
+      if (!solutionsError && (!existingSolutions || existingSolutions.length === 0)) {
+        const suggestions = generateSolutionSuggestions(problem);
+        
+        for (const suggestion of suggestions) {
+          const { error: insertError } = await supabase
+            .from('solutions')
+            .insert({
+              problem_id: problem.id,
+              title: suggestion.title,
+              description: suggestion.description,
+              approach: suggestion.approach,
+              tech_stack: suggestion.tech_stack,
+              market_fit: suggestion.market_fit,
+              ai_generated: true,
+              created_by: '00000000-0000-0000-0000-000000000000', // System user
+              status: 'concept',
+              upvotes: Math.floor(Math.random() * 10) + 5,
+              forks: Math.floor(Math.random() * 3) + 1,
+              comments: Math.floor(Math.random() * 5) + 2,
+            });
+
+          if (insertError) {
+            console.error(`Error creating solution for ${problem.id}:`, insertError);
+          } else {
+            console.log(`Created AI solution: ${suggestion.title}`);
+          }
+        }
       }
     }
 
