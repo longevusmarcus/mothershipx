@@ -228,7 +228,7 @@ export default function Profile() {
   return (
     <AppLayout>
       <SEO title="Profile" description="View your builder profile, achievements, and build history." />
-      <div className="space-y-6 overflow-x-hidden">
+      <div className="space-y-6 overflow-x-hidden max-w-full">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -239,43 +239,43 @@ export default function Profile() {
             <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">Profile</h1>
             <p className="text-sm text-muted-foreground mt-1">Manage your profile and track progress</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={handleShareProfile}
-              className="h-8 px-3"
+              className="h-8 px-2 sm:px-3"
             >
-              <Share2 className="h-4 w-4 mr-1.5" />
-              Share
+              <Share2 className="h-4 w-4 sm:mr-1.5" />
+              <span className="hidden sm:inline">Share</span>
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate("/settings")}
-              className="text-muted-foreground hover:text-foreground h-8 px-3"
+              className="text-muted-foreground hover:text-foreground h-8 px-2 sm:px-3"
             >
-              <Settings className="h-4 w-4 mr-1.5" />
-              Settings
+              <Settings className="h-4 w-4 sm:mr-1.5" />
+              <span className="hidden sm:inline">Settings</span>
             </Button>
             <Button
               variant={isEditing ? "default" : "outline"}
               size="sm"
               onClick={isEditing ? handleSave : () => setIsEditing(true)}
               disabled={isLoading}
-              className="h-8 px-4"
+              className="h-8 px-3"
             >
               {isLoading ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
               ) : isEditing ? (
                 <>
-                  <Check className="h-3.5 w-3.5 mr-1.5" />
-                  Save
+                  <Check className="h-3.5 w-3.5 sm:mr-1.5" />
+                  <span className="hidden sm:inline">Save</span>
                 </>
               ) : (
                 <>
-                  <Pencil className="h-3.5 w-3.5 mr-1.5" />
-                  Edit
+                  <Pencil className="h-3.5 w-3.5 sm:mr-1.5" />
+                  <span className="hidden sm:inline">Edit</span>
                 </>
               )}
             </Button>
@@ -287,9 +287,9 @@ export default function Profile() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="rounded-xl border border-border bg-card p-6"
+          className="rounded-xl border border-border bg-card p-4 sm:p-6 overflow-hidden"
         >
-          <div className="flex flex-col sm:flex-row gap-6">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
             {/* Avatar */}
             <div className="relative group shrink-0">
               <input
@@ -323,7 +323,7 @@ export default function Profile() {
             </div>
 
             {/* Info */}
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 overflow-hidden">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
                 {isEditing ? (
                   <Input
@@ -337,7 +337,7 @@ export default function Profile() {
                     {profile?.name || "Builder"}
                   </h2>
                 )}
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-1.5">
                   <Badge variant="secondary" className="w-fit text-xs">
                     {levelTitle}
                   </Badge>
