@@ -66,24 +66,24 @@ export function DataSourceSelector({ onSelectionChange }: DataSourceSelectorProp
                   className={cn(
                     "relative h-14 w-14 rounded-xl flex items-center justify-center transition-all duration-200",
                     "border",
-                    isDisabled 
+                    isDisabled
                       ? "border-border/30 bg-secondary/30 cursor-not-allowed opacity-60"
                       : "hover:scale-105 active:scale-95",
                     !isDisabled && isSelected
                       ? "border-primary bg-card shadow-glow"
-                      : !isDisabled && "border-border/50 bg-secondary/50 hover:border-border hover:bg-secondary"
+                      : !isDisabled && "border-border/50 bg-secondary/50 hover:border-border hover:bg-secondary",
                   )}
                 >
                   {source.logo ? (
-                    <img 
-                      src={source.logo} 
-                      alt={source.name} 
+                    <img
+                      src={source.logo}
+                      alt={source.name}
                       className={cn("h-8 w-8 object-contain", isDisabled && "grayscale")}
                     />
                   ) : (
                     <span className="text-xl">{source.icon}</span>
                   )}
-                  
+
                   {isSelected && !isDisabled && (
                     <motion.div
                       initial={{ scale: 0 }}
@@ -96,7 +96,10 @@ export function DataSourceSelector({ onSelectionChange }: DataSourceSelectorProp
                 </motion.button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{source.name}{isDisabled ? " - Coming Soon" : ""}</p>
+                <p>
+                  {source.name}
+                  {isDisabled ? " - Coming Soon" : ""}
+                </p>
               </TooltipContent>
             </Tooltip>
           );
@@ -121,7 +124,7 @@ export function DataSourceSelector({ onSelectionChange }: DataSourceSelectorProp
                 transition={{ duration: 0.2, delay: index * 0.03 }}
                 className={cn(
                   "relative h-14 w-14 rounded-xl flex items-center justify-center",
-                  "border border-border/20 bg-secondary/20 cursor-not-allowed"
+                  "border border-border/20 bg-secondary/20 cursor-not-allowed",
                 )}
               >
                 <Lock className="h-4 w-4 text-muted-foreground/40" />
@@ -133,9 +136,10 @@ export function DataSourceSelector({ onSelectionChange }: DataSourceSelectorProp
           </Tooltip>
         ))}
       </div>
-      
+
       <p className="text-xs text-muted-foreground">
-        Connect 10+ data sources to discover real problems and trends. Then build solutions together with our community of builders.
+        Connect our data sources to discover real problems and trends. Then build solutions together with our community
+        of builders.
       </p>
     </div>
   );
