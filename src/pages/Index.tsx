@@ -16,7 +16,7 @@ import type { SearchResult } from "@/components/SearchResultCard";
 
 const Index = () => {
   const [searchMode, setSearchMode] = useState<"search" | "neural" | "grid">("search");
-  const [selectedSources, setSelectedSources] = useState<string[]>(["tiktok", "reddit", "youtube", "freelancer"]);
+  const [selectedSource, setSelectedSource] = useState<string>("tiktok");
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [pendingNiche, setPendingNiche] = useState<NicheId | null>(null);
   const [isSearching, setIsSearching] = useState(false);
@@ -206,10 +206,10 @@ const Index = () => {
                   </div>
                   <div>
                     <p className="text-sm font-medium">Data Sources</p>
-                    <p className="text-xs text-muted-foreground">Scraping TikTok, Reddit, YouTube & Freelancer</p>
+                    <p className="text-xs text-muted-foreground">Currently scraping TikTok</p>
                   </div>
                 </div>
-                <DataSourceSelector onSelectionChange={setSelectedSources} />
+                <DataSourceSelector onSelectionChange={setSelectedSource} />
               </div>
             </motion.div>
 
