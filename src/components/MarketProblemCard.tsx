@@ -70,15 +70,21 @@ export function MarketProblemCard({ problem, delay = 0 }: MarketProblemCardProps
   const sentiment = getSentimentLabel(problem.sentiment);
   const sourceType = detectSourceType(problem);
 
+  // Determine card size variation for Pinterest effect
+  const cardVariant = problem.id.charCodeAt(0) % 3; // 0, 1, or 2
+  const subtitleLines = cardVariant === 0 ? "line-clamp-2" : cardVariant === 1 ? "line-clamp-3" : "line-clamp-4";
+  const showPainPoints = cardVariant === 2 && problem.painPoints && problem.painPoints.length > 0;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay }}
+      className="cursor-grab active:cursor-grabbing"
     >
       <div
         onClick={handleCardClick}
-        className="relative rounded-lg border border-border bg-card p-4 cursor-pointer hover:border-foreground/20 transition-colors group"
+        className="relative rounded-xl border border-border bg-card p-4 cursor-pointer hover:border-foreground/20 hover:shadow-lg transition-all duration-200 group"
       >
         {/* Admin delete button */}
         {isAdmin && (
@@ -107,14 +113,25 @@ export function MarketProblemCard({ problem, delay = 0 }: MarketProblemCardProps
         </div>
 
         {/* Title */}
-        <h3 className="font-medium text-sm mb-1 line-clamp-2">
+        <h3 className="font-medium text-sm mb-2 line-clamp-2">
           {problem.title}
         </h3>
         
-        {/* Subtitle */}
-        <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
+        {/* Subtitle - variable height for masonry */}
+        <p className={`text-xs text-muted-foreground ${subtitleLines} mb-3`}>
           {problem.subtitle}
         </p>
+
+        {/* Pain Points - shown on larger cards */}
+        {showPainPoints && (
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            {problem.painPoints?.slice(0, 3).map((point, i) => (
+              <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-muted-foreground">
+                {point.length > 20 ? point.slice(0, 20) + "..." : point}
+              </span>
+            ))}
+          </div>
+        )}
 
         {/* Stats Row - source-specific */}
         <div className="flex items-center gap-4 text-xs text-muted-foreground mb-3">

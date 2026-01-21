@@ -16,12 +16,14 @@ export function useCategories() {
       }
 
       // Get unique categories from database and normalize to lowercase
-      const uniqueCategories = [...new Set(data.map(p => p.category).filter(Boolean))];
+      const lowercaseCategories = data
+        .map(p => p.category?.toLowerCase())
+        .filter(Boolean) as string[];
       
-      // Normalize helper - convert to lowercase display
-      const normalize = (cat: string) => cat.toLowerCase();
+      // Deduplicate using Set on lowercase values
+      const uniqueCategories = [...new Set(lowercaseCategories)];
       
-      // Sort alphabetically but keep common ones at the top
+      // Priority order for display
       const priorityCategories = [
         "mental health",
         "weight & fitness",
@@ -29,14 +31,13 @@ export function useCategories() {
         "gut health",
         "productivity",
         "career",
-        "social connections"
+        "business",
+        "connections"
       ];
       
       const sorted = uniqueCategories.sort((a, b) => {
-        const aNorm = normalize(a);
-        const bNorm = normalize(b);
-        const aIndex = priorityCategories.indexOf(aNorm);
-        const bIndex = priorityCategories.indexOf(bNorm);
+        const aIndex = priorityCategories.indexOf(a);
+        const bIndex = priorityCategories.indexOf(b);
         
         // Both in priority list - sort by priority order
         if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
@@ -45,11 +46,10 @@ export function useCategories() {
         // Only b in priority list - b comes first
         if (bIndex !== -1) return 1;
         // Neither in priority list - alphabetical
-        return aNorm.localeCompare(bNorm);
+        return a.localeCompare(b);
       });
 
-      // Return lowercase categories
-      return ["all", ...sorted.map(c => c.toLowerCase())];
+      return ["all", ...sorted];
     },
     staleTime: 1000 * 60 * 5, // Fresh for 5 minutes
   });

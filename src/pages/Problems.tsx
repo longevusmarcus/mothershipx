@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Search } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
-import { MarketProblemCard } from "@/components/MarketProblemCard";
+import { MasonryGrid } from "@/components/MasonryGrid";
 import { Badge } from "@/components/ui/badge";
 import { useProblems } from "@/hooks/useProblems";
 import { useCategories } from "@/hooks/useCategories";
@@ -88,16 +88,13 @@ const Problems = () => {
           ))}
         </motion.div>
 
-        {/* Problems Grid */}
+        {/* Problems Masonry Grid */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"
         >
-          {filteredProblems.map((problem, index) => (
-            <MarketProblemCard key={problem.id} problem={problem} delay={0.03 * index} />
-          ))}
+          <MasonryGrid problems={filteredProblems} />
         </motion.div>
 
         {filteredProblems.length === 0 && !isLoading && (
