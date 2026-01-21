@@ -237,6 +237,39 @@ export type Database = {
           },
         ]
       }
+      channel_scans: {
+        Row: {
+          channel_id: string
+          channel_name: string
+          created_at: string
+          id: string
+          last_scanned_at: string
+          problems_found: number
+          updated_at: string
+          videos_analyzed: number
+        }
+        Insert: {
+          channel_id: string
+          channel_name: string
+          created_at?: string
+          id?: string
+          last_scanned_at?: string
+          problems_found?: number
+          updated_at?: string
+          videos_analyzed?: number
+        }
+        Update: {
+          channel_id?: string
+          channel_name?: string
+          created_at?: string
+          id?: string
+          last_scanned_at?: string
+          problems_found?: number
+          updated_at?: string
+          videos_analyzed?: number
+        }
+        Relationships: []
+      }
       paywall_events: {
         Row: {
           created_at: string

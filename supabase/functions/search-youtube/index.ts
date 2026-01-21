@@ -442,6 +442,18 @@ serve(async (req) => {
       else console.log(`Saved problem to library: ${result.title}`);
     }
 
+    // Record scan in channel_scans table
+    const { error: scanError } = await supabase.from("channel_scans").upsert({
+      channel_id: channelId,
+      channel_name: channel.name,
+      last_scanned_at: new Date().toISOString(),
+      videos_analyzed: videos.length,
+      problems_found: results.length
+    }, { onConflict: "channel_id" });
+    
+    if (scanError) console.error("Error recording scan:", scanError);
+    else console.log(`Recorded scan for ${channel.name}`);
+
     console.log(`Analysis complete. Found ${results.length} problems from ${videos.length} videos`);
 
     return new Response(
@@ -449,7 +461,8 @@ serve(async (req) => {
         success: true, 
         data: results,
         videosAnalyzed: videos.length,
-        channel: channel.name
+        channel: channel.name,
+        lastScannedAt: new Date().toISOString()
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
