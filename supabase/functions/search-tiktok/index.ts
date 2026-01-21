@@ -14,726 +14,208 @@ interface TrendSignal {
   icon?: string;
 }
 
-interface NichePainPoint {
+interface TikTokVideo {
   id: string;
-  title: string;
-  subtitle: string;
-  category: string;
-  sentiment: "exploding" | "rising" | "stable" | "declining";
-  views: number;
-  saves: number;
-  shares: number;
-  painPoints: string[];
-  rank: number;
-  demandVelocity: number;
-  competitionGap: number;
-  hiddenInsight: {
-    surfaceAsk: string;
-    realProblem: string;
-    hiddenSignal: string;
+  text: string;
+  createTime: number;
+  authorMeta?: {
+    name?: string;
+    nickName?: string;
+    verified?: boolean;
+  };
+  musicMeta?: {
+    musicName?: string;
+    musicAuthor?: string;
+  };
+  hashtags?: Array<{ name: string }>;
+  videoMeta?: {
+    duration?: number;
+  };
+  diggCount?: number;
+  shareCount?: number;
+  playCount?: number;
+  commentCount?: number;
+  collectCount?: number;
+  webVideoUrl?: string;
+}
+
+interface ApifyRunResponse {
+  data: {
+    id: string;
+    defaultDatasetId: string;
+    status: string;
   };
 }
 
-function generateSources(views: number, demandVelocity: number, competitionGap: number): TrendSignal[] {
-  const formatValue = (n: number) => n >= 1000000 ? `${(n / 1000000).toFixed(1)}M` : n >= 1000 ? `${(n / 1000).toFixed(0)}K` : n.toString();
-  
+// Niche to search query mapping for more relevant TikTok searches
+const NICHE_QUERIES: Record<string, string[]> = {
+  "mental-health": ["mental health tips", "anxiety help", "therapy alternatives", "stress relief", "burnout recovery"],
+  "weight-fitness": ["weight loss journey", "fitness motivation", "gym anxiety", "workout tips", "diet struggles"],
+  "skin-beauty": ["skincare routine", "adult acne", "skin problems", "beauty hacks", "anti aging"],
+  "gut-health": ["bloating help", "gut health", "digestive issues", "IBS tips", "food sensitivity"],
+  "productivity": ["productivity tips", "focus hacks", "time management", "work from home", "ADHD tips"],
+  "career": ["career advice", "job hunting", "salary negotiation", "work life balance", "career change"],
+  "social": ["social anxiety", "making friends", "dating tips", "relationship advice", "confidence building"],
+};
+
+// Keywords that indicate pain points
+const PAIN_INDICATORS = [
+  "struggle", "problem", "help", "hate", "can't", "don't know", "frustrated",
+  "tired of", "sick of", "wish", "need", "want", "why", "how to", "anyone else",
+  "am i the only", "does anyone", "is it normal", "advice", "tips", "hack",
+  "finally found", "game changer", "life saver", "this helped", "try this"
+];
+
+function formatNumber(n: number): string {
+  if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`;
+  if (n >= 1000) return `${(n / 1000).toFixed(0)}K`;
+  return n.toString();
+}
+
+function generateSources(views: number, engagement: number): TrendSignal[] {
   return [
-    { source: "tiktok", metric: "Views", value: formatValue(views), change: Math.round(demandVelocity * 0.8 + Math.random() * 20), icon: "📱" },
-    { source: "google_trends", metric: "Search Interest", value: `${Math.min(99, Math.round(demandVelocity * 0.9))}/100`, change: Math.round(demandVelocity * 0.5), icon: "📈" },
-    { source: "reddit", metric: "Mentions", value: `${Math.round(views / 200)}+`, change: Math.round(competitionGap * 0.6), icon: "💬" },
+    { source: "tiktok", metric: "Views", value: formatNumber(views), change: Math.round(engagement * 100), icon: "📱" },
+    { source: "tiktok", metric: "Engagement", value: `${(engagement * 100).toFixed(1)}%`, change: Math.round(engagement * 50), icon: "💬" },
   ];
 }
 
-const NICHE_PAIN_POINTS: Record<string, NichePainPoint[]> = {
-  "mental-health": [
-    {
-      id: "mh-1",
-      title: "Anxiety apps feel clinical, not human",
-      subtitle: "Gen Z wants vibe-based mental wellness, not therapy-lite",
-      category: "Mental Health",
-      sentiment: "exploding",
-      views: 2400000,
-      saves: 89000,
-      shares: 34000,
-      painPoints: ["Clinical tone feels cold", "Want authentic human connection", "Therapy jargon is off-putting"],
-      rank: 1,
-      demandVelocity: 92,
-      competitionGap: 78,
-      hiddenInsight: {
-        surfaceAsk: "I need a better meditation app",
-        realProblem: "I want emotional regulation that doesn't feel like I'm broken",
-        hiddenSignal: "Mental wellness is becoming lifestyle content, not healthcare"
-      },
-    },
-    {
-      id: "mh-2",
-      title: "Burnout recovery feels impossible alone",
-      subtitle: "Remote workers need community-based support, not solo meditation",
-      category: "Mental Health",
-      sentiment: "rising",
-      views: 1800000,
-      saves: 72000,
-      shares: 28000,
-      painPoints: ["Solo recovery doesn't work", "Need accountability partners", "Meditation alone isn't enough"],
-      rank: 2,
-      demandVelocity: 85,
-      competitionGap: 72,
-      hiddenInsight: {
-        surfaceAsk: "How do I recover from burnout?",
-        realProblem: "I need structured support without feeling weak for asking",
-        hiddenSignal: "Recovery is social, not solo - community accountability is key"
-      },
-    },
-    {
-      id: "mh-3",
-      title: "Overthinking at 3am has no quick fix",
-      subtitle: "People want instant calm, not 30-day programs",
-      category: "Mental Health",
-      sentiment: "exploding",
-      views: 3100000,
-      saves: 145000,
-      shares: 52000,
-      painPoints: ["Can't fall asleep", "Racing thoughts at night", "Long programs feel overwhelming"],
-      rank: 3,
-      demandVelocity: 95,
-      competitionGap: 65,
-      hiddenInsight: {
-        surfaceAsk: "I need help sleeping",
-        realProblem: "I need instant relief when anxiety spikes, not another habit to build",
-        hiddenSignal: "On-demand micro-interventions beat structured programs"
-      },
-    },
-    {
-      id: "mh-4",
-      title: "Therapy is too expensive for most",
-      subtitle: "Demand for affordable peer-support alternatives",
-      category: "Mental Health",
-      sentiment: "rising",
-      views: 2200000,
-      saves: 98000,
-      shares: 41000,
-      painPoints: ["Can't afford therapy", "Long waitlists", "Insurance doesn't cover enough"],
-      rank: 4,
-      demandVelocity: 88,
-      competitionGap: 58,
-      hiddenInsight: {
-        surfaceAsk: "Where can I find affordable therapy?",
-        realProblem: "I need professional-quality support without professional prices",
-        hiddenSignal: "Peer support with light professional oversight is the sweet spot"
-      },
-    },
-    {
-      id: "mh-5",
-      title: "Men don't know how to talk about feelings",
-      subtitle: "Masculinity-friendly mental health content is rare",
-      category: "Mental Health",
-      sentiment: "rising",
-      views: 1500000,
-      saves: 62000,
-      shares: 38000,
-      painPoints: ["Stigma around men's mental health", "Don't relate to typical wellness content", "Need male-focused approach"],
-      rank: 5,
-      demandVelocity: 78,
-      competitionGap: 82,
-      hiddenInsight: {
-        surfaceAsk: "I need to manage stress better",
-        realProblem: "I want to process emotions without feeling emasculated",
-        hiddenSignal: "Mental health needs masculine rebranding, not feminine adaptation"
-      },
-    },
-  ],
-  "weight-fitness": [
-    {
-      id: "wf-1",
-      title: "Gym anxiety stops beginners before they start",
-      subtitle: "First-timers want judgment-free guidance, not intimidation",
-      category: "Weight & Fitness",
-      sentiment: "exploding",
-      views: 2800000,
-      saves: 112000,
-      shares: 45000,
-      painPoints: ["Fear of looking stupid", "Don't know how to use equipment", "Feel judged by regulars"],
-      rank: 1,
-      demandVelocity: 94,
-      competitionGap: 71,
-      hiddenInsight: {
-        surfaceAsk: "What's the best workout for beginners?",
-        realProblem: "I need to feel competent before I can feel confident",
-        hiddenSignal: "The barrier isn't knowledge - it's social anxiety about public failure"
-      },
-    },
-    {
-      id: "wf-2",
-      title: "Weight loss plateaus feel like failure",
-      subtitle: "People need motivation to push through stalls",
-      category: "Weight & Fitness",
-      sentiment: "rising",
-      views: 1900000,
-      saves: 85000,
-      shares: 32000,
-      painPoints: ["Stuck at same weight for weeks", "Losing motivation", "Don't know what to change"],
-      rank: 2,
-      demandVelocity: 86,
-      competitionGap: 68,
-      hiddenInsight: {
-        surfaceAsk: "Why did I stop losing weight?",
-        realProblem: "I need validation that I'm not failing, just adapting",
-        hiddenSignal: "Emotional support matters more than metabolic hacks"
-      },
-    },
-    {
-      id: "wf-3",
-      title: "Counting calories is mentally exhausting",
-      subtitle: "Intuitive eating trends show people want simpler systems",
-      category: "Weight & Fitness",
-      sentiment: "exploding",
-      views: 2500000,
-      saves: 95000,
-      shares: 48000,
-      painPoints: ["Obsessing over numbers", "Ruins relationship with food", "Too time-consuming"],
-      rank: 3,
-      demandVelocity: 91,
-      competitionGap: 62,
-      hiddenInsight: {
-        surfaceAsk: "What's the best calorie tracking app?",
-        realProblem: "I want results without obsession",
-        hiddenSignal: "Friction-free tracking that doesn't feel like tracking"
-      },
-    },
-    {
-      id: "wf-4",
-      title: "No time for hour-long workouts",
-      subtitle: "Busy parents and workers need 15-minute effective routines",
-      category: "Weight & Fitness",
-      sentiment: "rising",
-      views: 2100000,
-      saves: 78000,
-      shares: 35000,
-      painPoints: ["Can't find time to exercise", "Short workouts feel pointless", "Need quick but effective"],
-      rank: 4,
-      demandVelocity: 82,
-      competitionGap: 75,
-      hiddenInsight: {
-        surfaceAsk: "Best quick workout routines?",
-        realProblem: "I need to maintain consistency when life gets chaotic",
-        hiddenSignal: "Minimum effective dose fitness is the new goal"
-      },
-    },
-    {
-      id: "wf-5",
-      title: "Post-pregnancy body confidence is shattered",
-      subtitle: "New moms need supportive, realistic fitness journeys",
-      category: "Weight & Fitness",
-      sentiment: "rising",
-      views: 1600000,
-      saves: 68000,
-      shares: 29000,
-      painPoints: ["Body doesn't feel like mine", "Pressure to bounce back", "Lack of mom-specific programs"],
-      rank: 5,
-      demandVelocity: 79,
-      competitionGap: 80,
-      hiddenInsight: {
-        surfaceAsk: "How to lose baby weight?",
-        realProblem: "I need to reconnect with my body, not punish it",
-        hiddenSignal: "Body acceptance is the gateway to fitness motivation"
-      },
-    },
-  ],
-  "skin-beauty": [
-    {
-      id: "sb-1",
-      title: "Adult acne is embarrassing and misunderstood",
-      subtitle: "Skincare for 30+ with breakouts is underdeveloped",
-      category: "Skin & Beauty",
-      sentiment: "exploding",
-      views: 3200000,
-      saves: 128000,
-      shares: 56000,
-      painPoints: ["Thought acne would end after teens", "Products for teens don't work", "Feel judged at work"],
-      rank: 1,
-      demandVelocity: 96,
-      competitionGap: 74,
-      hiddenInsight: {
-        surfaceAsk: "Best products for adult acne?",
-        realProblem: "I feel like a teenager in an adult's body",
-        hiddenSignal: "Adult acne is as much an identity crisis as a skin issue"
-      },
-    },
-    {
-      id: "sb-2",
-      title: "Skincare routines are overwhelming",
-      subtitle: "10-step routines are out, minimalism is trending",
-      category: "Skin & Beauty",
-      sentiment: "rising",
-      views: 2700000,
-      saves: 102000,
-      shares: 42000,
-      painPoints: ["Too many products", "Don't know what actually works", "Expensive to maintain"],
-      rank: 2,
-      demandVelocity: 89,
-      competitionGap: 69,
-      hiddenInsight: {
-        surfaceAsk: "What's a simple skincare routine?",
-        realProblem: "I want good skin without it becoming my personality",
-        hiddenSignal: "Effortless results are the new flex"
-      },
-    },
-    {
-      id: "sb-3",
-      title: "Sunscreen feels gross on dark skin",
-      subtitle: "White cast and greasy formulas exclude POC consumers",
-      category: "Skin & Beauty",
-      sentiment: "exploding",
-      views: 2400000,
-      saves: 95000,
-      shares: 51000,
-      painPoints: ["White cast on photos", "Greasy feeling all day", "Hard to find inclusive products"],
-      rank: 3,
-      demandVelocity: 92,
-      competitionGap: 85,
-      hiddenInsight: {
-        surfaceAsk: "Sunscreen without white cast?",
-        realProblem: "I shouldn't have to choose between protection and looking good",
-        hiddenSignal: "Inclusive formulation is table stakes, not a feature"
-      },
-    },
-    {
-      id: "sb-4",
-      title: "Anti-aging starts too late for most",
-      subtitle: "20-somethings want preventive, not reactive skincare",
-      category: "Skin & Beauty",
-      sentiment: "rising",
-      views: 1800000,
-      saves: 72000,
-      shares: 31000,
-      painPoints: ["When should I start retinol?", "Prevention vs treatment confusion", "Marketing targets older demos"],
-      rank: 4,
-      demandVelocity: 84,
-      competitionGap: 67,
-      hiddenInsight: {
-        surfaceAsk: "When should I start anti-aging?",
-        realProblem: "I'm anxious about aging before it even happens",
-        hiddenSignal: "Prevention anxiety is the new anti-aging market"
-      },
-    },
-    {
-      id: "sb-5",
-      title: "Ingredient lists are unreadable",
-      subtitle: "Demand for plain-English product transparency",
-      category: "Skin & Beauty",
-      sentiment: "stable",
-      views: 1400000,
-      saves: 58000,
-      shares: 24000,
-      painPoints: ["Can't pronounce ingredients", "Don't know what's harmful", "Marketing claims are confusing"],
-      rank: 5,
-      demandVelocity: 76,
-      competitionGap: 72,
-      hiddenInsight: {
-        surfaceAsk: "Is this ingredient safe?",
-        realProblem: "I don't trust brands to tell me the truth",
-        hiddenSignal: "Ingredient transparency is the new brand trust signal"
-      },
-    },
-  ],
-  "gut-health": [
-    {
-      id: "gh-1",
-      title: "Bloating ruins daily life and confidence",
-      subtitle: "Millions searching for real solutions beyond probiotics",
-      category: "Gut Health",
-      sentiment: "exploding",
-      views: 2900000,
-      saves: 118000,
-      shares: 48000,
-      painPoints: ["Look pregnant by evening", "Can't wear fitted clothes", "Probiotics don't help"],
-      rank: 1,
-      demandVelocity: 95,
-      competitionGap: 76,
-      hiddenInsight: {
-        surfaceAsk: "How do I stop bloating?",
-        realProblem: "My body embarrasses me every day",
-        hiddenSignal: "Bloating is a confidence issue disguised as a health issue"
-      },
-    },
-    {
-      id: "gh-2",
-      title: "Food sensitivity tests are confusing",
-      subtitle: "People want clear answers, not more elimination diets",
-      category: "Gut Health",
-      sentiment: "rising",
-      views: 2100000,
-      saves: 86000,
-      shares: 35000,
-      painPoints: ["Conflicting test results", "Elimination diets are hard", "Don't know what to eat"],
-      rank: 2,
-      demandVelocity: 87,
-      competitionGap: 70,
-      hiddenInsight: {
-        surfaceAsk: "Which food sensitivity test is accurate?",
-        realProblem: "I just want someone to tell me what I can eat",
-        hiddenSignal: "Decision fatigue is worse than dietary restriction"
-      },
-    },
-    {
-      id: "gh-3",
-      title: "IBS is embarrassing to talk about",
-      subtitle: "Stigma prevents people from seeking help",
-      category: "Gut Health",
-      sentiment: "rising",
-      views: 1800000,
-      saves: 74000,
-      shares: 29000,
-      painPoints: ["Can't discuss symptoms openly", "Fear of accidents", "Affects social life"],
-      rank: 3,
-      demandVelocity: 82,
-      competitionGap: 78,
-      hiddenInsight: {
-        surfaceAsk: "IBS management tips?",
-        realProblem: "I'm planning my life around my bathroom",
-        hiddenSignal: "IBS solutions need to address social anxiety, not just symptoms"
-      },
-    },
-    {
-      id: "gh-4",
-      title: "Gut-brain connection is poorly understood",
-      subtitle: "People linking anxiety to digestion want answers",
-      category: "Gut Health",
-      sentiment: "exploding",
-      views: 2600000,
-      saves: 105000,
-      shares: 44000,
-      painPoints: ["Stress causes stomach issues", "Anxiety and digestion linked", "Doctors don't explain connection"],
-      rank: 4,
-      demandVelocity: 93,
-      competitionGap: 82,
-      hiddenInsight: {
-        surfaceAsk: "Why does stress upset my stomach?",
-        realProblem: "I need to understand my body, not just treat symptoms",
-        hiddenSignal: "Holistic gut-brain education is an untapped market"
-      },
-    },
-    {
-      id: "gh-5",
-      title: "Healthy eating still causes digestive issues",
-      subtitle: "FODMAPs and fiber confusion among health-conscious users",
-      category: "Gut Health",
-      sentiment: "stable",
-      views: 1500000,
-      saves: 62000,
-      shares: 25000,
-      painPoints: ["Eating healthy but still bloated", "Too much fiber causes problems", "FODMAP diet is complex"],
-      rank: 5,
-      demandVelocity: 78,
-      competitionGap: 68,
-      hiddenInsight: {
-        surfaceAsk: "Why does healthy food make me bloated?",
-        realProblem: "I feel betrayed by nutrition advice",
-        hiddenSignal: "Personalized nutrition is the only way forward"
-      },
-    },
-  ],
-  "productivity": [
-    {
-      id: "pr-1",
-      title: "To-do apps create more anxiety than clarity",
-      subtitle: "Task overload is burning out productivity enthusiasts",
-      category: "Productivity",
-      sentiment: "exploding",
-      views: 2700000,
-      saves: 108000,
-      shares: 46000,
-      painPoints: ["Endless task lists", "Never feel done", "Apps add complexity"],
-      rank: 1,
-      demandVelocity: 94,
-      competitionGap: 65,
-      hiddenInsight: {
-        surfaceAsk: "Best to-do app for productivity?",
-        realProblem: "I need permission to do less, not tools to do more",
-        hiddenSignal: "Productivity tools are causing the problem they claim to solve"
-      },
-    },
-    {
-      id: "pr-2",
-      title: "Focus is impossible with constant notifications",
-      subtitle: "Digital minimalism trend shows demand for focus tools",
-      category: "Productivity",
-      sentiment: "rising",
-      views: 2200000,
-      saves: 89000,
-      shares: 38000,
-      painPoints: ["Phone addiction", "Can't do deep work", "Notifications break concentration"],
-      rank: 2,
-      demandVelocity: 88,
-      competitionGap: 58,
-      hiddenInsight: {
-        surfaceAsk: "How do I focus better?",
-        realProblem: "I've lost the ability to sit with my own thoughts",
-        hiddenSignal: "Focus is a skill atrophied by design, not willpower failure"
-      },
-    },
-    {
-      id: "pr-3",
-      title: "Morning routines feel performative",
-      subtitle: "Backlash against 5am wake-up culture is growing",
-      category: "Productivity",
-      sentiment: "rising",
-      views: 1900000,
-      saves: 76000,
-      shares: 42000,
-      painPoints: ["Unrealistic morning routines", "Feel guilty for sleeping in", "Not everyone is a morning person"],
-      rank: 3,
-      demandVelocity: 83,
-      competitionGap: 74,
-      hiddenInsight: {
-        surfaceAsk: "What's the best morning routine?",
-        realProblem: "I want to feel productive without performing productivity",
-        hiddenSignal: "Anti-hustle productivity is the next wave"
-      },
-    },
-    {
-      id: "pr-4",
-      title: "Procrastination stems from perfectionism",
-      subtitle: "People need emotional tools, not more systems",
-      category: "Productivity",
-      sentiment: "exploding",
-      views: 2500000,
-      saves: 98000,
-      shares: 51000,
-      painPoints: ["Fear of starting", "Analysis paralysis", "Perfectionism blocks action"],
-      rank: 4,
-      demandVelocity: 91,
-      competitionGap: 72,
-      hiddenInsight: {
-        surfaceAsk: "How do I stop procrastinating?",
-        realProblem: "I'm afraid of finding out I'm not good enough",
-        hiddenSignal: "Procrastination is an emotional regulation problem, not a time management one"
-      },
-    },
-    {
-      id: "pr-5",
-      title: "Work-life balance is a myth for freelancers",
-      subtitle: "Gig workers need different productivity frameworks",
-      category: "Productivity",
-      sentiment: "stable",
-      views: 1400000,
-      saves: 58000,
-      shares: 24000,
-      painPoints: ["No clear work hours", "Guilt when not working", "Traditional advice doesn't apply"],
-      rank: 5,
-      demandVelocity: 77,
-      competitionGap: 80,
-      hiddenInsight: {
-        surfaceAsk: "How to balance freelance and life?",
-        realProblem: "I chose freedom but found a new kind of prison",
-        hiddenSignal: "Freelancer-specific productivity is an underserved niche"
-      },
-    },
-  ],
-  "career": [
-    {
-      id: "ca-1",
-      title: "Networking feels fake and exhausting",
-      subtitle: "Introverts need authentic connection strategies",
-      category: "Career",
-      sentiment: "exploding",
-      views: 2400000,
-      saves: 96000,
-      shares: 44000,
-      painPoints: ["Hate small talk", "Feel inauthentic", "Networking events are draining"],
-      rank: 1,
-      demandVelocity: 92,
-      competitionGap: 77,
-      hiddenInsight: {
-        surfaceAsk: "How do I network effectively?",
-        realProblem: "I want career opportunities without becoming someone I'm not",
-        hiddenSignal: "Authentic networking for introverts is massively underserved"
-      },
-    },
-    {
-      id: "ca-2",
-      title: "Salary negotiation terrifies most people",
-      subtitle: "Fear of rejection leaves money on the table",
-      category: "Career",
-      sentiment: "rising",
-      views: 2000000,
-      saves: 82000,
-      shares: 35000,
-      painPoints: ["Don't know my worth", "Fear of seeming greedy", "Never taught how to negotiate"],
-      rank: 2,
-      demandVelocity: 86,
-      competitionGap: 69,
-      hiddenInsight: {
-        surfaceAsk: "How do I negotiate salary?",
-        realProblem: "I'm terrified of confrontation and rejection",
-        hiddenSignal: "Salary negotiation is an emotional skills gap, not an information gap"
-      },
-    },
-    {
-      id: "ca-3",
-      title: "LinkedIn feels like a highlight reel",
-      subtitle: "Authenticity gap making platform unusable for many",
-      category: "Career",
-      sentiment: "rising",
-      views: 1800000,
-      saves: 72000,
-      shares: 48000,
-      painPoints: ["Comparing to others", "Toxic positivity", "Don't know what to post"],
-      rank: 3,
-      demandVelocity: 84,
-      competitionGap: 62,
-      hiddenInsight: {
-        surfaceAsk: "How do I build a LinkedIn presence?",
-        realProblem: "I hate self-promotion but need to be visible",
-        hiddenSignal: "Anti-performative personal branding is the next trend"
-      },
-    },
-    {
-      id: "ca-4",
-      title: "Career pivots in your 30s feel impossible",
-      subtitle: "Age-related career anxiety is spiking",
-      category: "Career",
-      sentiment: "exploding",
-      views: 2800000,
-      saves: 115000,
-      shares: 52000,
-      painPoints: ["Too late to change", "Starting over is scary", "Financial responsibilities prevent risk"],
-      rank: 4,
-      demandVelocity: 95,
-      competitionGap: 83,
-      hiddenInsight: {
-        surfaceAsk: "Is it too late to change careers?",
-        realProblem: "I'm terrified of wasting the years I've already invested",
-        hiddenSignal: "Mid-career pivots need financial and emotional scaffolding"
-      },
-    },
-    {
-      id: "ca-5",
-      title: "Remote job search is overwhelming",
-      subtitle: "Thousands of applicants, no responses",
-      category: "Career",
-      sentiment: "stable",
-      views: 1600000,
-      saves: 65000,
-      shares: 28000,
-      painPoints: ["Applied to 100+ jobs", "No interview callbacks", "ATS systems reject resumes"],
-      rank: 5,
-      demandVelocity: 79,
-      competitionGap: 55,
-      hiddenInsight: {
-        surfaceAsk: "How do I find remote jobs?",
-        realProblem: "I'm shouting into a void and losing hope",
-        hiddenSignal: "Job search is a mental health crisis, not just a skills problem"
-      },
-    },
-  ],
-  "social": [
-    {
-      id: "sc-1",
-      title: "Making friends as an adult is impossibly hard",
-      subtitle: "Post-college loneliness epidemic needs solutions",
-      category: "Social Connections",
-      sentiment: "exploding",
-      views: 3500000,
-      saves: 142000,
-      shares: 68000,
-      painPoints: ["No organic friend opportunities", "Work friends aren't real friends", "Don't know where to meet people"],
-      rank: 1,
-      demandVelocity: 97,
-      competitionGap: 84,
-      hiddenInsight: {
-        surfaceAsk: "How do I make friends as an adult?",
-        realProblem: "I'm lonely but don't know how to admit it",
-        hiddenSignal: "Adult friendship is a logistics problem wrapped in shame"
-      },
-    },
-    {
-      id: "sc-2",
-      title: "Dating apps feel like a second job",
-      subtitle: "Swipe fatigue driving demand for alternatives",
-      category: "Social Connections",
-      sentiment: "exploding",
-      views: 2900000,
-      saves: 118000,
-      shares: 55000,
-      painPoints: ["Endless swiping", "Superficial connections", "Ghosting is exhausting"],
-      rank: 2,
-      demandVelocity: 94,
-      competitionGap: 71,
-      hiddenInsight: {
-        surfaceAsk: "Which dating app is best?",
-        realProblem: "I want to meet someone without performing a version of myself",
-        hiddenSignal: "Low-effort, high-quality connection is the unmet need"
-      },
-    },
-    {
-      id: "sc-3",
-      title: "Social anxiety makes everything harder",
-      subtitle: "Fear of judgment prevents authentic connection",
-      category: "Social Connections",
-      sentiment: "rising",
-      views: 2200000,
-      saves: 88000,
-      shares: 41000,
-      painPoints: ["Overthink every interaction", "Avoid social situations", "Feel like an outsider"],
-      rank: 3,
-      demandVelocity: 87,
-      competitionGap: 76,
-      hiddenInsight: {
-        surfaceAsk: "How do I deal with social anxiety?",
-        realProblem: "I want connection but the fear is paralyzing",
-        hiddenSignal: "Social skills training with exposure therapy elements"
-      },
-    },
-    {
-      id: "sc-4",
-      title: "Moving to a new city means starting over",
-      subtitle: "Relocation loneliness is underserved",
-      category: "Social Connections",
-      sentiment: "rising",
-      views: 1800000,
-      saves: 74000,
-      shares: 32000,
-      painPoints: ["Left all friends behind", "Don't know the area", "Takes months to build connections"],
-      rank: 4,
-      demandVelocity: 82,
-      competitionGap: 88,
-      hiddenInsight: {
-        surfaceAsk: "How do I meet people in a new city?",
-        realProblem: "I'm grieving my old life while building a new one",
-        hiddenSignal: "Relocation support is emotional, not just logistical"
-      },
-    },
-    {
-      id: "sc-5",
-      title: "Maintaining long-distance friendships is hard",
-      subtitle: "People drift apart despite good intentions",
-      category: "Social Connections",
-      sentiment: "stable",
-      views: 1500000,
-      saves: 62000,
-      shares: 26000,
-      painPoints: ["Life gets busy", "Time zones make it hard", "Calls feel like obligations"],
-      rank: 5,
-      demandVelocity: 75,
-      competitionGap: 79,
-      hiddenInsight: {
-        surfaceAsk: "How do I stay in touch with old friends?",
-        realProblem: "I feel guilty about friendships fading but can't fix it",
-        hiddenSignal: "Low-friction async connection tools for friends"
-      },
-    },
-  ],
-};
-
 function checkVirality(views: number, shares: number, saves: number): boolean {
-  const totalEngagement = shares + saves;
-  const engagementRate = views > 0 ? (totalEngagement / views) * 100 : 0;
-  return (views >= 100000 && engagementRate > 3) || views >= 1000000;
+  const engagement = (shares + saves) / Math.max(views, 1);
+  return views >= 100000 && engagement >= 0.03;
 }
 
-function calculateOpportunityScore(demandVelocity: number, competitionGap: number): number {
-  return Math.round((demandVelocity * 0.6) + (competitionGap * 0.4));
+function calculateOpportunityScore(engagement: number, views: number): number {
+  // Higher engagement + high views = higher opportunity
+  const engagementScore = Math.min(engagement * 1000, 50);
+  const viewsScore = Math.min((views / 1000000) * 30, 30);
+  const baseScore = 20;
+  return Math.round(baseScore + engagementScore + viewsScore);
+}
+
+function extractPainPoints(text: string): string[] {
+  const painPoints: string[] = [];
+  const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 10);
+  
+  for (const sentence of sentences.slice(0, 3)) {
+    const trimmed = sentence.trim();
+    if (trimmed.length > 20 && trimmed.length < 150) {
+      // Check if it contains pain indicators
+      const hasPainIndicator = PAIN_INDICATORS.some(indicator => 
+        trimmed.toLowerCase().includes(indicator)
+      );
+      if (hasPainIndicator || painPoints.length < 2) {
+        painPoints.push(trimmed);
+      }
+    }
+  }
+  
+  return painPoints.slice(0, 3);
+}
+
+function determineSentiment(engagement: number, views: number): "exploding" | "rising" | "stable" | "declining" {
+  if (views >= 1000000 && engagement >= 0.05) return "exploding";
+  if (views >= 500000 || engagement >= 0.04) return "rising";
+  if (views >= 100000) return "stable";
+  return "declining";
+}
+
+function extractTitle(text: string): string {
+  // Get first sentence or first 80 chars
+  const firstSentence = text.split(/[.!?]/)[0]?.trim() || text;
+  if (firstSentence.length <= 80) return firstSentence;
+  return firstSentence.substring(0, 77) + "...";
+}
+
+function extractSubtitle(text: string, hashtags: string[]): string {
+  // Use hashtags or second part of text
+  if (hashtags.length >= 2) {
+    return `Trending: #${hashtags.slice(0, 3).join(" #")}`;
+  }
+  const sentences = text.split(/[.!?]+/);
+  if (sentences.length > 1) {
+    const second = sentences[1]?.trim();
+    if (second && second.length > 10 && second.length < 100) {
+      return second;
+    }
+  }
+  return "TikTok trend insight";
+}
+
+async function fetchTikTokData(query: string, apiToken: string): Promise<TikTokVideo[]> {
+  console.log(`Fetching TikTok data for query: ${query}`);
+  
+  // Start the Apify actor run
+  const actorId = "clockworks~free-tiktok-scraper";
+  const startUrl = `https://api.apify.com/v2/acts/${actorId}/runs?token=${apiToken}`;
+  
+  const startResponse = await fetch(startUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      searchQueries: [query],
+      maxProfilesPerQuery: 0,
+      maxVideosPerQuery: 10,
+      shouldDownloadVideos: false,
+      shouldDownloadCovers: false,
+      shouldDownloadSlideshowImages: false,
+    }),
+  });
+
+  if (!startResponse.ok) {
+    const errorText = await startResponse.text();
+    console.error("Apify start error:", errorText);
+    throw new Error(`Failed to start Apify actor: ${startResponse.status}`);
+  }
+
+  const runData: ApifyRunResponse = await startResponse.json();
+  const runId = runData.data.id;
+  const datasetId = runData.data.defaultDatasetId;
+  
+  console.log(`Apify run started: ${runId}, dataset: ${datasetId}`);
+
+  // Wait for the run to complete (poll every 2 seconds, max 60 seconds)
+  let attempts = 0;
+  const maxAttempts = 30;
+  
+  while (attempts < maxAttempts) {
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    const statusUrl = `https://api.apify.com/v2/acts/${actorId}/runs/${runId}?token=${apiToken}`;
+    const statusResponse = await fetch(statusUrl);
+    
+    if (!statusResponse.ok) {
+      console.error("Status check failed");
+      attempts++;
+      continue;
+    }
+    
+    const statusData = await statusResponse.json();
+    const status = statusData.data.status;
+    
+    console.log(`Run status: ${status}`);
+    
+    if (status === "SUCCEEDED") {
+      // Fetch the results
+      const resultsUrl = `https://api.apify.com/v2/datasets/${datasetId}/items?token=${apiToken}`;
+      const resultsResponse = await fetch(resultsUrl);
+      
+      if (!resultsResponse.ok) {
+        throw new Error("Failed to fetch results");
+      }
+      
+      const results: TikTokVideo[] = await resultsResponse.json();
+      console.log(`Fetched ${results.length} videos`);
+      return results;
+    }
+    
+    if (status === "FAILED" || status === "ABORTED" || status === "TIMED-OUT") {
+      throw new Error(`Apify run ${status}`);
+    }
+    
+    attempts++;
+  }
+  
+  throw new Error("Apify run timed out");
 }
 
 serve(async (req) => {
@@ -744,6 +226,11 @@ serve(async (req) => {
   try {
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const APIFY_API_TOKEN = Deno.env.get('APIFY_API_TOKEN');
+
+    if (!APIFY_API_TOKEN) {
+      throw new Error('APIFY_API_TOKEN is not configured');
+    }
 
     const { niche } = await req.json();
     
@@ -753,43 +240,67 @@ serve(async (req) => {
 
     console.log(`Processing niche: ${niche}`);
 
-    const painPoints = NICHE_PAIN_POINTS[niche];
+    const queries = NICHE_QUERIES[niche];
     
-    if (!painPoints || painPoints.length === 0) {
+    if (!queries || queries.length === 0) {
       return new Response(
-        JSON.stringify({ success: true, data: [], viralCount: 0 }),
+        JSON.stringify({ success: true, data: [], viralCount: 0, source: "real" }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const results = painPoints.map((point) => {
-      const isViral = checkVirality(point.views, point.shares, point.saves);
-      const opportunityScore = calculateOpportunityScore(point.demandVelocity, point.competitionGap);
-      const sources = generateSources(point.views, point.demandVelocity, point.competitionGap);
-      
-      return {
-        id: point.id,
-        title: point.title,
-        subtitle: point.subtitle,
-        category: point.category,
-        sentiment: point.sentiment,
-        views: point.views,
-        saves: point.saves,
-        shares: point.shares,
-        painPoints: point.painPoints,
-        rank: point.rank,
-        isViral,
-        opportunityScore,
-        addedToLibrary: isViral,
-        hiddenInsight: point.hiddenInsight,
-        sources,
-        demandVelocity: point.demandVelocity,
-        competitionGap: point.competitionGap,
-      };
-    });
+    // Pick a random query from the niche
+    const selectedQuery = queries[Math.floor(Math.random() * queries.length)];
+    
+    // Fetch real TikTok data
+    const videos = await fetchTikTokData(selectedQuery, APIFY_API_TOKEN);
 
-    console.log(`Found ${results.length} pain points, ${results.filter(r => r.isViral).length} viral`);
+    // Transform TikTok videos into pain point results
+    const results = videos
+      .filter(video => video.text && video.playCount)
+      .map((video, index) => {
+        const views = video.playCount || 0;
+        const shares = video.shareCount || 0;
+        const saves = video.collectCount || 0;
+        const comments = video.commentCount || 0;
+        const likes = video.diggCount || 0;
+        
+        const totalEngagement = shares + saves + comments + likes;
+        const engagement = totalEngagement / Math.max(views, 1);
+        
+        const isViral = checkVirality(views, shares, saves);
+        const opportunityScore = calculateOpportunityScore(engagement, views);
+        const sources = generateSources(views, engagement);
+        
+        const hashtags = video.hashtags?.map(h => h.name) || [];
+        const painPoints = extractPainPoints(video.text);
+        
+        return {
+          id: video.id || `tiktok-${Date.now()}-${index}`,
+          title: extractTitle(video.text),
+          subtitle: extractSubtitle(video.text, hashtags),
+          category: niche.replace("-", " ").replace(/\b\w/g, c => c.toUpperCase()),
+          sentiment: determineSentiment(engagement, views),
+          views,
+          saves,
+          shares,
+          shared: shares, // Alias for compatibility
+          painPoints,
+          rank: index + 1,
+          isViral,
+          opportunityScore,
+          addedToLibrary: isViral,
+          sources,
+          demandVelocity: Math.round(engagement * 100),
+          competitionGap: Math.round(100 - (views / 100000)),
+          webVideoUrl: video.webVideoUrl,
+        };
+      })
+      .sort((a, b) => b.opportunityScore - a.opportunityScore);
 
+    console.log(`Found ${results.length} real TikTok videos, ${results.filter(r => r.isViral).length} viral`);
+
+    // Save viral results to database
     const viralResults = results.filter(r => r.isViral);
     
     if (viralResults.length > 0) {
@@ -821,7 +332,6 @@ serve(async (req) => {
             slots_filled: 0,
             demand_velocity: result.demandVelocity,
             competition_gap: result.competitionGap,
-            hidden_insight: result.hiddenInsight,
           };
 
           const { error } = await supabase.from('problems').insert(problemData);
@@ -831,24 +341,18 @@ serve(async (req) => {
           } else {
             console.log(`Added viral problem to library: ${result.title}`);
           }
-        } else {
-          // Update the existing problem with missing data
-          await supabase
-            .from('problems')
-            .update({ 
-              hidden_insight: result.hiddenInsight,
-              sources: result.sources,
-              demand_velocity: result.demandVelocity,
-              competition_gap: result.competitionGap,
-            })
-            .eq('id', existing.id);
-          console.log(`Updated data for: ${result.title}`);
         }
       }
     }
 
     return new Response(
-      JSON.stringify({ success: true, data: results, viralCount: viralResults.length }),
+      JSON.stringify({ 
+        success: true, 
+        data: results, 
+        viralCount: viralResults.length,
+        source: "apify-tiktok",
+        query: selectedQuery
+      }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
