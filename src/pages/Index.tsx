@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Search, Zap, LayoutGrid, ArrowUpRight } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
 import { DataSourceSelector } from "@/components/DataSourceSelector";
@@ -29,6 +30,7 @@ const Index = () => {
   const navigate = useNavigate();
   const { user, profile } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   // Quick scan - search all niches at once
   const handleQuickScan = async () => {
@@ -64,6 +66,10 @@ const Index = () => {
         .slice(0, 10);
 
       setSearchResults(sorted);
+      
+      // Invalidate problems cache so Library shows new data
+      await queryClient.invalidateQueries({ queryKey: ["problems"] });
+      
       toast({
         title: "Quick Scan Complete",
         description: `Found ${sorted.length} top opportunities across ${randomNiches.length} niches`,
@@ -114,6 +120,9 @@ const Index = () => {
         setSearchResults([]);
       } else if (data?.success && data?.data) {
         setSearchResults(data.data);
+        
+        // Invalidate problems cache so Library shows new data
+        await queryClient.invalidateQueries({ queryKey: ["problems"] });
       }
     } catch (error) {
       console.error("Failed to search:", error);
