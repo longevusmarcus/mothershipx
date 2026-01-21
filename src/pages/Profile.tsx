@@ -409,12 +409,13 @@ export default function Profile() {
         </motion.div>
 
         {/* Tabs */}
-        <Tabs defaultValue="overview" className="space-y-6 overflow-x-hidden">
-          <TabsList className="bg-muted/50 p-1 h-auto w-full overflow-x-auto scrollbar-hide flex-nowrap">
-            <TabsTrigger value="overview" className="text-xs sm:text-sm px-3 flex-shrink-0">Overview</TabsTrigger>
-            <TabsTrigger value="builds" className="text-xs sm:text-sm px-3 flex-shrink-0">Builds</TabsTrigger>
-            <TabsTrigger value="achievements" className="text-xs sm:text-sm px-3 flex-shrink-0">Achievements</TabsTrigger>
-            <TabsTrigger value="account" className="text-xs sm:text-sm px-3 flex-shrink-0">Account</TabsTrigger>
+        <Tabs defaultValue="overview" className="space-y-6 overflow-x-hidden w-full max-w-full">
+          {/* No horizontal scrolling: grid on mobile, row on desktop */}
+          <TabsList className="bg-muted/50 p-1 h-auto w-full max-w-full grid grid-cols-2 gap-1 sm:flex sm:gap-0">
+            <TabsTrigger value="overview" className="text-xs sm:text-sm px-3 w-full">Overview</TabsTrigger>
+            <TabsTrigger value="builds" className="text-xs sm:text-sm px-3 w-full">Builds</TabsTrigger>
+            <TabsTrigger value="achievements" className="text-xs sm:text-sm px-3 w-full">Achievements</TabsTrigger>
+            <TabsTrigger value="account" className="text-xs sm:text-sm px-3 w-full">Account</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
