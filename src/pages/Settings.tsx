@@ -50,7 +50,7 @@ import {
   Crown,
   ExternalLink as ExternalLinkIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useUserSettings } from "@/hooks/useUserSettings";
@@ -60,36 +60,17 @@ import { supabase } from "@/lib/supabaseClient";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AuthModal } from "@/components/AuthModal";
 import { SubscriptionPaywall } from "@/components/SubscriptionPaywall";
+import { BuilderVerificationModal } from "@/components/BuilderVerificationModal";
 
-const integrations = [
-  {
-    id: "github",
-    name: "GitHub",
-    description: "Connect your repositories for build verification",
-    icon: Github,
-    connected: false,
-    username: null,
-    connectedAt: null,
-  },
-  {
-    id: "stripe",
-    name: "Stripe",
-    description: "Verify revenue for your builds",
-    icon: CreditCard,
-    connected: false,
-    username: null,
-    connectedAt: null,
-  },
-  {
-    id: "supabase",
-    name: "Supabase",
-    description: "Connect your database for usage metrics",
-    icon: Database,
-    connected: false,
-    username: null,
-    connectedAt: null,
-  },
-];
+interface Integration {
+  id: string;
+  name: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string }>;
+  connected: boolean;
+  username: string | null;
+  connectedAt: string | null;
+}
 
 function SettingsSkeleton() {
   return (
@@ -119,6 +100,84 @@ export default function Settings() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isOpeningPortal, setIsOpeningPortal] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [integrations, setIntegrations] = useState<Integration[]>([
+    {
+      id: "github",
+      name: "GitHub",
+      description: "Connect your repositories for build verification",
+      icon: Github,
+      connected: false,
+      username: null,
+      connectedAt: null,
+    },
+    {
+      id: "stripe",
+      name: "Stripe",
+      description: "Verify revenue for your builds",
+      icon: CreditCard,
+      connected: false,
+      username: null,
+      connectedAt: null,
+    },
+    {
+      id: "supabase",
+      name: "Supabase",
+      description: "Connect your database for usage metrics",
+      icon: Database,
+      connected: false,
+      username: null,
+      connectedAt: null,
+    },
+  ]);
+
+  // Fetch existing verification data to show connected integrations
+  useEffect(() => {
+    const fetchVerificationData = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data } = await supabase
+        .from("builder_verifications")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+
+      if (data) {
+        setIntegrations((prev) =>
+          prev.map((integration) => {
+            if (integration.id === "github" && data.github_username) {
+              return {
+                ...integration,
+                connected: true,
+                username: data.github_username,
+                connectedAt: new Date(data.updated_at).toLocaleDateString(),
+              };
+            }
+            if (integration.id === "stripe" && data.stripe_public_key) {
+              return {
+                ...integration,
+                connected: true,
+                username: data.stripe_public_key.slice(0, 12) + "...",
+                connectedAt: new Date(data.updated_at).toLocaleDateString(),
+              };
+            }
+            if (integration.id === "supabase" && data.supabase_project_key) {
+              return {
+                ...integration,
+                connected: true,
+                username: data.supabase_project_key.slice(0, 12) + "...",
+                connectedAt: new Date(data.updated_at).toLocaleDateString(),
+              };
+            }
+            return integration;
+          })
+        );
+      }
+    };
+
+    fetchVerificationData();
+  }, []);
 
   const handleOpenPortal = async () => {
     setIsOpeningPortal(true);
@@ -136,18 +195,42 @@ export default function Settings() {
     }
   };
 
-  const handleConnect = (integrationId: string) => {
-    toast({
-      title: "Coming soon",
-      description: `${integrationId} integration will be available soon.`,
-    });
+  const handleConnect = () => {
+    setShowVerificationModal(true);
   };
 
-  const handleDisconnect = (integrationId: string) => {
-    toast({
-      title: "Disconnected",
-      description: `${integrationId} has been disconnected from your account.`,
-    });
+  const handleVerificationComplete = () => {
+    // Refresh integration data
+    window.location.reload();
+  };
+
+  const handleDisconnect = async (integrationId: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const updateData: Record<string, null> = {};
+    if (integrationId === "github") updateData.github_username = null;
+    if (integrationId === "stripe") updateData.stripe_public_key = null;
+    if (integrationId === "supabase") updateData.supabase_project_key = null;
+
+    const { error } = await supabase
+      .from("builder_verifications")
+      .update(updateData)
+      .eq("user_id", user.id);
+
+    if (!error) {
+      setIntegrations((prev) =>
+        prev.map((i) =>
+          i.id === integrationId
+            ? { ...i, connected: false, username: null, connectedAt: null }
+            : i
+        )
+      );
+      toast({
+        title: "Disconnected",
+        description: `${integrationId} has been disconnected from your account.`,
+      });
+    }
   };
 
   const handleExportData = async () => {
@@ -641,7 +724,7 @@ export default function Settings() {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => handleConnect(integration.name)}
+                              onClick={handleConnect}
                               className="h-8 text-xs sm:text-sm"
                             >
                               Connect
@@ -861,6 +944,11 @@ export default function Settings() {
         </motion.div>
       </div>
       <SubscriptionPaywall open={showPaywall} onOpenChange={setShowPaywall} />
+      <BuilderVerificationModal
+        open={showVerificationModal}
+        onOpenChange={setShowVerificationModal}
+        onVerified={handleVerificationComplete}
+      />
     </AppLayout>
   );
 }
