@@ -5,6 +5,7 @@ import { Search, Zap, LayoutGrid, ArrowUp, ArrowUpRight } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
 import { DataSourceSelector } from "@/components/DataSourceSelector";
+import { NicheSelector, NICHES, type NicheId } from "@/components/NicheSelector";
 import { SearchResults } from "@/components/SearchResults";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -14,37 +15,34 @@ import { AuthModal } from "@/components/AuthModal";
 import type { SearchResult } from "@/components/SearchResultCard";
 
 const Index = () => {
-  const [searchQuery, setSearchQuery] = useState("");
   const [searchMode, setSearchMode] = useState<"search" | "neural" | "grid">("search");
   const [selectedSources, setSelectedSources] = useState<string[]>(["tiktok", "reddit", "youtube", "freelancer"]);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [pendingQuery, setPendingQuery] = useState("");
+  const [pendingNiche, setPendingNiche] = useState<NicheId | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const [submittedQuery, setSubmittedQuery] = useState("");
+  const [selectedNiche, setSelectedNiche] = useState<NicheId | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
   const navigate = useNavigate();
   const { user, profile } = useAuth();
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      const query = searchQuery.trim();
-
-      // If user is not logged in, show auth modal first
-      if (!user) {
-        setPendingQuery(query);
-        setShowAuthModal(true);
-        return;
-      }
-
-      // User is logged in, perform the search
-      await performSearch(query);
+  const handleNicheSelect = async (nicheId: NicheId) => {
+    // If user is not logged in, show auth modal first
+    if (!user) {
+      setPendingNiche(nicheId);
+      setShowAuthModal(true);
+      return;
     }
+
+    // User is logged in, perform the search
+    await performSearch(nicheId);
   };
 
-  const performSearch = async (query: string) => {
-    setSubmittedQuery(query);
+  const performSearch = async (nicheId: NicheId) => {
+    const niche = NICHES.find(n => n.id === nicheId);
+    if (!niche) return;
+
+    setSelectedNiche(nicheId);
     setHasSearched(true);
     setIsSearching(true);
     setSearchResults([]);
@@ -52,14 +50,14 @@ const Index = () => {
     try {
       // Save the search interest
       await supabase.from("search_interests").insert({
-        query: query,
+        query: niche.label,
         user_id: user?.id || null,
         email: profile?.email || user?.email || null,
       });
 
-      // Call the search edge function
+      // Call the search edge function with niche
       const { data, error } = await supabase.functions.invoke("search-tiktok", {
-        body: { query },
+        body: { niche: nicheId },
       });
 
       if (error) {
@@ -73,28 +71,20 @@ const Index = () => {
     }
 
     setIsSearching(false);
-    setSearchQuery("");
   };
 
   const handleAuthSuccess = () => {
     // After successful auth, perform the search
-    if (pendingQuery) {
-      performSearch(pendingQuery);
-      setPendingQuery("");
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSearch(e);
+    if (pendingNiche) {
+      performSearch(pendingNiche);
+      setPendingNiche(null);
     }
   };
 
   const handleNewSearch = () => {
     setHasSearched(false);
     setSearchResults([]);
-    setSubmittedQuery("");
+    setSelectedNiche(null);
   };
 
   return (
@@ -126,31 +116,12 @@ const Index = () => {
             <SearchResults
               results={searchResults}
               isLoading={isSearching}
-              searchQuery={submittedQuery}
+              selectedNiche={selectedNiche}
             />
-            
-            {/* View Library Link */}
-            {searchResults.some(r => r.addedToLibrary) && !isSearching && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="mt-6 pl-11"
-              >
-                <Button
-                  variant="outline"
-                  onClick={() => navigate("/problems")}
-                  className="gap-2"
-                >
-                  View in Library
-                  <ArrowUpRight className="h-4 w-4" />
-                </Button>
-              </motion.div>
-            )}
           </div>
         )}
 
-        {/* Search Box - Fixed at bottom when searched, centered when not */}
+        {/* Niche Selector and Search Box */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -160,66 +131,63 @@ const Index = () => {
             hasSearched && "sticky bottom-4 mt-auto"
           )}
         >
-          <form onSubmit={handleSearch}>
-            <div className="rounded-xl border border-border bg-card overflow-hidden shadow-lg">
-              {/* Search Input */}
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Find pain points and 30-day trends in mental health on TikTok"
-                className="w-full px-4 py-5 text-sm bg-transparent border-0 focus:outline-none focus:ring-0 placeholder:text-muted-foreground/60 placeholder:font-light placeholder:tracking-wide placeholder:lowercase"
-              />
+          <div className="rounded-xl border border-border bg-card overflow-hidden shadow-lg p-5 space-y-5">
+            {/* Niche Selector */}
+            <NicheSelector
+              selectedNiche={selectedNiche}
+              onSelect={handleNicheSelect}
+              disabled={isSearching}
+            />
 
-              {/* Bottom Bar */}
-              <div className="flex items-center justify-between px-3 py-2 border-t border-border">
-                {/* Mode Toggles */}
-                <div className="flex items-center gap-1 bg-secondary/50 rounded-lg p-0.5">
-                  <button
-                    type="button"
-                    onClick={() => setSearchMode("search")}
-                    className={cn(
-                      "p-2 rounded-md transition-colors",
-                      searchMode === "search" ? "bg-background shadow-sm" : "hover:bg-background/50",
-                    )}
-                  >
-                    <Search className="h-4 w-4" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSearchMode("neural")}
-                    className={cn(
-                      "p-2 rounded-md transition-colors",
-                      searchMode === "neural" ? "bg-background shadow-sm" : "hover:bg-background/50",
-                    )}
-                  >
-                    <Zap className="h-4 w-4" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSearchMode("grid")}
-                    className={cn(
-                      "p-2 rounded-md transition-colors",
-                      searchMode === "grid" ? "bg-background shadow-sm" : "hover:bg-background/50",
-                    )}
-                  >
-                    <LayoutGrid className="h-4 w-4" />
-                  </button>
-                </div>
-
-                {/* Submit Button */}
-                <Button
-                  type="submit"
-                  size="icon"
-                  className="h-9 w-9 rounded-lg"
-                  disabled={!searchQuery.trim() || isSearching}
+            {/* Bottom Bar */}
+            <div className="flex items-center justify-between pt-3 border-t border-border">
+              {/* Mode Toggles */}
+              <div className="flex items-center gap-1 bg-secondary/50 rounded-lg p-0.5">
+                <button
+                  type="button"
+                  onClick={() => setSearchMode("search")}
+                  className={cn(
+                    "p-2 rounded-md transition-colors",
+                    searchMode === "search" ? "bg-background shadow-sm" : "hover:bg-background/50",
+                  )}
                 >
-                  <ArrowUp className="h-4 w-4" />
-                </Button>
+                  <Search className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSearchMode("neural")}
+                  className={cn(
+                    "p-2 rounded-md transition-colors",
+                    searchMode === "neural" ? "bg-background shadow-sm" : "hover:bg-background/50",
+                  )}
+                >
+                  <Zap className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSearchMode("grid")}
+                  className={cn(
+                    "p-2 rounded-md transition-colors",
+                    searchMode === "grid" ? "bg-background shadow-sm" : "hover:bg-background/50",
+                  )}
+                >
+                  <LayoutGrid className="h-4 w-4" />
+                </button>
               </div>
+
+              {/* New Search Button when searched */}
+              {hasSearched && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleNewSearch}
+                  className="gap-2"
+                >
+                  New Search
+                </Button>
+              )}
             </div>
-          </form>
+          </div>
         </motion.div>
 
         {/* Data Sources - Only show when not searched */}
