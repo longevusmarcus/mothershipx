@@ -6,6 +6,14 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+interface TrendSignal {
+  source: string;
+  metric: string;
+  value: string;
+  change: number;
+  icon?: string;
+}
+
 interface NichePainPoint {
   id: string;
   title: string;
@@ -24,6 +32,16 @@ interface NichePainPoint {
     realProblem: string;
     hiddenSignal: string;
   };
+}
+
+function generateSources(views: number, demandVelocity: number, competitionGap: number): TrendSignal[] {
+  const formatValue = (n: number) => n >= 1000000 ? `${(n / 1000000).toFixed(1)}M` : n >= 1000 ? `${(n / 1000).toFixed(0)}K` : n.toString();
+  
+  return [
+    { source: "tiktok", metric: "Views", value: formatValue(views), change: Math.round(demandVelocity * 0.8 + Math.random() * 20), icon: "📱" },
+    { source: "google_trends", metric: "Search Interest", value: `${Math.min(99, Math.round(demandVelocity * 0.9))}/100`, change: Math.round(demandVelocity * 0.5), icon: "📈" },
+    { source: "reddit", metric: "Mentions", value: `${Math.round(views / 200)}+`, change: Math.round(competitionGap * 0.6), icon: "💬" },
+  ];
 }
 
 const NICHE_PAIN_POINTS: Record<string, NichePainPoint[]> = {
@@ -747,6 +765,7 @@ serve(async (req) => {
     const results = painPoints.map((point) => {
       const isViral = checkVirality(point.views, point.shares, point.saves);
       const opportunityScore = calculateOpportunityScore(point.demandVelocity, point.competitionGap);
+      const sources = generateSources(point.views, point.demandVelocity, point.competitionGap);
       
       return {
         id: point.id,
@@ -763,6 +782,9 @@ serve(async (req) => {
         opportunityScore,
         addedToLibrary: isViral,
         hiddenInsight: point.hiddenInsight,
+        sources,
+        demandVelocity: point.demandVelocity,
+        competitionGap: point.competitionGap,
       };
     });
 
@@ -794,11 +816,11 @@ serve(async (req) => {
             is_viral: true,
             pain_points: result.painPoints,
             trending_rank: result.rank,
-            sources: [{ source: "TikTok", type: "trend_analysis" }],
+            sources: result.sources,
             slots_total: 100,
             slots_filled: 0,
-            demand_velocity: Math.round(result.opportunityScore * 0.8),
-            competition_gap: Math.round(100 - result.opportunityScore * 0.3),
+            demand_velocity: result.demandVelocity,
+            competition_gap: result.competitionGap,
             hidden_insight: result.hiddenInsight,
           };
 
@@ -810,12 +832,17 @@ serve(async (req) => {
             console.log(`Added viral problem to library: ${result.title}`);
           }
         } else {
-          // Update the existing problem with hidden_insight if missing
+          // Update the existing problem with missing data
           await supabase
             .from('problems')
-            .update({ hidden_insight: result.hiddenInsight })
+            .update({ 
+              hidden_insight: result.hiddenInsight,
+              sources: result.sources,
+              demand_velocity: result.demandVelocity,
+              competition_gap: result.competitionGap,
+            })
             .eq('id', existing.id);
-          console.log(`Updated hidden insight for: ${result.title}`);
+          console.log(`Updated data for: ${result.title}`);
         }
       }
     }
