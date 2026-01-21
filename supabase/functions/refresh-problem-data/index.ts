@@ -132,10 +132,39 @@ serve(async (req) => {
     
     for (const problem of problems) {
       const views = problem.views || 100000;
-      const demandVelocity = problem.demand_velocity || 50;
-      const competitionGap = problem.competition_gap || 50;
+      const shares = problem.shares || 0;
       
-      // Generate fresh sources
+      // Calculate demand velocity if missing or needs refresh
+      // Base on views, shares, and opportunity score
+      let demandVelocity = problem.demand_velocity;
+      if (!demandVelocity || demandVelocity === 0) {
+        const viewScore = Math.log10(Math.max(1, views)) * 10;
+        const shareBonus = Math.min(20, shares / 100);
+        demandVelocity = Math.min(200, Math.max(30, Math.round(
+          40 + viewScore + shareBonus + (problem.opportunity_score * 0.4) + Math.random() * 25
+        )));
+      } else {
+        // Add small daily variation (+/- 5%)
+        demandVelocity = Math.min(200, Math.max(20, Math.round(
+          demandVelocity * (0.95 + Math.random() * 0.1)
+        )));
+      }
+      
+      // Calculate competition gap if missing or needs refresh
+      let competitionGap = problem.competition_gap;
+      if (!competitionGap || competitionGap === 0) {
+        const sentimentBonus = problem.sentiment === 'exploding' ? 20 : problem.sentiment === 'rising' ? 10 : 0;
+        competitionGap = Math.min(95, Math.max(40, Math.round(
+          45 + sentimentBonus + (problem.opportunity_score * 0.3) + Math.random() * 15
+        )));
+      } else {
+        // Add small daily variation (+/- 3%)
+        competitionGap = Math.min(95, Math.max(30, Math.round(
+          competitionGap * (0.97 + Math.random() * 0.06)
+        )));
+      }
+      
+      // Generate fresh sources based on updated metrics
       const freshSources = generateFreshSources(views, demandVelocity, competitionGap);
       
       // Generate or update hidden insight if missing
@@ -148,10 +177,12 @@ serve(async (req) => {
         );
       }
       
-      // Update the problem
+      // Update the problem with fresh metrics
       const { error: updateError } = await supabase
         .from('problems')
         .update({
+          demand_velocity: demandVelocity,
+          competition_gap: competitionGap,
           sources: freshSources,
           hidden_insight: hiddenInsight,
           updated_at: new Date().toISOString(),
@@ -162,7 +193,7 @@ serve(async (req) => {
         console.error(`Error updating problem ${problem.id}:`, updateError);
       } else {
         updatedCount++;
-        console.log(`Updated: ${problem.title}`);
+        console.log(`Updated: ${problem.title} (demand: ${demandVelocity}%, gap: ${competitionGap}%)`);
       }
     }
 
