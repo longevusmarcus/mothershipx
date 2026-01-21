@@ -12,8 +12,7 @@ const logStep = (step: string, details?: unknown) => {
   console.log(`[CREATE-SUBSCRIPTION-CHECKOUT] ${step}${detailsStr}`);
 };
 
-// PLACEHOLDER - User will provide this
-const SUBSCRIPTION_PRICE_ID = "price_PLACEHOLDER";
+const SUBSCRIPTION_PRICE_ID = "price_1SrxbZ2LCwPxHz0nC7VtOgeS";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
