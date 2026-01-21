@@ -1,25 +1,28 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Search, Zap, LayoutGrid, ArrowUp, ArrowUpRight, X, CheckCircle2 } from "lucide-react";
+import { Search, Zap, LayoutGrid, ArrowUp, ArrowUpRight } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
 import { DataSourceSelector } from "@/components/DataSourceSelector";
+import { SearchResults } from "@/components/SearchResults";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthModal } from "@/components/AuthModal";
+import type { SearchResult } from "@/components/SearchResultCard";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchMode, setSearchMode] = useState<"search" | "neural" | "grid">("search");
-  const [selectedSources, setSelectedSources] = useState<string[]>(["tiktok", "google_trends", "freelancer"]);
-  const [showWaitlistModal, setShowWaitlistModal] = useState(false);
+  const [selectedSources, setSelectedSources] = useState<string[]>(["tiktok", "reddit", "youtube", "freelancer"]);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [pendingQuery, setPendingQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [submittedQuery, setSubmittedQuery] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
   const navigate = useNavigate();
   const { user, profile } = useAuth();
 
@@ -35,36 +38,49 @@ const Index = () => {
         return;
       }
 
-      // User is logged in, proceed with saving and showing waitlist
-      await saveSearchAndShowWaitlist(query);
+      // User is logged in, perform the search
+      await performSearch(query);
     }
   };
 
-  const saveSearchAndShowWaitlist = async (query: string) => {
+  const performSearch = async (query: string) => {
     setSubmittedQuery(query);
-    setIsSaving(true);
+    setHasSearched(true);
+    setIsSearching(true);
+    setSearchResults([]);
 
-    // Save the search interest to the database
     try {
+      // Save the search interest
       await supabase.from("search_interests").insert({
         query: query,
         user_id: user?.id || null,
         email: profile?.email || user?.email || null,
       });
+
+      // Call the search edge function
+      const { data, error } = await supabase.functions.invoke("search-tiktok", {
+        body: { query },
+      });
+
+      if (error) {
+        console.error("Search error:", error);
+        setSearchResults([]);
+      } else if (data?.success && data?.data) {
+        setSearchResults(data.data);
+      }
     } catch (error) {
-      console.error("Failed to save search interest:", error);
+      console.error("Failed to search:", error);
     }
 
-    setIsSaving(false);
-    setShowWaitlistModal(true);
+    setIsSearching(false);
+    setSearchQuery("");
   };
 
   const handleAuthSuccess = () => {
-    // After successful auth, save the search and show waitlist
+    // After successful auth, perform the search
     if (pendingQuery) {
-      saveSearchAndShowWaitlist(pendingQuery);
+      performSearch(pendingQuery);
       setPendingQuery("");
-      setSearchQuery("");
     }
   };
 
@@ -75,9 +91,10 @@ const Index = () => {
     }
   };
 
-  const handleCloseModal = () => {
-    setShowWaitlistModal(false);
-    setSearchQuery("");
+  const handleNewSearch = () => {
+    setHasSearched(false);
+    setSearchResults([]);
+    setSubmittedQuery("");
   };
 
   return (
@@ -87,26 +104,64 @@ const Index = () => {
         description="Discover real problems and trends from 10+ data sources. Build solutions together with our community of builders."
       />
 
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)]">
-        {/* Title */}
-        <motion.h1
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="font-display text-2xl sm:text-3xl font-normal tracking-tight text-center mb-8"
-        >
-          Mothership Search
-        </motion.h1>
+      <div className={cn(
+        "flex flex-col min-h-[calc(100vh-8rem)]",
+        hasSearched ? "justify-start pt-6" : "items-center justify-center"
+      )}>
+        {/* Title - Only show when not searched */}
+        {!hasSearched && (
+          <motion.h1
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="font-display text-2xl sm:text-3xl font-normal tracking-tight text-center mb-8"
+          >
+            Mothership Search
+          </motion.h1>
+        )}
 
-        {/* Search Box */}
+        {/* Search Results - Chat-like vertical display */}
+        {hasSearched && (
+          <div className="w-full max-w-2xl mx-auto px-4 mb-6 flex-1 overflow-y-auto">
+            <SearchResults
+              results={searchResults}
+              isLoading={isSearching}
+              searchQuery={submittedQuery}
+            />
+            
+            {/* View Library Link */}
+            {searchResults.some(r => r.addedToLibrary) && !isSearching && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="mt-6 pl-11"
+              >
+                <Button
+                  variant="outline"
+                  onClick={() => navigate("/problems")}
+                  className="gap-2"
+                >
+                  View in Library
+                  <ArrowUpRight className="h-4 w-4" />
+                </Button>
+              </motion.div>
+            )}
+          </div>
+        )}
+
+        {/* Search Box - Fixed at bottom when searched, centered when not */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="w-full max-w-2xl px-4"
+          transition={{ duration: 0.5, delay: hasSearched ? 0 : 0.1 }}
+          className={cn(
+            "w-full max-w-2xl px-4",
+            hasSearched && "sticky bottom-4 mt-auto"
+          )}
         >
           <form onSubmit={handleSearch}>
-            <div className="rounded-xl border border-border bg-card overflow-hidden">
+            <div className="rounded-xl border border-border bg-card overflow-hidden shadow-lg">
               {/* Search Input */}
               <input
                 type="text"
@@ -158,7 +213,7 @@ const Index = () => {
                   type="submit"
                   size="icon"
                   className="h-9 w-9 rounded-lg"
-                  disabled={!searchQuery.trim() || isSaving}
+                  disabled={!searchQuery.trim() || isSearching}
                 >
                   <ArrowUp className="h-4 w-4" />
                 </Button>
@@ -167,116 +222,49 @@ const Index = () => {
           </form>
         </motion.div>
 
-        {/* Data Sources */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="w-full max-w-2xl px-4 mt-8"
-        >
-          <div className="rounded-xl border border-border bg-card p-5">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="h-9 w-9 rounded-lg bg-secondary/50 flex items-center justify-center">
-                <Search className="h-4 w-4 text-muted-foreground" />
-              </div>
-              <div>
-                <p className="text-sm font-medium">Data Sources</p>
-                <p className="text-xs text-muted-foreground">Scraping TikTok, Reddit, YouTube & Freelancer</p>
-              </div>
-            </div>
-            <DataSourceSelector onSelectionChange={setSelectedSources} />
-          </div>
-        </motion.div>
-
-        {/* Featured Link */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-8"
-        >
-          <a
-            href="https://drive.google.com/file/d/1cRqz_GYzouxZ5OQQGYnmPwz6IX0y5v_V/view?usp=sharing"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors px-4 py-2 rounded-full border border-border/50 hover:border-border"
-          >
-            What we're working on
-            <ArrowUpRight className="h-3.5 w-3.5" />
-          </a>
-        </motion.div>
-      </div>
-
-      {/* Waitlist Modal */}
-      <AnimatePresence>
-        {showWaitlistModal && (
+        {/* Data Sources - Only show when not searched */}
+        {!hasSearched && (
           <>
-            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="w-full max-w-2xl px-4 mt-8"
+            >
+              <div className="rounded-xl border border-border bg-card p-5">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-9 w-9 rounded-lg bg-secondary/50 flex items-center justify-center">
+                    <Search className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">Data Sources</p>
+                    <p className="text-xs text-muted-foreground">Scraping TikTok, Reddit, YouTube & Freelancer</p>
+                  </div>
+                </div>
+                <DataSourceSelector onSelectionChange={setSelectedSources} />
+              </div>
+            </motion.div>
+
+            {/* Featured Link */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={handleCloseModal}
-              className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50"
-            />
-
-            {/* Modal */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
-              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md px-4"
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="mt-8"
             >
-              <div className="bg-card border border-border rounded-2xl p-8 shadow-lg relative">
-                {/* Close button */}
-                <button
-                  onClick={handleCloseModal}
-                  className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-secondary transition-colors"
-                >
-                  <X className="h-4 w-4 text-muted-foreground" />
-                </button>
-
-                {/* Content */}
-                <div className="text-center">
-                  <div className="h-12 w-12 rounded-full bg-secondary/30 border border-border/50 flex items-center justify-center mx-auto mb-5">
-                    <CheckCircle2 className="h-5 w-5 text-foreground/60" />
-                  </div>
-
-                  <h2 className="font-display text-xl mb-3">You're on the list</h2>
-
-                  <p className="text-sm text-muted-foreground mb-1">You're interested in</p>
-                  <p className="text-sm font-medium mb-4 px-3 py-1.5 bg-secondary/50 rounded-lg inline-block">
-                    "{submittedQuery}"
-                  </p>
-
-                  <p className="text-sm text-muted-foreground mb-6">
-                    Search is coming soon. We'll notify you when it's ready.
-                  </p>
-
-                  <div className="flex flex-col gap-2">
-                    <Button
-                      onClick={() => {
-                        handleCloseModal();
-                        navigate("/problems");
-                      }}
-                      className="w-full"
-                    >
-                      Browse Library
-                    </Button>
-                    <button
-                      onClick={handleCloseModal}
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
-                    >
-                      Maybe later
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <a
+                href="https://drive.google.com/file/d/1cRqz_GYzouxZ5OQQGYnmPwz6IX0y5v_V/view?usp=sharing"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors px-4 py-2 rounded-full border border-border/50 hover:border-border"
+              >
+                What we're working on
+                <ArrowUpRight className="h-3.5 w-3.5" />
+              </a>
             </motion.div>
           </>
         )}
-      </AnimatePresence>
+      </div>
 
       {/* Auth Modal for logged out users */}
       <AuthModal open={showAuthModal} onOpenChange={setShowAuthModal} onSuccess={handleAuthSuccess} />
