@@ -6,9 +6,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Pre-seeded pain points per niche
-// Based on TikTok Creative Center signals and cross-platform analysis
-const NICHE_PAIN_POINTS: Record<string, Array<{
+interface NichePainPoint {
   id: string;
   title: string;
   subtitle: string;
@@ -21,7 +19,14 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
   rank: number;
   demandVelocity: number;
   competitionGap: number;
-}>> = {
+  hiddenInsight: {
+    surfaceAsk: string;
+    realProblem: string;
+    hiddenSignal: string;
+  };
+}
+
+const NICHE_PAIN_POINTS: Record<string, NichePainPoint[]> = {
   "mental-health": [
     {
       id: "mh-1",
@@ -36,6 +41,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 1,
       demandVelocity: 92,
       competitionGap: 78,
+      hiddenInsight: {
+        surfaceAsk: "I need a better meditation app",
+        realProblem: "I want emotional regulation that doesn't feel like I'm broken",
+        hiddenSignal: "Mental wellness is becoming lifestyle content, not healthcare"
+      },
     },
     {
       id: "mh-2",
@@ -50,6 +60,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 2,
       demandVelocity: 85,
       competitionGap: 72,
+      hiddenInsight: {
+        surfaceAsk: "How do I recover from burnout?",
+        realProblem: "I need structured support without feeling weak for asking",
+        hiddenSignal: "Recovery is social, not solo - community accountability is key"
+      },
     },
     {
       id: "mh-3",
@@ -64,6 +79,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 3,
       demandVelocity: 95,
       competitionGap: 65,
+      hiddenInsight: {
+        surfaceAsk: "I need help sleeping",
+        realProblem: "I need instant relief when anxiety spikes, not another habit to build",
+        hiddenSignal: "On-demand micro-interventions beat structured programs"
+      },
     },
     {
       id: "mh-4",
@@ -78,6 +98,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 4,
       demandVelocity: 88,
       competitionGap: 58,
+      hiddenInsight: {
+        surfaceAsk: "Where can I find affordable therapy?",
+        realProblem: "I need professional-quality support without professional prices",
+        hiddenSignal: "Peer support with light professional oversight is the sweet spot"
+      },
     },
     {
       id: "mh-5",
@@ -92,6 +117,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 5,
       demandVelocity: 78,
       competitionGap: 82,
+      hiddenInsight: {
+        surfaceAsk: "I need to manage stress better",
+        realProblem: "I want to process emotions without feeling emasculated",
+        hiddenSignal: "Mental health needs masculine rebranding, not feminine adaptation"
+      },
     },
   ],
   "weight-fitness": [
@@ -108,6 +138,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 1,
       demandVelocity: 94,
       competitionGap: 71,
+      hiddenInsight: {
+        surfaceAsk: "What's the best workout for beginners?",
+        realProblem: "I need to feel competent before I can feel confident",
+        hiddenSignal: "The barrier isn't knowledge - it's social anxiety about public failure"
+      },
     },
     {
       id: "wf-2",
@@ -122,6 +157,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 2,
       demandVelocity: 86,
       competitionGap: 68,
+      hiddenInsight: {
+        surfaceAsk: "Why did I stop losing weight?",
+        realProblem: "I need validation that I'm not failing, just adapting",
+        hiddenSignal: "Emotional support matters more than metabolic hacks"
+      },
     },
     {
       id: "wf-3",
@@ -136,6 +176,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 3,
       demandVelocity: 91,
       competitionGap: 62,
+      hiddenInsight: {
+        surfaceAsk: "What's the best calorie tracking app?",
+        realProblem: "I want results without obsession",
+        hiddenSignal: "Friction-free tracking that doesn't feel like tracking"
+      },
     },
     {
       id: "wf-4",
@@ -150,6 +195,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 4,
       demandVelocity: 82,
       competitionGap: 75,
+      hiddenInsight: {
+        surfaceAsk: "Best quick workout routines?",
+        realProblem: "I need to maintain consistency when life gets chaotic",
+        hiddenSignal: "Minimum effective dose fitness is the new goal"
+      },
     },
     {
       id: "wf-5",
@@ -164,6 +214,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 5,
       demandVelocity: 79,
       competitionGap: 80,
+      hiddenInsight: {
+        surfaceAsk: "How to lose baby weight?",
+        realProblem: "I need to reconnect with my body, not punish it",
+        hiddenSignal: "Body acceptance is the gateway to fitness motivation"
+      },
     },
   ],
   "skin-beauty": [
@@ -180,6 +235,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 1,
       demandVelocity: 96,
       competitionGap: 74,
+      hiddenInsight: {
+        surfaceAsk: "Best products for adult acne?",
+        realProblem: "I feel like a teenager in an adult's body",
+        hiddenSignal: "Adult acne is as much an identity crisis as a skin issue"
+      },
     },
     {
       id: "sb-2",
@@ -194,6 +254,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 2,
       demandVelocity: 89,
       competitionGap: 69,
+      hiddenInsight: {
+        surfaceAsk: "What's a simple skincare routine?",
+        realProblem: "I want good skin without it becoming my personality",
+        hiddenSignal: "Effortless results are the new flex"
+      },
     },
     {
       id: "sb-3",
@@ -208,6 +273,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 3,
       demandVelocity: 92,
       competitionGap: 85,
+      hiddenInsight: {
+        surfaceAsk: "Sunscreen without white cast?",
+        realProblem: "I shouldn't have to choose between protection and looking good",
+        hiddenSignal: "Inclusive formulation is table stakes, not a feature"
+      },
     },
     {
       id: "sb-4",
@@ -222,6 +292,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 4,
       demandVelocity: 84,
       competitionGap: 67,
+      hiddenInsight: {
+        surfaceAsk: "When should I start anti-aging?",
+        realProblem: "I'm anxious about aging before it even happens",
+        hiddenSignal: "Prevention anxiety is the new anti-aging market"
+      },
     },
     {
       id: "sb-5",
@@ -236,6 +311,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 5,
       demandVelocity: 76,
       competitionGap: 72,
+      hiddenInsight: {
+        surfaceAsk: "Is this ingredient safe?",
+        realProblem: "I don't trust brands to tell me the truth",
+        hiddenSignal: "Ingredient transparency is the new brand trust signal"
+      },
     },
   ],
   "gut-health": [
@@ -252,6 +332,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 1,
       demandVelocity: 95,
       competitionGap: 76,
+      hiddenInsight: {
+        surfaceAsk: "How do I stop bloating?",
+        realProblem: "My body embarrasses me every day",
+        hiddenSignal: "Bloating is a confidence issue disguised as a health issue"
+      },
     },
     {
       id: "gh-2",
@@ -266,6 +351,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 2,
       demandVelocity: 87,
       competitionGap: 70,
+      hiddenInsight: {
+        surfaceAsk: "Which food sensitivity test is accurate?",
+        realProblem: "I just want someone to tell me what I can eat",
+        hiddenSignal: "Decision fatigue is worse than dietary restriction"
+      },
     },
     {
       id: "gh-3",
@@ -280,6 +370,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 3,
       demandVelocity: 82,
       competitionGap: 78,
+      hiddenInsight: {
+        surfaceAsk: "IBS management tips?",
+        realProblem: "I'm planning my life around my bathroom",
+        hiddenSignal: "IBS solutions need to address social anxiety, not just symptoms"
+      },
     },
     {
       id: "gh-4",
@@ -294,6 +389,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 4,
       demandVelocity: 93,
       competitionGap: 82,
+      hiddenInsight: {
+        surfaceAsk: "Why does stress upset my stomach?",
+        realProblem: "I need to understand my body, not just treat symptoms",
+        hiddenSignal: "Holistic gut-brain education is an untapped market"
+      },
     },
     {
       id: "gh-5",
@@ -308,6 +408,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 5,
       demandVelocity: 78,
       competitionGap: 68,
+      hiddenInsight: {
+        surfaceAsk: "Why does healthy food make me bloated?",
+        realProblem: "I feel betrayed by nutrition advice",
+        hiddenSignal: "Personalized nutrition is the only way forward"
+      },
     },
   ],
   "productivity": [
@@ -324,6 +429,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 1,
       demandVelocity: 94,
       competitionGap: 65,
+      hiddenInsight: {
+        surfaceAsk: "Best to-do app for productivity?",
+        realProblem: "I need permission to do less, not tools to do more",
+        hiddenSignal: "Productivity tools are causing the problem they claim to solve"
+      },
     },
     {
       id: "pr-2",
@@ -338,6 +448,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 2,
       demandVelocity: 88,
       competitionGap: 58,
+      hiddenInsight: {
+        surfaceAsk: "How do I focus better?",
+        realProblem: "I've lost the ability to sit with my own thoughts",
+        hiddenSignal: "Focus is a skill atrophied by design, not willpower failure"
+      },
     },
     {
       id: "pr-3",
@@ -352,6 +467,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 3,
       demandVelocity: 83,
       competitionGap: 74,
+      hiddenInsight: {
+        surfaceAsk: "What's the best morning routine?",
+        realProblem: "I want to feel productive without performing productivity",
+        hiddenSignal: "Anti-hustle productivity is the next wave"
+      },
     },
     {
       id: "pr-4",
@@ -366,6 +486,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 4,
       demandVelocity: 91,
       competitionGap: 72,
+      hiddenInsight: {
+        surfaceAsk: "How do I stop procrastinating?",
+        realProblem: "I'm afraid of finding out I'm not good enough",
+        hiddenSignal: "Procrastination is an emotional regulation problem, not a time management one"
+      },
     },
     {
       id: "pr-5",
@@ -380,6 +505,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 5,
       demandVelocity: 77,
       competitionGap: 80,
+      hiddenInsight: {
+        surfaceAsk: "How to balance freelance and life?",
+        realProblem: "I chose freedom but found a new kind of prison",
+        hiddenSignal: "Freelancer-specific productivity is an underserved niche"
+      },
     },
   ],
   "career": [
@@ -396,6 +526,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 1,
       demandVelocity: 92,
       competitionGap: 77,
+      hiddenInsight: {
+        surfaceAsk: "How do I network effectively?",
+        realProblem: "I want career opportunities without becoming someone I'm not",
+        hiddenSignal: "Authentic networking for introverts is massively underserved"
+      },
     },
     {
       id: "ca-2",
@@ -410,6 +545,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 2,
       demandVelocity: 86,
       competitionGap: 69,
+      hiddenInsight: {
+        surfaceAsk: "How do I negotiate salary?",
+        realProblem: "I'm terrified of confrontation and rejection",
+        hiddenSignal: "Salary negotiation is an emotional skills gap, not an information gap"
+      },
     },
     {
       id: "ca-3",
@@ -424,6 +564,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 3,
       demandVelocity: 84,
       competitionGap: 62,
+      hiddenInsight: {
+        surfaceAsk: "How do I build a LinkedIn presence?",
+        realProblem: "I hate self-promotion but need to be visible",
+        hiddenSignal: "Anti-performative personal branding is the next trend"
+      },
     },
     {
       id: "ca-4",
@@ -438,6 +583,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 4,
       demandVelocity: 95,
       competitionGap: 83,
+      hiddenInsight: {
+        surfaceAsk: "Is it too late to change careers?",
+        realProblem: "I'm terrified of wasting the years I've already invested",
+        hiddenSignal: "Mid-career pivots need financial and emotional scaffolding"
+      },
     },
     {
       id: "ca-5",
@@ -452,6 +602,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 5,
       demandVelocity: 79,
       competitionGap: 55,
+      hiddenInsight: {
+        surfaceAsk: "How do I find remote jobs?",
+        realProblem: "I'm shouting into a void and losing hope",
+        hiddenSignal: "Job search is a mental health crisis, not just a skills problem"
+      },
     },
   ],
   "social": [
@@ -468,6 +623,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 1,
       demandVelocity: 97,
       competitionGap: 84,
+      hiddenInsight: {
+        surfaceAsk: "How do I make friends as an adult?",
+        realProblem: "I'm lonely but don't know how to admit it",
+        hiddenSignal: "Adult friendship is a logistics problem wrapped in shame"
+      },
     },
     {
       id: "sc-2",
@@ -482,6 +642,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 2,
       demandVelocity: 94,
       competitionGap: 71,
+      hiddenInsight: {
+        surfaceAsk: "Which dating app is best?",
+        realProblem: "I want to meet someone without performing a version of myself",
+        hiddenSignal: "Low-effort, high-quality connection is the unmet need"
+      },
     },
     {
       id: "sc-3",
@@ -496,6 +661,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 3,
       demandVelocity: 87,
       competitionGap: 76,
+      hiddenInsight: {
+        surfaceAsk: "How do I deal with social anxiety?",
+        realProblem: "I want connection but the fear is paralyzing",
+        hiddenSignal: "Social skills training with exposure therapy elements"
+      },
     },
     {
       id: "sc-4",
@@ -510,6 +680,11 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 4,
       demandVelocity: 82,
       competitionGap: 88,
+      hiddenInsight: {
+        surfaceAsk: "How do I meet people in a new city?",
+        realProblem: "I'm grieving my old life while building a new one",
+        hiddenSignal: "Relocation support is emotional, not just logistical"
+      },
     },
     {
       id: "sc-5",
@@ -524,18 +699,21 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       rank: 5,
       demandVelocity: 75,
       competitionGap: 79,
+      hiddenInsight: {
+        surfaceAsk: "How do I stay in touch with old friends?",
+        realProblem: "I feel guilty about friendships fading but can't fix it",
+        hiddenSignal: "Low-friction async connection tools for friends"
+      },
     },
   ],
 };
 
-// Calculate virality based on thresholds (100k+ views AND engagement rate > 3%)
 function checkVirality(views: number, shares: number, saves: number): boolean {
   const totalEngagement = shares + saves;
   const engagementRate = views > 0 ? (totalEngagement / views) * 100 : 0;
   return (views >= 100000 && engagementRate > 3) || views >= 1000000;
 }
 
-// Calculate opportunity score
 function calculateOpportunityScore(demandVelocity: number, competitionGap: number): number {
   return Math.round((demandVelocity * 0.6) + (competitionGap * 0.4));
 }
@@ -557,7 +735,6 @@ serve(async (req) => {
 
     console.log(`Processing niche: ${niche}`);
 
-    // Get pain points for the selected niche
     const painPoints = NICHE_PAIN_POINTS[niche];
     
     if (!painPoints || painPoints.length === 0) {
@@ -567,7 +744,6 @@ serve(async (req) => {
       );
     }
 
-    // Process results and check virality
     const results = painPoints.map((point) => {
       const isViral = checkVirality(point.views, point.shares, point.saves);
       const opportunityScore = calculateOpportunityScore(point.demandVelocity, point.competitionGap);
@@ -586,19 +762,18 @@ serve(async (req) => {
         isViral,
         opportunityScore,
         addedToLibrary: isViral,
+        hiddenInsight: point.hiddenInsight,
       };
     });
 
     console.log(`Found ${results.length} pain points, ${results.filter(r => r.isViral).length} viral`);
 
-    // Add viral results to the problems table
     const viralResults = results.filter(r => r.isViral);
     
     if (viralResults.length > 0) {
       const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
       
       for (const result of viralResults) {
-        // Check if this problem already exists (by title)
         const { data: existing } = await supabase
           .from('problems')
           .select('id')
@@ -624,6 +799,7 @@ serve(async (req) => {
             slots_filled: 0,
             demand_velocity: Math.round(result.opportunityScore * 0.8),
             competition_gap: Math.round(100 - result.opportunityScore * 0.3),
+            hidden_insight: result.hiddenInsight,
           };
 
           const { error } = await supabase.from('problems').insert(problemData);
@@ -634,7 +810,12 @@ serve(async (req) => {
             console.log(`Added viral problem to library: ${result.title}`);
           }
         } else {
-          console.log(`Problem already exists: ${result.title}`);
+          // Update the existing problem with hidden_insight if missing
+          await supabase
+            .from('problems')
+            .update({ hidden_insight: result.hiddenInsight })
+            .eq('id', existing.id);
+          console.log(`Updated hidden insight for: ${result.title}`);
         }
       }
     }
