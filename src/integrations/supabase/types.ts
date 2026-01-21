@@ -237,6 +237,33 @@ export type Database = {
           },
         ]
       }
+      paywall_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          feature: string
+          id: string
+          metadata: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          feature: string
+          id?: string
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          feature?: string
+          id?: string
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       problem_builders: {
         Row: {
           id: string
