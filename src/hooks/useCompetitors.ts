@@ -13,6 +13,7 @@ export interface Competitor {
   ratingChange?: number;
   firstSeenAt?: string;
   isNew?: boolean;
+  source?: "serp" | "hackernews" | "producthunt";
 }
 
 export interface ThreatLevel {

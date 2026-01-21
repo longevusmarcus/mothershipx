@@ -567,11 +567,21 @@ const ProblemDetail = () => {
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <p className="text-sm font-medium truncate">{competitor.name}</p>
                             {competitor.isNew && (
                               <Badge variant="outline" className="text-[9px] px-1 py-0 border-primary/50 text-primary">
                                 New
+                              </Badge>
+                            )}
+                            {competitor.source === "hackernews" && (
+                              <Badge variant="outline" className="text-[9px] px-1 py-0 bg-warning/10 border-warning/50 text-warning">
+                                HN
+                              </Badge>
+                            )}
+                            {(competitor.url?.includes("producthunt.com") || competitor.source === "producthunt") && (
+                              <Badge variant="outline" className="text-[9px] px-1 py-0 bg-primary/10 border-primary/50 text-primary">
+                                PH
                               </Badge>
                             )}
                             <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
