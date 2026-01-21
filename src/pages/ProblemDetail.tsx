@@ -16,6 +16,7 @@ import {
   Lock,
   ArrowUp,
   MessageSquare,
+  Plus,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { FitVerificationPanel } from "@/components/FitVerificationPanel";
@@ -684,6 +685,39 @@ const ProblemDetail = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Floating Submit Button */}
+      <motion.button
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
+        onClick={() => {
+          if (!user) {
+            toast({
+              title: "Sign in required",
+              description: "Please sign in to submit a build",
+            });
+            return;
+          }
+          navigate("/submit", {
+            state: {
+              problem: {
+                id: problem.id,
+                title: problem.title,
+                subtitle: problem.subtitle,
+                niche: problem.niche,
+                opportunityScore: problem.opportunityScore,
+                sentiment: problem.sentiment,
+              },
+              joinType: "solo",
+            },
+          });
+        }}
+        className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full bg-foreground text-background shadow-lg hover:scale-105 active:scale-95 transition-transform flex items-center justify-center group"
+        aria-label="Submit build"
+      >
+        <Plus className="h-6 w-6 transition-transform group-hover:rotate-90" />
+      </motion.button>
 
       {/* Subscription Paywall */}
       <SubscriptionPaywall 
