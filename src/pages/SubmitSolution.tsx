@@ -88,8 +88,18 @@ interface ChallengeContext {
   tags: string[];
 }
 
+interface ProblemContext {
+  id: string;
+  title: string;
+  subtitle?: string;
+  niche: string;
+  opportunityScore: number;
+  sentiment: string;
+}
+
 interface LocationState {
   challenge?: ChallengeContext;
+  problem?: ProblemContext;
   joinType?: "solo" | "team";
   entryFee?: number;
 }
@@ -103,6 +113,7 @@ const SubmitSolution = () => {
   
   const state = location.state as LocationState | null;
   const challenge = state?.challenge;
+  const problem = state?.problem;
   const joinType = state?.joinType || "solo";
   
   const [currentStep, setCurrentStep] = useState(0);
@@ -174,6 +185,7 @@ const SubmitSolution = () => {
           paymentInfo: data.paymentInfo,
         },
         challengeId: challenge?.id,
+        problemId: problem?.id,
         joinType: joinType as "solo" | "team",
       });
 
@@ -187,10 +199,12 @@ const SubmitSolution = () => {
       setCurrentStep(2);
       
       toast({
-        title: "Entry Submitted!",
+        title: "Build Submitted!",
         description: challenge 
           ? `Your build for "${challenge.title}" is now in the competition.`
-          : "Your solution has been submitted successfully.",
+          : problem
+            ? `Your build for "${problem.title}" has been submitted.`
+            : "Your solution has been submitted successfully.",
       });
     } catch (error) {
       clearInterval(progressInterval);
@@ -209,6 +223,8 @@ const SubmitSolution = () => {
   const handleBack = () => {
     if (challenge) {
       navigate("/challenges");
+    } else if (problem) {
+      navigate(`/problems/${problem.id}`);
     } else {
       navigate(-1);
     }
@@ -239,7 +255,9 @@ const SubmitSolution = () => {
           <p className="text-sm text-muted-foreground mt-1">
             {challenge 
               ? `Compete for $${challenge.winnerPrize.toFixed(0)} in "${challenge.title}"`
-              : "Submit your solution for AI validation"
+              : problem
+                ? `Submit your build for "${problem.title}"`
+                : "Submit your solution for AI validation"
             }
           </p>
         </motion.div>
@@ -279,6 +297,47 @@ const SubmitSolution = () => {
             <div className="mt-3 pt-3 border-t border-border">
               <p className="text-xs text-muted-foreground">Example build idea</p>
               <p className="text-sm italic mt-1">"{challenge.example}"</p>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Problem Context */}
+        {problem && !challenge && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="mb-6 p-4 rounded-lg border border-border bg-card"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0 flex-1">
+                <p className="font-medium truncate">{problem.title}</p>
+                {problem.subtitle && (
+                  <p className="text-sm text-muted-foreground mt-0.5 line-clamp-2">
+                    {problem.subtitle}
+                  </p>
+                )}
+              </div>
+              <div className="flex items-center gap-3 text-sm shrink-0">
+                <div className="text-right">
+                  <span className="font-medium">{problem.opportunityScore}</span>
+                  <p className="text-[10px] text-muted-foreground">score</p>
+                </div>
+                <Badge 
+                  variant="secondary" 
+                  className={`text-[10px] ${
+                    problem.sentiment === 'exploding' ? 'bg-success/10 text-success' :
+                    problem.sentiment === 'rising' ? 'bg-warning/10 text-warning' :
+                    'bg-muted'
+                  }`}
+                >
+                  {problem.sentiment}
+                </Badge>
+              </div>
+            </div>
+            <div className="mt-3 pt-3 border-t border-border">
+              <p className="text-xs text-muted-foreground">Niche</p>
+              <p className="text-sm mt-1">{problem.niche}</p>
             </div>
           </motion.div>
         )}
