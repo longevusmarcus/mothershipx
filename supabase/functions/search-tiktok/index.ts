@@ -48,6 +48,19 @@ interface ApifyRunResponse {
   data: { id: string; defaultDatasetId: string; status: string };
 }
 
+interface CachedResult {
+  id: string;
+  niche: string;
+  results: any[];
+  videos_analyzed: number;
+  queries_used: string[];
+  created_at: string;
+  expires_at: string;
+}
+
+// Cache duration in hours
+const CACHE_DURATION_HOURS = 24;
+
 // Niche to search query mapping
 const NICHE_QUERIES: Record<string, string[]> = {
   "mental-health": ["mental health struggle", "anxiety help me", "burnout symptoms", "therapy alternative", "can't sleep anxiety"],
@@ -81,6 +94,58 @@ function generateSources(totalViews: number, avgEngagement: number): TrendSignal
     { source: "tiktok", metric: "Avg Engagement", value: `${(avgEngagement * 100).toFixed(1)}%`, change: Math.round(avgEngagement * 100), icon: "💬" },
     { source: "google_trends", metric: "Search Interest", value: `${Math.min(99, Math.round(avgEngagement * 500))}/100`, change: Math.round(avgEngagement * 30), icon: "📈" },
   ];
+}
+
+async function getCachedResults(supabase: any, niche: string): Promise<CachedResult | null> {
+  const { data, error } = await supabase
+    .from('search_cache')
+    .select('*')
+    .eq('niche', niche)
+    .gt('expires_at', new Date().toISOString())
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Cache lookup error:', error);
+    return null;
+  }
+
+  return data;
+}
+
+async function setCachedResults(
+  supabase: any, 
+  niche: string, 
+  results: any[], 
+  videosAnalyzed: number,
+  queriesUsed: string[]
+): Promise<void> {
+  // Delete old cache entries for this niche
+  await supabase
+    .from('search_cache')
+    .delete()
+    .eq('niche', niche);
+
+  // Insert new cache entry
+  const expiresAt = new Date();
+  expiresAt.setHours(expiresAt.getHours() + CACHE_DURATION_HOURS);
+
+  const { error } = await supabase
+    .from('search_cache')
+    .insert({
+      niche,
+      results,
+      videos_analyzed: videosAnalyzed,
+      queries_used: queriesUsed,
+      expires_at: expiresAt.toISOString(),
+    });
+
+  if (error) {
+    console.error('Cache write error:', error);
+  } else {
+    console.log(`Cached ${results.length} results for niche: ${niche}`);
+  }
 }
 
 async function fetchTikTokData(query: string, apiToken: string): Promise<TikTokVideo[]> {
@@ -329,16 +394,46 @@ serve(async (req) => {
     if (!APIFY_API_TOKEN) throw new Error('APIFY_API_TOKEN is not configured');
     if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY is not configured');
 
-    const { niche } = await req.json();
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+    const { niche, forceRefresh } = await req.json();
     
     if (!niche || typeof niche !== 'string') {
       throw new Error('Niche selection is required');
     }
 
-    console.log(`Processing niche: ${niche}`);
+    console.log(`Processing niche: ${niche}, forceRefresh: ${forceRefresh}`);
+
+    const category = NICHE_CATEGORIES[niche] || niche;
+
+    // Check cache first (unless force refresh requested)
+    if (!forceRefresh) {
+      const cached = await getCachedResults(supabase, niche);
+      
+      if (cached) {
+        console.log(`Cache HIT for niche: ${niche}, ${cached.results.length} results`);
+        
+        const viralCount = cached.results.filter((r: any) => r.isViral).length;
+        
+        return new Response(
+          JSON.stringify({ 
+            success: true, 
+            data: cached.results, 
+            viralCount,
+            source: "cache",
+            cachedAt: cached.created_at,
+            expiresAt: cached.expires_at,
+            videosAnalyzed: cached.videos_analyzed,
+            queries: cached.queries_used,
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      console.log(`Cache MISS for niche: ${niche}`);
+    }
 
     const queries = NICHE_QUERIES[niche];
-    const category = NICHE_CATEGORIES[niche] || niche;
     
     if (!queries || queries.length === 0) {
       return new Response(
@@ -421,12 +516,13 @@ serve(async (req) => {
 
     console.log(`Processed ${results.length} AI-analyzed problems, ${results.filter(r => r.isViral).length} viral`);
 
+    // Cache the results
+    await setCachedResults(supabase, niche, results, allVideos.length, selectedQueries);
+
     // Save viral results to database
     const viralResults = results.filter(r => r.isViral);
     
     if (viralResults.length > 0) {
-      const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-      
       for (const result of viralResults) {
         const { data: existing } = await supabase
           .from('problems')

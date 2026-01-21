@@ -553,6 +553,36 @@ export type Database = {
           },
         ]
       }
+      search_cache: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          niche: string
+          queries_used: string[]
+          results: Json
+          videos_analyzed: number
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          niche: string
+          queries_used?: string[]
+          results: Json
+          videos_analyzed?: number
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          niche?: string
+          queries_used?: string[]
+          results?: Json
+          videos_analyzed?: number
+        }
+        Relationships: []
+      }
       search_interests: {
         Row: {
           created_at: string
