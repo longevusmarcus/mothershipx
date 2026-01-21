@@ -123,7 +123,11 @@ export function useProblems(category?: string) {
       }
 
       if (!data || data.length === 0) {
-        // Return mock data if database is empty
+        // If the user selected a category and it has no results, show an empty state
+        // (do NOT fall back to mock data, which makes the filter appear broken).
+        if (category && category !== "All") return [];
+
+        // Only fall back to mock data when the whole table is empty (initial demo state).
         return mockMarketProblems;
       }
 
