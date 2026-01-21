@@ -1,17 +1,12 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+// Pre-seeded pain points and trends per niche
+// These are curated from TikTok Creative Center and cross-platform signals
+// Each entry represents aggregated signals, not individual videos
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
-// Pre-seeded pain points per niche
-// Based on TikTok Creative Center signals and cross-platform analysis
-const NICHE_PAIN_POINTS: Record<string, Array<{
+export interface NichePainPoint {
   id: string;
   title: string;
   subtitle: string;
+  niche: string;
   category: string;
   sentiment: "exploding" | "rising" | "stable" | "declining";
   views: number;
@@ -21,12 +16,15 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
   rank: number;
   demandVelocity: number;
   competitionGap: number;
-}>> = {
+}
+
+export const NICHE_PAIN_POINTS: Record<string, NichePainPoint[]> = {
   "mental-health": [
     {
       id: "mh-1",
       title: "Anxiety apps feel clinical, not human",
       subtitle: "Gen Z wants vibe-based mental wellness, not therapy-lite",
+      niche: "mental-health",
       category: "Mental Health",
       sentiment: "exploding",
       views: 2400000,
@@ -41,6 +39,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "mh-2",
       title: "Burnout recovery feels impossible alone",
       subtitle: "Remote workers need community-based support, not solo meditation",
+      niche: "mental-health",
       category: "Mental Health",
       sentiment: "rising",
       views: 1800000,
@@ -55,6 +54,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "mh-3",
       title: "Overthinking at 3am has no quick fix",
       subtitle: "People want instant calm, not 30-day programs",
+      niche: "mental-health",
       category: "Mental Health",
       sentiment: "exploding",
       views: 3100000,
@@ -69,6 +69,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "mh-4",
       title: "Therapy is too expensive for most",
       subtitle: "Demand for affordable peer-support alternatives",
+      niche: "mental-health",
       category: "Mental Health",
       sentiment: "rising",
       views: 2200000,
@@ -83,6 +84,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "mh-5",
       title: "Men don't know how to talk about feelings",
       subtitle: "Masculinity-friendly mental health content is rare",
+      niche: "mental-health",
       category: "Mental Health",
       sentiment: "rising",
       views: 1500000,
@@ -99,6 +101,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "wf-1",
       title: "Gym anxiety stops beginners before they start",
       subtitle: "First-timers want judgment-free guidance, not intimidation",
+      niche: "weight-fitness",
       category: "Weight & Fitness",
       sentiment: "exploding",
       views: 2800000,
@@ -113,6 +116,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "wf-2",
       title: "Weight loss plateaus feel like failure",
       subtitle: "People need motivation to push through stalls",
+      niche: "weight-fitness",
       category: "Weight & Fitness",
       sentiment: "rising",
       views: 1900000,
@@ -127,6 +131,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "wf-3",
       title: "Counting calories is mentally exhausting",
       subtitle: "Intuitive eating trends show people want simpler systems",
+      niche: "weight-fitness",
       category: "Weight & Fitness",
       sentiment: "exploding",
       views: 2500000,
@@ -141,6 +146,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "wf-4",
       title: "No time for hour-long workouts",
       subtitle: "Busy parents and workers need 15-minute effective routines",
+      niche: "weight-fitness",
       category: "Weight & Fitness",
       sentiment: "rising",
       views: 2100000,
@@ -155,6 +161,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "wf-5",
       title: "Post-pregnancy body confidence is shattered",
       subtitle: "New moms need supportive, realistic fitness journeys",
+      niche: "weight-fitness",
       category: "Weight & Fitness",
       sentiment: "rising",
       views: 1600000,
@@ -171,6 +178,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "sb-1",
       title: "Adult acne is embarrassing and misunderstood",
       subtitle: "Skincare for 30+ with breakouts is underdeveloped",
+      niche: "skin-beauty",
       category: "Skin & Beauty",
       sentiment: "exploding",
       views: 3200000,
@@ -185,6 +193,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "sb-2",
       title: "Skincare routines are overwhelming",
       subtitle: "10-step routines are out, minimalism is trending",
+      niche: "skin-beauty",
       category: "Skin & Beauty",
       sentiment: "rising",
       views: 2700000,
@@ -199,6 +208,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "sb-3",
       title: "Sunscreen feels gross on dark skin",
       subtitle: "White cast and greasy formulas exclude POC consumers",
+      niche: "skin-beauty",
       category: "Skin & Beauty",
       sentiment: "exploding",
       views: 2400000,
@@ -213,6 +223,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "sb-4",
       title: "Anti-aging starts too late for most",
       subtitle: "20-somethings want preventive, not reactive skincare",
+      niche: "skin-beauty",
       category: "Skin & Beauty",
       sentiment: "rising",
       views: 1800000,
@@ -227,6 +238,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "sb-5",
       title: "Ingredient lists are unreadable",
       subtitle: "Demand for plain-English product transparency",
+      niche: "skin-beauty",
       category: "Skin & Beauty",
       sentiment: "stable",
       views: 1400000,
@@ -243,6 +255,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "gh-1",
       title: "Bloating ruins daily life and confidence",
       subtitle: "Millions searching for real solutions beyond probiotics",
+      niche: "gut-health",
       category: "Gut Health",
       sentiment: "exploding",
       views: 2900000,
@@ -257,6 +270,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "gh-2",
       title: "Food sensitivity tests are confusing",
       subtitle: "People want clear answers, not more elimination diets",
+      niche: "gut-health",
       category: "Gut Health",
       sentiment: "rising",
       views: 2100000,
@@ -271,6 +285,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "gh-3",
       title: "IBS is embarrassing to talk about",
       subtitle: "Stigma prevents people from seeking help",
+      niche: "gut-health",
       category: "Gut Health",
       sentiment: "rising",
       views: 1800000,
@@ -285,6 +300,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "gh-4",
       title: "Gut-brain connection is poorly understood",
       subtitle: "People linking anxiety to digestion want answers",
+      niche: "gut-health",
       category: "Gut Health",
       sentiment: "exploding",
       views: 2600000,
@@ -299,6 +315,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "gh-5",
       title: "Healthy eating still causes digestive issues",
       subtitle: "FODMAPs and fiber confusion among health-conscious users",
+      niche: "gut-health",
       category: "Gut Health",
       sentiment: "stable",
       views: 1500000,
@@ -315,6 +332,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "pr-1",
       title: "To-do apps create more anxiety than clarity",
       subtitle: "Task overload is burning out productivity enthusiasts",
+      niche: "productivity",
       category: "Productivity",
       sentiment: "exploding",
       views: 2700000,
@@ -329,6 +347,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "pr-2",
       title: "Focus is impossible with constant notifications",
       subtitle: "Digital minimalism trend shows demand for focus tools",
+      niche: "productivity",
       category: "Productivity",
       sentiment: "rising",
       views: 2200000,
@@ -343,6 +362,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "pr-3",
       title: "Morning routines feel performative",
       subtitle: "Backlash against 5am wake-up culture is growing",
+      niche: "productivity",
       category: "Productivity",
       sentiment: "rising",
       views: 1900000,
@@ -357,6 +377,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "pr-4",
       title: "Procrastination stems from perfectionism",
       subtitle: "People need emotional tools, not more systems",
+      niche: "productivity",
       category: "Productivity",
       sentiment: "exploding",
       views: 2500000,
@@ -371,6 +392,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "pr-5",
       title: "Work-life balance is a myth for freelancers",
       subtitle: "Gig workers need different productivity frameworks",
+      niche: "productivity",
       category: "Productivity",
       sentiment: "stable",
       views: 1400000,
@@ -387,6 +409,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "ca-1",
       title: "Networking feels fake and exhausting",
       subtitle: "Introverts need authentic connection strategies",
+      niche: "career",
       category: "Career",
       sentiment: "exploding",
       views: 2400000,
@@ -401,6 +424,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "ca-2",
       title: "Salary negotiation terrifies most people",
       subtitle: "Fear of rejection leaves money on the table",
+      niche: "career",
       category: "Career",
       sentiment: "rising",
       views: 2000000,
@@ -415,6 +439,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "ca-3",
       title: "LinkedIn feels like a highlight reel",
       subtitle: "Authenticity gap making platform unusable for many",
+      niche: "career",
       category: "Career",
       sentiment: "rising",
       views: 1800000,
@@ -429,6 +454,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "ca-4",
       title: "Career pivots in your 30s feel impossible",
       subtitle: "Age-related career anxiety is spiking",
+      niche: "career",
       category: "Career",
       sentiment: "exploding",
       views: 2800000,
@@ -443,6 +469,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "ca-5",
       title: "Remote job search is overwhelming",
       subtitle: "Thousands of applicants, no responses",
+      niche: "career",
       category: "Career",
       sentiment: "stable",
       views: 1600000,
@@ -459,6 +486,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "sc-1",
       title: "Making friends as an adult is impossibly hard",
       subtitle: "Post-college loneliness epidemic needs solutions",
+      niche: "social",
       category: "Social Connections",
       sentiment: "exploding",
       views: 3500000,
@@ -473,6 +501,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "sc-2",
       title: "Dating apps feel like a second job",
       subtitle: "Swipe fatigue driving demand for alternatives",
+      niche: "social",
       category: "Social Connections",
       sentiment: "exploding",
       views: 2900000,
@@ -487,6 +516,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "sc-3",
       title: "Social anxiety makes everything harder",
       subtitle: "Fear of judgment prevents authentic connection",
+      niche: "social",
       category: "Social Connections",
       sentiment: "rising",
       views: 2200000,
@@ -501,6 +531,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "sc-4",
       title: "Moving to a new city means starting over",
       subtitle: "Relocation loneliness is underserved",
+      niche: "social",
       category: "Social Connections",
       sentiment: "rising",
       views: 1800000,
@@ -515,6 +546,7 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
       id: "sc-5",
       title: "Maintaining long-distance friendships is hard",
       subtitle: "People drift apart despite good intentions",
+      niche: "social",
       category: "Social Connections",
       sentiment: "stable",
       views: 1500000,
@@ -527,129 +559,3 @@ const NICHE_PAIN_POINTS: Record<string, Array<{
     },
   ],
 };
-
-// Calculate virality based on thresholds (100k+ views AND engagement rate > 3%)
-function checkVirality(views: number, shares: number, saves: number): boolean {
-  const totalEngagement = shares + saves;
-  const engagementRate = views > 0 ? (totalEngagement / views) * 100 : 0;
-  return (views >= 100000 && engagementRate > 3) || views >= 1000000;
-}
-
-// Calculate opportunity score
-function calculateOpportunityScore(demandVelocity: number, competitionGap: number): number {
-  return Math.round((demandVelocity * 0.6) + (competitionGap * 0.4));
-}
-
-serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  try {
-    const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
-    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-
-    const { niche } = await req.json();
-    
-    if (!niche || typeof niche !== 'string') {
-      throw new Error('Niche selection is required');
-    }
-
-    console.log(`Processing niche: ${niche}`);
-
-    // Get pain points for the selected niche
-    const painPoints = NICHE_PAIN_POINTS[niche];
-    
-    if (!painPoints || painPoints.length === 0) {
-      return new Response(
-        JSON.stringify({ success: true, data: [], viralCount: 0 }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Process results and check virality
-    const results = painPoints.map((point) => {
-      const isViral = checkVirality(point.views, point.shares, point.saves);
-      const opportunityScore = calculateOpportunityScore(point.demandVelocity, point.competitionGap);
-      
-      return {
-        id: point.id,
-        title: point.title,
-        subtitle: point.subtitle,
-        category: point.category,
-        sentiment: point.sentiment,
-        views: point.views,
-        saves: point.saves,
-        shares: point.shares,
-        painPoints: point.painPoints,
-        rank: point.rank,
-        isViral,
-        opportunityScore,
-        addedToLibrary: isViral,
-      };
-    });
-
-    console.log(`Found ${results.length} pain points, ${results.filter(r => r.isViral).length} viral`);
-
-    // Add viral results to the problems table
-    const viralResults = results.filter(r => r.isViral);
-    
-    if (viralResults.length > 0) {
-      const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-      
-      for (const result of viralResults) {
-        // Check if this problem already exists (by title)
-        const { data: existing } = await supabase
-          .from('problems')
-          .select('id')
-          .eq('title', result.title)
-          .maybeSingle();
-
-        if (!existing) {
-          const problemData = {
-            title: result.title,
-            subtitle: result.subtitle,
-            category: result.category,
-            niche: niche.replace('-', ' '),
-            sentiment: result.sentiment,
-            opportunity_score: result.opportunityScore,
-            views: result.views,
-            saves: result.saves,
-            shares: result.shares,
-            is_viral: true,
-            pain_points: result.painPoints,
-            trending_rank: result.rank,
-            sources: [{ source: "TikTok", type: "trend_analysis" }],
-            slots_total: 100,
-            slots_filled: 0,
-            demand_velocity: Math.round(result.opportunityScore * 0.8),
-            competition_gap: Math.round(100 - result.opportunityScore * 0.3),
-          };
-
-          const { error } = await supabase.from('problems').insert(problemData);
-
-          if (error) {
-            console.error('Error inserting problem:', error);
-          } else {
-            console.log(`Added viral problem to library: ${result.title}`);
-          }
-        } else {
-          console.log(`Problem already exists: ${result.title}`);
-        }
-      }
-    }
-
-    return new Response(
-      JSON.stringify({ success: true, data: results, viralCount: viralResults.length }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
-
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('Search error:', errorMessage);
-    return new Response(
-      JSON.stringify({ success: false, error: errorMessage }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
-  }
-});
