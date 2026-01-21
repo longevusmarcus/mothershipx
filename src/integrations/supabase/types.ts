@@ -1094,6 +1094,15 @@ export type Database = {
         }
         Returns: boolean
       }
+      insert_paywall_event: {
+        Args: {
+          p_event_type: string
+          p_feature: string
+          p_metadata?: Json
+          p_user_id: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "subscriber" | "user"
