@@ -14,6 +14,8 @@ import {
   Search,
   Loader2,
   Lock,
+  ArrowUp,
+  MessageSquare,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { FitVerificationPanel } from "@/components/FitVerificationPanel";
@@ -56,6 +58,16 @@ const getSentimentLabel = (sentiment: string): { label: string; className: strin
     default:
       return { label: "Declining", className: "text-muted-foreground bg-secondary" };
   }
+};
+
+// Detect source type from problem sources
+const detectSourceType = (sources: any[] | undefined): "reddit" | "youtube" | "tiktok" | "default" => {
+  if (!sources || sources.length === 0) return "default";
+  const sourceName = sources[0]?.source?.toLowerCase();
+  if (sourceName === "reddit") return "reddit";
+  if (sourceName === "youtube") return "youtube";
+  if (sourceName === "tiktok") return "tiktok";
+  return "default";
 };
 
 const mockTopSolution = {
@@ -151,6 +163,7 @@ const ProblemDetail = () => {
   const slotsRemaining = problem.slotsTotal - problem.slotsFilled;
   const fillPercentage = (problem.slotsFilled / problem.slotsTotal) * 100;
   const sentiment = getSentimentLabel(problem.sentiment);
+  const sourceType = detectSourceType(problem.sources);
 
   const handleJoinToggle = () => {
     if (!user) {
@@ -225,7 +238,7 @@ const ProblemDetail = () => {
             {problem.subtitle}
           </p>
           
-          {/* Stats Row */}
+          {/* Stats Row - source-specific */}
           <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
             {problem.trendingRank && (
               <span className="flex items-center gap-1">
@@ -233,23 +246,63 @@ const ProblemDetail = () => {
                 #{problem.trendingRank}
               </span>
             )}
-            {problem.views && (
-              <span className="flex items-center gap-1">
-                <Eye className="h-3.5 w-3.5" />
-                {formatNumber(problem.views)} Views
-              </span>
-            )}
-            {problem.saves && (
-              <span className="flex items-center gap-1">
-                <Bookmark className="h-3.5 w-3.5" />
-                {formatNumber(problem.saves)} Saves
-              </span>
-            )}
-            {problem.shares && (
-              <span className="flex items-center gap-1">
-                <Share2 className="h-3.5 w-3.5" />
-                {formatNumber(problem.shares)} Shares
-              </span>
+            {sourceType === "reddit" ? (
+              <>
+                {problem.views > 0 && (
+                  <span className="flex items-center gap-1">
+                    <ArrowUp className="h-3.5 w-3.5" />
+                    {formatNumber(problem.views)} upvotes
+                  </span>
+                )}
+                {problem.shares > 0 && (
+                  <span className="flex items-center gap-1">
+                    <MessageSquare className="h-3.5 w-3.5" />
+                    {formatNumber(problem.shares)} comments
+                  </span>
+                )}
+              </>
+            ) : sourceType === "youtube" ? (
+              <>
+                {problem.views > 0 && (
+                  <span className="flex items-center gap-1">
+                    <Eye className="h-3.5 w-3.5" />
+                    {formatNumber(problem.views)} views
+                  </span>
+                )}
+                {problem.saves > 0 && (
+                  <span className="flex items-center gap-1">
+                    <Bookmark className="h-3.5 w-3.5" />
+                    {formatNumber(problem.saves)} likes
+                  </span>
+                )}
+                {problem.shares > 0 && (
+                  <span className="flex items-center gap-1">
+                    <MessageSquare className="h-3.5 w-3.5" />
+                    {formatNumber(problem.shares)} comments
+                  </span>
+                )}
+              </>
+            ) : (
+              <>
+                {problem.views > 0 && (
+                  <span className="flex items-center gap-1">
+                    <Eye className="h-3.5 w-3.5" />
+                    {formatNumber(problem.views)} Views
+                  </span>
+                )}
+                {problem.saves > 0 && (
+                  <span className="flex items-center gap-1">
+                    <Bookmark className="h-3.5 w-3.5" />
+                    {formatNumber(problem.saves)} Saves
+                  </span>
+                )}
+                {problem.shares > 0 && (
+                  <span className="flex items-center gap-1">
+                    <Share2 className="h-3.5 w-3.5" />
+                    {formatNumber(problem.shares)} Shares
+                  </span>
+                )}
+              </>
             )}
           </div>
           
