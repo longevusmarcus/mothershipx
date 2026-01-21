@@ -53,8 +53,9 @@ const detectSourceType = (result: SearchResult): "reddit" | "youtube" | "tiktok"
   if (result.sourceType) return result.sourceType;
   if (result.id?.startsWith("reddit-")) return "reddit";
   if (result.id?.startsWith("yt-")) return "youtube";
-  if (result.sources?.some(s => s.name === "reddit" || s.source?.toLowerCase() === "reddit")) return "reddit";
-  if (result.sources?.some(s => s.name === "youtube" || s.source?.toLowerCase() === "youtube")) return "youtube";
+  // Check both 'source' and 'name' keys for compatibility
+  if (result.sources?.some(s => (s as any).name === "reddit" || s.source?.toLowerCase() === "reddit")) return "reddit";
+  if (result.sources?.some(s => (s as any).name === "youtube" || s.source?.toLowerCase() === "youtube")) return "youtube";
   return "default";
 };
 

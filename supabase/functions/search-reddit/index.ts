@@ -356,31 +356,50 @@ serve(async (req) => {
     const totalScore = posts.reduce((sum, p) => sum + p.score, 0);
     const totalComments = posts.reduce((sum, p) => sum + p.num_comments, 0);
 
-    // Format results
-    const results = problems.map((problem, index) => ({
-      id: `reddit-${subredditId}-${Date.now()}-${index}`,
-      title: problem.title,
-      description: problem.description,
-      opportunityScore: problem.opportunityScore,
-      sentiment: problem.sentiment,
-      category: problem.category || subreddit.category,
-      sources: [{
-        name: "reddit" as const,
+    // Format results - use per-problem engagement when available
+    const results = problems.map((problem, index) => {
+      // Try to match problem to specific posts for more accurate engagement
+      const matchingPost = posts.find(p => 
+        problem.title.toLowerCase().includes(p.title.toLowerCase().slice(0, 20)) ||
+        p.title.toLowerCase().includes(problem.title.toLowerCase().slice(0, 20))
+      );
+      
+      // Use matching post engagement, or average across top posts
+      const topPosts = posts.slice(0, 5);
+      const avgScore = Math.round(topPosts.reduce((sum, p) => sum + p.score, 0) / topPosts.length);
+      const avgComments = Math.round(topPosts.reduce((sum, p) => sum + p.num_comments, 0) / topPosts.length);
+      
+      const upvotes = matchingPost?.score || avgScore;
+      const comments = matchingPost?.num_comments || avgComments;
+      
+      return {
+        id: `reddit-${subredditId}-${Date.now()}-${index}`,
+        title: problem.title,
+        description: problem.description,
+        opportunityScore: problem.opportunityScore,
         sentiment: problem.sentiment,
-        mentions: totalComments,
-        trend: `${formatNumber(totalScore)} upvotes`
-      }],
-      hiddenInsight: {
-        surfaceAsk: problem.surfaceAsk,
-        realProblem: problem.realProblem,
-        hiddenSignal: problem.hiddenSignal
-      },
-      painPoints: problem.painPoints,
-      subredditSource: subreddit.name,
-      totalScore,
-      totalComments,
-      isViral: totalScore > 5000
-    }));
+        category: problem.category || subreddit.category,
+        sources: [{
+          source: "reddit", // Use 'source' key for consistency with detection
+          name: "reddit",
+          sentiment: problem.sentiment,
+          mentions: comments,
+          trend: `${formatNumber(upvotes)} upvotes`
+        }],
+        hiddenInsight: {
+          surfaceAsk: problem.surfaceAsk,
+          realProblem: problem.realProblem,
+          hiddenSignal: problem.hiddenSignal
+        },
+        painPoints: problem.painPoints,
+        subredditSource: subreddit.name,
+        upvotes,
+        comments,
+        totalScore,
+        totalComments,
+        isViral: upvotes > 1000
+      };
+    });
 
     // Save to database
     const supabaseClient = createClient(
@@ -402,7 +421,8 @@ serve(async (req) => {
         is_viral: result.isViral,
         slots_total: 20,
         slots_filled: 0,
-        views: result.totalScore || 0,
+        views: result.upvotes || 0, // Upvotes stored in views
+        shares: result.comments || 0, // Comments stored in shares
         discovered_at: new Date().toISOString()
       }, { onConflict: "title" });
       

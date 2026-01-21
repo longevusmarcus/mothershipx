@@ -36,7 +36,9 @@ const getSentimentLabel = (sentiment: string): { label: string; className: strin
 // Detect source type from problem sources
 const detectSourceType = (problem: MarketProblem): "reddit" | "youtube" | "tiktok" | "default" => {
   if (!problem.sources || problem.sources.length === 0) return "default";
-  const sourceName = problem.sources[0]?.source?.toLowerCase();
+  const firstSource = problem.sources[0];
+  // Check both 'source' and 'name' keys for compatibility
+  const sourceName = (firstSource?.source || (firstSource as any)?.name || "").toLowerCase();
   if (sourceName === "reddit") return "reddit";
   if (sourceName === "youtube") return "youtube";
   if (sourceName === "tiktok") return "tiktok";
