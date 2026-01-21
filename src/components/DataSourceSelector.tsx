@@ -138,8 +138,8 @@ export function DataSourceSelector({ onSelectionChange }: DataSourceSelectorProp
       </div>
 
       <p className="text-xs text-muted-foreground">
-        Connect our data sources to discover real problems and trends. Then build solutions together with our community
-        of builders, and win prizes.
+        Connect our data sources to uncover real problems and trends. Then build solutions together with our community
+        of builders, compete for the best products, and win prizes.
       </p>
     </div>
   );
