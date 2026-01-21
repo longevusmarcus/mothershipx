@@ -228,18 +228,18 @@ export default function Profile() {
   return (
     <AppLayout>
       <SEO title="Profile" description="View your builder profile, achievements, and build history." />
-      <div className="space-y-6 overflow-x-hidden w-full max-w-full">
+      <div className="space-y-6 overflow-x-hidden">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 w-full max-w-full"
+          className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4"
         >
           <div>
             <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">Profile</h1>
             <p className="text-sm text-muted-foreground mt-1">Manage your profile and track progress</p>
           </div>
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-2">
             <Button
               variant="outline"
               size="sm"
@@ -289,7 +289,7 @@ export default function Profile() {
           transition={{ delay: 0.1 }}
           className="rounded-xl border border-border bg-card p-6"
         >
-          <div className="flex flex-col sm:flex-row gap-6 w-full max-w-full overflow-x-hidden">
+          <div className="flex flex-col sm:flex-row gap-6">
             {/* Avatar */}
             <div className="relative group shrink-0">
               <input
@@ -392,32 +392,29 @@ export default function Profile() {
               </div>
             </div>
 
-            {/* Stats - fixed width to prevent layout shift */}
-            <div className="flex sm:flex-col gap-6 sm:gap-4 sm:border-l sm:border-border sm:pl-6 shrink-0">
-              <div className="text-center sm:text-right w-20">
-                <div className="text-2xl font-semibold tabular-nums h-8 flex items-center justify-center sm:justify-end">
+            {/* Stats */}
+            <div className="flex sm:flex-col gap-6 sm:gap-4 sm:border-l sm:border-border sm:pl-6">
+              <div className="text-center sm:text-right">
+                <div className="text-2xl font-semibold tabular-nums">
                   {statsLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : userStats?.problemsJoined || 0}
                 </div>
-                <div className="text-xs text-muted-foreground whitespace-nowrap">Joined</div>
+                <div className="text-xs text-muted-foreground">Problems Joined</div>
               </div>
-              <div className="text-center sm:text-right opacity-50 w-20">
-                <div className="text-2xl font-semibold tabular-nums h-8 flex items-center justify-center sm:justify-end">
-                  {userStats?.solutionsShipped || 0}
-                </div>
-                <div className="text-xs text-muted-foreground whitespace-nowrap">Solutions</div>
+              <div className="text-center sm:text-right opacity-50">
+                <div className="text-2xl font-semibold tabular-nums">{userStats?.solutionsShipped || 0}</div>
+                <div className="text-xs text-muted-foreground">Solutions</div>
               </div>
             </div>
           </div>
         </motion.div>
 
         {/* Tabs */}
-        <Tabs defaultValue="overview" className="space-y-6 overflow-x-hidden w-full max-w-full">
-          {/* No horizontal scrolling: grid on mobile, row on desktop */}
-          <TabsList className="bg-muted/50 p-1 h-auto w-full max-w-full grid grid-cols-2 gap-1 sm:flex sm:gap-0">
-            <TabsTrigger value="overview" className="text-xs sm:text-sm px-3 w-full">Overview</TabsTrigger>
-            <TabsTrigger value="builds" className="text-xs sm:text-sm px-3 w-full">Builds</TabsTrigger>
-            <TabsTrigger value="achievements" className="text-xs sm:text-sm px-3 w-full">Achievements</TabsTrigger>
-            <TabsTrigger value="account" className="text-xs sm:text-sm px-3 w-full">Account</TabsTrigger>
+        <Tabs defaultValue="overview" className="space-y-6 overflow-x-hidden">
+          <TabsList className="bg-muted/50 p-1 h-auto w-full overflow-x-auto scrollbar-hide flex-nowrap">
+            <TabsTrigger value="overview" className="text-xs sm:text-sm px-3 flex-shrink-0">Overview</TabsTrigger>
+            <TabsTrigger value="builds" className="text-xs sm:text-sm px-3 flex-shrink-0">Builds</TabsTrigger>
+            <TabsTrigger value="achievements" className="text-xs sm:text-sm px-3 flex-shrink-0">Achievements</TabsTrigger>
+            <TabsTrigger value="account" className="text-xs sm:text-sm px-3 flex-shrink-0">Account</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
