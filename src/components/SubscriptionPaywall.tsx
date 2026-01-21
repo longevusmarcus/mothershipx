@@ -18,7 +18,7 @@ const features = [
   { icon: Zap, label: "Unlimited AI searches" },
   { icon: Globe, label: "Full problem dashboard access" },
   { icon: Swords, label: "Free Arena challenge entry" },
-  { icon: Users, label: "Builder matching" },
+  { icon: Users, label: "Builder matching/networking" },
   { icon: Trophy, label: "Weekly prizes" },
 ];
 
@@ -123,9 +123,7 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
               </Button>
 
               {/* Alternative */}
-              <p className="text-center text-xs text-muted-foreground mt-4">
-                Or pay $5 per Arena challenge (NO search & library access)
-              </p>
+              <p className="text-center text-xs text-muted-foreground mt-4">Or pay $5 per Arena challenge</p>
 
               {/* Trust */}
               <p className="text-center text-xs text-muted-foreground/70 mt-2">Cancel anytime • Secured by Stripe</p>
