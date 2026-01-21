@@ -18,7 +18,7 @@ const features = [
   { icon: Zap, label: "Unlimited AI searches" },
   { icon: Globe, label: "Full problem dashboard access" },
   { icon: Swords, label: "Free Arena challenge entry" },
-  { icon: Users, label: "Builder matching" },
+  { icon: Users, label: "Builder matching/Networking" },
   { icon: Trophy, label: "Weekly prizes" },
 ];
 
