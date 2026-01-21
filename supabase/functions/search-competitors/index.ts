@@ -93,25 +93,50 @@ function extractCompanyName(title: string, url: string): string {
   }
 }
 
-// Check if a result looks like an actual app/startup vs a news article
+// Check if a result looks like an actual app/startup/product vs a news article
 function isLikelyApp(title: string, snippet: string, url: string): boolean {
   const text = (title + " " + snippet).toLowerCase();
   const urlLower = url.toLowerCase();
   
-  // Positive signals for apps/startups
-  const appSignals = [
+  // Strong positive signals for apps/startups/products
+  const strongAppSignals = [
     "app", "platform", "tool", "software", "saas", "startup",
     "sign up", "get started", "try free", "free trial", "pricing",
     "dashboard", "login", "features", "product", "solution",
     "download", "ios", "android", "mobile app", "web app",
-    ".io", ".app", ".co", ".ai", "getapp", "capterra", "g2.com",
-    "producthunt", "crunchbase", "techcrunch startup"
+    "try it", "start free", "demo", "subscription", "plans",
+    "integrations", "api", "for teams", "for business"
   ];
   
-  // Check for app signals
-  const hasAppSignal = appSignals.some(signal => text.includes(signal) || urlLower.includes(signal));
+  // Domain extensions that are typically startups/apps
+  const appDomains = [".io", ".app", ".co", ".ai", ".so", ".dev", ".tools"];
+  const hasAppDomain = appDomains.some(ext => urlLower.includes(ext));
   
-  return hasAppSignal;
+  // Review/comparison sites that list real products
+  const productListingSites = [
+    "getapp", "capterra", "g2.com", "g2crowd", "trustpilot",
+    "softwareadvice", "alternativeto", "producthunt", "crunchbase",
+    "appsumo", "betalist", "startupranking"
+  ];
+  const isProductListing = productListingSites.some(site => urlLower.includes(site));
+  
+  // Check for strong app signals in text
+  const hasStrongSignal = strongAppSignals.some(signal => text.includes(signal));
+  
+  // Negative signals - news/article indicators
+  const articleSignals = [
+    "news", "article", "report", "study", "research", "announced",
+    "according to", "said in", "published", "journalist", "editor",
+    "magazine", "newsletter", "blog post", "opinion", "editorial"
+  ];
+  const hasArticleSignal = articleSignals.some(signal => text.includes(signal));
+  
+  // If it has article signals and no strong app signals, reject
+  if (hasArticleSignal && !hasStrongSignal && !hasAppDomain && !isProductListing) {
+    return false;
+  }
+  
+  return hasStrongSignal || hasAppDomain || isProductListing;
 }
 
 // Search Hacker News for relevant startups/products
@@ -326,14 +351,14 @@ serve(async (req) => {
       existingCompetitors = existing || [];
     }
 
-    // Build better search queries that target actual apps/startups
-    // Use multiple queries to find real competitors
+    // Build search queries specifically targeting products and startups
     const searchQueries = [
-      `best ${niche || problemTitle} apps 2025`,
-      `${problemTitle} software tools startups`,
-      `alternatives to solve ${problemTitle}`,
+      `best ${niche || problemTitle} apps software 2025`,
+      `${problemTitle} startup app product`,
+      `top ${niche || problemTitle} tools platforms`,
     ];
     
+    // Use first query as primary, but we can iterate through others
     const primaryQuery = searchQueries[0];
     console.log("Searching for competitors:", primaryQuery);
 
