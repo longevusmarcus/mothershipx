@@ -192,12 +192,47 @@ const ProblemDetail = () => {
     });
   };
 
-  const handleShare = () => {
-    navigator.clipboard.writeText(window.location.href);
-    toast({
-      title: "Link copied!",
-      description: "Share this opportunity with your network",
-    });
+  const handleShare = async () => {
+    const url = window.location.href;
+    const shareData = { 
+      title: problem?.title || "Problem Opportunity", 
+      text: problem?.subtitle || "Check out this market opportunity!",
+      url 
+    };
+    
+    // Try Web Share API first (mobile/supported browsers)
+    if (navigator.share && navigator.canShare?.(shareData)) {
+      try {
+        await navigator.share(shareData);
+        return;
+      } catch (err) {
+        // User cancelled or share failed - fall through to clipboard
+        if ((err as Error).name === 'AbortError') return;
+      }
+    }
+    
+    // Fallback to clipboard
+    try {
+      await navigator.clipboard.writeText(url);
+      toast({
+        title: "Link copied!",
+        description: "Share this opportunity with your network",
+      });
+    } catch {
+      // Final fallback for older browsers
+      const textArea = document.createElement("textarea");
+      textArea.value = url;
+      textArea.style.position = "fixed";
+      textArea.style.opacity = "0";
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+      toast({
+        title: "Link copied!",
+        description: "Share this opportunity with your network",
+      });
+    }
   };
 
   return (
