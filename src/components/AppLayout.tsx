@@ -8,7 +8,8 @@ import { WelcomeChatbot } from "@/components/WelcomeChatbot";
 import { AuthModal } from "@/components/AuthModal";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
-import { User, Settings, Info, LogOut, LogIn } from "lucide-react";
+import { useSubscription } from "@/hooks/useSubscription";
+import { User, Settings, Info, LogOut, LogIn, Crown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +17,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import logo from "@/assets/logo.png";
 
 interface AppLayoutProps {
@@ -26,6 +33,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const { profile, user, signOut, isAuthenticated } = useAuth();
+  const { hasPremiumAccess } = useSubscription();
   const navigate = useNavigate();
 
   const initials = profile?.name
@@ -84,19 +92,53 @@ export function AppLayout({ children }: AppLayoutProps) {
               
               {isAuthenticated ? (
                 <>
-                  {/* Desktop - simple link */}
-                  <Link to="/profile" className="hidden md:flex h-9 w-9 rounded-full bg-gradient-primary items-center justify-center text-primary-foreground text-sm font-bold hover:opacity-90 transition-opacity">
-                    {initials}
-                  </Link>
+                  {/* Desktop - avatar with premium badge */}
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Link to="/profile" className="hidden md:flex relative">
+                          <div className="h-9 w-9 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground text-sm font-bold hover:opacity-90 transition-opacity">
+                            {initials}
+                          </div>
+                          {hasPremiumAccess && (
+                            <div className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-amber-500 flex items-center justify-center ring-2 ring-background">
+                              <Crown className="h-2.5 w-2.5 text-white" />
+                            </div>
+                          )}
+                        </Link>
+                      </TooltipTrigger>
+                      {hasPremiumAccess && (
+                        <TooltipContent>
+                          <p>Premium Member</p>
+                        </TooltipContent>
+                      )}
+                    </Tooltip>
+                  </TooltipProvider>
                   
-                  {/* Mobile - dropdown menu */}
+                  {/* Mobile - dropdown menu with premium badge */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="md:hidden h-8 w-8 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground text-xs font-bold hover:opacity-90 transition-opacity">
-                        {initials}
+                      <button className="md:hidden relative">
+                        <div className="h-8 w-8 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground text-xs font-bold hover:opacity-90 transition-opacity">
+                          {initials}
+                        </div>
+                        {hasPremiumAccess && (
+                          <div className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-amber-500 flex items-center justify-center ring-2 ring-background">
+                            <Crown className="h-2 w-2 text-white" />
+                          </div>
+                        )}
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48">
+                      {hasPremiumAccess && (
+                        <>
+                          <div className="px-2 py-1.5 text-xs font-medium text-amber-500 flex items-center gap-1.5">
+                            <Crown className="h-3 w-3" />
+                            Premium Member
+                          </div>
+                          <DropdownMenuSeparator />
+                        </>
+                      )}
                       <DropdownMenuItem onClick={() => navigate("/profile")} className="gap-2">
                         <User className="h-4 w-4" />
                         Profile

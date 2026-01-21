@@ -47,15 +47,19 @@ import {
   Zap,
   Loader2,
   LogIn,
+  Crown,
+  ExternalLink as ExternalLinkIcon,
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useUserSettings } from "@/hooks/useUserSettings";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription, SUBSCRIPTION_PRICE } from "@/hooks/useSubscription";
 import { supabase } from "@/lib/supabaseClient";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AuthModal } from "@/components/AuthModal";
+import { SubscriptionPaywall } from "@/components/SubscriptionPaywall";
 
 const integrations = [
   {
@@ -111,7 +115,26 @@ export default function Settings() {
     saveSettings,
   } = useUserSettings();
   
+  const { hasPremiumAccess, subscriptionEnd, openCustomerPortal, isLoading: subLoading } = useSubscription();
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isOpeningPortal, setIsOpeningPortal] = useState(false);
+  const [showPaywall, setShowPaywall] = useState(false);
+
+  const handleOpenPortal = async () => {
+    setIsOpeningPortal(true);
+    try {
+      await openCustomerPortal();
+    } catch (error) {
+      console.error("Error opening portal:", error);
+      toast({
+        title: "Error",
+        description: "Could not open subscription portal. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsOpeningPortal(false);
+    }
+  };
 
   const handleConnect = (integrationId: string) => {
     toast({
@@ -630,6 +653,81 @@ export default function Settings() {
                   </CardContent>
                 </Card>
 
+                {/* Subscription Management */}
+                <Card>
+                  <CardHeader className="p-4 sm:p-6">
+                    <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                      <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500" />
+                      Subscription
+                    </CardTitle>
+                    <CardDescription className="text-xs sm:text-sm">
+                      Manage your premium subscription
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
+                    {subLoading ? (
+                      <Skeleton className="h-20 w-full" />
+                    ) : hasPremiumAccess ? (
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3 sm:p-4 rounded-xl border border-amber-500/20 bg-amber-500/5">
+                        <div className="flex items-center gap-3 sm:gap-4">
+                          <div className="p-2 sm:p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                            <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500" />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-medium text-sm sm:text-base">Premium Member</span>
+                              <Badge variant="secondary" className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 text-[10px] sm:text-xs">
+                                Active
+                              </Badge>
+                            </div>
+                            <p className="text-xs sm:text-sm text-muted-foreground">
+                              ${SUBSCRIPTION_PRICE}/month • {subscriptionEnd 
+                                ? `Renews ${new Date(subscriptionEnd).toLocaleDateString()}`
+                                : "Active subscription"
+                              }
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleOpenPortal}
+                          disabled={isOpeningPortal}
+                          className="h-8 text-xs sm:text-sm w-full sm:w-auto"
+                        >
+                          {isOpeningPortal ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />
+                          ) : (
+                            <ExternalLinkIcon className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1.5" />
+                          )}
+                          Manage Subscription
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3 sm:p-4 rounded-xl border border-border/50 bg-muted/20">
+                        <div className="flex items-center gap-3 sm:gap-4">
+                          <div className="p-2 sm:p-2.5 rounded-xl bg-muted border border-border/50">
+                            <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+                          </div>
+                          <div className="min-w-0">
+                            <span className="font-medium text-sm sm:text-base block">Free Plan</span>
+                            <p className="text-xs sm:text-sm text-muted-foreground">
+                              Upgrade to unlock unlimited AI searches and more
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          size="sm"
+                          onClick={() => setShowPaywall(true)}
+                          className="h-8 text-xs sm:text-sm w-full sm:w-auto"
+                        >
+                          Upgrade to Premium
+                        </Button>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
                 <Card className="border-dashed">
                   <CardContent className="py-6 sm:py-8">
                     <div className="text-center">
@@ -762,6 +860,7 @@ export default function Settings() {
           )}
         </motion.div>
       </div>
+      <SubscriptionPaywall open={showPaywall} onOpenChange={setShowPaywall} />
     </AppLayout>
   );
 }
