@@ -63,17 +63,7 @@ export const categories = [
   "Gut Health",
   "Productivity",
   "Career",
-  "Connections",
-  // YouTube-derived categories
-  "entrepreneurship",
-  "business",
-  "marketing",
-  "sales",
-  "mindset",
-  "health",
-  "relationships",
-  "finance",
-  "leadership"
+  "Social Connections"
 ];
 
 // Map mock IDs to database UUIDs
@@ -365,7 +355,7 @@ export const mockMarketProblems: MarketProblem[] = [
     id: "cn-001",
     title: "Dating apps killed spontaneous connection",
     subtitle: "People crave IRL meetups but don't know how to start",
-    category: "Connections",
+    category: "Social Connections",
     niche: "connections",
     sentiment: "exploding",
     
