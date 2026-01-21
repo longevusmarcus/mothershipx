@@ -154,9 +154,9 @@ export function MasonryGrid({ problems }: MasonryGridProps) {
       onDragEnd={handleDragEnd}
     >
       <SortableContext items={orderedProblems.map((p) => p.id)} strategy={rectSortingStrategy}>
-        <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-3 space-y-0">
+        <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4">
           {orderedProblems.map((problem, index) => (
-            <div key={problem.id} className="break-inside-avoid mb-3">
+            <div key={problem.id} className="break-inside-avoid mb-4">
               <SortableCard problem={problem} index={index} />
             </div>
           ))}

@@ -97,46 +97,74 @@ function extractCompanyName(title: string, url: string): string {
 function isLikelyApp(title: string, snippet: string, url: string): boolean {
   const text = (title + " " + snippet).toLowerCase();
   const urlLower = url.toLowerCase();
+  const titleLower = title.toLowerCase();
   
-  // Strong positive signals for apps/startups/products
-  const strongAppSignals = [
-    "app", "platform", "tool", "software", "saas", "startup",
-    "sign up", "get started", "try free", "free trial", "pricing",
-    "dashboard", "login", "features", "product", "solution",
-    "download", "ios", "android", "mobile app", "web app",
-    "try it", "start free", "demo", "subscription", "plans",
-    "integrations", "api", "for teams", "for business"
+  // STRICT NEGATIVE CHECK FIRST - reject anything that looks like an article/blog
+  const strictArticleIndicators = [
+    // Blog/article patterns
+    "blog", "article", "news", "report", "study", "research",
+    "journalist", "editor", "magazine", "newsletter", "opinion", "editorial",
+    "according to", "said in", "published", "announced today",
+    // List articles (these are NOT the products themselves)
+    "top 5", "top 10", "top 11", "best 5", "best 10", "best 11",
+    "top ai tools", "best ai tools", "best apps for",
+    "compare top", "expert reviews", "find 11", "find 10", "find 5",
+    "below, you'll find", "here are the best", "we've compiled",
+    "roundup", "comparison", "vs.", "versus",
+    // Job boards (not products)
+    "job search", "job boards", "job alerts", "job listings", "find jobs",
+    "indeed", "linkedin", "glassdoor", "ziprecruiter",
+    // Generic/non-product sites
+    "unified search across", "customizable job alerts"
   ];
   
-  // Domain extensions that are typically startups/apps
-  const appDomains = [".io", ".app", ".co", ".ai", ".so", ".dev", ".tools"];
-  const hasAppDomain = appDomains.some(ext => urlLower.includes(ext));
-  
-  // Review/comparison sites that list real products
-  const productListingSites = [
-    "getapp", "capterra", "g2.com", "g2crowd", "trustpilot",
-    "softwareadvice", "alternativeto", "producthunt", "crunchbase",
-    "appsumo", "betalist", "startupranking"
-  ];
-  const isProductListing = productListingSites.some(site => urlLower.includes(site));
-  
-  // Check for strong app signals in text
-  const hasStrongSignal = strongAppSignals.some(signal => text.includes(signal));
-  
-  // Negative signals - news/article indicators
-  const articleSignals = [
-    "news", "article", "report", "study", "research", "announced",
-    "according to", "said in", "published", "journalist", "editor",
-    "magazine", "newsletter", "blog post", "opinion", "editorial"
-  ];
-  const hasArticleSignal = articleSignals.some(signal => text.includes(signal));
-  
-  // If it has article signals and no strong app signals, reject
-  if (hasArticleSignal && !hasStrongSignal && !hasAppDomain && !isProductListing) {
+  if (strictArticleIndicators.some(indicator => text.includes(indicator))) {
+    console.log("Rejected (article indicator):", title.substring(0, 50));
     return false;
   }
   
-  return hasStrongSignal || hasAppDomain || isProductListing;
+  // Reject if the name sounds like a blog or content site
+  const blogNamePatterns = ["blog", "news", "times", "daily", "weekly", "analytics", "insights", "guide"];
+  if (blogNamePatterns.some(pattern => titleLower.startsWith(pattern) || urlLower.includes(pattern + "."))) {
+    console.log("Rejected (blog name pattern):", title.substring(0, 50));
+    return false;
+  }
+  
+  // POSITIVE SIGNALS - these indicate actual products
+  // Domain extensions that are almost always startups/apps
+  const appDomains = [".io", ".app", ".co", ".ai", ".so", ".dev", ".tools", ".run", ".work"];
+  const hasAppDomain = appDomains.some(ext => {
+    const domain = urlLower.split("/")[2] || "";
+    return domain.endsWith(ext);
+  });
+  
+  // Review/comparison sites that list real products (we extract products from these)
+  const productListingSites = [
+    "getapp.com", "capterra.com", "g2.com", "g2crowd.com", "trustpilot.com",
+    "softwareadvice.com", "alternativeto.net", "producthunt.com", "crunchbase.com",
+    "appsumo.com", "betalist.com"
+  ];
+  const isProductListing = productListingSites.some(site => urlLower.includes(site));
+  
+  // Strong product signals in text
+  const strongProductSignals = [
+    "sign up", "get started", "try free", "free trial", "pricing",
+    "start your", "create account", "book a demo", "request demo",
+    "download now", "install", "add to chrome", "mobile app",
+    "for teams", "for business", "enterprise", "pro plan",
+    "integrations", "api docs", "documentation", "sdk",
+    "dashboard", "your workspace", "my account"
+  ];
+  const hasProductSignal = strongProductSignals.some(signal => text.includes(signal));
+  
+  // Must have at least one strong positive signal
+  if (hasAppDomain || isProductListing || hasProductSignal) {
+    console.log("Accepted (has positive signal):", title.substring(0, 50));
+    return true;
+  }
+  
+  console.log("Rejected (no positive signals):", title.substring(0, 50));
+  return false;
 }
 
 // Search Hacker News for relevant startups/products
@@ -351,14 +379,15 @@ serve(async (req) => {
       existingCompetitors = existing || [];
     }
 
-    // Build search queries specifically targeting products and startups
+    // Build search queries specifically targeting PRODUCTS - not articles about products
+    // Use site: operator to target actual product sites
     const searchQueries = [
-      `best ${niche || problemTitle} apps software 2025`,
-      `${problemTitle} startup app product`,
-      `top ${niche || problemTitle} tools platforms`,
+      `site:producthunt.com ${niche || problemTitle}`,
+      `${problemTitle} app site:.io OR site:.app OR site:.ai`,
+      `"try free" OR "get started" ${niche || problemTitle} tool`,
     ];
     
-    // Use first query as primary, but we can iterate through others
+    // Use first query as primary
     const primaryQuery = searchQueries[0];
     console.log("Searching for competitors:", primaryQuery);
 
