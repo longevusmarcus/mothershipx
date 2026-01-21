@@ -80,10 +80,17 @@ const ProblemDetail = () => {
   const { isJoined, joinProblem, leaveProblem } = useProblemBuilders(dbProblemId);
   const { refresh, isRefreshing } = useRefreshProblem(dbProblemId);
   const { 
-    data: competitors, 
+    competitors, 
+    threatLevel,
     isLoading: competitorsLoading, 
     refetch: refetchCompetitors 
-  } = useCompetitors(problem?.title || "", problem?.niche, searchCompetitors);
+  } = useCompetitors(
+    dbProblemId,
+    problem?.title || "", 
+    problem?.opportunityScore || 50,
+    problem?.niche, 
+    searchCompetitors
+  );
 
   // Trigger search when tab becomes active
   useEffect(() => {
@@ -369,108 +376,187 @@ const ProblemDetail = () => {
           </TabsContent>
 
           <TabsContent value="competitors" forceMount className={`mt-4 ${activeTab !== "competitors" ? "hidden" : ""}`}>
-            <div className="rounded-lg border border-border bg-card p-4">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="font-medium text-sm">Competitor Analysis</h3>
-                  <p className="text-xs text-muted-foreground">
-                    AI-powered market research based on "{problem?.title}"
-                  </p>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => refetchCompetitors()}
-                  disabled={competitorsLoading}
-                  className="gap-2"
-                >
-                  {competitorsLoading ? (
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                  ) : (
-                    <Search className="h-3 w-3" />
+            <div className="space-y-4">
+              {/* Threat Level Indicator */}
+              {threatLevel && !competitorsLoading && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={cn(
+                    "rounded-lg border p-4",
+                    threatLevel.level === "Critical" && "border-destructive/50 bg-destructive/5",
+                    threatLevel.level === "High" && "border-warning/50 bg-warning/5",
+                    threatLevel.level === "Moderate" && "border-primary/50 bg-primary/5",
+                    threatLevel.level === "Low" && "border-success/50 bg-success/5"
                   )}
-                  {competitorsLoading ? "Searching..." : "Refresh"}
-                </Button>
-              </div>
-
-              {competitorsLoading && (
-                <div className="space-y-3">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="flex items-center gap-3 p-3 rounded-md bg-secondary/30">
-                      <Skeleton className="h-10 w-10 rounded-md" />
-                      <div className="flex-1 space-y-2">
-                        <Skeleton className="h-4 w-32" />
-                        <Skeleton className="h-3 w-48" />
-                      </div>
-                      <Skeleton className="h-6 w-16" />
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className={cn(
+                        "h-2 w-2 rounded-full",
+                        threatLevel.level === "Critical" && "bg-destructive animate-pulse",
+                        threatLevel.level === "High" && "bg-warning",
+                        threatLevel.level === "Moderate" && "bg-primary",
+                        threatLevel.level === "Low" && "bg-success"
+                      )} />
+                      <span className="text-sm font-medium">Threat Level: {threatLevel.level}</span>
                     </div>
-                  ))}
-                </div>
-              )}
-
-              {!competitorsLoading && competitors && competitors.length > 0 && (
-                <div className="space-y-3">
-                  {competitors.map((competitor) => (
-                    <a
-                      key={competitor.url}
-                      href={competitor.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-start gap-3 p-3 rounded-md bg-secondary/30 hover:bg-secondary/50 transition-colors group"
+                    <Badge 
+                      variant="outline"
+                      className={cn(
+                        "text-xs",
+                        threatLevel.level === "Critical" && "border-destructive/50 text-destructive",
+                        threatLevel.level === "High" && "border-warning/50 text-warning",
+                        threatLevel.level === "Moderate" && "border-primary/50 text-primary",
+                        threatLevel.level === "Low" && "border-success/50 text-success"
+                      )}
                     >
-                      <div className="h-10 w-10 rounded-md bg-muted flex items-center justify-center text-sm font-medium flex-shrink-0">
-                        {competitor.name[0]?.toUpperCase()}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="text-sm font-medium truncate">{competitor.name}</p>
-                          <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </div>
-                        <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
-                          {competitor.description}
-                        </p>
-                      </div>
-                      <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                        <Badge 
-                          variant="outline" 
-                          className={cn(
-                            "text-[10px]",
-                            competitor.rating >= 80 && "border-destructive/50 text-destructive",
-                            competitor.rating >= 60 && competitor.rating < 80 && "border-warning/50 text-warning",
-                            competitor.rating >= 40 && competitor.rating < 60 && "border-primary/50 text-primary",
-                            competitor.rating < 40 && "border-muted-foreground/50"
-                          )}
-                        >
-                          {competitor.ratingLabel}
-                        </Badge>
-                        <div className="flex items-center gap-1">
-                          <div className="w-12 h-1.5 bg-secondary rounded-full overflow-hidden">
-                            <div 
-                              className={cn(
-                                "h-full rounded-full transition-all",
-                                competitor.rating >= 80 && "bg-destructive",
-                                competitor.rating >= 60 && competitor.rating < 80 && "bg-warning",
-                                competitor.rating >= 40 && competitor.rating < 60 && "bg-primary",
-                                competitor.rating < 40 && "bg-muted-foreground"
-                              )}
-                              style={{ width: `${competitor.rating}%` }}
-                            />
-                          </div>
-                          <span className="text-[10px] text-muted-foreground">{competitor.rating}</span>
-                        </div>
-                      </div>
-                    </a>
-                  ))}
-                </div>
+                      {threatLevel.score}/100
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{threatLevel.description}</p>
+                  <div className="mt-2 h-1.5 bg-secondary rounded-full overflow-hidden">
+                    <div 
+                      className={cn(
+                        "h-full rounded-full transition-all",
+                        threatLevel.level === "Critical" && "bg-destructive",
+                        threatLevel.level === "High" && "bg-warning",
+                        threatLevel.level === "Moderate" && "bg-primary",
+                        threatLevel.level === "Low" && "bg-success"
+                      )}
+                      style={{ width: `${threatLevel.score}%` }}
+                    />
+                  </div>
+                </motion.div>
               )}
 
-              {!competitorsLoading && (!competitors || competitors.length === 0) && (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Search className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">No competitors found</p>
-                  <p className="text-xs">Try refreshing the search</p>
+              {/* Competitors Card */}
+              <div className="rounded-lg border border-border bg-card p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="font-medium text-sm">Competitor Analysis</h3>
+                    <p className="text-xs text-muted-foreground">
+                      AI-powered market research based on "{problem?.title}"
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => refetchCompetitors()}
+                    disabled={competitorsLoading}
+                    className="gap-2"
+                  >
+                    {competitorsLoading ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <Search className="h-3 w-3" />
+                    )}
+                    {competitorsLoading ? "Searching..." : "Refresh"}
+                  </Button>
                 </div>
-              )}
+
+                {competitorsLoading && (
+                  <div className="space-y-3">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="flex items-center gap-3 p-3 rounded-md bg-secondary/30">
+                        <Skeleton className="h-10 w-10 rounded-md" />
+                        <div className="flex-1 space-y-2">
+                          <Skeleton className="h-4 w-32" />
+                          <Skeleton className="h-3 w-48" />
+                        </div>
+                        <Skeleton className="h-6 w-16" />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {!competitorsLoading && competitors && competitors.length > 0 && (
+                  <div className="space-y-3">
+                    {competitors.map((competitor) => (
+                      <a
+                        key={competitor.url}
+                        href={competitor.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-start gap-3 p-3 rounded-md bg-secondary/30 hover:bg-secondary/50 transition-colors group"
+                      >
+                        <div className="h-10 w-10 rounded-md bg-muted flex items-center justify-center text-sm font-medium flex-shrink-0 relative">
+                          {competitor.name[0]?.toUpperCase()}
+                          {competitor.isNew && (
+                            <span className="absolute -top-1 -right-1 h-3 w-3 bg-primary rounded-full flex items-center justify-center">
+                              <span className="text-[8px] text-primary-foreground font-bold">N</span>
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm font-medium truncate">{competitor.name}</p>
+                            {competitor.isNew && (
+                              <Badge variant="outline" className="text-[9px] px-1 py-0 border-primary/50 text-primary">
+                                New
+                              </Badge>
+                            )}
+                            <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </div>
+                          <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
+                            {competitor.description}
+                          </p>
+                          {competitor.firstSeenAt && (
+                            <p className="text-[10px] text-muted-foreground/70 mt-1">
+                              First seen: {new Date(competitor.firstSeenAt).toLocaleDateString()}
+                            </p>
+                          )}
+                        </div>
+                        <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                          <Badge 
+                            variant="outline" 
+                            className={cn(
+                              "text-[10px]",
+                              competitor.rating >= 80 && "border-destructive/50 text-destructive",
+                              competitor.rating >= 60 && competitor.rating < 80 && "border-warning/50 text-warning",
+                              competitor.rating >= 40 && competitor.rating < 60 && "border-primary/50 text-primary",
+                              competitor.rating < 40 && "border-muted-foreground/50"
+                            )}
+                          >
+                            {competitor.ratingLabel}
+                          </Badge>
+                          <div className="flex items-center gap-1">
+                            <div className="w-12 h-1.5 bg-secondary rounded-full overflow-hidden">
+                              <div 
+                                className={cn(
+                                  "h-full rounded-full transition-all",
+                                  competitor.rating >= 80 && "bg-destructive",
+                                  competitor.rating >= 60 && competitor.rating < 80 && "bg-warning",
+                                  competitor.rating >= 40 && competitor.rating < 60 && "bg-primary",
+                                  competitor.rating < 40 && "bg-muted-foreground"
+                                )}
+                                style={{ width: `${competitor.rating}%` }}
+                              />
+                            </div>
+                            <span className="text-[10px] text-muted-foreground">{competitor.rating}</span>
+                            {competitor.ratingChange !== undefined && competitor.ratingChange !== 0 && (
+                              <span className={cn(
+                                "text-[10px] font-medium",
+                                competitor.ratingChange > 0 ? "text-destructive" : "text-success"
+                              )}>
+                                {competitor.ratingChange > 0 ? "↑" : "↓"}{Math.abs(competitor.ratingChange)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                )}
+
+                {!competitorsLoading && (!competitors || competitors.length === 0) && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Search className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-sm">No competitors found</p>
+                    <p className="text-xs">Try refreshing the search</p>
+                  </div>
+                )}
+              </div>
             </div>
           </TabsContent>
         </Tabs>
