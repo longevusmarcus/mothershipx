@@ -177,7 +177,7 @@ export function MyProblems() {
                   transition={{ delay: index * 0.05 }}
                   className="group"
                 >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 rounded-lg bg-muted/30 border border-border/50 hover:bg-muted/50 hover:border-primary/20 transition-all gap-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 rounded-lg bg-muted/30 border border-border/50 hover:bg-muted/50 hover:border-primary/20 transition-all gap-3 w-full max-w-full overflow-x-hidden">
                     <div
                       className="flex-1 min-w-0 cursor-pointer"
                       onClick={() => navigate(`/problems/${problem.id}`)}
@@ -210,7 +210,7 @@ export function MyProblems() {
                       )}
                     </div>
 
-                    <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="flex items-center flex-wrap gap-3 sm:gap-4">
                       {/* Builders */}
                       <div className="text-right">
                         <div className="flex items-center gap-1 text-sm font-medium">
@@ -221,7 +221,7 @@ export function MyProblems() {
                       </div>
 
                       {/* Opportunity Score */}
-                      <div className="text-right min-w-[60px]">
+                      <div className="text-right sm:min-w-[60px]">
                         <div className="text-sm font-semibold text-primary">
                           {problem.opportunity_score}%
                         </div>

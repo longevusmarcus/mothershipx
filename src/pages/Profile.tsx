@@ -228,18 +228,18 @@ export default function Profile() {
   return (
     <AppLayout>
       <SEO title="Profile" description="View your builder profile, achievements, and build history." />
-      <div className="space-y-6 overflow-x-hidden">
+      <div className="space-y-6 overflow-x-hidden w-full max-w-full">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4"
+          className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 w-full max-w-full"
         >
           <div>
             <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">Profile</h1>
             <p className="text-sm text-muted-foreground mt-1">Manage your profile and track progress</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Button
               variant="outline"
               size="sm"
@@ -289,7 +289,7 @@ export default function Profile() {
           transition={{ delay: 0.1 }}
           className="rounded-xl border border-border bg-card p-6"
         >
-          <div className="flex flex-col sm:flex-row gap-6">
+          <div className="flex flex-col sm:flex-row gap-6 w-full max-w-full overflow-x-hidden">
             {/* Avatar */}
             <div className="relative group shrink-0">
               <input
@@ -393,7 +393,7 @@ export default function Profile() {
             </div>
 
             {/* Stats */}
-            <div className="flex sm:flex-col gap-6 sm:gap-4 sm:border-l sm:border-border sm:pl-6">
+            <div className="flex sm:flex-col gap-6 sm:gap-4 sm:border-l sm:border-border sm:pl-6 min-w-0">
               <div className="text-center sm:text-right">
                 <div className="text-2xl font-semibold tabular-nums">
                   {statsLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : userStats?.problemsJoined || 0}
