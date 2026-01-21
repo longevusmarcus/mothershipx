@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.verify-builder]
 verify_jwt = false
+
+[functions.fetch-tiktok-data]
+verify_jwt = false
