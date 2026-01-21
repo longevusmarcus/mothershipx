@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.refresh-problem-data]
 verify_jwt = false
+
+[functions.search-competitors]
+verify_jwt = false
