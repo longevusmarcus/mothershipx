@@ -49,7 +49,7 @@ export function WelcomeChatbot() {
         {/* Comparison table */}
         <div className="space-y-1.5">
           <div className="flex items-center gap-2 text-sm">
-            <span className="font-medium">Mothership</span>
+            <span className="font-medium">MothershipX</span>
             <span className="text-muted-foreground text-xs">(SuperLovable)</span>
             <span className="text-muted-foreground">=</span>
             <span className="text-foreground">insights + people + prizes</span>
