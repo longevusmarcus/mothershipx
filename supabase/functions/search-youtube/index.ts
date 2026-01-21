@@ -12,7 +12,7 @@ const CHANNELS = {
     id: "diary-of-a-ceo",
     name: "The Diary Of A CEO",
     handle: "@TheDiaryOfACEO",
-    channelId: "UC7SeFWZYFmsm1tqWxfuOTPQ", // Correct Steven Bartlett DOAC channel ID
+    channelId: "UC7SeFWZYFmsm1tqWxfuOTPQ",
     category: "entrepreneurship"
   },
   "alex-hormozi": {
@@ -30,6 +30,7 @@ interface YouTubeVideo {
   description: string;
   viewCount: number;
   publishedAt: string;
+  transcript?: string;
 }
 
 interface VideoComment {
@@ -50,6 +51,7 @@ interface AnalyzedProblem {
 }
 
 const RAPIDAPI_HOST = "youtube138.p.rapidapi.com";
+const TRANSCRIPT_HOST = "youtube-transcript3.p.rapidapi.com";
 
 function formatNumber(num: number): string {
   if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
@@ -121,11 +123,62 @@ async function fetchChannelVideos(channelId: string, apiKey: string): Promise<Yo
   }
 }
 
+// Fetch video transcript using youtube-transcript3 API
+async function fetchVideoTranscript(videoId: string, apiKey: string): Promise<string> {
+  try {
+    console.log(`Fetching transcript for video: ${videoId}`);
+    
+    const response = await fetch(
+      `https://${TRANSCRIPT_HOST}/api/transcript?videoId=${videoId}`,
+      {
+        method: "GET",
+        headers: {
+          "x-rapidapi-key": apiKey,
+          "x-rapidapi-host": TRANSCRIPT_HOST
+        }
+      }
+    );
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Transcript fetch error:", response.status, errorText);
+      return "";
+    }
+    
+    const data = await response.json();
+    
+    // The transcript API returns an array of segments with text
+    if (Array.isArray(data)) {
+      const transcriptText = data
+        .map((segment: { text?: string }) => segment.text || "")
+        .filter((text: string) => text.length > 0)
+        .join(" ")
+        .slice(0, 5000); // Limit to 5000 chars for AI context
+      
+      console.log(`Got transcript (${transcriptText.length} chars) for video ${videoId}`);
+      return transcriptText;
+    }
+    
+    // Handle object response format
+    if (data?.transcript) {
+      const text = typeof data.transcript === 'string' 
+        ? data.transcript 
+        : JSON.stringify(data.transcript);
+      return text.slice(0, 5000);
+    }
+    
+    console.log("No transcript found for video:", videoId);
+    return "";
+  } catch (error) {
+    console.error("Error fetching transcript:", error);
+    return "";
+  }
+}
+
 async function fetchVideoComments(videoId: string, apiKey: string): Promise<VideoComment[]> {
   try {
     console.log(`Fetching comments for video: ${videoId}`);
     
-    // Use the correct endpoint for video comments
     const response = await fetch(`https://${RAPIDAPI_HOST}/video/comments/?id=${videoId}&hl=en&gl=US`, {
       method: "GET",
       headers: {
@@ -143,7 +196,6 @@ async function fetchVideoComments(videoId: string, apiKey: string): Promise<Vide
     const data = await response.json();
     const comments: VideoComment[] = [];
     
-    // Handle different response structures
     const commentItems = data?.comments || data?.contents || [];
     for (const item of commentItems.slice(0, 30)) {
       const comment = item?.comment || item;
@@ -161,37 +213,6 @@ async function fetchVideoComments(videoId: string, apiKey: string): Promise<Vide
   }
 }
 
-async function fetchVideoDetails(videoId: string, apiKey: string): Promise<{ description: string; title: string }> {
-  try {
-    const response = await fetch(`https://${RAPIDAPI_HOST}/video/details/`, {
-      method: "POST",
-      headers: {
-        "x-rapidapi-key": apiKey,
-        "x-rapidapi-host": RAPIDAPI_HOST,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        id: videoId,
-        hl: "en",
-        gl: "US"
-      })
-    });
-    
-    if (!response.ok) {
-      await response.text();
-      return { description: "", title: "" };
-    }
-    
-    const data = await response.json();
-    return {
-      description: data?.description || "",
-      title: data?.title || ""
-    };
-  } catch {
-    return { description: "", title: "" };
-  }
-}
-
 async function analyzeWithAI(
   videos: YouTubeVideo[],
   allComments: Map<string, VideoComment[]>,
@@ -202,45 +223,51 @@ async function analyzeWithAI(
     const comments = allComments.get(video.videoId) || [];
     const topComments = comments
       .sort((a, b) => b.likeCount - a.likeCount)
-      .slice(0, 15)
+      .slice(0, 10)
       .map(c => c.text)
-      .filter(c => c.length > 10) // Filter out very short comments
+      .filter(c => c.length > 10)
       .join("\n- ");
+    
+    // Include transcript if available (truncated for context)
+    const transcriptSection = video.transcript 
+      ? `\nTRANSCRIPT EXCERPT:\n"${video.transcript.slice(0, 1500)}..."`
+      : "";
     
     return `
 VIDEO TITLE: "${video.title}"
 Views: ${formatNumber(video.viewCount)}
 Published: ${video.publishedAt}
 Description: ${video.description || "N/A"}
+${transcriptSection}
 
-Top Comments (if available):
+Top Comments:
 ${topComments ? `- ${topComments}` : "No comments available"}
 ---`;
   }).join("\n\n");
 
   const systemPrompt = `You are an expert business analyst specializing in identifying market opportunities from YouTube content.
-You MUST analyze the ACTUAL video titles, descriptions, and comments provided below from "${channelName}".
+You will analyze the ACTUAL video titles, descriptions, TRANSCRIPTS, and comments from "${channelName}".
 
 CRITICAL RULES:
-1. Extract problems/opportunities DIRECTLY from the video content provided
-2. DO NOT invent generic business problems unrelated to the videos
-3. Each problem MUST reference specific topics from the video titles
-4. Focus on what the audience is discussing, asking, or struggling with
+1. Extract problems/opportunities DIRECTLY from the video content and transcripts
+2. Pay special attention to TRANSCRIPT content - this is the actual spoken words
+3. Each problem MUST reference specific topics from the video content
+4. Focus on:
+   - Pain points discussed in the transcripts
+   - Questions and struggles from comments
+   - Unmet needs the creator addresses
+   - Opportunities mentioned but not solved
 
-Categories to identify:
-- Confusion points from comments
-- Complaints about existing solutions
-- Unmet needs expressed by viewers
-- Repeated questions or pain points`;
+Categories: entrepreneurship, business, marketing, sales, mindset, health, relationships, finance, productivity, leadership`;
 
-  const userPrompt = `Here are the 5 most recent videos from "${channelName}" - analyze them to extract 3-5 REAL business problems/opportunities DIRECTLY related to the content:
+  const userPrompt = `Analyze these videos from "${channelName}" including TRANSCRIPTS to extract 4-6 REAL business problems/opportunities:
 
 ${videoSummaries}
 
-IMPORTANT: Your analysis MUST be based on the actual video topics above. Extract problems that relate to the specific themes discussed in these videos.`;
+IMPORTANT: Your analysis MUST be based on the actual content, especially the TRANSCRIPTS. Extract specific problems people face.`;
 
   try {
-    console.log("Analyzing with AI...");
+    console.log("Analyzing with AI (including transcripts)...");
     
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -249,7 +276,7 @@ IMPORTANT: Your analysis MUST be based on the actual video topics above. Extract
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "google/gemini-2.5-flash",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt }
@@ -258,7 +285,7 @@ IMPORTANT: Your analysis MUST be based on the actual video topics above. Extract
           type: "function",
           function: {
             name: "suggest_problems",
-            description: "Return analyzed problems from YouTube content",
+            description: "Return analyzed problems from YouTube content and transcripts",
             parameters: {
               type: "object",
               properties: {
@@ -267,15 +294,15 @@ IMPORTANT: Your analysis MUST be based on the actual video topics above. Extract
                   items: {
                     type: "object",
                     properties: {
-                      title: { type: "string", description: "Clear, concise problem title based on video content" },
-                      description: { type: "string", description: "2-3 sentence description of the problem" },
-                      opportunityScore: { type: "number", description: "Score 1-100 based on market opportunity" },
+                      title: { type: "string", description: "Clear, concise problem title" },
+                      description: { type: "string", description: "2-3 sentence description" },
+                      opportunityScore: { type: "number", description: "Score 1-100" },
                       sentiment: { type: "string", enum: ["exploding", "rising", "stable", "emerging"] },
-                      category: { type: "string", enum: ["entrepreneurship", "business", "marketing", "sales", "mindset", "health", "relationships", "finance", "productivity", "leadership"], description: "Best category for this problem" },
+                      category: { type: "string", enum: ["entrepreneurship", "business", "marketing", "sales", "mindset", "health", "relationships", "finance", "productivity", "leadership"] },
                       surfaceAsk: { type: "string", description: "What people literally ask for" },
                       realProblem: { type: "string", description: "The actual underlying problem" },
-                      hiddenSignal: { type: "string", description: "Deeper insight about unmet needs" },
-                      painPoints: { type: "array", items: { type: "string" }, description: "3-5 specific pain points" }
+                      hiddenSignal: { type: "string", description: "Deeper insight" },
+                      painPoints: { type: "array", items: { type: "string" }, description: "3-5 pain points" }
                     },
                     required: ["title", "description", "opportunityScore", "sentiment", "category", "surfaceAsk", "realProblem", "hiddenSignal", "painPoints"]
                   }
@@ -300,7 +327,7 @@ IMPORTANT: Your analysis MUST be based on the actual video topics above. Extract
     
     if (toolCall?.function?.arguments) {
       const parsed = JSON.parse(toolCall.function.arguments);
-      console.log(`AI found ${parsed.problems?.length || 0} problems`);
+      console.log(`AI found ${parsed.problems?.length || 0} problems from transcript analysis`);
       return parsed.problems || [];
     }
     
@@ -361,12 +388,21 @@ serve(async (req) => {
       );
     }
 
-    // Fetch comments for each video
+    // Fetch transcripts and comments for each video (in parallel)
     const allComments = new Map<string, VideoComment[]>();
-    for (const video of videos) {
+    
+    await Promise.all(videos.map(async (video) => {
+      // Fetch transcript
+      const transcript = await fetchVideoTranscript(video.videoId, YOUTUBE_API_KEY);
+      video.transcript = transcript;
+      
+      // Fetch comments
       const comments = await fetchVideoComments(video.videoId, YOUTUBE_API_KEY);
       allComments.set(video.videoId, comments);
-    }
+    }));
+
+    const transcriptCount = videos.filter(v => v.transcript && v.transcript.length > 0).length;
+    console.log(`Fetched transcripts for ${transcriptCount}/${videos.length} videos`);
 
     // Analyze with AI
     const problems = await analyzeWithAI(videos, allComments, channel.name, LOVABLE_API_KEY);
@@ -378,13 +414,14 @@ serve(async (req) => {
           data: [],
           message: "No problems identified from content analysis",
           channel: channel.name,
-          videosAnalyzed: videos.length
+          videosAnalyzed: videos.length,
+          transcriptsAnalyzed: transcriptCount
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Format results - use AI-detected category for each problem
+    // Format results
     const results = problems.map((problem, index) => {
       const sourceVideo = videos[index] || videos[0];
       return {
@@ -393,7 +430,7 @@ serve(async (req) => {
         description: problem.description,
         opportunityScore: problem.opportunityScore,
         sentiment: problem.sentiment,
-        category: problem.category || channel.category, // Use AI category, fallback to channel
+        category: problem.category || channel.category,
         sources: [{
           name: "youtube" as const,
           sentiment: problem.sentiment,
@@ -409,29 +446,26 @@ serve(async (req) => {
         videoSource: sourceVideo?.title || "",
         viewCount: sourceVideo?.viewCount || 0,
         channelName: channel.name,
-        isViral: (sourceVideo?.viewCount || 0) > 500000
+        isViral: (sourceVideo?.viewCount || 0) > 500000,
+        hasTranscript: !!sourceVideo?.transcript
       };
     });
 
-    // Store viral results in database
+    // Store results in database
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Save ALL YouTube results to database (not just viral)
     for (const result of results) {
-      // Get comment count for this result
       const commentCount = allComments.get(videos[0]?.videoId)?.length || 0;
-      const likeEstimate = Math.round((result.viewCount || 0) * 0.03); // Estimate ~3% like rate
+      const likeEstimate = Math.round((result.viewCount || 0) * 0.03);
       
-      // Calculate demand velocity based on view count and engagement
       const viewScore = Math.log10(Math.max(1, result.viewCount || 1)) * 10;
       const demandVelocity = Math.min(200, Math.max(30, Math.round(
         40 + viewScore + (result.opportunityScore * 0.4) + Math.random() * 25
       )));
       
-      // Calculate competition gap based on opportunity and sentiment
       const sentimentBonus = result.sentiment === 'exploding' ? 20 : result.sentiment === 'rising' ? 10 : 0;
       const competitionGap = Math.min(95, Math.max(40, Math.round(
         45 + sentimentBonus + (result.opportunityScore * 0.3) + Math.random() * 15
@@ -459,28 +493,26 @@ serve(async (req) => {
       }, { onConflict: "title" });
       
       if (error) console.error("Error storing problem:", error);
-      else console.log(`Saved problem to library: ${result.title} (demand: ${demandVelocity}%, gap: ${competitionGap}%)`);
+      else console.log(`Saved: ${result.title} (transcript: ${result.hasTranscript})`);
     }
 
-    // Record scan in channel_scans table
-    const { error: scanError } = await supabase.from("channel_scans").upsert({
+    // Record scan
+    await supabase.from("channel_scans").upsert({
       channel_id: channelId,
       channel_name: channel.name,
       last_scanned_at: new Date().toISOString(),
       videos_analyzed: videos.length,
       problems_found: results.length
     }, { onConflict: "channel_id" });
-    
-    if (scanError) console.error("Error recording scan:", scanError);
-    else console.log(`Recorded scan for ${channel.name}`);
 
-    console.log(`Analysis complete. Found ${results.length} problems from ${videos.length} videos`);
+    console.log(`Analysis complete. Found ${results.length} problems from ${videos.length} videos (${transcriptCount} with transcripts)`);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
         data: results,
         videosAnalyzed: videos.length,
+        transcriptsAnalyzed: transcriptCount,
         channel: channel.name,
         lastScannedAt: new Date().toISOString()
       }),
