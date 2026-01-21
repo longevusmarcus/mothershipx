@@ -15,23 +15,28 @@ export function useCategories() {
         return ["All"];
       }
 
-      // Get unique categories from database
+      // Get unique categories from database and normalize to lowercase
       const uniqueCategories = [...new Set(data.map(p => p.category).filter(Boolean))];
+      
+      // Normalize helper - convert to lowercase display
+      const normalize = (cat: string) => cat.toLowerCase();
       
       // Sort alphabetically but keep common ones at the top
       const priorityCategories = [
-        "Mental Health",
-        "Weight & Fitness",
-        "Skin & Beauty",
-        "Gut Health",
-        "Productivity",
-        "Career",
-        "Social Connections"
+        "mental health",
+        "weight & fitness",
+        "skin & beauty",
+        "gut health",
+        "productivity",
+        "career",
+        "social connections"
       ];
       
       const sorted = uniqueCategories.sort((a, b) => {
-        const aIndex = priorityCategories.indexOf(a);
-        const bIndex = priorityCategories.indexOf(b);
+        const aNorm = normalize(a);
+        const bNorm = normalize(b);
+        const aIndex = priorityCategories.indexOf(aNorm);
+        const bIndex = priorityCategories.indexOf(bNorm);
         
         // Both in priority list - sort by priority order
         if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
@@ -40,10 +45,11 @@ export function useCategories() {
         // Only b in priority list - b comes first
         if (bIndex !== -1) return 1;
         // Neither in priority list - alphabetical
-        return a.localeCompare(b);
+        return aNorm.localeCompare(bNorm);
       });
 
-      return ["All", ...sorted];
+      // Return lowercase categories
+      return ["all", ...sorted.map(c => c.toLowerCase())];
     },
     staleTime: 1000 * 60 * 5, // Fresh for 5 minutes
   });

@@ -12,7 +12,7 @@ import { useCategories } from "@/hooks/useCategories";
 const Problems = () => {
   const [searchParams] = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState(initialQuery);
 
   const { data: problems = [], isLoading } = useProblems(selectedCategory);

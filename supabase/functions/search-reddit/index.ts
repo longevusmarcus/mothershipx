@@ -70,10 +70,26 @@ async function fetchSubredditPosts(subreddit: string, apiKey: string): Promise<R
     
     const data = await response.json();
     console.log("Reddit response structure:", Object.keys(data));
+    console.log("Reddit data sample:", JSON.stringify(data).slice(0, 1000));
     
-    // Parse posts from response
+    // Parse posts from response - handle multiple API response formats
     const posts: RedditPost[] = [];
-    const items = data?.data?.children || data?.posts || data || [];
+    
+    // Try different response structures
+    let items: any[] = [];
+    if (data?.data?.children && Array.isArray(data.data.children)) {
+      // Standard Reddit API format
+      items = data.data.children;
+    } else if (data?.data && Array.isArray(data.data)) {
+      // RapidAPI format: {success: true, data: [...]}
+      items = data.data;
+    } else if (data?.posts && Array.isArray(data.posts)) {
+      items = data.posts;
+    } else if (Array.isArray(data)) {
+      items = data;
+    }
+    
+    console.log(`Found ${items.length} items in response`);
     
     for (const item of items.slice(0, 15)) {
       const post = item?.data || item;
@@ -81,11 +97,11 @@ async function fetchSubredditPosts(subreddit: string, apiKey: string): Promise<R
       
       posts.push({
         title: post.title || "",
-        selftext: post.selftext || post.body || "",
-        score: post.score || post.ups || 0,
-        num_comments: post.num_comments || post.numComments || 0,
+        selftext: post.selftext || post.body || post.content || "",
+        score: post.score || post.ups || post.upvotes || 0,
+        num_comments: post.num_comments || post.numComments || post.comments || 0,
         created_utc: post.created_utc || post.createdAt || 0,
-        permalink: post.permalink || "",
+        permalink: post.permalink || `/r/${subreddit}/comments/${post.id}` || "",
         upvote_ratio: post.upvote_ratio || 0.5
       });
     }

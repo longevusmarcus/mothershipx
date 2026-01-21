@@ -421,9 +421,13 @@ serve(async (req) => {
 
     // Save ALL YouTube results to database (not just viral)
     for (const result of results) {
+      // Get comment count for this result
+      const commentCount = allComments.get(videos[0]?.videoId)?.length || 0;
+      const likeEstimate = Math.round((result.viewCount || 0) * 0.03); // Estimate ~3% like rate
+      
       const { error } = await supabase.from("problems").upsert({
         title: result.title,
-        subtitle: result.description, // Use subtitle, not description
+        subtitle: result.description,
         opportunity_score: result.opportunityScore,
         sentiment: result.sentiment,
         category: result.category,
@@ -435,6 +439,8 @@ serve(async (req) => {
         slots_total: 20,
         slots_filled: 0,
         views: result.viewCount || 0,
+        saves: likeEstimate, // Estimated likes
+        shares: commentCount, // Comment count as shares metric
         discovered_at: new Date().toISOString()
       }, { onConflict: "title" });
       
