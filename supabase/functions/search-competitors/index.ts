@@ -67,12 +67,40 @@ function rateCompetitor(title: string, snippet: string, position: number): { rat
 function extractCompanyName(title: string, url: string): string {
   try {
     const urlObj = new URL(url);
-    const domain = urlObj.hostname.replace("www.", "").split(".")[0];
-    return domain.charAt(0).toUpperCase() + domain.slice(1);
+    let domain = urlObj.hostname.replace("www.", "").split(".")[0];
+    // Capitalize properly
+    domain = domain.charAt(0).toUpperCase() + domain.slice(1);
+    // If it's a generic domain like "apps" or "tools", use title
+    if (["apps", "tools", "software", "get", "try", "use", "my"].includes(domain.toLowerCase())) {
+      const words = title.split(/[-|:]/).map(s => s.trim())[0];
+      return words.substring(0, 30);
+    }
+    return domain;
   } catch {
     const words = title.split(/[-|:]/).map(s => s.trim())[0];
     return words.substring(0, 30);
   }
+}
+
+// Check if a result looks like an actual app/startup vs a news article
+function isLikelyApp(title: string, snippet: string, url: string): boolean {
+  const text = (title + " " + snippet).toLowerCase();
+  const urlLower = url.toLowerCase();
+  
+  // Positive signals for apps/startups
+  const appSignals = [
+    "app", "platform", "tool", "software", "saas", "startup",
+    "sign up", "get started", "try free", "free trial", "pricing",
+    "dashboard", "login", "features", "product", "solution",
+    "download", "ios", "android", "mobile app", "web app",
+    ".io", ".app", ".co", ".ai", "getapp", "capterra", "g2.com",
+    "producthunt", "crunchbase", "techcrunch startup"
+  ];
+  
+  // Check for app signals
+  const hasAppSignal = appSignals.some(signal => text.includes(signal) || urlLower.includes(signal));
+  
+  return hasAppSignal;
 }
 
 function calculateThreatLevel(competitors: Competitor[], opportunityScore: number): {
@@ -164,15 +192,22 @@ serve(async (req) => {
       existingCompetitors = existing || [];
     }
 
-    // Build search query
-    const searchQuery = `${problemTitle} app software solution`;
-    console.log("Searching for competitors:", searchQuery);
+    // Build better search queries that target actual apps/startups
+    // Use multiple queries to find real competitors
+    const searchQueries = [
+      `best ${niche || problemTitle} apps 2025`,
+      `${problemTitle} software tools startups`,
+      `alternatives to solve ${problemTitle}`,
+    ];
+    
+    const primaryQuery = searchQueries[0];
+    console.log("Searching for competitors:", primaryQuery);
 
-    // Call SERP API
+    // Call SERP API with improved query
     const serpUrl = new URL("https://serpapi.com/search.json");
-    serpUrl.searchParams.set("q", searchQuery);
+    serpUrl.searchParams.set("q", primaryQuery);
     serpUrl.searchParams.set("api_key", SERP_API_KEY);
-    serpUrl.searchParams.set("num", "10");
+    serpUrl.searchParams.set("num", "15");
     serpUrl.searchParams.set("gl", "us");
     serpUrl.searchParams.set("hl", "en");
 
@@ -189,24 +224,66 @@ serve(async (req) => {
     const data = await response.json();
     console.log("SERP response received, organic results:", data.organic_results?.length || 0);
 
-    // Process organic results
+    // Process organic results with stricter filtering
     const competitors: Competitor[] = [];
     const organicResults = data.organic_results || [];
-    const skipDomains = ["wikipedia", "reddit", "quora", "youtube", "medium", "twitter", "facebook", "linkedin", "pinterest", "tiktok"];
     
-    for (let i = 0; i < Math.min(organicResults.length, 10); i++) {
+    // Expanded skip list - news sites, publications, social media, etc.
+    const skipDomains = [
+      // Social media
+      "wikipedia", "reddit", "quora", "youtube", "medium", "twitter", "facebook", 
+      "linkedin", "pinterest", "tiktok", "instagram", "threads", "x.com",
+      // News and publications
+      "nytimes", "wsj", "forbes", "businessinsider", "techcrunch", "wired", 
+      "theverge", "cnn", "bbc", "bloomberg", "reuters", "huffpost", "guardian",
+      "usatoday", "washingtonpost", "latimes", "nypost", "dailymail", "mirror",
+      "independent", "telegraph", "express", "sun", "metro", "standard",
+      // Academic and research
+      "researchgate", "academia", "sciencedirect", "springer", "nature.com",
+      "jstor", "ssrn", "arxiv", "pubmed", "scholar.google",
+      // General info sites
+      "indeed", "glassdoor", "ziprecruiter", "monster", "careerbuilder",
+      // News aggregators and local news
+      "news.google", "yahoo", "msn", "aol", "newsweek", "time.com",
+      "centredaily", "miamiherald", "stacker", "highbrowmagazine", "ere",
+      "newsletter", "substack", "beehiiv", "ghost.io",
+      // Government and org sites
+      ".gov", ".edu", ".org",
+    ];
+    
+    const seenDomains = new Set<string>();
+    
+    for (let i = 0; i < organicResults.length; i++) {
       const result = organicResults[i];
       if (!result.link || !result.title) continue;
       
       try {
-        const domain = new URL(result.link).hostname.toLowerCase();
-        if (skipDomains.some(d => domain.includes(d))) continue;
+        const urlObj = new URL(result.link);
+        const domain = urlObj.hostname.toLowerCase();
+        
+        // Skip if domain is in skip list
+        if (skipDomains.some(d => domain.includes(d))) {
+          console.log("Skipping non-app domain:", domain);
+          continue;
+        }
+        
+        // Skip duplicate domains
+        const baseDomain = domain.replace("www.", "").split(".").slice(-2).join(".");
+        if (seenDomains.has(baseDomain)) continue;
+        
+        // Check if this looks like an actual app/startup
+        if (!isLikelyApp(result.title, result.snippet || "", result.link)) {
+          console.log("Skipping non-app result:", result.title);
+          continue;
+        }
+        
+        seenDomains.add(baseDomain);
       } catch {
         continue;
       }
       
       const name = extractCompanyName(result.title, result.link);
-      const { rating, label } = rateCompetitor(result.title, result.snippet || "", i + 1);
+      const { rating, label } = rateCompetitor(result.title, result.snippet || "", competitors.length + 1);
       
       // Check if this competitor existed before
       const existing = existingCompetitors.find(e => e.url === result.link);
@@ -220,12 +297,15 @@ serve(async (req) => {
         description: result.snippet || "",
         rating,
         ratingLabel: label,
-        position: i + 1,
+        position: competitors.length + 1,
         previousRating,
         ratingChange,
         firstSeenAt: existing?.first_seen_at,
         isNew,
       });
+      
+      // Stop after finding 8 good competitors
+      if (competitors.length >= 8) break;
     }
 
     // Sort by rating
@@ -286,7 +366,7 @@ serve(async (req) => {
         success: true, 
         competitors,
         threatLevel,
-        query: searchQuery,
+        query: primaryQuery,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
