@@ -25,12 +25,11 @@ const dataSources: DataSource[] = [
   { id: "reddit", name: "Reddit", logo: logoReddit, color: "bg-orange-500/20", isLocked: false },
 ];
 
-// Coming soon sources
+// Coming soon sources - reduced to 4 locks
 const comingSoonSources: DataSource[] = [
   { id: "google_trends", name: "Google Trends", icon: "📈", color: "bg-blue-500/20", isLocked: true },
   { id: "hackernews", name: "Hacker News", icon: "🔥", color: "bg-orange-400/20", isLocked: true },
   { id: "twitter", name: "X", icon: "𝕏", color: "bg-foreground/10", isLocked: true },
-  { id: "linkedin", name: "LinkedIn", icon: "in", color: "bg-blue-600/20", isLocked: true },
   { id: "producthunt", name: "Product Hunt", icon: "🚀", color: "bg-orange-400/20", isLocked: true },
 ];
 
