@@ -221,9 +221,9 @@ export function ArenaHistory() {
                   transition={{ delay: index * 0.05 }}
                   className="group"
                 >
-                  <div className="p-3 sm:p-4 rounded-lg bg-muted/30 border border-border/50 hover:bg-muted/50 hover:border-primary/20 transition-all">
+                    <div className="p-3 sm:p-4 rounded-lg bg-muted/30 border border-border/50 hover:bg-muted/50 hover:border-primary/20 transition-all w-full max-w-full overflow-x-hidden">
                     {/* Header Row */}
-                    <div className="flex items-start justify-between gap-3 mb-3">
+                      <div className="flex items-start justify-between gap-3 mb-3 w-full max-w-full overflow-x-hidden">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap mb-1">
                           {getStatusBadge(challenge.status)}
@@ -245,7 +245,7 @@ export function ArenaHistory() {
                         </p>
                       </div>
 
-                      <div className="flex items-center gap-2">
+                        <div className="flex items-center flex-wrap gap-2">
                         {/* Prize */}
                         <div className="text-right">
                           <div className="flex items-center gap-1 text-success font-semibold text-sm">
@@ -258,7 +258,7 @@ export function ArenaHistory() {
                         </div>
 
                         {/* Time / Status */}
-                        <div className="text-right min-w-[80px]">
+                        <div className="text-right sm:min-w-[80px]">
                           {isActive ? (
                             <>
                               <div className="flex items-center gap-1 text-sm font-medium text-foreground">
@@ -325,7 +325,7 @@ export function ArenaHistory() {
                               </Badge>
                             )}
                           </div>
-                          <div className="flex gap-2 ml-auto">
+                          <div className="flex flex-wrap gap-2 sm:ml-auto">
                             {submission.product_url && (
                               <a
                                 href={submission.product_url}

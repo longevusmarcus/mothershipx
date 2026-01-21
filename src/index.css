@@ -135,11 +135,13 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     scroll-behavior: smooth;
+    overflow-x: hidden;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
     overscroll-behavior: none;
+    overflow-x: hidden;
   }
 
   /* Safe area for mobile devices with notches/home indicators */
