@@ -13,10 +13,11 @@ export interface SearchResult {
   saves: number;
   shares: number;
   painPoints: string[];
-  sources: { source: string; metric: string; value: string }[];
+  sources?: { source: string; metric: string; value: string }[];
   isViral: boolean;
   opportunityScore: number;
   addedToLibrary?: boolean;
+  rank?: number;
 }
 
 interface SearchResultCardProps {
@@ -119,14 +120,16 @@ export function SearchResultCard({ result, delay = 0, isLatest = false }: Search
         </div>
 
         {/* Sources */}
-        <div className="flex flex-wrap gap-2 mb-3">
-          {result.sources.map((source, i) => (
-            <div key={i} className="text-xs px-2 py-1 bg-secondary/50 rounded-md">
-              <span className="text-muted-foreground">{source.source}:</span>{" "}
-              <span className="font-medium">{source.value}</span>
-            </div>
-          ))}
-        </div>
+        {result.sources && result.sources.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-3">
+            {result.sources.map((source, i) => (
+              <div key={i} className="text-xs px-2 py-1 bg-secondary/50 rounded-md">
+                <span className="text-muted-foreground">{source.source}:</span>{" "}
+                <span className="font-medium">{source.value}</span>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Library Status */}
         {result.addedToLibrary && (
