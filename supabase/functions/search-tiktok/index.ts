@@ -69,7 +69,8 @@ const NICHE_QUERIES: Record<string, string[]> = {
   "gut-health": ["bloating every day", "gut health confused", "food sensitivity help", "digestive issues", "probiotics don't work"],
   "productivity": ["can't focus anymore", "productivity burnout", "todo list overwhelming", "morning routine fake", "work from home struggle"],
   "career": ["job hunting depressing", "career change scared", "salary negotiation help", "work life balance impossible", "boss toxic"],
-  "social": ["social anxiety crippling", "making friends adult", "dating apps exhausting", "lonely despite friends", "confidence low"],
+  "connections": ["social anxiety crippling", "making friends adult", "dating apps exhausting", "lonely despite friends", "confidence low"],
+  "business": ["startup struggle", "business idea validation", "founder burnout", "side hustle tips", "revenue growth stuck", "marketing not working", "startup fail stories"],
 };
 
 const NICHE_CATEGORIES: Record<string, string> = {
@@ -79,7 +80,8 @@ const NICHE_CATEGORIES: Record<string, string> = {
   "gut-health": "Gut Health",
   "productivity": "Productivity",
   "career": "Career",
-  "social": "Social & Relationships",
+  "connections": "Social & Relationships",
+  "business": "Business",
 };
 
 function formatNumber(n: number): string {

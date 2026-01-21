@@ -228,7 +228,7 @@ export default function Profile() {
   return (
     <AppLayout>
       <SEO title="Profile" description="View your builder profile, achievements, and build history." />
-      <div className="space-y-6">
+      <div className="space-y-6 overflow-x-hidden">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -409,12 +409,12 @@ export default function Profile() {
         </motion.div>
 
         {/* Tabs */}
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="bg-muted/50 p-1 h-auto">
-            <TabsTrigger value="overview" className="text-xs sm:text-sm px-3">Overview</TabsTrigger>
-            <TabsTrigger value="builds" className="text-xs sm:text-sm px-3">Builds</TabsTrigger>
-            <TabsTrigger value="achievements" className="text-xs sm:text-sm px-3">Achievements</TabsTrigger>
-            <TabsTrigger value="account" className="text-xs sm:text-sm px-3">Account</TabsTrigger>
+        <Tabs defaultValue="overview" className="space-y-6 overflow-x-hidden">
+          <TabsList className="bg-muted/50 p-1 h-auto w-full overflow-x-auto scrollbar-hide flex-nowrap">
+            <TabsTrigger value="overview" className="text-xs sm:text-sm px-3 flex-shrink-0">Overview</TabsTrigger>
+            <TabsTrigger value="builds" className="text-xs sm:text-sm px-3 flex-shrink-0">Builds</TabsTrigger>
+            <TabsTrigger value="achievements" className="text-xs sm:text-sm px-3 flex-shrink-0">Achievements</TabsTrigger>
+            <TabsTrigger value="account" className="text-xs sm:text-sm px-3 flex-shrink-0">Account</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}

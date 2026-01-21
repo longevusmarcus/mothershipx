@@ -35,15 +35,7 @@ interface DbCompetitor {
   last_seen_at: string;
 }
 
-interface HNHit {
-  title: string;
-  url: string | null;
-  author: string;
-  points: number;
-  num_comments: number;
-  created_at: string;
-  objectID: string;
-}
+// HN results are now fetched via SERP API instead of Algolia
 
 function rateCompetitor(title: string, snippet: string, position: number): { rating: number; label: string } {
   let score = 0;
@@ -167,125 +159,128 @@ function isLikelyApp(title: string, snippet: string, url: string): boolean {
   return false;
 }
 
-// Search Hacker News for relevant startups/products
-async function searchHackerNews(problemTitle: string, niche?: string): Promise<Competitor[]> {
+// Search Hacker News via SERP API for relevant startups/products
+async function searchHackerNews(problemTitle: string, niche: string | undefined, serpApiKey: string): Promise<Competitor[]> {
   const competitors: Competitor[] = [];
   
   try {
-    // Build search queries for HN
+    // Build search query for HN via SERP
     const searchTerms = niche 
-      ? `${niche} startup OR ${niche} app OR ${problemTitle} tool`
-      : `${problemTitle} startup OR ${problemTitle} app`;
+      ? `site:news.ycombinator.com "${niche}" OR "${problemTitle}" startup OR app OR tool`
+      : `site:news.ycombinator.com "${problemTitle}" startup OR app OR tool`;
     
-    const hnUrl = new URL("https://hn.algolia.com/api/v1/search");
-    hnUrl.searchParams.set("query", searchTerms);
-    hnUrl.searchParams.set("tags", "story");
-    hnUrl.searchParams.set("hitsPerPage", "20");
-    // Filter for posts with at least some engagement
-    hnUrl.searchParams.set("numericFilters", "points>10");
+    console.log("Searching Hacker News via SERP:", searchTerms);
     
-    console.log("Searching Hacker News:", searchTerms);
+    const serpUrl = new URL("https://serpapi.com/search.json");
+    serpUrl.searchParams.set("q", searchTerms);
+    serpUrl.searchParams.set("api_key", serpApiKey);
+    serpUrl.searchParams.set("num", "15");
+    serpUrl.searchParams.set("gl", "us");
+    serpUrl.searchParams.set("hl", "en");
     
-    const response = await fetch(hnUrl.toString());
+    const response = await fetch(serpUrl.toString());
     
     if (!response.ok) {
-      console.error("HN API error:", response.status);
+      console.error("SERP HN search error:", response.status);
       return [];
     }
     
     const data = await response.json();
-    const hits: HNHit[] = data.hits || [];
+    const organicResults = data.organic_results || [];
     
-    console.log("HN results:", hits.length);
+    console.log("SERP HN results:", organicResults.length);
     
     const seenDomains = new Set<string>();
     
-    for (const hit of hits) {
-      // Skip if no URL (Ask HN, etc.)
-      if (!hit.url) continue;
+    for (const result of organicResults) {
+      if (!result.link || !result.title) continue;
       
-      try {
-        const urlObj = new URL(hit.url);
-        const domain = urlObj.hostname.toLowerCase().replace("www.", "");
+      // Skip HN discussion pages, we want the linked products
+      if (result.link.includes("news.ycombinator.com/item")) {
+        // Extract product info from the HN result
+        const title = result.title || "";
+        const snippet = result.snippet || "";
         
-        // Skip common non-startup domains
-        const skipDomains = [
-          "github.com", "medium.com", "twitter.com", "youtube.com", 
-          "wikipedia.org", "reddit.com", "news.ycombinator.com",
-          "nytimes.com", "wsj.com", "techcrunch.com", "theverge.com",
-          "bloomberg.com", "reuters.com", "bbc.com", "cnn.com",
-          "docs.google.com", "drive.google.com", "arxiv.org"
-        ];
+        // Look for "Show HN:" prefix which indicates a product launch
+        const isShowHN = title.toLowerCase().includes("show hn");
         
-        if (skipDomains.some(d => domain.includes(d))) continue;
+        // Try to extract any mentioned URL from snippet
+        const urlMatch = snippet.match(/https?:\/\/[^\s]+/);
+        let productUrl = urlMatch ? urlMatch[0] : null;
         
-        // Skip duplicates
-        const baseDomain = domain.split(".").slice(-2).join(".");
-        if (seenDomains.has(baseDomain)) continue;
-        seenDomains.add(baseDomain);
+        // If no URL in snippet, try to infer from title
+        if (!productUrl && isShowHN) {
+          // Show HN posts often have the product name after the colon
+          const afterShowHN = title.replace(/show hn:?\s*/i, "").trim();
+          const productName = afterShowHN.split(/[-–—]|\s{2,}/)[0].trim().toLowerCase();
+          
+          // Common startup domains
+          const possibleDomains = [".io", ".com", ".app", ".ai", ".co"];
+          for (const ext of possibleDomains) {
+            const cleanName = productName.replace(/[^a-z0-9]/g, "");
+            if (cleanName.length > 2) {
+              productUrl = `https://${cleanName}${ext}`;
+              break;
+            }
+          }
+        }
         
-        // Check if this looks like a startup/product launch
-        const titleLower = hit.title.toLowerCase();
-        const isLaunch = titleLower.includes("launch") || 
-                         titleLower.includes("show hn") ||
-                         titleLower.includes("introducing") ||
-                         titleLower.includes("announce") ||
-                         titleLower.includes("built") ||
-                         titleLower.includes("made") ||
-                         titleLower.includes("created") ||
-                         titleLower.includes("app") ||
-                         titleLower.includes("tool") ||
-                         titleLower.includes("startup") ||
-                         domain.endsWith(".io") ||
-                         domain.endsWith(".ai") ||
-                         domain.endsWith(".app") ||
-                         domain.endsWith(".co");
+        if (!productUrl) continue;
         
-        if (!isLaunch && hit.points < 50) continue;
-        
-        // Calculate rating based on HN engagement
-        let rating = 30; // Base
-        if (hit.points >= 500) rating += 40;
-        else if (hit.points >= 200) rating += 30;
-        else if (hit.points >= 100) rating += 20;
-        else if (hit.points >= 50) rating += 10;
-        
-        if (hit.num_comments >= 100) rating += 15;
-        else if (hit.num_comments >= 50) rating += 10;
-        else if (hit.num_comments >= 20) rating += 5;
-        
-        rating = Math.min(95, rating);
-        
-        let ratingLabel: string;
-        if (rating >= 80) ratingLabel = "Major Player";
-        else if (rating >= 60) ratingLabel = "Established";
-        else if (rating >= 40) ratingLabel = "Growing";
-        else ratingLabel = "Emerging";
-        
-        // Extract company name from domain
-        let name = baseDomain.split(".")[0];
-        name = name.charAt(0).toUpperCase() + name.slice(1);
-        
-        competitors.push({
-          name,
-          url: hit.url,
-          description: `${hit.title} (${hit.points} points, ${hit.num_comments} comments on HN)`,
-          rating,
-          ratingLabel,
-          position: competitors.length + 1,
-          isNew: true,
-          source: "hackernews",
-        });
-        
-        if (competitors.length >= 5) break;
-      } catch {
-        continue;
+        try {
+          const urlObj = new URL(productUrl);
+          const domain = urlObj.hostname.toLowerCase().replace("www.", "");
+          const baseDomain = domain.split(".").slice(-2).join(".");
+          
+          if (seenDomains.has(baseDomain)) continue;
+          seenDomains.add(baseDomain);
+          
+          // Calculate rating based on HN presence (being on HN indicates traction)
+          let rating = 45; // Base rating for HN presence
+          
+          // Boost for "Show HN" (product launch)
+          if (isShowHN) rating += 15;
+          
+          // Boost for certain keywords indicating success
+          const textLower = (title + " " + snippet).toLowerCase();
+          if (textLower.includes("launched") || textLower.includes("launch")) rating += 10;
+          if (textLower.includes("users") || textLower.includes("customers")) rating += 10;
+          if (textLower.includes("revenue") || textLower.includes("mrr")) rating += 10;
+          if (textLower.includes("funding") || textLower.includes("raised")) rating += 15;
+          
+          rating = Math.min(90, rating);
+          
+          let ratingLabel: string;
+          if (rating >= 80) ratingLabel = "Major Player";
+          else if (rating >= 60) ratingLabel = "Established";
+          else if (rating >= 40) ratingLabel = "Growing";
+          else ratingLabel = "Emerging";
+          
+          // Extract company name from domain
+          let name = baseDomain.split(".")[0];
+          name = name.charAt(0).toUpperCase() + name.slice(1);
+          
+          competitors.push({
+            name,
+            url: productUrl,
+            description: `${title} - Found on Hacker News`,
+            rating,
+            ratingLabel,
+            position: competitors.length + 1,
+            isNew: true,
+            source: "hackernews",
+          });
+          
+          if (competitors.length >= 5) break;
+        } catch {
+          continue;
+        }
       }
     }
     
     return competitors;
   } catch (error) {
-    console.error("Error searching Hacker News:", error);
+    console.error("Error searching Hacker News via SERP:", error);
     return [];
   }
 }
@@ -498,7 +493,7 @@ serve(async (req) => {
 
     // Also search Hacker News for additional competitors
     console.log("Searching Hacker News for additional competitors...");
-    const hnCompetitors = await searchHackerNews(problemTitle, niche);
+    const hnCompetitors = await searchHackerNews(problemTitle, niche, SERP_API_KEY);
     
     // Merge HN competitors, avoiding duplicates
     const existingUrls = new Set(competitors.map(c => {
