@@ -72,6 +72,7 @@ function generateAISuggestions(
   const isProductivity = categoryLower.includes("productivity") || problemLower.includes("focus") || problemLower.includes("context");
   const isCareer = categoryLower.includes("career") || problemLower.includes("pivot") || problemLower.includes("career");
   const isConnections = categoryLower.includes("connection") || problemLower.includes("dating") || problemLower.includes("connection");
+  const isBusiness = categoryLower.includes("business") || categoryLower.includes("entrepreneur") || problemLower.includes("startup") || problemLower.includes("saas") || problemLower.includes("revenue") || problemLower.includes("customer") || problemLower.includes("churn") || problemLower.includes("pricing") || problemLower.includes("market") || problemLower.includes("launch");
 
   // Generate unique solutions based on problem type
   let suggestions: Partial<Solution>[] = [];
@@ -773,6 +774,99 @@ function generateAISuggestions(
         market_fit: Math.min(81, (opportunityScore || 68) + Math.floor(Math.random() * 6)),
         status: "concept",
         tech_stack: ["React Native", "Supabase", "Push Notifications"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    ];
+  } else if (isBusiness) {
+    suggestions = [
+      {
+        id: "ai-suggestion-1",
+        title: "AI-Powered Customer Churn Predictor",
+        description: `Predict and prevent customer churn before it happens. Tackles "${mainPainPoint}" with ML-driven early warning signals and automated retention playbooks.`,
+        approach: `**Phase 1 - Data Integration** (Week 1-2)
+• Connect to your CRM, billing, and support tools
+• Build unified customer health scoring
+• "${mainPainPoint}" - identify at-risk accounts automatically
+
+**Phase 2 - Prediction Engine** (Week 3-4)
+• Train ML model on historical churn data
+• Real-time risk scoring dashboard
+• Automated alerts for CS team
+
+**Phase 3 - Retention Playbooks** (Week 5+)
+• Trigger personalized win-back campaigns
+• A/B test retention offers
+• ROI tracking per intervention`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 18) + 14,
+        forks: Math.floor(Math.random() * 7) + 5,
+        comments: Math.floor(Math.random() * 10) + 6,
+        edit_count: 1,
+        market_fit: Math.min(94, (opportunityScore || 82) + Math.floor(Math.random() * 8)),
+        status: "concept",
+        tech_stack: ["Python", "FastAPI", "PostgreSQL", "React", "Stripe API"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: "ai-suggestion-2",
+        title: "Dynamic Pricing Intelligence Tool",
+        description: `Stop leaving money on the table with data-driven pricing. Addresses "${secondPainPoint}" by analyzing competitor prices, demand signals, and willingness-to-pay in real-time.`,
+        approach: `**Core Features**
+• Competitor price monitoring across 50+ sources
+• Dynamic pricing recommendations by segment
+• A/B testing framework for price experiments
+
+**Business Intelligence**
+• Price elasticity analysis
+• Revenue impact simulations
+• "${thirdPainPoint}" - optimal discount strategies
+
+**Implementation**
+• API for e-commerce platforms
+• Shopify/WooCommerce plugins
+• Custom enterprise integrations`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 14) + 10,
+        forks: Math.floor(Math.random() * 5) + 3,
+        comments: Math.floor(Math.random() * 8) + 4,
+        edit_count: 1,
+        market_fit: Math.min(90, (opportunityScore || 78) + Math.floor(Math.random() * 7)),
+        status: "concept",
+        tech_stack: ["Next.js", "Python", "Supabase", "Puppeteer", "OpenAI"],
+        contributors: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: "ai-suggestion-3",
+        title: "Founder-Market Fit Validator",
+        description: `Validate your startup idea before building. Solves "${fourthPainPoint}" with AI-powered market research, competitor analysis, and founder-market fit scoring.`,
+        approach: `**Validation Process**
+• 20-minute structured interview about your idea
+• AI analyzes market size, competition, timing
+• Founder background vs. problem domain matching
+
+**Deliverables**
+• Comprehensive market report
+• Top 5 risks with mitigation strategies
+• "${secondPainPoint}" - concrete next steps
+
+**Community**
+• Connect with others in same space
+• Find co-founders with complementary skills
+• Expert office hours for feedback`,
+        ai_generated: true,
+        upvotes: Math.floor(Math.random() * 12) + 8,
+        forks: Math.floor(Math.random() * 4) + 2,
+        comments: Math.floor(Math.random() * 6) + 3,
+        edit_count: 1,
+        market_fit: Math.min(86, (opportunityScore || 72) + Math.floor(Math.random() * 6)),
+        status: "concept",
+        tech_stack: ["Next.js", "OpenAI", "Supabase", "Stripe"],
         contributors: [],
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),

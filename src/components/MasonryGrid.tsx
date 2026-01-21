@@ -18,8 +18,13 @@ import {
   rectSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { Lock } from "lucide-react";
 import { MarketProblemCard } from "@/components/MarketProblemCard";
+import { useSubscription } from "@/hooks/useSubscription";
+import { useAuth } from "@/contexts/AuthContext";
 import type { MarketProblem } from "@/data/marketIntelligence";
+
+const FREE_CARD_LIMIT = 12;
 
 interface MasonryGridProps {
   problems: MarketProblem[];
@@ -68,6 +73,11 @@ const STORAGE_KEY = "mothership_problems_order";
 export function MasonryGrid({ problems }: MasonryGridProps) {
   const [orderedProblems, setOrderedProblems] = useState<MarketProblem[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const { hasPremiumAccess, isLoading: subscriptionLoading } = useSubscription();
+  const { isAuthenticated } = useAuth();
+
+  // Determine if we should blur cards beyond the limit
+  const shouldBlurExcess = isAuthenticated && !hasPremiumAccess && !subscriptionLoading;
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -155,11 +165,35 @@ export function MasonryGrid({ problems }: MasonryGridProps) {
     >
       <SortableContext items={orderedProblems.map((p) => p.id)} strategy={rectSortingStrategy}>
         <div className="columns-1 sm:columns-2 lg:columns-3 gap-4">
-          {orderedProblems.map((problem, index) => (
-            <div key={problem.id} className="break-inside-avoid mb-4">
-              <SortableCard problem={problem} index={index} />
-            </div>
-          ))}
+          {orderedProblems.map((problem, index) => {
+            const isBlurred = shouldBlurExcess && index >= FREE_CARD_LIMIT;
+            
+            return (
+              <div key={problem.id} className="break-inside-avoid mb-4 relative">
+                {isBlurred ? (
+                  <div className="relative">
+                    <div className="blur-sm pointer-events-none select-none">
+                      <MarketProblemCard problem={problem} delay={0} />
+                    </div>
+                    {/* Show lock overlay only on first blurred card */}
+                    {index === FREE_CARD_LIMIT && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-background/60 rounded-xl">
+                        <div className="text-center p-4">
+                          <Lock className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                          <p className="text-sm font-medium">Subscribe to unlock all problems</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {orderedProblems.length - FREE_CARD_LIMIT}+ more discoveries waiting
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <SortableCard problem={problem} index={index} />
+                )}
+              </div>
+            );
+          })}
         </div>
       </SortableContext>
 

@@ -18,19 +18,17 @@ interface DataSource {
   isLocked?: boolean;
 }
 
-// Available sources - TikTok, YouTube, and Reddit are selectable
+// Available sources - TikTok and Reddit are selectable
 const dataSources: DataSource[] = [
   { id: "tiktok", name: "TikTok", logo: logoTiktok, color: "bg-foreground/10", isLocked: false },
-  { id: "youtube", name: "YouTube", logo: logoYoutube, color: "bg-red-500/20", isLocked: false },
   { id: "reddit", name: "Reddit", logo: logoReddit, color: "bg-orange-500/20", isLocked: false },
 ];
 
-// Coming soon sources - reduced to 4 locks
+// Coming soon sources - YouTube moved here, 3 locks total
 const comingSoonSources: DataSource[] = [
+  { id: "youtube", name: "YouTube", logo: logoYoutube, color: "bg-red-500/20", isLocked: true },
   { id: "google_trends", name: "Google Trends", icon: "📈", color: "bg-blue-500/20", isLocked: true },
   { id: "hackernews", name: "Hacker News", icon: "🔥", color: "bg-orange-400/20", isLocked: true },
-  { id: "twitter", name: "X", icon: "𝕏", color: "bg-foreground/10", isLocked: true },
-  { id: "producthunt", name: "Product Hunt", icon: "🚀", color: "bg-orange-400/20", isLocked: true },
 ];
 
 interface DataSourceSelectorProps {
@@ -123,10 +121,19 @@ export function DataSourceSelector({ onSelectionChange }: DataSourceSelectorProp
                 transition={{ duration: 0.2, delay: index * 0.03 }}
                 className={cn(
                   "relative h-14 w-14 rounded-xl flex items-center justify-center",
-                  "border border-border/20 bg-secondary/20 cursor-not-allowed",
+                  "border border-border/20 bg-secondary/20 cursor-not-allowed opacity-60",
                 )}
               >
-                <Lock className="h-4 w-4 text-muted-foreground/40" />
+                {source.logo ? (
+                  <img
+                    src={source.logo}
+                    alt={source.name}
+                    className="h-8 w-8 object-contain grayscale opacity-50"
+                  />
+                ) : (
+                  <span className="text-xl opacity-50 grayscale">{source.icon}</span>
+                )}
+                <Lock className="h-3 w-3 text-muted-foreground/60 absolute bottom-1 right-1" />
               </motion.div>
             </TooltipTrigger>
             <TooltipContent>
