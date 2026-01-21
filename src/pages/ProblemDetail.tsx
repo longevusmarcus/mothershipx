@@ -10,9 +10,6 @@ import {
   Eye,
   Check,
   RefreshCw,
-  Search,
-  Zap,
-  LayoutGrid,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { FitVerificationPanel } from "@/components/FitVerificationPanel";
@@ -72,8 +69,6 @@ const ProblemDetail = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
   const [isSaved, setIsSaved] = useState(false);
-  const [signalsLayout, setSignalsLayout] = useState<"horizontal" | "grid">("horizontal");
-  const [showQuickInsight, setShowQuickInsight] = useState(false);
 
   const { data: problem, isLoading } = useProblem(id || "");
   const dbProblemId = problem?.id || id || "";
@@ -143,25 +138,6 @@ const ProblemDetail = () => {
     });
   };
 
-  const handleSearchRelated = () => {
-    // Navigate to problems page with category filter
-    window.location.href = `/problems?category=${encodeURIComponent(problem.category)}`;
-  };
-
-  const handleQuickInsight = () => {
-    setShowQuickInsight(!showQuickInsight);
-    if (!showQuickInsight) {
-      toast({
-        title: "AI Analysis Active",
-        description: "Viewing deeper market insights",
-      });
-    }
-  };
-
-  const handleToggleLayout = () => {
-    setSignalsLayout(prev => prev === "horizontal" ? "grid" : "horizontal");
-  };
-
   return (
     <AppLayout>
       <div className="max-w-3xl mx-auto space-y-6">
@@ -181,50 +157,17 @@ const ProblemDetail = () => {
           className="rounded-lg border border-border bg-card p-5"
         >
           {/* Top Row */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">{problem.category}</span>
-              <Badge variant="secondary" className={`text-xs ${sentiment.className}`}>
-                {sentiment.label}
-              </Badge>
-              {problem.trendingRank && (
-                <span className="text-xs text-muted-foreground flex items-center gap-1">
-                  <TrendingUp className="h-3 w-3" />
-                  #{problem.trendingRank} Trending
-                </span>
-              )}
-            </div>
-            
-            {/* Toolbar */}
-            <div className="flex items-center gap-1 p-1 rounded-lg bg-secondary/50">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8"
-                onClick={handleSearchRelated}
-                title="Search related problems"
-              >
-                <Search className="h-4 w-4" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className={`h-8 w-8 ${showQuickInsight ? "bg-background shadow-sm" : ""}`}
-                onClick={handleQuickInsight}
-                title="Toggle AI insights"
-              >
-                <Zap className="h-4 w-4" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className={`h-8 w-8 ${signalsLayout === "grid" ? "bg-background shadow-sm" : ""}`}
-                onClick={handleToggleLayout}
-                title="Toggle layout"
-              >
-                <LayoutGrid className="h-4 w-4" />
-              </Button>
-            </div>
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-sm text-muted-foreground">{problem.category}</span>
+            <Badge variant="secondary" className={`text-xs ${sentiment.className}`}>
+              {sentiment.label}
+            </Badge>
+            {problem.trendingRank && (
+              <span className="text-xs text-muted-foreground flex items-center gap-1">
+                <TrendingUp className="h-3 w-3" />
+                #{problem.trendingRank} Trending
+              </span>
+            )}
           </div>
           
           {/* Title & Subtitle */}
@@ -330,30 +273,6 @@ const ProblemDetail = () => {
           </TabsList>
 
           <TabsContent value="overview" forceMount className={`mt-4 space-y-4 ${activeTab !== "overview" ? "hidden" : ""}`}>
-            {/* Quick AI Insight Panel */}
-            {showQuickInsight && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="rounded-lg border border-primary/20 bg-primary/5 p-4"
-              >
-                <div className="flex items-start gap-3">
-                  <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                    <Zap className="h-4 w-4 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium mb-1">AI Market Analysis</p>
-                    <p className="text-sm text-muted-foreground">
-                      This problem shows {problem.sentiment === "exploding" ? "explosive" : "strong"} demand signals 
-                      with a {problem.competitionGap}% competition gap. Consider building a solution that addresses 
-                      the core pain point: "{problem.painPoints[0]}". Peak opportunity window: {problem.peakPrediction || "Next 2-3 months"}.
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
             {/* Opportunity + Hidden Insight */}
             <div className="grid md:grid-cols-2 gap-4">
               <div className="rounded-lg border border-border bg-card p-4">
@@ -383,7 +302,7 @@ const ProblemDetail = () => {
                   {isRefreshing ? "Updating..." : "Refresh"}
                 </Button>
               </div>
-              <SourceSignals sources={problem.sources} layout={signalsLayout} />
+              <SourceSignals sources={problem.sources} layout="horizontal" />
             </div>
 
             {/* Pain Points */}
