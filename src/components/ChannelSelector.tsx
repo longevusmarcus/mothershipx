@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
-import { Check, Play, Users } from "lucide-react";
+import { Check, Play, RefreshCw, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useChannelScans } from "@/hooks/useChannelScans";
+import { formatDistanceToNow } from "date-fns";
 
 interface Channel {
   id: string;
@@ -34,6 +36,12 @@ interface ChannelSelectorProps {
 }
 
 export function ChannelSelector({ selectedChannel, onSelect, disabled }: ChannelSelectorProps) {
+  const { data: scans = [] } = useChannelScans();
+
+  const getScanInfo = (channelId: string) => {
+    return scans.find(s => s.channel_id === channelId);
+  };
+
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2 mb-4">
@@ -44,6 +52,7 @@ export function ChannelSelector({ selectedChannel, onSelect, disabled }: Channel
       <div className="grid gap-3">
         {YOUTUBE_CHANNELS.map((channel, index) => {
           const isSelected = selectedChannel === channel.id;
+          const scanInfo = getScanInfo(channel.id);
           
           return (
             <motion.button
@@ -85,15 +94,36 @@ export function ChannelSelector({ selectedChannel, onSelect, disabled }: Channel
                   )}
                 </div>
                 <p className="text-xs text-muted-foreground truncate">{channel.handle}</p>
-                <p className="text-xs text-muted-foreground/70 mt-1 line-clamp-1">
-                  {channel.description}
-                </p>
+                
+                {/* Last scanned indicator */}
+                {scanInfo ? (
+                  <div className="flex items-center gap-2 mt-1.5">
+                    <Clock className="h-3 w-3 text-muted-foreground/60" />
+                    <span className="text-xs text-muted-foreground/60">
+                      Scanned {formatDistanceToNow(new Date(scanInfo.last_scanned_at), { addSuffix: true })}
+                    </span>
+                    <span className="text-xs text-success">
+                      • {scanInfo.problems_found} problems found
+                    </span>
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground/70 mt-1 line-clamp-1">
+                    {channel.description}
+                  </p>
+                )}
               </div>
               
-              {/* YouTube indicator */}
+              {/* Action indicator */}
               <div className="flex-shrink-0">
-                <div className="h-8 w-8 rounded-lg bg-red-500/10 flex items-center justify-center">
-                  <Play className="h-4 w-4 text-red-500 fill-red-500" />
+                <div className={cn(
+                  "h-8 w-8 rounded-lg flex items-center justify-center",
+                  scanInfo ? "bg-secondary" : "bg-red-500/10"
+                )}>
+                  {scanInfo ? (
+                    <RefreshCw className="h-4 w-4 text-muted-foreground" />
+                  ) : (
+                    <Play className="h-4 w-4 text-red-500 fill-red-500" />
+                  )}
                 </div>
               </div>
             </motion.button>
