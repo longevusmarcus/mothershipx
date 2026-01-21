@@ -426,7 +426,7 @@ export default function Profile() {
                     className="resize-none text-sm"
                   />
                 ) : (
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-sm text-muted-foreground leading-relaxed break-words">
                     {formData.bio || "No bio added yet. Click Edit to add your bio."}
                   </p>
                 )}
@@ -476,7 +476,7 @@ export default function Profile() {
                     </div>
                   </div>
                 ) : (
-                  <div className="space-y-2">
+                    <div className="space-y-2 overflow-hidden">
                     {formData.website || formData.github || formData.twitter ? (
                       <>
                         {formData.website && (
@@ -484,10 +484,10 @@ export default function Profile() {
                             href={`https://${formData.website}`} 
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors min-w-0"
                           >
                             <ExternalLink className="h-3.5 w-3.5" />
-                            {formData.website}
+                              <span className="truncate">{formData.website}</span>
                           </a>
                         )}
                         {formData.github && (
@@ -495,10 +495,10 @@ export default function Profile() {
                             href={`https://github.com/${formData.github}`} 
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors min-w-0"
                           >
                             <Github className="h-3.5 w-3.5" />
-                            {formData.github}
+                              <span className="truncate">{formData.github}</span>
                           </a>
                         )}
                         {formData.twitter && (
@@ -506,10 +506,10 @@ export default function Profile() {
                             href={`https://twitter.com/${formData.twitter}`} 
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors min-w-0"
                           >
                             <Twitter className="h-3.5 w-3.5" />
-                            @{formData.twitter}
+                              <span className="truncate">@{formData.twitter}</span>
                           </a>
                         )}
                       </>
