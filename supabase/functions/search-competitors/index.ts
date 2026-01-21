@@ -17,6 +17,7 @@ interface Competitor {
   ratingChange?: number;
   firstSeenAt?: string;
   isNew?: boolean;
+  source?: "serp" | "hackernews";
 }
 
 interface DbCompetitor {
@@ -32,6 +33,16 @@ interface DbCompetitor {
   rating_change: number;
   first_seen_at: string;
   last_seen_at: string;
+}
+
+interface HNHit {
+  title: string;
+  url: string | null;
+  author: string;
+  points: number;
+  num_comments: number;
+  created_at: string;
+  objectID: string;
 }
 
 function rateCompetitor(title: string, snippet: string, position: number): { rating: number; label: string } {
@@ -101,6 +112,129 @@ function isLikelyApp(title: string, snippet: string, url: string): boolean {
   const hasAppSignal = appSignals.some(signal => text.includes(signal) || urlLower.includes(signal));
   
   return hasAppSignal;
+}
+
+// Search Hacker News for relevant startups/products
+async function searchHackerNews(problemTitle: string, niche?: string): Promise<Competitor[]> {
+  const competitors: Competitor[] = [];
+  
+  try {
+    // Build search queries for HN
+    const searchTerms = niche 
+      ? `${niche} startup OR ${niche} app OR ${problemTitle} tool`
+      : `${problemTitle} startup OR ${problemTitle} app`;
+    
+    const hnUrl = new URL("https://hn.algolia.com/api/v1/search");
+    hnUrl.searchParams.set("query", searchTerms);
+    hnUrl.searchParams.set("tags", "story");
+    hnUrl.searchParams.set("hitsPerPage", "20");
+    // Filter for posts with at least some engagement
+    hnUrl.searchParams.set("numericFilters", "points>10");
+    
+    console.log("Searching Hacker News:", searchTerms);
+    
+    const response = await fetch(hnUrl.toString());
+    
+    if (!response.ok) {
+      console.error("HN API error:", response.status);
+      return [];
+    }
+    
+    const data = await response.json();
+    const hits: HNHit[] = data.hits || [];
+    
+    console.log("HN results:", hits.length);
+    
+    const seenDomains = new Set<string>();
+    
+    for (const hit of hits) {
+      // Skip if no URL (Ask HN, etc.)
+      if (!hit.url) continue;
+      
+      try {
+        const urlObj = new URL(hit.url);
+        const domain = urlObj.hostname.toLowerCase().replace("www.", "");
+        
+        // Skip common non-startup domains
+        const skipDomains = [
+          "github.com", "medium.com", "twitter.com", "youtube.com", 
+          "wikipedia.org", "reddit.com", "news.ycombinator.com",
+          "nytimes.com", "wsj.com", "techcrunch.com", "theverge.com",
+          "bloomberg.com", "reuters.com", "bbc.com", "cnn.com",
+          "docs.google.com", "drive.google.com", "arxiv.org"
+        ];
+        
+        if (skipDomains.some(d => domain.includes(d))) continue;
+        
+        // Skip duplicates
+        const baseDomain = domain.split(".").slice(-2).join(".");
+        if (seenDomains.has(baseDomain)) continue;
+        seenDomains.add(baseDomain);
+        
+        // Check if this looks like a startup/product launch
+        const titleLower = hit.title.toLowerCase();
+        const isLaunch = titleLower.includes("launch") || 
+                         titleLower.includes("show hn") ||
+                         titleLower.includes("introducing") ||
+                         titleLower.includes("announce") ||
+                         titleLower.includes("built") ||
+                         titleLower.includes("made") ||
+                         titleLower.includes("created") ||
+                         titleLower.includes("app") ||
+                         titleLower.includes("tool") ||
+                         titleLower.includes("startup") ||
+                         domain.endsWith(".io") ||
+                         domain.endsWith(".ai") ||
+                         domain.endsWith(".app") ||
+                         domain.endsWith(".co");
+        
+        if (!isLaunch && hit.points < 50) continue;
+        
+        // Calculate rating based on HN engagement
+        let rating = 30; // Base
+        if (hit.points >= 500) rating += 40;
+        else if (hit.points >= 200) rating += 30;
+        else if (hit.points >= 100) rating += 20;
+        else if (hit.points >= 50) rating += 10;
+        
+        if (hit.num_comments >= 100) rating += 15;
+        else if (hit.num_comments >= 50) rating += 10;
+        else if (hit.num_comments >= 20) rating += 5;
+        
+        rating = Math.min(95, rating);
+        
+        let ratingLabel: string;
+        if (rating >= 80) ratingLabel = "Major Player";
+        else if (rating >= 60) ratingLabel = "Established";
+        else if (rating >= 40) ratingLabel = "Growing";
+        else ratingLabel = "Emerging";
+        
+        // Extract company name from domain
+        let name = baseDomain.split(".")[0];
+        name = name.charAt(0).toUpperCase() + name.slice(1);
+        
+        competitors.push({
+          name,
+          url: hit.url,
+          description: `${hit.title} (${hit.points} points, ${hit.num_comments} comments on HN)`,
+          rating,
+          ratingLabel,
+          position: competitors.length + 1,
+          isNew: true,
+          source: "hackernews",
+        });
+        
+        if (competitors.length >= 5) break;
+      } catch {
+        continue;
+      }
+    }
+    
+    return competitors;
+  } catch (error) {
+    console.error("Error searching Hacker News:", error);
+    return [];
+  }
 }
 
 function calculateThreatLevel(competitors: Competitor[], opportunityScore: number): {
@@ -304,18 +438,48 @@ serve(async (req) => {
         isNew,
       });
       
-      // Stop after finding 8 good competitors
-      if (competitors.length >= 8) break;
+      // Stop after finding 6 good competitors from SERP (leave room for HN)
+      if (competitors.length >= 6) break;
     }
+
+    // Also search Hacker News for additional competitors
+    console.log("Searching Hacker News for additional competitors...");
+    const hnCompetitors = await searchHackerNews(problemTitle, niche);
+    
+    // Merge HN competitors, avoiding duplicates
+    const existingUrls = new Set(competitors.map(c => {
+      try {
+        return new URL(c.url).hostname.replace("www.", "");
+      } catch {
+        return c.url;
+      }
+    }));
+    
+    for (const hnComp of hnCompetitors) {
+      try {
+        const hnDomain = new URL(hnComp.url).hostname.replace("www.", "");
+        if (!existingUrls.has(hnDomain)) {
+          existingUrls.add(hnDomain);
+          competitors.push(hnComp);
+        }
+      } catch {
+        competitors.push(hnComp);
+      }
+    }
+    
+    console.log("Total competitors after HN merge:", competitors.length);
 
     // Sort by rating
     competitors.sort((a, b) => b.rating - a.rating);
+    
+    // Limit to top 10
+    const topCompetitors = competitors.slice(0, 10);
 
     // Save competitors to database if problemId provided
-    if (problemId && competitors.length > 0) {
+    if (problemId && topCompetitors.length > 0) {
       const now = new Date().toISOString();
       
-      for (const comp of competitors) {
+      for (const comp of topCompetitors) {
         const existing = existingCompetitors.find(e => e.url === comp.url);
         
         if (existing) {
@@ -353,20 +517,21 @@ serve(async (req) => {
         }
       }
       
-      console.log("Saved", competitors.length, "competitors to database");
+      console.log("Saved", topCompetitors.length, "competitors to database");
     }
 
     // Calculate threat level
-    const threatLevel = calculateThreatLevel(competitors, opportunityScore || 50);
+    const threatLevel = calculateThreatLevel(topCompetitors, opportunityScore || 50);
 
-    console.log("Processed competitors:", competitors.length, "Threat level:", threatLevel.level);
+    console.log("Processed competitors:", topCompetitors.length, "Threat level:", threatLevel.level);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        competitors,
+        competitors: topCompetitors,
         threatLevel,
         query: primaryQuery,
+        sources: ["serp", "hackernews"],
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
