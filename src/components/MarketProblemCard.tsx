@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, TrendingUp, Eye, Bookmark, Share2 } from "lucide-react";
+import { ArrowRight, TrendingUp, Eye, Bookmark, Share2, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { AuthModal } from "@/components/AuthModal";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription } from "@/hooks/useSubscription";
+import { useDeleteProblem } from "@/hooks/useDeleteProblem";
 import type { MarketProblem } from "@/data/marketIntelligence";
 
 interface MarketProblemCardProps {
@@ -34,6 +36,8 @@ const getSentimentLabel = (sentiment: string): { label: string; className: strin
 export function MarketProblemCard({ problem, delay = 0 }: MarketProblemCardProps) {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const { isAdmin } = useSubscription();
+  const deleteProblem = useDeleteProblem();
   const [authOpen, setAuthOpen] = useState(false);
 
   const handleCardClick = () => {
@@ -41,6 +45,13 @@ export function MarketProblemCard({ problem, delay = 0 }: MarketProblemCardProps
       navigate(`/problems/${problem.id}`);
     } else {
       setAuthOpen(true);
+    }
+  };
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (confirm("Remove this problem from the library?")) {
+      deleteProblem.mutate(problem.id);
     }
   };
 
@@ -54,8 +65,20 @@ export function MarketProblemCard({ problem, delay = 0 }: MarketProblemCardProps
     >
       <div
         onClick={handleCardClick}
-        className="rounded-lg border border-border bg-card p-4 cursor-pointer hover:border-foreground/20 transition-colors"
+        className="relative rounded-lg border border-border bg-card p-4 cursor-pointer hover:border-foreground/20 transition-colors group"
       >
+        {/* Admin delete button */}
+        {isAdmin && (
+          <button
+            onClick={handleDelete}
+            disabled={deleteProblem.isPending}
+            className="absolute top-2 right-2 p-1.5 rounded-md opacity-0 group-hover:opacity-100 hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all z-10"
+            title="Remove from library"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        )}
+
         {/* Top Row */}
         <div className="flex items-center gap-2 mb-3">
           <span className="text-xs text-muted-foreground">{problem.category}</span>

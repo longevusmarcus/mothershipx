@@ -6,9 +6,32 @@ interface HiddenInsightCardProps {
   insight?: HiddenInsight | null;
 }
 
+// Detect template/dummy insights that should be filtered out
+function isDummyInsight(insight: HiddenInsight): boolean {
+  if (!insight.surfaceAsk || !insight.realProblem || !insight.hiddenSignal) {
+    return true;
+  }
+  
+  // Common template patterns to filter
+  const dummyPatterns = [
+    /how do i solve .+ issues\?/i,
+    /what's the best .+ solution\?/i,
+    /i need help with/i,
+    /users feel overwhelmed by existing solutions/i,
+    /the emotional burden of .+ is underestimated/i,
+    /people seek validation, not just solutions/i,
+    /market gap exists for human-centered/i,
+    /community-driven solutions outperform/i,
+    /simplification is the new premium feature/i,
+  ];
+  
+  const allText = `${insight.surfaceAsk} ${insight.realProblem} ${insight.hiddenSignal}`;
+  return dummyPatterns.some(pattern => pattern.test(allText));
+}
+
 export function HiddenInsightCard({ insight }: HiddenInsightCardProps) {
-  // Show empty state if no insight data
-  if (!insight || !insight.surfaceAsk) {
+  // Show empty state if no insight data or if it's dummy/template data
+  if (!insight || !insight.surfaceAsk || isDummyInsight(insight)) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 10 }}
