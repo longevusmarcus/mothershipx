@@ -20,10 +20,11 @@ export interface SearchResult {
   rank?: number;
 }
 
-interface SearchResultCardProps {
+export interface SearchResultCardProps {
   result: SearchResult;
   delay?: number;
   isLatest?: boolean;
+  compact?: boolean;
 }
 
 const formatNumber = (num: number): string => {
@@ -45,9 +46,57 @@ const getSentimentStyle = (sentiment: string) => {
   }
 };
 
-export function SearchResultCard({ result, delay = 0, isLatest = false }: SearchResultCardProps) {
+export function SearchResultCard({ result, delay = 0, isLatest = false, compact = false }: SearchResultCardProps) {
   const sentiment = getSentimentStyle(result.sentiment);
 
+  if (compact) {
+    // Compact grid card
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3, delay, ease: "easeOut" }}
+        className="w-full"
+      >
+        <div
+          className={cn(
+            "rounded-lg border bg-card p-3 transition-all h-full",
+            isLatest ? "border-primary/50" : "border-border",
+            result.isViral && "ring-1 ring-primary/20"
+          )}
+        >
+          {/* Compact Header */}
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <span className={cn("text-[10px] px-1.5 py-0.5 rounded-full font-medium", sentiment.className)}>
+              {sentiment.label}
+            </span>
+            <div className="flex items-center gap-1 text-[10px]">
+              <TrendingUp className="h-2.5 w-2.5 text-primary" />
+              <span className="font-medium">{result.opportunityScore}%</span>
+            </div>
+          </div>
+
+          {/* Title */}
+          <h3 className="font-medium text-xs mb-1 line-clamp-2">{result.title}</h3>
+          
+          {/* Stats */}
+          <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+            <span className="flex items-center gap-0.5">
+              <Eye className="h-2.5 w-2.5" />
+              {formatNumber(result.views)}
+            </span>
+            {result.isViral && (
+              <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px] px-1 py-0">
+                Viral
+              </Badge>
+            )}
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
+
+  // Full card (default)
   return (
     <motion.div
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
