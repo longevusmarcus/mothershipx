@@ -544,6 +544,25 @@ const SubmitSolution = () => {
                     </div>
                   </div>
 
+                  {/* Leaderboard & Rewards Info */}
+                  <div className="p-4 rounded-lg border border-border bg-card text-sm space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className="h-6 w-6 rounded-full bg-gradient-to-br from-warning/20 to-success/20 flex items-center justify-center">
+                        <span className="text-xs">🏆</span>
+                      </div>
+                      <p className="font-medium">Compete forever on the leaderboard</p>
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      After AI validation, your build enters the permanent leaderboard where it's continuously judged by the market—real users and revenue signals determine your rank over time.
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      <span className="px-2 py-0.5 rounded-full bg-success/10 text-success text-[10px] font-medium">Cash Prizes</span>
+                      <span className="px-2 py-0.5 rounded-full bg-warning/10 text-warning text-[10px] font-medium">Cashback</span>
+                      <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-medium">Perks</span>
+                      <span className="px-2 py-0.5 rounded-full bg-secondary text-foreground text-[10px] font-medium">Glory</span>
+                    </div>
+                  </div>
+
                   {/* Action Buttons */}
                   <div className="flex items-center justify-between pt-4 border-t border-border">
                     <Button type="button" variant="ghost" size="sm" onClick={handleBack}>
