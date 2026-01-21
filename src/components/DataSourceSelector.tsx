@@ -8,7 +8,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import logoTiktok from "@/assets/logo-tiktok.png";
 import logoReddit from "@/assets/logo-reddit.png";
 import logoYoutube from "@/assets/logo-youtube.png";
-import logoFreelancer from "@/assets/logo-freelancer.png";
 
 interface DataSource {
   id: string;
@@ -19,12 +18,11 @@ interface DataSource {
   isLocked?: boolean;
 }
 
-// Unlocked sources: TikTok, Reddit, YouTube, and Freelancer
+// Unlocked sources: TikTok, Reddit, YouTube
 const dataSources: DataSource[] = [
   { id: "tiktok", name: "TikTok", logo: logoTiktok, color: "bg-foreground/10", isLocked: false },
   { id: "reddit", name: "Reddit", logo: logoReddit, color: "bg-orange-500/20", isLocked: false },
   { id: "youtube", name: "YouTube", logo: logoYoutube, color: "bg-red-500/20", isLocked: false },
-  { id: "freelancer", name: "Freelancer", logo: logoFreelancer, color: "bg-blue-600/20", isLocked: false },
   // Locked sources - coming soon
   { id: "google_trends", name: "Google Trends", icon: "📈", color: "bg-blue-500/20", isLocked: true },
   { id: "hackernews", name: "Hacker News", icon: "🔥", color: "bg-orange-400/20", isLocked: true },
@@ -38,7 +36,7 @@ interface DataSourceSelectorProps {
 }
 
 export function DataSourceSelector({ onSelectionChange }: DataSourceSelectorProps) {
-  const [selected, setSelected] = useState<string[]>(["tiktok", "reddit", "youtube", "freelancer"]);
+  const [selected, setSelected] = useState<string[]>(["tiktok", "reddit", "youtube"]);
 
   const toggleSource = (source: DataSource) => {
     if (source.isLocked) return;
