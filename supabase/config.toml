@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.search-tiktok]
 verify_jwt = false
+
+[functions.refresh-problem-data]
+verify_jwt = false

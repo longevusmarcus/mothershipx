@@ -9,6 +9,7 @@ import {
   Bookmark,
   Eye,
   Check,
+  RefreshCw,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { FitVerificationPanel } from "@/components/FitVerificationPanel";
@@ -27,6 +28,7 @@ import { useToast } from "@/hooks/use-toast";
 import { getDbProblemId } from "@/data/marketIntelligence";
 import { useProblem } from "@/hooks/useProblems";
 import { useProblemBuilders } from "@/hooks/useProblemBuilders";
+import { useRefreshProblem } from "@/hooks/useRefreshProblem";
 import { useAuth } from "@/contexts/AuthContext";
 
 const formatNumber = (num: number): string => {
@@ -69,8 +71,9 @@ const ProblemDetail = () => {
   const [isSaved, setIsSaved] = useState(false);
 
   const { data: problem, isLoading } = useProblem(id || "");
-  const dbProblemId = problem ? getDbProblemId(problem.id) : "";
+  const dbProblemId = problem?.id || id || "";
   const { isJoined, joinProblem, leaveProblem } = useProblemBuilders(dbProblemId);
+  const { refresh, isRefreshing } = useRefreshProblem(dbProblemId);
   
   if (isLoading) {
     return (
@@ -286,7 +289,19 @@ const ProblemDetail = () => {
 
             {/* Source Signals */}
             <div className="rounded-lg border border-border bg-card p-4">
-              <p className="text-sm font-medium mb-3">Live Data Signals</p>
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm font-medium">Live Data Signals</p>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => refresh()}
+                  disabled={isRefreshing}
+                  className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
+                >
+                  <RefreshCw className={`h-3.5 w-3.5 mr-1.5 ${isRefreshing ? "animate-spin" : ""}`} />
+                  {isRefreshing ? "Updating..." : "Refresh"}
+                </Button>
+              </div>
               <SourceSignals sources={problem.sources} layout="horizontal" />
             </div>
 
