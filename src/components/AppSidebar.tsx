@@ -13,6 +13,7 @@ import {
   LogOut,
   ExternalLink,
   LogIn,
+  Trophy,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -186,6 +187,32 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
             )}
           </AnimatePresence>
         </NavLink>
+
+        {/* Leaderboards - Coming Soon */}
+        <div
+          className={cn(
+            "flex items-center gap-3 px-2 py-2 rounded-md text-sm cursor-not-allowed opacity-50",
+            "text-muted-foreground"
+          )}
+          title="Coming soon"
+        >
+          <Trophy className="h-4 w-4 shrink-0" />
+          <AnimatePresence mode="wait">
+            {(!collapsed || isMobile) && (
+              <motion.div
+                initial={{ opacity: 0, width: 0 }}
+                animate={{ opacity: 1, width: "auto" }}
+                exit={{ opacity: 0, width: 0 }}
+                className="flex items-center gap-2 overflow-hidden whitespace-nowrap"
+              >
+                <span>Leaderboards</span>
+                <span className="text-[8px] bg-muted text-muted-foreground px-1 py-0.5 rounded font-medium">
+                  SOON
+                </span>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </nav>
 
       {/* Profile Section */}
