@@ -38,17 +38,19 @@ import { AuthModal } from "@/components/AuthModal";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabaseClient";
 import { useUserStats, getXpProgress, getLevelTitle } from "@/hooks/useUserStats";
-import { MyChallenges } from "@/components/MyChallenges";
 import { useIsBuilderVerified } from "@/hooks/useBuilderVerification";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { MyProblems } from "@/components/MyProblems";
+import { ArenaHistory } from "@/components/ArenaHistory";
 
-const achievements = [
-  { id: 1, name: "First Build", description: "Submitted your first solution", unlocked: false, date: null, icon: Layers },
-  { id: 2, name: "Problem Solver", description: "Solved 5 problems", unlocked: false, date: null, icon: Target },
-  { id: 3, name: "Top 20", description: "Reached top 20 on leaderboard", unlocked: false, date: null, icon: Trophy },
-  { id: 4, name: "Perfect Fit", description: "Achieved 95%+ fit score", unlocked: false, date: null, icon: Sparkles },
-  { id: 5, name: "Revenue Maker", description: "First verified revenue", unlocked: false, date: null, icon: Award },
-  { id: 6, name: "Elite Builder", description: "Reach top 10 on leaderboard", unlocked: false, date: null, icon: Trophy },
+// Achievement definitions - unlock conditions are checked dynamically
+const achievementDefs = [
+  { id: 1, name: "First Build", description: "Submitted your first solution", icon: Layers, check: (stats: any) => stats.solutionsShipped >= 1 },
+  { id: 2, name: "Problem Solver", description: "Joined 5 problems", icon: Target, check: (stats: any) => stats.problemsJoined >= 5 },
+  { id: 3, name: "Arena Warrior", description: "Entered 3 challenges", icon: Trophy, check: (stats: any) => stats.challengesEntered >= 3 },
+  { id: 4, name: "Challenge Victor", description: "Won a challenge", icon: Award, check: (stats: any) => stats.challengesWon >= 1 },
+  { id: 5, name: "Level 5", description: "Reached level 5", icon: Sparkles, check: (stats: any) => stats.currentLevel >= 5 },
+  { id: 6, name: "Elite Builder", description: "Reach level 10", icon: Trophy, check: (stats: any) => stats.currentLevel >= 10 },
 ];
 
 const recentBuilds: { id: number; name: string; problem: string; fitScore: number; status: string; date: string }[] = [];
@@ -509,13 +511,22 @@ export default function Profile() {
               </motion.div>
             </div>
 
-            {/* My Challenges */}
+            {/* My Problems */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <MyChallenges />
+              <MyProblems />
+            </motion.div>
+
+            {/* Arena History */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.12 }}
+            >
+              <ArenaHistory />
             </motion.div>
 
             {/* Recent Builds */}
@@ -588,12 +599,13 @@ export default function Profile() {
                   Achievements
                 </h3>
                 <Badge variant="secondary" className="text-xs">
-                  {achievements.filter(a => a.unlocked).length}/{achievements.length} Unlocked
+                  {userStats ? achievementDefs.filter(a => a.check(userStats)).length : 0}/{achievementDefs.length} Unlocked
                 </Badge>
               </div>
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {achievements.map((achievement, index) => {
+                {achievementDefs.map((achievement, index) => {
                   const Icon = achievement.icon;
+                  const isUnlocked = userStats ? achievement.check(userStats) : false;
                   return (
                     <motion.div
                       key={achievement.id}
@@ -601,22 +613,22 @@ export default function Profile() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}
                       className={`flex items-start gap-3 p-4 rounded-lg border transition-colors ${
-                        achievement.unlocked
+                        isUnlocked
                           ? "border-border bg-muted/20"
                           : "border-border/50 opacity-50"
                       }`}
                     >
                       <div className={`p-2 rounded-lg shrink-0 ${
-                        achievement.unlocked ? "bg-primary/10" : "bg-muted"
+                        isUnlocked ? "bg-primary/10" : "bg-muted"
                       }`}>
                         <Icon className={`h-4 w-4 ${
-                          achievement.unlocked ? "text-primary" : "text-muted-foreground"
+                          isUnlocked ? "text-primary" : "text-muted-foreground"
                         }`} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="font-medium text-sm truncate">{achievement.name}</span>
-                          {achievement.unlocked && (
+                          {isUnlocked && (
                             <CheckCircle2 className="h-3.5 w-3.5 text-success shrink-0" />
                           )}
                         </div>
