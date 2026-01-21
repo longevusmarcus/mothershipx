@@ -391,20 +391,6 @@ export default function Profile() {
                 <Progress value={xpProgress.percentage} className="h-1.5" />
               </div>
             </div>
-
-            {/* Stats */}
-            <div className="flex sm:flex-col gap-6 sm:gap-4 sm:border-l sm:border-border sm:pl-6">
-              <div className="text-center sm:text-right">
-                <div className="text-2xl font-semibold tabular-nums">
-                  {statsLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : userStats?.problemsJoined || 0}
-                </div>
-                <div className="text-xs text-muted-foreground">Problems Joined</div>
-              </div>
-              <div className="text-center sm:text-right opacity-50">
-                <div className="text-2xl font-semibold tabular-nums">{userStats?.solutionsShipped || 0}</div>
-                <div className="text-xs text-muted-foreground">Solutions</div>
-              </div>
-            </div>
           </div>
         </motion.div>
 
