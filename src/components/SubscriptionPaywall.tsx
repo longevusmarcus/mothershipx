@@ -22,11 +22,7 @@ const features = [
   { icon: Trophy, label: "Weekly prizes" },
 ];
 
-export function SubscriptionPaywall({
-  open,
-  onOpenChange,
-  feature = "search",
-}: SubscriptionPaywallProps) {
+export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: SubscriptionPaywallProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const { createCheckout } = useSubscription();
   const { trackPaywallView, trackPaywallDismiss, trackCheckoutStart } = usePaywallAnalytics();
@@ -89,12 +85,8 @@ export function SubscriptionPaywall({
 
               {/* Title */}
               <div className="text-center mb-5 sm:mb-6">
-                <h2 className="text-lg sm:text-xl font-semibold tracking-tight mb-2">
-                  Unlock Premium Access
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  Subscribe to access {featureLabels[feature]} and more
-                </p>
+                <h2 className="text-lg sm:text-xl font-semibold tracking-tight mb-2">Unlock Premium Access</h2>
+                <p className="text-sm text-muted-foreground">Subscribe to access {featureLabels[feature]} and more</p>
               </div>
 
               {/* Price */}
@@ -119,11 +111,7 @@ export function SubscriptionPaywall({
               </div>
 
               {/* CTA */}
-              <Button
-                onClick={handleSubscribe}
-                disabled={isProcessing}
-                className="w-full h-11"
-              >
+              <Button onClick={handleSubscribe} disabled={isProcessing} className="w-full h-11">
                 {isProcessing ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
@@ -136,13 +124,11 @@ export function SubscriptionPaywall({
 
               {/* Alternative */}
               <p className="text-center text-xs text-muted-foreground mt-4">
-                Or pay $5 per Arena challenge
+                Or pay $5 per Arena challenge (NO search & library access)
               </p>
 
               {/* Trust */}
-              <p className="text-center text-xs text-muted-foreground/70 mt-2">
-                Cancel anytime • Secured by Stripe
-              </p>
+              <p className="text-center text-xs text-muted-foreground/70 mt-2">Cancel anytime • Secured by Stripe</p>
             </motion.div>
           </AnimatePresence>
         </div>
