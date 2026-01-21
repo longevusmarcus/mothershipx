@@ -172,7 +172,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 p-4 md:p-6 pb-20 md:pb-6 overflow-x-clip w-full max-w-full min-w-0">
+        <main className="flex-1 p-4 md:p-6 pb-20 md:pb-6 overflow-x-hidden overflow-y-auto w-full max-w-full min-w-0">
           {children}
         </main>
 
