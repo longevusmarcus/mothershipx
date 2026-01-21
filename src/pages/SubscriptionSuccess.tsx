@@ -1,25 +1,34 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Check, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppLayout } from "@/components/AppLayout";
 import { useSubscription } from "@/hooks/useSubscription";
+import { usePaywallAnalytics } from "@/hooks/usePaywallAnalytics";
 import logoIcon from "@/assets/logo-icon.png";
 
 export default function SubscriptionSuccess() {
   const navigate = useNavigate();
   const { checkSubscription } = useSubscription();
+  const { trackCheckoutComplete } = usePaywallAnalytics();
   const [showContent, setShowContent] = useState(false);
+  const hasTracked = useRef(false);
 
   useEffect(() => {
     // Refresh subscription status
     checkSubscription();
     
+    // Track checkout completion (only once)
+    if (!hasTracked.current) {
+      hasTracked.current = true;
+      trackCheckoutComplete();
+    }
+    
     // Delay content reveal for smoother animation
     const timer = setTimeout(() => setShowContent(true), 100);
     return () => clearTimeout(timer);
-  }, [checkSubscription]);
+  }, [checkSubscription, trackCheckoutComplete]);
 
   return (
     <AppLayout>

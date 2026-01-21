@@ -23,6 +23,7 @@ import { SourceSignals } from "@/components/SourceSignals";
 import { HiddenInsightCard } from "@/components/HiddenInsightCard";
 import { TeamFormation } from "@/components/TeamFormation";
 import { SubscriptionPaywall } from "@/components/SubscriptionPaywall";
+import { SubscriptionLoadingGate } from "@/components/SubscriptionLoadingGate";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -111,6 +112,15 @@ const ProblemDetail = () => {
       setSearchCompetitors(true);
     }
   }, [activeTab, problem?.title, searchCompetitors]);
+  
+  // Show loading state while checking subscription (prevents paywall flash)
+  if (subscriptionLoading && user) {
+    return (
+      <AppLayout>
+        <SubscriptionLoadingGate message="Checking your access..." />
+      </AppLayout>
+    );
+  }
   
   if (isLoading) {
     return (

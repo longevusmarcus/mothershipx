@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, ArrowRight, Check, Zap, Globe, Swords, Users, Trophy } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useSubscription, SUBSCRIPTION_PRICE } from "@/hooks/useSubscription";
+import { usePaywallAnalytics } from "@/hooks/usePaywallAnalytics";
 import logoIcon from "@/assets/logo-icon.png";
 
 interface SubscriptionPaywallProps {
@@ -28,6 +29,14 @@ export function SubscriptionPaywall({
 }: SubscriptionPaywallProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const { createCheckout } = useSubscription();
+  const { trackPaywallView, trackPaywallDismiss, trackCheckoutStart } = usePaywallAnalytics();
+
+  // Track paywall view
+  useEffect(() => {
+    if (open) {
+      trackPaywallView(feature);
+    }
+  }, [open, feature, trackPaywallView]);
 
   const featureLabels = {
     search: "AI-powered searches",
@@ -35,8 +44,17 @@ export function SubscriptionPaywall({
     arena: "Arena challenges",
   };
 
+  const handleOpenChange = (newOpen: boolean) => {
+    if (!newOpen && open) {
+      // User is dismissing the paywall
+      trackPaywallDismiss(feature);
+    }
+    onOpenChange(newOpen);
+  };
+
   const handleSubscribe = async () => {
     setIsProcessing(true);
+    trackCheckoutStart(feature);
 
     try {
       const url = await createCheckout();
@@ -51,7 +69,7 @@ export function SubscriptionPaywall({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md p-0 gap-0 border-border bg-card overflow-hidden max-h-[100dvh] sm:max-h-[90vh]">
         <div className="p-6 sm:p-8 overflow-y-auto">
           <AnimatePresence mode="wait">
