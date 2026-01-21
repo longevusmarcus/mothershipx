@@ -16,6 +16,7 @@ import {
   LogIn,
   Send,
   Shield,
+  Sparkles,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -33,8 +34,10 @@ import { getSourceIcon } from "@/data/marketIntelligence";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMyChallengeJoins, useJoinChallenge } from "@/hooks/useChallengeJoins";
 import { PaywallModal } from "@/components/PaywallModal";
+import { SubscriptionPaywall } from "@/components/SubscriptionPaywall";
 import { AuthModal } from "@/components/AuthModal";
 import { BuilderVerificationModal } from "@/components/BuilderVerificationModal";
+import { useSubscription } from "@/hooks/useSubscription";
 import { supabase } from "@/lib/supabaseClient";
 
 interface ChallengeCardProps {
@@ -45,11 +48,13 @@ interface ChallengeCardProps {
 export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
+  const { hasPremiumAccess } = useSubscription();
   const { data: myChallengeJoins = [] } = useMyChallengeJoins();
   const joinChallengeMutation = useJoinChallenge();
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
   const [isVerificationOpen, setIsVerificationOpen] = useState(false);
   const [isPaywallOpen, setIsPaywallOpen] = useState(false);
+  const [isSubscriptionPaywallOpen, setIsSubscriptionPaywallOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [joinType, setJoinType] = useState<"solo" | "team" | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -93,7 +98,11 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
     // Check if user is verified first
     if (!isVerified) {
       setIsVerificationOpen(true);
+    } else if (hasPremiumAccess) {
+      // Premium users get free entry - join directly
+      handleFreeJoin();
     } else {
+      // Non-premium users see paywall for $5 entry
       setIsPaywallOpen(true);
     }
   };
@@ -101,8 +110,50 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
   const handleVerificationComplete = () => {
     setIsVerified(true);
     setIsVerificationOpen(false);
-    // After verification, open paywall
-    setIsPaywallOpen(true);
+    // After verification, check premium status
+    if (hasPremiumAccess) {
+      handleFreeJoin();
+    } else {
+      setIsPaywallOpen(true);
+    }
+  };
+
+  const handleFreeJoin = async () => {
+    if (!joinType) return;
+    setIsProcessing(true);
+    
+    try {
+      await joinChallengeMutation.mutateAsync({
+        challengeId: challenge.id,
+        joinType,
+      });
+      
+      toast.success(`Joined challenge as ${joinType}! (Premium benefit: Free entry)`);
+      
+      navigate("/submit", {
+        state: {
+          challenge: {
+            id: challenge.id,
+            title: challenge.title,
+            trend: challenge.trend,
+            description: challenge.description,
+            example: challenge.example,
+            prizePool: challenge.prizePool,
+            winnerPrize: challenge.winnerPrize,
+            endsAt: challenge.endsAt.toISOString(),
+            difficulty: challenge.difficulty,
+            tags: challenge.tags,
+          },
+          joinType,
+          entryFee: 0,
+        },
+      });
+    } catch (error) {
+      console.error("Error joining challenge:", error);
+      toast.error("Failed to join challenge. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handlePaymentSuccess = async () => {
@@ -436,6 +487,12 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
         joinType={joinType || "solo"}
         prizePool={challenge.prizePool}
         winnerPrize={challenge.winnerPrize}
+      />
+
+      <SubscriptionPaywall
+        open={isSubscriptionPaywallOpen}
+        onOpenChange={setIsSubscriptionPaywallOpen}
+        feature="arena"
       />
 
       <AuthModal open={isAuthModalOpen} onOpenChange={setIsAuthModalOpen} />

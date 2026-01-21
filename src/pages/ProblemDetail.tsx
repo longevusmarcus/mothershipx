@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
   ArrowLeft, 
@@ -13,6 +13,7 @@ import {
   ExternalLink,
   Search,
   Loader2,
+  Lock,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { FitVerificationPanel } from "@/components/FitVerificationPanel";
@@ -21,6 +22,7 @@ import { OpportunityMeter } from "@/components/OpportunityMeter";
 import { SourceSignals } from "@/components/SourceSignals";
 import { HiddenInsightCard } from "@/components/HiddenInsightCard";
 import { TeamFormation } from "@/components/TeamFormation";
+import { SubscriptionPaywall } from "@/components/SubscriptionPaywall";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -33,6 +35,7 @@ import { useProblemBuilders } from "@/hooks/useProblemBuilders";
 import { useRefreshProblem } from "@/hooks/useRefreshProblem";
 import { useCompetitors } from "@/hooks/useCompetitors";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription } from "@/hooks/useSubscription";
 import { cn } from "@/lib/utils";
 
 const formatNumber = (num: number): string => {
@@ -69,11 +72,21 @@ const mockTopSolution = {
 
 const ProblemDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
+  const { hasPremiumAccess, isLoading: subscriptionLoading } = useSubscription();
   const [activeTab, setActiveTab] = useState("overview");
   const [isSaved, setIsSaved] = useState(false);
   const [searchCompetitors, setSearchCompetitors] = useState(false);
+  const [showPaywall, setShowPaywall] = useState(false);
+
+  // Check access on mount
+  useEffect(() => {
+    if (!subscriptionLoading && user && !hasPremiumAccess) {
+      setShowPaywall(true);
+    }
+  }, [subscriptionLoading, user, hasPremiumAccess]);
 
   const { data: problem, isLoading } = useProblem(id || "");
   const dbProblemId = problem?.id || id || "";
@@ -561,6 +574,18 @@ const ProblemDetail = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Subscription Paywall */}
+      <SubscriptionPaywall 
+        open={showPaywall} 
+        onOpenChange={(open) => {
+          setShowPaywall(open);
+          if (!open && !hasPremiumAccess) {
+            navigate("/problems");
+          }
+        }} 
+        feature="problem"
+      />
     </AppLayout>
   );
 };

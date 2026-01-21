@@ -13,7 +13,9 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthModal } from "@/components/AuthModal";
+import { SubscriptionPaywall } from "@/components/SubscriptionPaywall";
 import { useToast } from "@/hooks/use-toast";
+import { useSubscription } from "@/hooks/useSubscription";
 import type { SearchResult } from "@/components/SearchResultCard";
 
 type SearchMode = "search" | "quick" | "grid";
@@ -22,6 +24,7 @@ const Index = () => {
   const [searchMode, setSearchMode] = useState<SearchMode>("search");
   const [selectedSource, setSelectedSource] = useState<string>("tiktok");
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showPaywall, setShowPaywall] = useState(false);
   const [pendingNiche, setPendingNiche] = useState<NicheId | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
@@ -31,11 +34,18 @@ const Index = () => {
   const { user, profile } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { hasPremiumAccess, isLoading: subscriptionLoading } = useSubscription();
 
   // Quick scan - search all niches at once
   const handleQuickScan = async () => {
     if (!user) {
       setShowAuthModal(true);
+      return;
+    }
+
+    // Check premium access
+    if (!hasPremiumAccess && !subscriptionLoading) {
+      setShowPaywall(true);
       return;
     }
 
@@ -89,7 +99,14 @@ const Index = () => {
       return;
     }
 
-    // User is logged in, perform the search
+    // Check premium access
+    if (!hasPremiumAccess && !subscriptionLoading) {
+      setPendingNiche(nicheId);
+      setShowPaywall(true);
+      return;
+    }
+
+    // User is logged in and has access, perform the search
     await performSearch(nicheId);
   };
 
@@ -301,6 +318,13 @@ const Index = () => {
 
       {/* Auth Modal for logged out users */}
       <AuthModal open={showAuthModal} onOpenChange={setShowAuthModal} onSuccess={handleAuthSuccess} />
+      
+      {/* Subscription Paywall */}
+      <SubscriptionPaywall 
+        open={showPaywall} 
+        onOpenChange={setShowPaywall} 
+        feature="search"
+      />
     </AppLayout>
   );
 };
