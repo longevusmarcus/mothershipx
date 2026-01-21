@@ -18,11 +18,11 @@ interface DataSource {
   isLocked?: boolean;
 }
 
-// Available sources - only TikTok is selectable for now
+// Available sources - TikTok and YouTube are selectable
 const dataSources: DataSource[] = [
   { id: "tiktok", name: "TikTok", logo: logoTiktok, color: "bg-foreground/10", isLocked: false },
+  { id: "youtube", name: "YouTube", logo: logoYoutube, color: "bg-red-500/20", isLocked: false },
   { id: "reddit", name: "Reddit", logo: logoReddit, color: "bg-orange-500/20", isLocked: true },
-  { id: "youtube", name: "YouTube", logo: logoYoutube, color: "bg-red-500/20", isLocked: true },
 ];
 
 // Coming soon sources
