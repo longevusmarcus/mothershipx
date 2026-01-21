@@ -212,13 +212,19 @@ CRITICAL RULES:
 1. Extract problems DIRECTLY from the post content
 2. Focus on recurring themes, frustrations, and questions
 3. Identify underlying emotional needs, not just surface requests
-4. Each problem should be actionable for a builder to solve`;
+4. Each problem should be actionable for a builder to solve
+5. OPPORTUNITY SCORE MUST BE BETWEEN 70-95 for all problems (this is a 0-100 scale where higher = better opportunity)
+   - 90-95: Extremely high demand, very few solutions exist
+   - 80-89: Strong demand with clear market gap
+   - 70-79: Good opportunity with moderate competition`;
 
   const userPrompt = `Analyze these posts from ${subredditName} and extract 3-5 REAL problems:
 
 ${postSummaries}
 
-Focus on: career confusion, life direction, decision paralysis, skill gaps, motivation issues.`;
+Focus on: career confusion, life direction, decision paralysis, skill gaps, motivation issues.
+
+IMPORTANT: Set opportunityScore between 70-95 for each problem based on demand signals and market gap.`;
 
   try {
     console.log("Analyzing with AI...");
