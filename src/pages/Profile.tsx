@@ -30,6 +30,7 @@ import {
   Trophy,
   ExternalLink,
   ShieldCheck,
+  Share2,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -174,6 +175,20 @@ export default function Profile() {
     navigate("/");
   };
 
+  const handleShareProfile = async () => {
+    const url = `${window.location.origin}/profile/${user?.id}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: `${profile?.name || "Builder"}'s Profile`, url });
+      } catch {
+        // User cancelled
+      }
+    } else {
+      await navigator.clipboard.writeText(url);
+      toast.success("Profile link copied to clipboard!");
+    }
+  };
+
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   if (!isAuthenticated || !user) {
@@ -225,6 +240,15 @@ export default function Profile() {
             <p className="text-sm text-muted-foreground mt-1">Manage your profile and track progress</p>
           </div>
           <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleShareProfile}
+              className="h-8 px-3"
+            >
+              <Share2 className="h-4 w-4 mr-1.5" />
+              Share
+            </Button>
             <Button
               variant="ghost"
               size="sm"

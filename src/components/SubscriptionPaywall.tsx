@@ -70,8 +70,8 @@ export function SubscriptionPaywall({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-md p-0 gap-0 border-border bg-card overflow-hidden max-h-[100dvh] sm:max-h-[90vh]">
-        <div className="p-6 sm:p-8 overflow-y-auto">
+      <DialogContent className="sm:max-w-md p-0 gap-0 border-border bg-card overflow-hidden h-[100dvh] sm:h-auto sm:max-h-[90vh] rounded-none sm:rounded-lg">
+        <div className="p-6 sm:p-8 overflow-y-auto flex flex-col h-full sm:h-auto">
           <AnimatePresence mode="wait">
             <motion.div
               key="subscription-paywall"

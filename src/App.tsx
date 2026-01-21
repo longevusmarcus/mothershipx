@@ -16,6 +16,7 @@ import Builds from "./pages/Builds";
 import SubmitSolution from "./pages/SubmitSolution";
 import LeaderboardPage from "./pages/LeaderboardPage";
 import Profile from "./pages/Profile";
+import PublicProfile from "./pages/PublicProfile";
 import Settings from "./pages/Settings";
 import SubscriptionSuccess from "./pages/SubscriptionSuccess";
 import Auth from "./pages/Auth";
@@ -43,6 +44,7 @@ const App = () => (
                 <Route path="/submit" element={<SubmitSolution />} />
                 <Route path="/leaderboard" element={<LeaderboardPage />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/profile/:userId" element={<PublicProfile />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/subscription/success" element={<SubscriptionSuccess />} />
                 <Route path="/auth" element={<Auth />} />
