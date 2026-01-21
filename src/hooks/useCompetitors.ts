@@ -9,24 +9,43 @@ export interface Competitor {
   rating: number;
   ratingLabel: string;
   position: number;
+  previousRating?: number;
+  ratingChange?: number;
+  firstSeenAt?: string;
+  isNew?: boolean;
+}
+
+export interface ThreatLevel {
+  level: "Low" | "Moderate" | "High" | "Critical";
+  score: number;
+  description: string;
 }
 
 interface CompetitorResponse {
   success: boolean;
   competitors: Competitor[];
+  threatLevel: ThreatLevel;
   query: string;
 }
 
-export function useCompetitors(problemTitle: string, niche?: string, enabled = false) {
+export function useCompetitors(
+  problemId: string,
+  problemTitle: string,
+  opportunityScore: number,
+  niche?: string,
+  enabled = false
+) {
   const [hasSearched, setHasSearched] = useState(false);
 
   const query = useQuery({
-    queryKey: ["competitors", problemTitle],
-    queryFn: async (): Promise<Competitor[]> => {
+    queryKey: ["competitors", problemId, problemTitle],
+    queryFn: async (): Promise<{ competitors: Competitor[]; threatLevel: ThreatLevel }> => {
       const { data, error } = await supabase.functions.invoke<CompetitorResponse>("search-competitors", {
         body: { 
+          problemId,
           problemTitle,
           niche,
+          opportunityScore,
         },
       });
 
@@ -40,7 +59,10 @@ export function useCompetitors(problemTitle: string, niche?: string, enabled = f
       }
 
       setHasSearched(true);
-      return data.competitors;
+      return {
+        competitors: data.competitors,
+        threatLevel: data.threatLevel,
+      };
     },
     enabled: enabled && !!problemTitle,
     staleTime: 1000 * 60 * 30, // 30 minutes
@@ -50,6 +72,8 @@ export function useCompetitors(problemTitle: string, niche?: string, enabled = f
 
   return {
     ...query,
+    competitors: query.data?.competitors,
+    threatLevel: query.data?.threatLevel,
     hasSearched,
   };
 }

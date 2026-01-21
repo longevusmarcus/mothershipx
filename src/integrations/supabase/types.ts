@@ -269,6 +269,65 @@ export type Database = {
           },
         ]
       }
+      problem_competitors: {
+        Row: {
+          created_at: string
+          description: string | null
+          first_seen_at: string
+          id: string
+          last_seen_at: string
+          name: string
+          position: number | null
+          previous_rating: number | null
+          problem_id: string
+          rating: number
+          rating_change: number | null
+          rating_label: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          first_seen_at?: string
+          id?: string
+          last_seen_at?: string
+          name: string
+          position?: number | null
+          previous_rating?: number | null
+          problem_id: string
+          rating?: number
+          rating_change?: number | null
+          rating_label?: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          first_seen_at?: string
+          id?: string
+          last_seen_at?: string
+          name?: string
+          position?: number | null
+          previous_rating?: number | null
+          problem_id?: string
+          rating?: number
+          rating_change?: number | null
+          rating_label?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "problem_competitors_problem_id_fkey"
+            columns: ["problem_id"]
+            isOneToOne: false
+            referencedRelation: "problems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       problems: {
         Row: {
           active_builders_last_24h: number | null
