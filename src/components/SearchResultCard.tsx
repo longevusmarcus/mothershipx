@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { TrendingUp, Eye, Bookmark, Share2, Sparkles, CheckCircle2, AlertCircle } from "lucide-react";
+import { TrendingUp, Eye, Bookmark, Share2, Sparkles, CheckCircle2, AlertCircle, ArrowUp, MessageSquare } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -13,11 +13,12 @@ export interface SearchResult {
   saves: number;
   shares: number;
   painPoints: string[];
-  sources?: { source: string; metric: string; value: string }[];
+  sources?: { source: string; metric: string; value: string; name?: string }[];
   isViral: boolean;
   opportunityScore: number;
   addedToLibrary?: boolean;
   rank?: number;
+  sourceType?: "reddit" | "youtube" | "tiktok"; // Explicit source type
 }
 
 export interface SearchResultCardProps {
@@ -47,8 +48,19 @@ const getSentimentStyle = (sentiment: string) => {
   }
 };
 
+// Detect source type from result
+const detectSourceType = (result: SearchResult): "reddit" | "youtube" | "tiktok" | "default" => {
+  if (result.sourceType) return result.sourceType;
+  if (result.id?.startsWith("reddit-")) return "reddit";
+  if (result.id?.startsWith("yt-")) return "youtube";
+  if (result.sources?.some(s => s.name === "reddit" || s.source?.toLowerCase() === "reddit")) return "reddit";
+  if (result.sources?.some(s => s.name === "youtube" || s.source?.toLowerCase() === "youtube")) return "youtube";
+  return "default";
+};
+
 export function SearchResultCard({ result, delay = 0, isLatest = false, compact = false }: SearchResultCardProps) {
   const sentiment = getSentimentStyle(result.sentiment);
+  const sourceType = detectSourceType(result);
 
   if (compact) {
     // Compact grid card
@@ -80,12 +92,25 @@ export function SearchResultCard({ result, delay = 0, isLatest = false, compact 
           {/* Title */}
           <h3 className="font-medium text-xs mb-1 line-clamp-2">{result.title}</h3>
           
-          {/* Stats */}
+          {/* Stats - source-specific */}
           <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-            <span className="flex items-center gap-0.5">
-              <Eye className="h-2.5 w-2.5" />
-              {formatNumber(result.views)}
-            </span>
+            {sourceType === "reddit" ? (
+              <>
+                <span className="flex items-center gap-0.5">
+                  <ArrowUp className="h-2.5 w-2.5" />
+                  {formatNumber(result.views)}
+                </span>
+                <span className="flex items-center gap-0.5">
+                  <MessageSquare className="h-2.5 w-2.5" />
+                  {formatNumber(result.shares)}
+                </span>
+              </>
+            ) : (
+              <span className="flex items-center gap-0.5">
+                <Eye className="h-2.5 w-2.5" />
+                {formatNumber(result.views)}
+              </span>
+            )}
             {result.isViral && (
               <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px] px-1 py-0">
                 Viral
@@ -153,20 +178,50 @@ export function SearchResultCard({ result, delay = 0, isLatest = false, compact 
           </div>
         )}
 
-        {/* Stats */}
+        {/* Stats - source-specific */}
         <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
-          <span className="flex items-center gap-1">
-            <Eye className="h-3 w-3" />
-            {formatNumber(result.views)}
-          </span>
-          <span className="flex items-center gap-1">
-            <Bookmark className="h-3 w-3" />
-            {formatNumber(result.saves)}
-          </span>
-          <span className="flex items-center gap-1">
-            <Share2 className="h-3 w-3" />
-            {formatNumber(result.shares)}
-          </span>
+          {sourceType === "reddit" ? (
+            <>
+              <span className="flex items-center gap-1">
+                <ArrowUp className="h-3 w-3" />
+                {formatNumber(result.views)} upvotes
+              </span>
+              <span className="flex items-center gap-1">
+                <MessageSquare className="h-3 w-3" />
+                {formatNumber(result.shares)} comments
+              </span>
+            </>
+          ) : sourceType === "youtube" ? (
+            <>
+              <span className="flex items-center gap-1">
+                <Eye className="h-3 w-3" />
+                {formatNumber(result.views)} views
+              </span>
+              <span className="flex items-center gap-1">
+                <Bookmark className="h-3 w-3" />
+                {formatNumber(result.saves)} likes
+              </span>
+              <span className="flex items-center gap-1">
+                <MessageSquare className="h-3 w-3" />
+                {formatNumber(result.shares)} comments
+              </span>
+            </>
+          ) : (
+            <>
+              <span className="flex items-center gap-1">
+                <Eye className="h-3 w-3" />
+                {formatNumber(result.views)}
+              </span>
+              <span className="flex items-center gap-1">
+                <Bookmark className="h-3 w-3" />
+                {formatNumber(result.saves)}
+              </span>
+              <span className="flex items-center gap-1">
+                <Share2 className="h-3 w-3" />
+                {formatNumber(result.shares)}
+              </span>
+            </>
+          )}
         </div>
 
         {/* Sources */}
