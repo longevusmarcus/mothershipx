@@ -199,11 +199,32 @@ const Index = () => {
         });
         setSearchResults([]);
       } else if (data?.success && data?.data) {
-        setSearchResults(data.data);
+        // Transform YouTube results to match SearchResult interface
+        const transformedResults: SearchResult[] = data.data.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          subtitle: item.description || "",
+          category: item.category || "business",
+          sentiment: item.sentiment || "rising",
+          views: item.viewCount || 0,
+          saves: 0,
+          shares: 0,
+          painPoints: item.painPoints || [],
+          sources: item.sources?.map((s: any) => ({
+            source: "YouTube",
+            metric: s.trend || "",
+            value: s.trend || ""
+          })) || [],
+          isViral: item.isViral || false,
+          opportunityScore: item.opportunityScore || 50,
+          addedToLibrary: item.isViral || false
+        }));
+        
+        setSearchResults(transformedResults);
         await queryClient.invalidateQueries({ queryKey: ["problems"] });
         toast({
           title: "YouTube Analysis Complete",
-          description: `Found ${data.data.length} opportunities from ${data.channel}`,
+          description: `Found ${transformedResults.length} opportunities from ${data.channel}`,
         });
       }
     } catch (error) {
