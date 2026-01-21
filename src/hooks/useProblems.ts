@@ -111,8 +111,9 @@ export function useProblems(category?: string) {
         .select("*")
         .order("opportunity_score", { ascending: false });
 
-      if (category && category !== "All") {
-        query = query.eq("category", category);
+      if (category && category.toLowerCase() !== "all") {
+        // Case-insensitive category filter
+        query = query.ilike("category", category);
       }
 
       const { data, error } = await query;
@@ -125,7 +126,7 @@ export function useProblems(category?: string) {
       if (!data || data.length === 0) {
         // If the user selected a category and it has no results, show an empty state
         // (do NOT fall back to mock data, which makes the filter appear broken).
-        if (category && category !== "All") return [];
+        if (category && category.toLowerCase() !== "all") return [];
 
         // Only fall back to mock data when the whole table is empty (initial demo state).
         return mockMarketProblems;
