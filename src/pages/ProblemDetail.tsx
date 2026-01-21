@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
@@ -10,6 +10,9 @@ import {
   Eye,
   Check,
   RefreshCw,
+  ExternalLink,
+  Search,
+  Loader2,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { FitVerificationPanel } from "@/components/FitVerificationPanel";
@@ -18,7 +21,6 @@ import { OpportunityMeter } from "@/components/OpportunityMeter";
 import { SourceSignals } from "@/components/SourceSignals";
 import { HiddenInsightCard } from "@/components/HiddenInsightCard";
 import { TeamFormation } from "@/components/TeamFormation";
-import { WaitlistForm } from "@/components/WaitlistForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -29,7 +31,9 @@ import { getDbProblemId } from "@/data/marketIntelligence";
 import { useProblem } from "@/hooks/useProblems";
 import { useProblemBuilders } from "@/hooks/useProblemBuilders";
 import { useRefreshProblem } from "@/hooks/useRefreshProblem";
+import { useCompetitors } from "@/hooks/useCompetitors";
 import { useAuth } from "@/contexts/AuthContext";
+import { cn } from "@/lib/utils";
 
 const formatNumber = (num: number): string => {
   if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
@@ -69,11 +73,24 @@ const ProblemDetail = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
   const [isSaved, setIsSaved] = useState(false);
+  const [searchCompetitors, setSearchCompetitors] = useState(false);
 
   const { data: problem, isLoading } = useProblem(id || "");
   const dbProblemId = problem?.id || id || "";
   const { isJoined, joinProblem, leaveProblem } = useProblemBuilders(dbProblemId);
   const { refresh, isRefreshing } = useRefreshProblem(dbProblemId);
+  const { 
+    data: competitors, 
+    isLoading: competitorsLoading, 
+    refetch: refetchCompetitors 
+  } = useCompetitors(problem?.title || "", problem?.niche, searchCompetitors);
+
+  // Trigger search when tab becomes active
+  useEffect(() => {
+    if (activeTab === "competitors" && problem?.title && !searchCompetitors) {
+      setSearchCompetitors(true);
+    }
+  }, [activeTab, problem?.title, searchCompetitors]);
   
   if (isLoading) {
     return (
@@ -352,41 +369,108 @@ const ProblemDetail = () => {
           </TabsContent>
 
           <TabsContent value="competitors" forceMount className={`mt-4 ${activeTab !== "competitors" ? "hidden" : ""}`}>
-            <div className="relative">
-              <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm rounded-lg">
-                <div className="text-center p-6">
-                  <h3 className="font-medium mb-2">Competitor Analysis</h3>
-                  <p className="text-sm text-muted-foreground mb-4 max-w-sm">
-                    AI-powered competitor tracking and market positioning
+            <div className="rounded-lg border border-border bg-card p-4">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="font-medium text-sm">Competitor Analysis</h3>
+                  <p className="text-xs text-muted-foreground">
+                    AI-powered market research based on "{problem?.title}"
                   </p>
-                  <WaitlistForm feature="general" buttonText="Join Waitlist" />
                 </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => refetchCompetitors()}
+                  disabled={competitorsLoading}
+                  className="gap-2"
+                >
+                  {competitorsLoading ? (
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                  ) : (
+                    <Search className="h-3 w-3" />
+                  )}
+                  {competitorsLoading ? "Searching..." : "Refresh"}
+                </Button>
               </div>
 
-              <div className="filter blur-[2px] pointer-events-none opacity-50 space-y-3">
-                <div className="rounded-lg border border-border bg-card p-4">
-                  <div className="space-y-3">
-                    {[
-                      { name: "CompetitorOne", funding: "$12M Series A", users: "50K+" },
-                      { name: "RivalApp", funding: "$3M Seed", users: "15K+" },
-                      { name: "AltSolution", funding: "Bootstrapped", users: "8K+" },
-                    ].map((c) => (
-                      <div key={c.name} className="flex items-center justify-between p-3 rounded-md bg-secondary/30">
-                        <div className="flex items-center gap-3">
-                          <div className="h-8 w-8 rounded-md bg-muted flex items-center justify-center text-sm font-medium">
-                            {c.name[0]}
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium">{c.name}</p>
-                            <p className="text-xs text-muted-foreground">{c.funding}</p>
-                          </div>
-                        </div>
-                        <span className="text-sm">{c.users}</span>
+              {competitorsLoading && (
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="flex items-center gap-3 p-3 rounded-md bg-secondary/30">
+                      <Skeleton className="h-10 w-10 rounded-md" />
+                      <div className="flex-1 space-y-2">
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-3 w-48" />
                       </div>
-                    ))}
-                  </div>
+                      <Skeleton className="h-6 w-16" />
+                    </div>
+                  ))}
                 </div>
-              </div>
+              )}
+
+              {!competitorsLoading && competitors && competitors.length > 0 && (
+                <div className="space-y-3">
+                  {competitors.map((competitor) => (
+                    <a
+                      key={competitor.url}
+                      href={competitor.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-start gap-3 p-3 rounded-md bg-secondary/30 hover:bg-secondary/50 transition-colors group"
+                    >
+                      <div className="h-10 w-10 rounded-md bg-muted flex items-center justify-center text-sm font-medium flex-shrink-0">
+                        {competitor.name[0]?.toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-medium truncate">{competitor.name}</p>
+                          <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                        <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
+                          {competitor.description}
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                        <Badge 
+                          variant="outline" 
+                          className={cn(
+                            "text-[10px]",
+                            competitor.rating >= 80 && "border-destructive/50 text-destructive",
+                            competitor.rating >= 60 && competitor.rating < 80 && "border-warning/50 text-warning",
+                            competitor.rating >= 40 && competitor.rating < 60 && "border-primary/50 text-primary",
+                            competitor.rating < 40 && "border-muted-foreground/50"
+                          )}
+                        >
+                          {competitor.ratingLabel}
+                        </Badge>
+                        <div className="flex items-center gap-1">
+                          <div className="w-12 h-1.5 bg-secondary rounded-full overflow-hidden">
+                            <div 
+                              className={cn(
+                                "h-full rounded-full transition-all",
+                                competitor.rating >= 80 && "bg-destructive",
+                                competitor.rating >= 60 && competitor.rating < 80 && "bg-warning",
+                                competitor.rating >= 40 && competitor.rating < 60 && "bg-primary",
+                                competitor.rating < 40 && "bg-muted-foreground"
+                              )}
+                              style={{ width: `${competitor.rating}%` }}
+                            />
+                          </div>
+                          <span className="text-[10px] text-muted-foreground">{competitor.rating}</span>
+                        </div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              )}
+
+              {!competitorsLoading && (!competitors || competitors.length === 0) && (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Search className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm">No competitors found</p>
+                  <p className="text-xs">Try refreshing the search</p>
+                </div>
+              )}
             </div>
           </TabsContent>
         </Tabs>
