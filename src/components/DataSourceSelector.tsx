@@ -18,12 +18,15 @@ interface DataSource {
   isLocked?: boolean;
 }
 
-// Unlocked sources: TikTok, Reddit, YouTube
+// Available sources - only TikTok is selectable for now
 const dataSources: DataSource[] = [
   { id: "tiktok", name: "TikTok", logo: logoTiktok, color: "bg-foreground/10", isLocked: false },
-  { id: "reddit", name: "Reddit", logo: logoReddit, color: "bg-orange-500/20", isLocked: false },
-  { id: "youtube", name: "YouTube", logo: logoYoutube, color: "bg-red-500/20", isLocked: false },
-  // Locked sources - coming soon
+  { id: "reddit", name: "Reddit", logo: logoReddit, color: "bg-orange-500/20", isLocked: true },
+  { id: "youtube", name: "YouTube", logo: logoYoutube, color: "bg-red-500/20", isLocked: true },
+];
+
+// Coming soon sources
+const comingSoonSources: DataSource[] = [
   { id: "google_trends", name: "Google Trends", icon: "📈", color: "bg-blue-500/20", isLocked: true },
   { id: "hackernews", name: "Hacker News", icon: "🔥", color: "bg-orange-400/20", isLocked: true },
   { id: "twitter", name: "X", icon: "𝕏", color: "bg-foreground/10", isLocked: true },
@@ -32,31 +35,25 @@ const dataSources: DataSource[] = [
 ];
 
 interface DataSourceSelectorProps {
-  onSelectionChange?: (selected: string[]) => void;
+  onSelectionChange?: (selected: string) => void;
 }
 
 export function DataSourceSelector({ onSelectionChange }: DataSourceSelectorProps) {
-  const [selected, setSelected] = useState<string[]>(["tiktok", "reddit", "youtube"]);
+  const [selected, setSelected] = useState<string>("tiktok");
 
-  const toggleSource = (source: DataSource) => {
+  const selectSource = (source: DataSource) => {
     if (source.isLocked) return;
-    
-    const newSelected = selected.includes(source.id)
-      ? selected.filter((s) => s !== source.id)
-      : [...selected, source.id];
-    setSelected(newSelected);
-    onSelectionChange?.(newSelected);
+    setSelected(source.id);
+    onSelectionChange?.(source.id);
   };
-
-  const unlockedSources = dataSources.filter(s => !s.isLocked);
-  const lockedSources = dataSources.filter(s => s.isLocked);
 
   return (
     <div className="space-y-4">
-      {/* Unlocked Sources */}
+      {/* Main Sources */}
       <div className="flex flex-wrap gap-3">
-        {unlockedSources.map((source, index) => {
-          const isSelected = selected.includes(source.id);
+        {dataSources.map((source, index) => {
+          const isSelected = selected === source.id;
+          const isDisabled = source.isLocked;
           return (
             <Tooltip key={source.id}>
               <TooltipTrigger asChild>
@@ -64,26 +61,30 @@ export function DataSourceSelector({ onSelectionChange }: DataSourceSelectorProp
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.2, delay: index * 0.05 }}
-                  onClick={() => toggleSource(source)}
+                  onClick={() => selectSource(source)}
+                  disabled={isDisabled}
                   className={cn(
                     "relative h-14 w-14 rounded-xl flex items-center justify-center transition-all duration-200",
-                    "border hover:scale-105 active:scale-95",
-                    isSelected
+                    "border",
+                    isDisabled 
+                      ? "border-border/30 bg-secondary/30 cursor-not-allowed opacity-60"
+                      : "hover:scale-105 active:scale-95",
+                    !isDisabled && isSelected
                       ? "border-primary bg-card shadow-glow"
-                      : "border-border/50 bg-secondary/50 hover:border-border hover:bg-secondary"
+                      : !isDisabled && "border-border/50 bg-secondary/50 hover:border-border hover:bg-secondary"
                   )}
                 >
                   {source.logo ? (
                     <img 
                       src={source.logo} 
                       alt={source.name} 
-                      className="h-8 w-8 object-contain"
+                      className={cn("h-8 w-8 object-contain", isDisabled && "grayscale")}
                     />
                   ) : (
                     <span className="text-xl">{source.icon}</span>
                   )}
                   
-                  {isSelected && (
+                  {isSelected && !isDisabled && (
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
@@ -95,7 +96,7 @@ export function DataSourceSelector({ onSelectionChange }: DataSourceSelectorProp
                 </motion.button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{source.name}</p>
+                <p>{source.name}{isDisabled ? " - Coming Soon" : ""}</p>
               </TooltipContent>
             </Tooltip>
           );
@@ -111,7 +112,7 @@ export function DataSourceSelector({ onSelectionChange }: DataSourceSelectorProp
 
       {/* Locked Sources */}
       <div className="flex flex-wrap gap-3">
-        {lockedSources.map((source, index) => (
+        {comingSoonSources.map((source, index) => (
           <Tooltip key={source.id}>
             <TooltipTrigger asChild>
               <motion.div
