@@ -10,20 +10,44 @@ import {
   DollarSign,
   Loader2,
   Calendar,
+  LogOut,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useMyChallengeJoins } from "@/hooks/useChallengeJoins";
+import { useMyChallengeJoins, useLeaveChallenge } from "@/hooks/useChallengeJoins";
 import { useChallenges } from "@/hooks/useChallenges";
 import { getTimeRemaining } from "@/data/challengesData";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export function MyChallenges() {
   const navigate = useNavigate();
   const { data: myChallengeJoins = [], isLoading: joinsLoading } = useMyChallengeJoins();
   const { data: allChallenges = [], isLoading: challengesLoading } = useChallenges();
+  const leaveChallengeMutation = useLeaveChallenge();
 
   const isLoading = joinsLoading || challengesLoading;
+
+  const handleLeaveChallenge = async (challengeId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await leaveChallengeMutation.mutateAsync(challengeId);
+      toast.success("Left challenge successfully");
+    } catch (error) {
+      toast.error("Failed to leave challenge");
+    }
+  };
 
   // Map joined challenges with their details
   const myJoinedChallenges = myChallengeJoins
@@ -189,6 +213,39 @@ export function MyChallenges() {
                           </>
                         )}
                       </div>
+
+                      {/* Leave button for active challenges */}
+                      {isActive && (
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <LogOut className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Leave this challenge?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                You'll lose your spot in the arena. Your entry fee won't be refunded.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={(e) => handleLeaveChallenge(challenge.id, e)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                Leave
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      )}
 
                       <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors hidden sm:block" />
                     </div>
