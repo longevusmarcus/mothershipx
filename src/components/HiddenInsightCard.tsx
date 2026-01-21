@@ -1,12 +1,35 @@
 import { motion } from "framer-motion";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, Lightbulb } from "lucide-react";
 import type { HiddenInsight } from "@/data/marketIntelligence";
 
 interface HiddenInsightCardProps {
-  insight: HiddenInsight;
+  insight?: HiddenInsight | null;
 }
 
 export function HiddenInsightCard({ insight }: HiddenInsightCardProps) {
+  // Show empty state if no insight data
+  if (!insight || !insight.surfaceAsk) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="space-y-4"
+      >
+        <h3 className="font-serif text-lg">Hidden Signal</h3>
+        <div className="p-6 rounded-lg border border-dashed border-border bg-secondary/20 flex flex-col items-center justify-center text-center">
+          <Lightbulb className="h-8 w-8 text-muted-foreground/30 mb-3" />
+          <p className="text-sm text-muted-foreground">
+            Hidden signal analysis coming soon
+          </p>
+          <p className="text-xs text-muted-foreground/60 mt-1">
+            AI is processing deeper insights for this problem
+          </p>
+        </div>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
