@@ -12,14 +12,14 @@ const CHANNELS = {
     id: "diary-of-a-ceo",
     name: "The Diary Of A CEO",
     handle: "@TheDiaryOfACEO",
-    channelId: "UCGq7ov9-Xk9fkeQjeeXElkQ",
+    channelId: "UC7SeFWZYFmsm1tqWxfuOTPQ", // Correct Steven Bartlett DOAC channel ID
     category: "entrepreneurship"
   },
   "alex-hormozi": {
     id: "alex-hormozi", 
     name: "Alex Hormozi",
     handle: "@AlexHormozi",
-    channelId: "UCJ5v_MCY6GNUBTO8-D3XoAg", // Correct Hormozi channel ID
+    channelId: "UCJ5v_MCY6GNUBTO8-D3XoAg",
     category: "business"
   }
 };
@@ -419,22 +419,27 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    for (const result of results.filter(r => r.isViral)) {
+    // Save ALL YouTube results to database (not just viral)
+    for (const result of results) {
       const { error } = await supabase.from("problems").upsert({
         title: result.title,
-        description: result.description,
+        subtitle: result.description, // Use subtitle, not description
         opportunity_score: result.opportunityScore,
         sentiment: result.sentiment,
         category: result.category,
+        niche: result.category.toLowerCase().replace(/\s+/g, "-"),
         sources: result.sources,
         hidden_insight: result.hiddenInsight,
         pain_points: result.painPoints,
-        is_viral: true,
+        is_viral: result.isViral,
+        slots_total: 20,
         slots_filled: 0,
-        builders_needed: 3
+        views: result.viewCount || 0,
+        discovered_at: new Date().toISOString()
       }, { onConflict: "title" });
       
       if (error) console.error("Error storing problem:", error);
+      else console.log(`Saved problem to library: ${result.title}`);
     }
 
     console.log(`Analysis complete. Found ${results.length} problems from ${videos.length} videos`);

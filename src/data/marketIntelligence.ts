@@ -63,7 +63,17 @@ export const categories = [
   "Gut Health",
   "Productivity",
   "Career",
-  "Connections"
+  "Connections",
+  // YouTube-derived categories
+  "entrepreneurship",
+  "business",
+  "marketing",
+  "sales",
+  "mindset",
+  "health",
+  "relationships",
+  "finance",
+  "leadership"
 ];
 
 // Map mock IDs to database UUIDs
