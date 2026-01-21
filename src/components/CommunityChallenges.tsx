@@ -48,7 +48,7 @@ export const CommunityChallenges = () => {
     { icon: Trophy, label: "Free Hackathons", desc: "Access to future events" },
     { icon: Award, label: "Builder Badge", desc: "Resume & vanity metric" },
     { icon: Link2, label: "Permanent Link", desc: "Showcase forever" },
-    { icon: Percent, label: "Top 10 Cashback", desc: "Rewards for ranking" },
+    { icon: Percent, label: "Top 10 Perks", desc: "Rewards for ranking" },
     { icon: Headphones, label: "Freelance Support", desc: "Help when you need it" },
     { icon: Users, label: "End User Access", desc: "Talk to real users" },
   ];
@@ -69,9 +69,7 @@ export const CommunityChallenges = () => {
             EXCLUSIVE
           </span>
         </div>
-        <p className="text-sm text-muted-foreground">
-          A private builder club • Prove you ship • Compete for prizes
-        </p>
+        <p className="text-sm text-muted-foreground">A private builder club • Prove you ship • Compete for prizes</p>
       </div>
 
       {/* Stats Row */}
@@ -97,10 +95,7 @@ export const CommunityChallenges = () => {
         </p>
         <div className="grid grid-cols-3 gap-2">
           {proofRequirements.map((req, i) => (
-            <div
-              key={i}
-              className="p-2.5 rounded-md bg-secondary/50 border border-border/50"
-            >
+            <div key={i} className="p-2.5 rounded-md bg-secondary/50 border border-border/50">
               <req.icon className="h-4 w-4 text-muted-foreground mb-1.5" />
               <p className="text-xs font-medium">{req.label}</p>
               <p className="text-[10px] text-muted-foreground">{req.desc}</p>
@@ -117,10 +112,7 @@ export const CommunityChallenges = () => {
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {memberBenefits.map((benefit, i) => (
-            <div
-              key={i}
-              className="p-2.5 rounded-md bg-background/50 border border-border/50"
-            >
+            <div key={i} className="p-2.5 rounded-md bg-background/50 border border-border/50">
               <benefit.icon className="h-3.5 w-3.5 text-primary mb-1" />
               <p className="text-xs font-medium">{benefit.label}</p>
               <p className="text-[10px] text-muted-foreground">{benefit.desc}</p>
@@ -137,10 +129,7 @@ export const CommunityChallenges = () => {
           { icon: Flame, label: "48h Sprint", desc: "Build & submit" },
           { icon: Trophy, label: "AI Judges", desc: "Win 90% pool" },
         ].map((step, i) => (
-          <div
-            key={i}
-            className="p-3 rounded-lg border border-border bg-card"
-          >
+          <div key={i} className="p-3 rounded-lg border border-border bg-card">
             <p className="text-sm font-medium">{step.label}</p>
             <p className="text-xs text-muted-foreground mt-0.5">{step.desc}</p>
           </div>
