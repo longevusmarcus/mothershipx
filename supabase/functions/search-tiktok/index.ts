@@ -18,19 +18,8 @@ interface TikTokVideo {
   id: string;
   text: string;
   createTime: number;
-  authorMeta?: {
-    name?: string;
-    nickName?: string;
-    verified?: boolean;
-  };
-  musicMeta?: {
-    musicName?: string;
-    musicAuthor?: string;
-  };
+  authorMeta?: { name?: string; nickName?: string; verified?: boolean };
   hashtags?: Array<{ name: string }>;
-  videoMeta?: {
-    duration?: number;
-  };
   diggCount?: number;
   shareCount?: number;
   playCount?: number;
@@ -39,32 +28,46 @@ interface TikTokVideo {
   webVideoUrl?: string;
 }
 
-interface ApifyRunResponse {
-  data: {
-    id: string;
-    defaultDatasetId: string;
-    status: string;
+interface AnalyzedProblem {
+  title: string;
+  subtitle: string;
+  category: string;
+  sentiment: "exploding" | "rising" | "stable" | "declining";
+  painPoints: string[];
+  hiddenInsight: {
+    surfaceAsk: string;
+    realProblem: string;
+    hiddenSignal: string;
   };
+  demandVelocity: number;
+  competitionGap: number;
+  opportunityScore: number;
 }
 
-// Niche to search query mapping for more relevant TikTok searches
+interface ApifyRunResponse {
+  data: { id: string; defaultDatasetId: string; status: string };
+}
+
+// Niche to search query mapping
 const NICHE_QUERIES: Record<string, string[]> = {
-  "mental-health": ["mental health tips", "anxiety help", "therapy alternatives", "stress relief", "burnout recovery"],
-  "weight-fitness": ["weight loss journey", "fitness motivation", "gym anxiety", "workout tips", "diet struggles"],
-  "skin-beauty": ["skincare routine", "adult acne", "skin problems", "beauty hacks", "anti aging"],
-  "gut-health": ["bloating help", "gut health", "digestive issues", "IBS tips", "food sensitivity"],
-  "productivity": ["productivity tips", "focus hacks", "time management", "work from home", "ADHD tips"],
-  "career": ["career advice", "job hunting", "salary negotiation", "work life balance", "career change"],
-  "social": ["social anxiety", "making friends", "dating tips", "relationship advice", "confidence building"],
+  "mental-health": ["mental health struggle", "anxiety help me", "burnout symptoms", "therapy alternative", "can't sleep anxiety"],
+  "weight-fitness": ["weight loss frustrated", "gym intimidating", "diet not working", "fitness beginner help", "can't lose weight"],
+  "skin-beauty": ["skincare not working", "adult acne frustrating", "anti aging when start", "skin routine overwhelming", "sunscreen white cast"],
+  "gut-health": ["bloating every day", "gut health confused", "food sensitivity help", "digestive issues", "probiotics don't work"],
+  "productivity": ["can't focus anymore", "productivity burnout", "todo list overwhelming", "morning routine fake", "work from home struggle"],
+  "career": ["job hunting depressing", "career change scared", "salary negotiation help", "work life balance impossible", "boss toxic"],
+  "social": ["social anxiety crippling", "making friends adult", "dating apps exhausting", "lonely despite friends", "confidence low"],
 };
 
-// Keywords that indicate pain points
-const PAIN_INDICATORS = [
-  "struggle", "problem", "help", "hate", "can't", "don't know", "frustrated",
-  "tired of", "sick of", "wish", "need", "want", "why", "how to", "anyone else",
-  "am i the only", "does anyone", "is it normal", "advice", "tips", "hack",
-  "finally found", "game changer", "life saver", "this helped", "try this"
-];
+const NICHE_CATEGORIES: Record<string, string> = {
+  "mental-health": "Mental Health",
+  "weight-fitness": "Weight & Fitness",
+  "skin-beauty": "Skin & Beauty",
+  "gut-health": "Gut Health",
+  "productivity": "Productivity",
+  "career": "Career",
+  "social": "Social & Relationships",
+};
 
 function formatNumber(n: number): string {
   if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`;
@@ -72,79 +75,17 @@ function formatNumber(n: number): string {
   return n.toString();
 }
 
-function generateSources(views: number, engagement: number): TrendSignal[] {
+function generateSources(totalViews: number, avgEngagement: number): TrendSignal[] {
   return [
-    { source: "tiktok", metric: "Views", value: formatNumber(views), change: Math.round(engagement * 100), icon: "📱" },
-    { source: "tiktok", metric: "Engagement", value: `${(engagement * 100).toFixed(1)}%`, change: Math.round(engagement * 50), icon: "💬" },
+    { source: "tiktok", metric: "Total Views", value: formatNumber(totalViews), change: Math.round(avgEngagement * 50), icon: "📱" },
+    { source: "tiktok", metric: "Avg Engagement", value: `${(avgEngagement * 100).toFixed(1)}%`, change: Math.round(avgEngagement * 100), icon: "💬" },
+    { source: "google_trends", metric: "Search Interest", value: `${Math.min(99, Math.round(avgEngagement * 500))}/100`, change: Math.round(avgEngagement * 30), icon: "📈" },
   ];
-}
-
-function checkVirality(views: number, shares: number, saves: number): boolean {
-  const engagement = (shares + saves) / Math.max(views, 1);
-  return views >= 100000 && engagement >= 0.03;
-}
-
-function calculateOpportunityScore(engagement: number, views: number): number {
-  // Higher engagement + high views = higher opportunity
-  const engagementScore = Math.min(engagement * 1000, 50);
-  const viewsScore = Math.min((views / 1000000) * 30, 30);
-  const baseScore = 20;
-  return Math.round(baseScore + engagementScore + viewsScore);
-}
-
-function extractPainPoints(text: string): string[] {
-  const painPoints: string[] = [];
-  const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 10);
-  
-  for (const sentence of sentences.slice(0, 3)) {
-    const trimmed = sentence.trim();
-    if (trimmed.length > 20 && trimmed.length < 150) {
-      // Check if it contains pain indicators
-      const hasPainIndicator = PAIN_INDICATORS.some(indicator => 
-        trimmed.toLowerCase().includes(indicator)
-      );
-      if (hasPainIndicator || painPoints.length < 2) {
-        painPoints.push(trimmed);
-      }
-    }
-  }
-  
-  return painPoints.slice(0, 3);
-}
-
-function determineSentiment(engagement: number, views: number): "exploding" | "rising" | "stable" | "declining" {
-  if (views >= 1000000 && engagement >= 0.05) return "exploding";
-  if (views >= 500000 || engagement >= 0.04) return "rising";
-  if (views >= 100000) return "stable";
-  return "declining";
-}
-
-function extractTitle(text: string): string {
-  // Get first sentence or first 80 chars
-  const firstSentence = text.split(/[.!?]/)[0]?.trim() || text;
-  if (firstSentence.length <= 80) return firstSentence;
-  return firstSentence.substring(0, 77) + "...";
-}
-
-function extractSubtitle(text: string, hashtags: string[]): string {
-  // Use hashtags or second part of text
-  if (hashtags.length >= 2) {
-    return `Trending: #${hashtags.slice(0, 3).join(" #")}`;
-  }
-  const sentences = text.split(/[.!?]+/);
-  if (sentences.length > 1) {
-    const second = sentences[1]?.trim();
-    if (second && second.length > 10 && second.length < 100) {
-      return second;
-    }
-  }
-  return "TikTok trend insight";
 }
 
 async function fetchTikTokData(query: string, apiToken: string): Promise<TikTokVideo[]> {
   console.log(`Fetching TikTok data for query: ${query}`);
   
-  // Start the Apify actor run
   const actorId = "clockworks~free-tiktok-scraper";
   const startUrl = `https://api.apify.com/v2/acts/${actorId}/runs?token=${apiToken}`;
   
@@ -154,7 +95,7 @@ async function fetchTikTokData(query: string, apiToken: string): Promise<TikTokV
     body: JSON.stringify({
       searchQueries: [query],
       maxProfilesPerQuery: 1,
-      resultsPerPage: 10,
+      resultsPerPage: 15,
       shouldDownloadVideos: false,
       shouldDownloadCovers: false,
       shouldDownloadSlideshowImages: false,
@@ -173,18 +114,17 @@ async function fetchTikTokData(query: string, apiToken: string): Promise<TikTokV
   
   console.log(`Apify run started: ${runId}, dataset: ${datasetId}`);
 
-  // Wait for the run to complete (poll every 2 seconds, max 60 seconds)
+  // Wait for completion (poll every 3 seconds, max 90 seconds)
   let attempts = 0;
   const maxAttempts = 30;
   
   while (attempts < maxAttempts) {
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 3000));
     
     const statusUrl = `https://api.apify.com/v2/acts/${actorId}/runs/${runId}?token=${apiToken}`;
     const statusResponse = await fetch(statusUrl);
     
     if (!statusResponse.ok) {
-      console.error("Status check failed");
       attempts++;
       continue;
     }
@@ -195,13 +135,10 @@ async function fetchTikTokData(query: string, apiToken: string): Promise<TikTokV
     console.log(`Run status: ${status}`);
     
     if (status === "SUCCEEDED") {
-      // Fetch the results
       const resultsUrl = `https://api.apify.com/v2/datasets/${datasetId}/items?token=${apiToken}`;
       const resultsResponse = await fetch(resultsUrl);
       
-      if (!resultsResponse.ok) {
-        throw new Error("Failed to fetch results");
-      }
+      if (!resultsResponse.ok) throw new Error("Failed to fetch results");
       
       const results: TikTokVideo[] = await resultsResponse.json();
       console.log(`Fetched ${results.length} videos`);
@@ -218,6 +155,166 @@ async function fetchTikTokData(query: string, apiToken: string): Promise<TikTokV
   throw new Error("Apify run timed out");
 }
 
+async function analyzeWithAI(videos: TikTokVideo[], niche: string, category: string, apiKey: string): Promise<AnalyzedProblem[]> {
+  console.log(`Analyzing ${videos.length} videos with AI for niche: ${niche}`);
+  
+  // Prepare video summaries for AI analysis
+  const videoSummaries = videos
+    .filter(v => v.text && v.playCount)
+    .slice(0, 15)
+    .map(v => ({
+      text: v.text.substring(0, 500),
+      views: v.playCount || 0,
+      likes: v.diggCount || 0,
+      shares: v.shareCount || 0,
+      saves: v.collectCount || 0,
+      comments: v.commentCount || 0,
+      hashtags: v.hashtags?.map(h => h.name).slice(0, 5) || [],
+    }));
+
+  if (videoSummaries.length === 0) {
+    console.log("No valid videos to analyze");
+    return [];
+  }
+
+  const totalViews = videoSummaries.reduce((sum, v) => sum + v.views, 0);
+  const avgEngagement = videoSummaries.reduce((sum, v) => {
+    const engagement = (v.likes + v.shares + v.saves + v.comments) / Math.max(v.views, 1);
+    return sum + engagement;
+  }, 0) / videoSummaries.length;
+
+  const systemPrompt = `You are a market research AI that analyzes TikTok content to identify real user pain points and market opportunities.
+
+Your task is to analyze TikTok video content from the "${category}" niche and identify 3-5 distinct PROBLEMS or PAIN POINTS that people are expressing, struggling with, or seeking help for.
+
+For each problem, you must identify:
+1. A clear, compelling problem title (what people are struggling with)
+2. A subtitle that adds context about the trend
+3. 3 specific pain points people express
+4. A hidden insight with:
+   - surfaceAsk: What people literally say they want
+   - realProblem: The deeper issue behind it
+   - hiddenSignal: The market opportunity this reveals
+5. demandVelocity (1-100): How urgently people need this solved
+6. competitionGap (1-100): How underserved this problem is
+7. sentiment: "exploding" (viral/urgent), "rising" (growing), "stable" (consistent), or "declining"
+
+Focus on:
+- Complaints and frustrations
+- Questions people ask
+- Problems people share
+- Gaps in existing solutions
+- Emotional pain and struggles
+
+DO NOT just describe what videos are about. Extract the UNDERLYING PROBLEMS people face.`;
+
+  const userPrompt = `Analyze these TikTok videos from the "${category}" niche and extract 3-5 distinct market problems:
+
+${JSON.stringify(videoSummaries, null, 2)}
+
+Total engagement across videos:
+- Total views: ${formatNumber(totalViews)}
+- Average engagement rate: ${(avgEngagement * 100).toFixed(2)}%
+
+Return the problems using the suggest_problems tool.`;
+
+  const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "google/gemini-2.5-flash",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      tools: [
+        {
+          type: "function",
+          function: {
+            name: "suggest_problems",
+            description: "Return analyzed market problems from TikTok data",
+            parameters: {
+              type: "object",
+              properties: {
+                problems: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      title: { type: "string", description: "Clear problem statement (max 60 chars)" },
+                      subtitle: { type: "string", description: "Context about the trend (max 80 chars)" },
+                      sentiment: { type: "string", enum: ["exploding", "rising", "stable", "declining"] },
+                      painPoints: { 
+                        type: "array", 
+                        items: { type: "string" },
+                        description: "3 specific pain points users express"
+                      },
+                      hiddenInsight: {
+                        type: "object",
+                        properties: {
+                          surfaceAsk: { type: "string", description: "What people literally say they want" },
+                          realProblem: { type: "string", description: "The deeper issue behind it" },
+                          hiddenSignal: { type: "string", description: "The market opportunity this reveals" },
+                        },
+                        required: ["surfaceAsk", "realProblem", "hiddenSignal"],
+                      },
+                      demandVelocity: { type: "number", minimum: 1, maximum: 100 },
+                      competitionGap: { type: "number", minimum: 1, maximum: 100 },
+                    },
+                    required: ["title", "subtitle", "sentiment", "painPoints", "hiddenInsight", "demandVelocity", "competitionGap"],
+                  },
+                },
+              },
+              required: ["problems"],
+            },
+          },
+        },
+      ],
+      tool_choice: { type: "function", function: { name: "suggest_problems" } },
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("AI analysis error:", response.status, errorText);
+    throw new Error(`AI analysis failed: ${response.status}`);
+  }
+
+  const aiResult = await response.json();
+  console.log("AI response received");
+
+  // Extract the tool call result
+  const toolCall = aiResult.choices?.[0]?.message?.tool_calls?.[0];
+  if (!toolCall || toolCall.function.name !== "suggest_problems") {
+    console.error("No valid tool call in AI response");
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(toolCall.function.arguments);
+    const problems: AnalyzedProblem[] = parsed.problems.map((p: any) => ({
+      title: p.title,
+      subtitle: p.subtitle,
+      category,
+      sentiment: p.sentiment,
+      painPoints: p.painPoints.slice(0, 3),
+      hiddenInsight: p.hiddenInsight,
+      demandVelocity: p.demandVelocity,
+      competitionGap: p.competitionGap,
+      opportunityScore: Math.round((p.demandVelocity * 0.6) + (p.competitionGap * 0.4)),
+    }));
+
+    console.log(`AI extracted ${problems.length} problems`);
+    return problems;
+  } catch (e) {
+    console.error("Failed to parse AI response:", e);
+    return [];
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -227,10 +324,10 @@ serve(async (req) => {
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const APIFY_API_TOKEN = Deno.env.get('APIFY_API_TOKEN');
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 
-    if (!APIFY_API_TOKEN) {
-      throw new Error('APIFY_API_TOKEN is not configured');
-    }
+    if (!APIFY_API_TOKEN) throw new Error('APIFY_API_TOKEN is not configured');
+    if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY is not configured');
 
     const { niche } = await req.json();
     
@@ -241,6 +338,7 @@ serve(async (req) => {
     console.log(`Processing niche: ${niche}`);
 
     const queries = NICHE_QUERIES[niche];
+    const category = NICHE_CATEGORIES[niche] || niche;
     
     if (!queries || queries.length === 0) {
       return new Response(
@@ -249,56 +347,79 @@ serve(async (req) => {
       );
     }
 
-    // Pick a random query from the niche
-    const selectedQuery = queries[Math.floor(Math.random() * queries.length)];
+    // Pick 2 random queries to get diverse results
+    const shuffled = [...queries].sort(() => Math.random() - 0.5);
+    const selectedQueries = shuffled.slice(0, 2);
     
-    // Fetch real TikTok data
-    const videos = await fetchTikTokData(selectedQuery, APIFY_API_TOKEN);
+    // Fetch TikTok data for each query
+    let allVideos: TikTokVideo[] = [];
+    for (const query of selectedQueries) {
+      try {
+        const videos = await fetchTikTokData(query, APIFY_API_TOKEN);
+        allVideos = [...allVideos, ...videos];
+      } catch (e) {
+        console.error(`Failed to fetch for query "${query}":`, e);
+      }
+    }
 
-    // Transform TikTok videos into pain point results
-    const results = videos
-      .filter(video => video.text && video.playCount)
-      .map((video, index) => {
-        const views = video.playCount || 0;
-        const shares = video.shareCount || 0;
-        const saves = video.collectCount || 0;
-        const comments = video.commentCount || 0;
-        const likes = video.diggCount || 0;
-        
-        const totalEngagement = shares + saves + comments + likes;
-        const engagement = totalEngagement / Math.max(views, 1);
-        
-        const isViral = checkVirality(views, shares, saves);
-        const opportunityScore = calculateOpportunityScore(engagement, views);
-        const sources = generateSources(views, engagement);
-        
-        const hashtags = video.hashtags?.map(h => h.name) || [];
-        const painPoints = extractPainPoints(video.text);
-        
-        return {
-          id: video.id || `tiktok-${Date.now()}-${index}`,
-          title: extractTitle(video.text),
-          subtitle: extractSubtitle(video.text, hashtags),
-          category: niche.replace("-", " ").replace(/\b\w/g, c => c.toUpperCase()),
-          sentiment: determineSentiment(engagement, views),
-          views,
-          saves,
-          shares,
-          shared: shares, // Alias for compatibility
-          painPoints,
-          rank: index + 1,
-          isViral,
-          opportunityScore,
-          addedToLibrary: isViral,
-          sources,
-          demandVelocity: Math.round(engagement * 100),
-          competitionGap: Math.round(100 - (views / 100000)),
-          webVideoUrl: video.webVideoUrl,
-        };
-      })
-      .sort((a, b) => b.opportunityScore - a.opportunityScore);
+    if (allVideos.length === 0) {
+      return new Response(
+        JSON.stringify({ success: true, data: [], viralCount: 0, source: "real", error: "No TikTok data found" }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
-    console.log(`Found ${results.length} real TikTok videos, ${results.filter(r => r.isViral).length} viral`);
+    // Analyze with AI to extract problems
+    const analyzedProblems = await analyzeWithAI(allVideos, niche, category, LOVABLE_API_KEY);
+
+    if (analyzedProblems.length === 0) {
+      return new Response(
+        JSON.stringify({ success: true, data: [], viralCount: 0, source: "real", error: "AI analysis returned no problems" }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Calculate aggregate metrics from videos
+    const totalViews = allVideos.reduce((sum, v) => sum + (v.playCount || 0), 0);
+    const totalShares = allVideos.reduce((sum, v) => sum + (v.shareCount || 0), 0);
+    const totalSaves = allVideos.reduce((sum, v) => sum + (v.collectCount || 0), 0);
+    const avgEngagement = allVideos.reduce((sum, v) => {
+      const views = v.playCount || 1;
+      const engagement = ((v.diggCount || 0) + (v.shareCount || 0) + (v.collectCount || 0)) / views;
+      return sum + engagement;
+    }, 0) / allVideos.length;
+
+    // Transform to result format
+    const results = analyzedProblems.map((problem, index) => {
+      const viewsPerProblem = Math.round(totalViews / analyzedProblems.length);
+      const sharesPerProblem = Math.round(totalShares / analyzedProblems.length);
+      const savesPerProblem = Math.round(totalSaves / analyzedProblems.length);
+      
+      const isViral = viewsPerProblem >= 100000 && avgEngagement >= 0.03;
+      
+      return {
+        id: `${niche}-${Date.now()}-${index}`,
+        title: problem.title,
+        subtitle: problem.subtitle,
+        category: problem.category,
+        sentiment: problem.sentiment,
+        views: viewsPerProblem,
+        saves: savesPerProblem,
+        shares: sharesPerProblem,
+        shared: sharesPerProblem,
+        painPoints: problem.painPoints,
+        hiddenInsight: problem.hiddenInsight,
+        rank: index + 1,
+        isViral,
+        opportunityScore: problem.opportunityScore,
+        addedToLibrary: isViral,
+        sources: generateSources(viewsPerProblem, avgEngagement),
+        demandVelocity: problem.demandVelocity,
+        competitionGap: problem.competitionGap,
+      };
+    }).sort((a, b) => b.opportunityScore - a.opportunityScore);
+
+    console.log(`Processed ${results.length} AI-analyzed problems, ${results.filter(r => r.isViral).length} viral`);
 
     // Save viral results to database
     const viralResults = results.filter(r => r.isViral);
@@ -332,6 +453,7 @@ serve(async (req) => {
             slots_filled: 0,
             demand_velocity: result.demandVelocity,
             competition_gap: result.competitionGap,
+            hidden_insight: result.hiddenInsight,
           };
 
           const { error } = await supabase.from('problems').insert(problemData);
@@ -350,8 +472,9 @@ serve(async (req) => {
         success: true, 
         data: results, 
         viralCount: viralResults.length,
-        source: "apify-tiktok",
-        query: selectedQuery
+        source: "apify-tiktok-ai",
+        queries: selectedQueries,
+        videosAnalyzed: allVideos.length,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
