@@ -92,8 +92,8 @@ async function fetchChannelVideos(channelId: string, apiKey: string): Promise<Yo
       return [];
     }
     
-    // Get videos from playlist
-    const playlistUrl = `https://${rapidApiHost}/playlistItems?part=snippet&playlistId=${uploadsPlaylistId}&maxResults=20`;
+    // Get only the 5 most recent videos from playlist
+    const playlistUrl = `https://${rapidApiHost}/playlistItems?part=snippet&playlistId=${uploadsPlaylistId}&maxResults=5`;
     const playlistResponse = await fetch(playlistUrl, {
       headers: {
         "X-RapidAPI-Key": apiKey,
