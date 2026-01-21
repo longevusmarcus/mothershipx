@@ -11,8 +11,8 @@ export interface SubscriptionStatus {
   isLoading: boolean;
 }
 
-// PLACEHOLDER - User will provide actual price ID
-export const SUBSCRIPTION_PRICE_ID = "price_PLACEHOLDER";
+export const SUBSCRIPTION_PRICE_ID = "price_1SrxbZ2LCwPxHz0nC7VtOgeS";
+export const SUBSCRIPTION_PRODUCT_ID = "prod_TpcrDIRieLAbv5";
 export const SUBSCRIPTION_PRICE = 29.99;
 
 export function useSubscription() {
