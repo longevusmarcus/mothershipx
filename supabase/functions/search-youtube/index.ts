@@ -19,7 +19,7 @@ const CHANNELS = {
     id: "alex-hormozi", 
     name: "Alex Hormozi",
     handle: "@AlexHormozi",
-    channelId: "UCo57N6y0cBI-mPhCjsGkHvg",
+    channelId: "UCJ5v_MCY6GNUBTO8-D3XoAg", // Correct Hormozi channel ID
     category: "business"
   }
 };
@@ -42,6 +42,7 @@ interface AnalyzedProblem {
   description: string;
   opportunityScore: number;
   sentiment: string;
+  category: string;
   surfaceAsk: string;
   realProblem: string;
   hiddenSignal: string;
@@ -124,19 +125,13 @@ async function fetchVideoComments(videoId: string, apiKey: string): Promise<Vide
   try {
     console.log(`Fetching comments for video: ${videoId}`);
     
-    const response = await fetch(`https://${RAPIDAPI_HOST}/video/comments/`, {
-      method: "POST",
+    // Use the correct endpoint for video comments
+    const response = await fetch(`https://${RAPIDAPI_HOST}/video/comments/?id=${videoId}&hl=en&gl=US`, {
+      method: "GET",
       headers: {
         "x-rapidapi-key": apiKey,
-        "x-rapidapi-host": RAPIDAPI_HOST,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        id: videoId,
-        cursor: "",
-        hl: "en",
-        gl: "US"
-      })
+        "x-rapidapi-host": RAPIDAPI_HOST
+      }
     });
     
     if (!response.ok) {
@@ -148,15 +143,17 @@ async function fetchVideoComments(videoId: string, apiKey: string): Promise<Vide
     const data = await response.json();
     const comments: VideoComment[] = [];
     
-    const commentItems = data?.comments || [];
+    // Handle different response structures
+    const commentItems = data?.comments || data?.contents || [];
     for (const item of commentItems.slice(0, 30)) {
+      const comment = item?.comment || item;
       comments.push({
-        text: item?.content || item?.text || "",
-        likeCount: parseInt(item?.likes || item?.likeCount || "0") || 0
+        text: comment?.content || comment?.text || comment?.snippet?.textDisplay || "",
+        likeCount: parseInt(comment?.likes || comment?.likeCount || comment?.snippet?.likeCount || "0") || 0
       });
     }
     
-    console.log(`Found ${comments.length} comments`);
+    console.log(`Found ${comments.length} comments for video ${videoId}`);
     return comments;
   } catch (error) {
     console.error("Error fetching comments:", error);
@@ -207,32 +204,40 @@ async function analyzeWithAI(
       .sort((a, b) => b.likeCount - a.likeCount)
       .slice(0, 15)
       .map(c => c.text)
+      .filter(c => c.length > 10) // Filter out very short comments
       .join("\n- ");
     
     return `
-VIDEO: ${video.title}
+VIDEO TITLE: "${video.title}"
 Views: ${formatNumber(video.viewCount)}
 Published: ${video.publishedAt}
+Description: ${video.description || "N/A"}
 
-Top Comments:
-- ${topComments}
+Top Comments (if available):
+${topComments ? `- ${topComments}` : "No comments available"}
 ---`;
   }).join("\n\n");
 
-  const systemPrompt = `You are an expert at analyzing YouTube content to identify business opportunities and unmet needs. 
-Analyze the following videos and comments from the channel "${channelName}" to find:
-1. Confusion points - where viewers are confused or ask for clarification
-2. Complaints - frustrations with current solutions  
-3. Unmet needs - things people want but can't find
-4. Repeated questions - common problems many people share
+  const systemPrompt = `You are an expert business analyst specializing in identifying market opportunities from YouTube content.
+You MUST analyze the ACTUAL video titles, descriptions, and comments provided below from "${channelName}".
 
-Focus on extracting REAL, actionable business problems that could be solved with a product or service.`;
+CRITICAL RULES:
+1. Extract problems/opportunities DIRECTLY from the video content provided
+2. DO NOT invent generic business problems unrelated to the videos
+3. Each problem MUST reference specific topics from the video titles
+4. Focus on what the audience is discussing, asking, or struggling with
 
-  const userPrompt = `Analyze these 5 recent videos and their comments to identify 3-5 distinct business problems or opportunities:
+Categories to identify:
+- Confusion points from comments
+- Complaints about existing solutions
+- Unmet needs expressed by viewers
+- Repeated questions or pain points`;
+
+  const userPrompt = `Here are the 5 most recent videos from "${channelName}" - analyze them to extract 3-5 REAL business problems/opportunities DIRECTLY related to the content:
 
 ${videoSummaries}
 
-For each problem, identify the surface-level ask, the real underlying problem, and any hidden signals about deeper needs.`;
+IMPORTANT: Your analysis MUST be based on the actual video topics above. Extract problems that relate to the specific themes discussed in these videos.`;
 
   try {
     console.log("Analyzing with AI...");
@@ -262,16 +267,17 @@ For each problem, identify the surface-level ask, the real underlying problem, a
                   items: {
                     type: "object",
                     properties: {
-                      title: { type: "string", description: "Clear, concise problem title" },
+                      title: { type: "string", description: "Clear, concise problem title based on video content" },
                       description: { type: "string", description: "2-3 sentence description of the problem" },
                       opportunityScore: { type: "number", description: "Score 1-100 based on market opportunity" },
                       sentiment: { type: "string", enum: ["exploding", "rising", "stable", "emerging"] },
+                      category: { type: "string", enum: ["entrepreneurship", "business", "marketing", "sales", "mindset", "health", "relationships", "finance", "productivity", "leadership"], description: "Best category for this problem" },
                       surfaceAsk: { type: "string", description: "What people literally ask for" },
                       realProblem: { type: "string", description: "The actual underlying problem" },
                       hiddenSignal: { type: "string", description: "Deeper insight about unmet needs" },
                       painPoints: { type: "array", items: { type: "string" }, description: "3-5 specific pain points" }
                     },
-                    required: ["title", "description", "opportunityScore", "sentiment", "surfaceAsk", "realProblem", "hiddenSignal", "painPoints"]
+                    required: ["title", "description", "opportunityScore", "sentiment", "category", "surfaceAsk", "realProblem", "hiddenSignal", "painPoints"]
                   }
                 }
               },
@@ -378,7 +384,7 @@ serve(async (req) => {
       );
     }
 
-    // Format results
+    // Format results - use AI-detected category for each problem
     const results = problems.map((problem, index) => {
       const sourceVideo = videos[index] || videos[0];
       return {
@@ -387,7 +393,7 @@ serve(async (req) => {
         description: problem.description,
         opportunityScore: problem.opportunityScore,
         sentiment: problem.sentiment,
-        category: channel.category,
+        category: problem.category || channel.category, // Use AI category, fallback to channel
         sources: [{
           name: "youtube" as const,
           sentiment: problem.sentiment,
