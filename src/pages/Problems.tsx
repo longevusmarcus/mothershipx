@@ -5,10 +5,9 @@ import { Search } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
 import { MarketProblemCard } from "@/components/MarketProblemCard";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { categories } from "@/data/marketIntelligence";
 import { useProblems } from "@/hooks/useProblems";
+import { useCategories } from "@/hooks/useCategories";
 
 const Problems = () => {
   const [searchParams] = useSearchParams();
@@ -17,6 +16,7 @@ const Problems = () => {
   const [searchQuery, setSearchQuery] = useState(initialQuery);
 
   const { data: problems = [], isLoading } = useProblems(selectedCategory);
+  const { data: categories = ["All"] } = useCategories();
 
   // Update search query when URL params change
   useEffect(() => {
