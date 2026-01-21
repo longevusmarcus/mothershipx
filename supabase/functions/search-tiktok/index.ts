@@ -153,8 +153,8 @@ async function fetchTikTokData(query: string, apiToken: string): Promise<TikTokV
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       searchQueries: [query],
-      maxProfilesPerQuery: 0,
-      maxVideosPerQuery: 10,
+      maxProfilesPerQuery: 1,
+      resultsPerPage: 10,
       shouldDownloadVideos: false,
       shouldDownloadCovers: false,
       shouldDownloadSlideshowImages: false,
