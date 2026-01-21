@@ -8,6 +8,7 @@ import { SEO } from "@/components/SEO";
 import { DataSourceSelector } from "@/components/DataSourceSelector";
 import { NicheSelector, NICHES, type NicheId } from "@/components/NicheSelector";
 import { ChannelSelector } from "@/components/ChannelSelector";
+import { SubredditSelector } from "@/components/SubredditSelector";
 import { SearchResults } from "@/components/SearchResults";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -31,6 +32,7 @@ const Index = () => {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [selectedNiche, setSelectedNiche] = useState<NicheId | null>(null);
   const [selectedChannel, setSelectedChannel] = useState<string | null>(null);
+  const [selectedSubreddit, setSelectedSubreddit] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
   const navigate = useNavigate();
   const { user, profile } = useAuth();
@@ -234,6 +236,72 @@ const Index = () => {
     setIsSearching(false);
   };
 
+  // Reddit search handler
+  const handleSubredditSelect = async (subredditId: string) => {
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+
+    if (!hasPremiumAccess && !subscriptionLoading) {
+      setShowPaywall(true);
+      return;
+    }
+
+    setSelectedSubreddit(subredditId);
+    setHasSearched(true);
+    setIsSearching(true);
+    setSearchResults([]);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("search-reddit", {
+        body: { subredditId },
+      });
+
+      if (error) {
+        console.error("Reddit search error:", error);
+        toast({
+          title: "Search Error",
+          description: "Failed to search Reddit",
+          variant: "destructive",
+        });
+        setSearchResults([]);
+      } else if (data?.success && data?.data) {
+        const transformedResults: SearchResult[] = data.data.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          subtitle: item.description || "",
+          category: item.category || "Career",
+          sentiment: item.sentiment || "rising",
+          views: item.totalScore || 0,
+          saves: 0,
+          shares: item.totalComments || 0,
+          painPoints: item.painPoints || [],
+          sources: item.sources?.map((s: any) => ({
+            source: "Reddit",
+            metric: s.trend || "",
+            value: s.trend || ""
+          })) || [],
+          isViral: item.isViral || false,
+          opportunityScore: item.opportunityScore || 50,
+          addedToLibrary: true
+        }));
+        
+        setSearchResults(transformedResults);
+        await queryClient.invalidateQueries({ queryKey: ["problems"] });
+        await queryClient.invalidateQueries({ queryKey: ["categories"] });
+        toast({
+          title: "Reddit Analysis Complete",
+          description: `Found ${transformedResults.length} opportunities from ${data.subreddit}`,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to search Reddit:", error);
+    }
+
+    setIsSearching(false);
+  };
+
   return (
     <AppLayout>
       <SEO
@@ -281,11 +349,17 @@ const Index = () => {
           )}
         >
           <div className="rounded-xl border border-border bg-card overflow-hidden shadow-lg p-5 space-y-5">
-            {/* Show Channel Selector for YouTube, Niche Selector for TikTok */}
+            {/* Show source-specific selector */}
             {selectedSource === "youtube" ? (
               <ChannelSelector
                 selectedChannel={selectedChannel}
                 onSelect={handleChannelSelect}
+                disabled={isSearching}
+              />
+            ) : selectedSource === "reddit" ? (
+              <SubredditSelector
+                selectedSubreddit={selectedSubreddit}
+                onSelect={handleSubredditSelect}
                 disabled={isSearching}
               />
             ) : (
