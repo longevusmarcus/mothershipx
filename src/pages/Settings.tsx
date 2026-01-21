@@ -308,7 +308,7 @@ export default function Settings() {
           transition={{ duration: 0.4 }}
         >
           <div className="mb-4 sm:mb-6">
-            <h1 className="text-xl sm:text-2xl font-bold">Settings</h1>
+            <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">Settings</h1>
             <p className="text-sm sm:text-base text-muted-foreground">
               Manage your notifications, privacy, and connected services
             </p>
