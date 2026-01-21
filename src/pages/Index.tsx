@@ -217,7 +217,7 @@ const Index = () => {
           })) || [],
           isViral: item.isViral || false,
           opportunityScore: item.opportunityScore || 50,
-          addedToLibrary: item.isViral || false
+          addedToLibrary: true // All YouTube results are saved to library
         }));
         
         setSearchResults(transformedResults);
