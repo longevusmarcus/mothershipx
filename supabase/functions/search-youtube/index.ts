@@ -6,7 +6,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Channel configurations
+// Channel configurations with correct YouTube channel IDs
 const CHANNELS = {
   "diary-of-a-ceo": {
     id: "diary-of-a-ceo",
@@ -29,16 +29,12 @@ interface YouTubeVideo {
   title: string;
   description: string;
   viewCount: number;
-  likeCount: number;
-  commentCount: number;
   publishedAt: string;
-  channelTitle: string;
 }
 
 interface VideoComment {
   text: string;
   likeCount: number;
-  authorDisplayName: string;
 }
 
 interface AnalyzedProblem {
@@ -50,15 +46,9 @@ interface AnalyzedProblem {
   realProblem: string;
   hiddenSignal: string;
   painPoints: string[];
-  videoSource: string;
-  viewCount: number;
-  commentCount: number;
 }
 
-// Minimum thresholds for video filtering
-const MIN_VIEW_COUNT = 50000;
-const MIN_COMMENT_COUNT = 100;
-const MAX_VIDEO_AGE_DAYS = 180; // 6 months
+const RAPIDAPI_HOST = "youtube138.p.rapidapi.com";
 
 function formatNumber(num: number): string {
   if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
@@ -66,88 +56,63 @@ function formatNumber(num: number): string {
   return num.toString();
 }
 
+function parseViewCount(viewCountText: string): number {
+  if (!viewCountText) return 0;
+  const cleaned = viewCountText.replace(/[^0-9.KMB]/gi, '');
+  const num = parseFloat(cleaned);
+  if (cleaned.includes('B') || cleaned.includes('b')) return num * 1000000000;
+  if (cleaned.includes('M') || cleaned.includes('m')) return num * 1000000;
+  if (cleaned.includes('K') || cleaned.includes('k')) return num * 1000;
+  return parseInt(viewCountText.replace(/[^0-9]/g, '')) || 0;
+}
+
 async function fetchChannelVideos(channelId: string, apiKey: string): Promise<YouTubeVideo[]> {
-  const rapidApiHost = "youtube-v31.p.rapidapi.com";
-  
   try {
-    // Get channel's upload playlist
-    const channelUrl = `https://${rapidApiHost}/channels?part=contentDetails&id=${channelId}`;
-    const channelResponse = await fetch(channelUrl, {
+    console.log(`Fetching videos for channel: ${channelId}`);
+    
+    const response = await fetch(`https://${RAPIDAPI_HOST}/channel/videos/`, {
+      method: "POST",
       headers: {
-        "X-RapidAPI-Key": apiKey,
-        "X-RapidAPI-Host": rapidApiHost
-      }
+        "x-rapidapi-key": apiKey,
+        "x-rapidapi-host": RAPIDAPI_HOST,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        id: channelId,
+        filter: "videos_latest",
+        cursor: "",
+        hl: "en",
+        gl: "US"
+      })
     });
     
-    if (!channelResponse.ok) {
-      console.error("Channel fetch error:", await channelResponse.text());
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Channel videos fetch error:", response.status, errorText);
       return [];
     }
     
-    const channelData = await channelResponse.json();
-    const uploadsPlaylistId = channelData.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
+    const data = await response.json();
+    console.log("Channel videos response:", JSON.stringify(data).slice(0, 500));
     
-    if (!uploadsPlaylistId) {
-      console.error("No uploads playlist found for channel:", channelId);
-      return [];
-    }
+    // Extract videos from the response
+    const contents = data?.contents || [];
+    const videos: YouTubeVideo[] = [];
     
-    // Get only the 5 most recent videos from playlist
-    const playlistUrl = `https://${rapidApiHost}/playlistItems?part=snippet&playlistId=${uploadsPlaylistId}&maxResults=5`;
-    const playlistResponse = await fetch(playlistUrl, {
-      headers: {
-        "X-RapidAPI-Key": apiKey,
-        "X-RapidAPI-Host": rapidApiHost
-      }
-    });
-    
-    if (!playlistResponse.ok) {
-      console.error("Playlist fetch error:", await playlistResponse.text());
-      return [];
-    }
-    
-    const playlistData = await playlistResponse.json();
-    const videoIds = playlistData.items?.map((item: any) => item.snippet?.resourceId?.videoId).filter(Boolean);
-    
-    if (!videoIds || videoIds.length === 0) return [];
-    
-    // Get video details with statistics
-    const videosUrl = `https://${rapidApiHost}/videos?part=snippet,statistics&id=${videoIds.join(",")}`;
-    const videosResponse = await fetch(videosUrl, {
-      headers: {
-        "X-RapidAPI-Key": apiKey,
-        "X-RapidAPI-Host": rapidApiHost
-      }
-    });
-    
-    if (!videosResponse.ok) {
-      console.error("Videos fetch error:", await videosResponse.text());
-      return [];
-    }
-    
-    const videosData = await videosResponse.json();
-    
-    const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - MAX_VIDEO_AGE_DAYS);
-    
-    const videos: YouTubeVideo[] = (videosData.items || [])
-      .map((video: any) => ({
-        videoId: video.id,
-        title: video.snippet?.title || "",
-        description: video.snippet?.description || "",
-        viewCount: parseInt(video.statistics?.viewCount || "0"),
-        likeCount: parseInt(video.statistics?.likeCount || "0"),
-        commentCount: parseInt(video.statistics?.commentCount || "0"),
-        publishedAt: video.snippet?.publishedAt || "",
-        channelTitle: video.snippet?.channelTitle || ""
-      }))
-      .filter((v: YouTubeVideo) => {
-        const videoDate = new Date(v.publishedAt);
-        return v.viewCount >= MIN_VIEW_COUNT && 
-               v.commentCount >= MIN_COMMENT_COUNT &&
-               videoDate >= cutoffDate;
+    for (const item of contents.slice(0, 5)) {
+      const video = item?.video;
+      if (!video) continue;
+      
+      videos.push({
+        videoId: video.videoId || "",
+        title: video.title || "",
+        description: video.descriptionSnippet || "",
+        viewCount: parseViewCount(video.stats?.views?.toString() || video.viewCountText || "0"),
+        publishedAt: video.publishedTimeText || ""
       });
+    }
     
+    console.log(`Found ${videos.length} videos`);
     return videos;
   } catch (error) {
     console.error("Error fetching channel videos:", error);
@@ -156,60 +121,77 @@ async function fetchChannelVideos(channelId: string, apiKey: string): Promise<Yo
 }
 
 async function fetchVideoComments(videoId: string, apiKey: string): Promise<VideoComment[]> {
-  const rapidApiHost = "youtube-v31.p.rapidapi.com";
-  
   try {
-    const url = `https://${rapidApiHost}/commentThreads?part=snippet&videoId=${videoId}&maxResults=50&order=relevance`;
-    const response = await fetch(url, {
+    console.log(`Fetching comments for video: ${videoId}`);
+    
+    const response = await fetch(`https://${RAPIDAPI_HOST}/video/comments/`, {
+      method: "POST",
       headers: {
-        "X-RapidAPI-Key": apiKey,
-        "X-RapidAPI-Host": rapidApiHost
-      }
+        "x-rapidapi-key": apiKey,
+        "x-rapidapi-host": RAPIDAPI_HOST,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        id: videoId,
+        cursor: "",
+        hl: "en",
+        gl: "US"
+      })
     });
     
     if (!response.ok) {
-      console.error("Comments fetch error:", await response.text());
+      const errorText = await response.text();
+      console.error("Comments fetch error:", response.status, errorText);
       return [];
     }
     
     const data = await response.json();
+    const comments: VideoComment[] = [];
     
-    return (data.items || []).map((item: any) => ({
-      text: item.snippet?.topLevelComment?.snippet?.textDisplay || "",
-      likeCount: item.snippet?.topLevelComment?.snippet?.likeCount || 0,
-      authorDisplayName: item.snippet?.topLevelComment?.snippet?.authorDisplayName || ""
-    }));
+    const commentItems = data?.comments || [];
+    for (const item of commentItems.slice(0, 30)) {
+      comments.push({
+        text: item?.content || item?.text || "",
+        likeCount: parseInt(item?.likes || item?.likeCount || "0") || 0
+      });
+    }
+    
+    console.log(`Found ${comments.length} comments`);
+    return comments;
   } catch (error) {
     console.error("Error fetching comments:", error);
     return [];
   }
 }
 
-async function fetchVideoTranscript(videoId: string, apiKey: string): Promise<string> {
-  const rapidApiHost = "youtube-v31.p.rapidapi.com";
-  
+async function fetchVideoDetails(videoId: string, apiKey: string): Promise<{ description: string; title: string }> {
   try {
-    // Try to get captions - this endpoint may not always work
-    const url = `https://${rapidApiHost}/captions?part=snippet&videoId=${videoId}`;
-    const response = await fetch(url, {
+    const response = await fetch(`https://${RAPIDAPI_HOST}/video/details/`, {
+      method: "POST",
       headers: {
-        "X-RapidAPI-Key": apiKey,
-        "X-RapidAPI-Host": rapidApiHost
-      }
+        "x-rapidapi-key": apiKey,
+        "x-rapidapi-host": RAPIDAPI_HOST,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        id: videoId,
+        hl: "en",
+        gl: "US"
+      })
     });
     
     if (!response.ok) {
-      // Transcripts may not be available, return empty
       await response.text();
-      return "";
+      return { description: "", title: "" };
     }
     
     const data = await response.json();
-    // Note: Full transcript download requires additional API calls
-    // For now, we'll rely on video description and comments for analysis
-    return data.items?.[0]?.snippet?.name || "";
+    return {
+      description: data?.description || "",
+      title: data?.title || ""
+    };
   } catch {
-    return "";
+    return { description: "", title: "" };
   }
 }
 
@@ -219,39 +201,42 @@ async function analyzeWithAI(
   channelName: string,
   apiKey: string
 ): Promise<AnalyzedProblem[]> {
-  const videoSummaries = videos.slice(0, 5).map(video => {
+  const videoSummaries = videos.map(video => {
     const comments = allComments.get(video.videoId) || [];
     const topComments = comments
       .sort((a, b) => b.likeCount - a.likeCount)
-      .slice(0, 10)
+      .slice(0, 15)
       .map(c => c.text)
-      .join("\n");
+      .join("\n- ");
     
     return `
 VIDEO: ${video.title}
-Views: ${formatNumber(video.viewCount)}, Comments: ${formatNumber(video.commentCount)}
-Description: ${video.description.slice(0, 500)}
+Views: ${formatNumber(video.viewCount)}
+Published: ${video.publishedAt}
+
 Top Comments:
-${topComments}
+- ${topComments}
 ---`;
   }).join("\n\n");
 
   const systemPrompt = `You are an expert at analyzing YouTube content to identify business opportunities and unmet needs. 
 Analyze the following videos and comments from the channel "${channelName}" to find:
 1. Confusion points - where viewers are confused or ask for clarification
-2. Complaints - frustrations with current solutions
+2. Complaints - frustrations with current solutions  
 3. Unmet needs - things people want but can't find
 4. Repeated questions - common problems many people share
 
 Focus on extracting REAL, actionable business problems that could be solved with a product or service.`;
 
-  const userPrompt = `Analyze these videos and their comments to identify 3-5 distinct business problems or opportunities:
+  const userPrompt = `Analyze these 5 recent videos and their comments to identify 3-5 distinct business problems or opportunities:
 
 ${videoSummaries}
 
 For each problem, identify the surface-level ask, the real underlying problem, and any hidden signals about deeper needs.`;
 
   try {
+    console.log("Analyzing with AI...");
+    
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -299,7 +284,8 @@ For each problem, identify the surface-level ask, the real underlying problem, a
     });
 
     if (!response.ok) {
-      console.error("AI analysis error:", await response.text());
+      const errorText = await response.text();
+      console.error("AI analysis error:", response.status, errorText);
       return [];
     }
 
@@ -308,6 +294,7 @@ For each problem, identify the surface-level ask, the real underlying problem, a
     
     if (toolCall?.function?.arguments) {
       const parsed = JSON.parse(toolCall.function.arguments);
+      console.log(`AI found ${parsed.problems?.length || 0} problems`);
       return parsed.problems || [];
     }
     
@@ -351,36 +338,47 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Fetching videos for channel: ${channel.name}`);
+    console.log(`Starting YouTube analysis for: ${channel.name} (${channel.channelId})`);
     
-    // Fetch videos from the channel
+    // Fetch 5 most recent videos
     const videos = await fetchChannelVideos(channel.channelId, YOUTUBE_API_KEY);
-    console.log(`Found ${videos.length} qualifying videos`);
     
     if (videos.length === 0) {
       return new Response(
         JSON.stringify({ 
           success: true, 
           data: [],
-          message: "No recent videos matching criteria found"
+          message: "No videos found for this channel",
+          channel: channel.name
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Fetch comments for top videos
+    // Fetch comments for each video
     const allComments = new Map<string, VideoComment[]>();
-    for (const video of videos.slice(0, 5)) {
+    for (const video of videos) {
       const comments = await fetchVideoComments(video.videoId, YOUTUBE_API_KEY);
       allComments.set(video.videoId, comments);
     }
 
-    console.log("Analyzing content with AI...");
-    
     // Analyze with AI
     const problems = await analyzeWithAI(videos, allComments, channel.name, LOVABLE_API_KEY);
     
-    // Format results similar to TikTok search results
+    if (problems.length === 0) {
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          data: [],
+          message: "No problems identified from content analysis",
+          channel: channel.name,
+          videosAnalyzed: videos.length
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Format results
     const results = problems.map((problem, index) => {
       const sourceVideo = videos[index] || videos[0];
       return {
@@ -393,7 +391,7 @@ serve(async (req) => {
         sources: [{
           name: "youtube" as const,
           sentiment: problem.sentiment,
-          mentions: sourceVideo?.commentCount || 0,
+          mentions: allComments.get(sourceVideo?.videoId)?.length || 0,
           trend: `${formatNumber(sourceVideo?.viewCount || 0)} views`
         }],
         hiddenInsight: {
@@ -432,6 +430,8 @@ serve(async (req) => {
       
       if (error) console.error("Error storing problem:", error);
     }
+
+    console.log(`Analysis complete. Found ${results.length} problems from ${videos.length} videos`);
 
     return new Response(
       JSON.stringify({ 
