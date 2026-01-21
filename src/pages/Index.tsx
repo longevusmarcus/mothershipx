@@ -7,6 +7,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
 import { DataSourceSelector } from "@/components/DataSourceSelector";
 import { NicheSelector, NICHES, type NicheId } from "@/components/NicheSelector";
+import { ChannelSelector } from "@/components/ChannelSelector";
 import { SearchResults } from "@/components/SearchResults";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -29,6 +30,7 @@ const Index = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [selectedNiche, setSelectedNiche] = useState<NicheId | null>(null);
+  const [selectedChannel, setSelectedChannel] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
   const navigate = useNavigate();
   const { user, profile } = useAuth();
@@ -160,6 +162,55 @@ const Index = () => {
     setHasSearched(false);
     setSearchResults([]);
     setSelectedNiche(null);
+    setSelectedChannel(null);
+  };
+
+  const handleChannelSelect = async (channelId: string) => {
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+
+    if (!hasPremiumAccess && !subscriptionLoading) {
+      setShowPaywall(true);
+      return;
+    }
+
+    await performYouTubeSearch(channelId);
+  };
+
+  const performYouTubeSearch = async (channelId: string) => {
+    setSelectedChannel(channelId);
+    setHasSearched(true);
+    setIsSearching(true);
+    setSearchResults([]);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("search-youtube", {
+        body: { channelId },
+      });
+
+      if (error) {
+        console.error("YouTube search error:", error);
+        toast({
+          title: "Search Error",
+          description: "Failed to search YouTube channel",
+          variant: "destructive",
+        });
+        setSearchResults([]);
+      } else if (data?.success && data?.data) {
+        setSearchResults(data.data);
+        await queryClient.invalidateQueries({ queryKey: ["problems"] });
+        toast({
+          title: "YouTube Analysis Complete",
+          description: `Found ${data.data.length} opportunities from ${data.channel}`,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to search YouTube:", error);
+    }
+
+    setIsSearching(false);
   };
 
   return (
@@ -209,12 +260,20 @@ const Index = () => {
           )}
         >
           <div className="rounded-xl border border-border bg-card overflow-hidden shadow-lg p-5 space-y-5">
-            {/* Niche Selector */}
-            <NicheSelector
-              selectedNiche={selectedNiche}
-              onSelect={handleNicheSelect}
-              disabled={isSearching}
-            />
+            {/* Show Channel Selector for YouTube, Niche Selector for TikTok */}
+            {selectedSource === "youtube" ? (
+              <ChannelSelector
+                selectedChannel={selectedChannel}
+                onSelect={handleChannelSelect}
+                disabled={isSearching}
+              />
+            ) : (
+              <NicheSelector
+                selectedNiche={selectedNiche}
+                onSelect={handleNicheSelect}
+                disabled={isSearching}
+              />
+            )}
 
             {/* Bottom Bar */}
             <div className="flex items-center justify-between pt-3 border-t border-border">
