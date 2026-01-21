@@ -16,7 +16,8 @@ export const NICHES = [
   { id: "gut-health", label: "Gut Health", icon: Stethoscope, keywords: ["gut", "digestion", "bloating", "probiotics", "stomach", "ibs", "food", "intolerance", "microbiome", "inflammation"] },
   { id: "productivity", label: "Productivity", icon: Target, keywords: ["productivity", "focus", "time", "procrastination", "habits", "discipline", "schedule", "organize", "morning", "routine"] },
   { id: "career", label: "Career", icon: Briefcase, keywords: ["career", "job", "interview", "resume", "salary", "promotion", "work", "boss", "linkedin", "networking"] },
-  { id: "social", label: "Social Connections", icon: Users, keywords: ["social", "friends", "lonely", "dating", "relationship", "connection", "introvert", "conversation", "community", "networking"] },
+  { id: "connections", label: "Connections", icon: Users, keywords: ["social", "friends", "lonely", "dating", "relationship", "connection", "introvert", "conversation", "community", "networking"] },
+  { id: "business", label: "Business", icon: Briefcase, keywords: ["business", "entrepreneurship", "startup", "founder", "revenue", "marketing", "sales", "growth", "scaling", "investment"] },
 ] as const;
 
 export type NicheId = typeof NICHES[number]["id"];
@@ -47,7 +48,7 @@ export function NicheSelector({ selectedNiche, onSelect, disabled }: NicheSelect
               onClick={() => !disabled && onSelect(niche.id)}
               disabled={disabled}
               className={`
-                flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all
+                flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-xs transition-all
                 ${isSelected 
                   ? "bg-foreground text-background" 
                   : "bg-card border border-border hover:border-foreground/30"
@@ -55,7 +56,7 @@ export function NicheSelector({ selectedNiche, onSelect, disabled }: NicheSelect
                 ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
               `}
             >
-              <Icon className="h-4 w-4" />
+              <Icon className="h-3.5 w-3.5" />
               <span>{niche.label}</span>
             </motion.button>
           );
