@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Search, Zap, LayoutGrid, ArrowUp, ArrowUpRight } from "lucide-react";
+import { Search, Zap, LayoutGrid, ArrowUpRight } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
 import { DataSourceSelector } from "@/components/DataSourceSelector";
@@ -12,10 +12,13 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthModal } from "@/components/AuthModal";
+import { useToast } from "@/hooks/use-toast";
 import type { SearchResult } from "@/components/SearchResultCard";
 
+type SearchMode = "search" | "quick" | "grid";
+
 const Index = () => {
-  const [searchMode, setSearchMode] = useState<"search" | "neural" | "grid">("search");
+  const [searchMode, setSearchMode] = useState<SearchMode>("search");
   const [selectedSource, setSelectedSource] = useState<string>("tiktok");
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [pendingNiche, setPendingNiche] = useState<NicheId | null>(null);
@@ -25,6 +28,52 @@ const Index = () => {
   const [hasSearched, setHasSearched] = useState(false);
   const navigate = useNavigate();
   const { user, profile } = useAuth();
+  const { toast } = useToast();
+
+  // Quick scan - search all niches at once
+  const handleQuickScan = async () => {
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+
+    setSearchMode("quick");
+    setHasSearched(true);
+    setIsSearching(true);
+    setSearchResults([]);
+    setSelectedNiche(null);
+
+    try {
+      // Pick 3 random niches and scan them
+      const randomNiches = [...NICHES].sort(() => Math.random() - 0.5).slice(0, 3);
+      const allResults: SearchResult[] = [];
+
+      for (const niche of randomNiches) {
+        const { data, error } = await supabase.functions.invoke("search-tiktok", {
+          body: { niche: niche.id },
+        });
+
+        if (!error && data?.success && data?.data) {
+          allResults.push(...data.data);
+        }
+      }
+
+      // Sort by opportunity score and take top results
+      const sorted = allResults
+        .sort((a, b) => (b.opportunityScore || 0) - (a.opportunityScore || 0))
+        .slice(0, 10);
+
+      setSearchResults(sorted);
+      toast({
+        title: "Quick Scan Complete",
+        description: `Found ${sorted.length} top opportunities across ${randomNiches.length} niches`,
+      });
+    } catch (error) {
+      console.error("Quick scan failed:", error);
+    }
+
+    setIsSearching(false);
+  };
 
   const handleNicheSelect = async (nicheId: NicheId) => {
     // If user is not logged in, show auth modal first
@@ -110,13 +159,15 @@ const Index = () => {
           </motion.h1>
         )}
 
-        {/* Search Results - Chat-like vertical display */}
+        {/* Search Results - Chat-like vertical display or Grid */}
         {hasSearched && (
           <div className="w-full max-w-2xl mx-auto px-4 mb-6 flex-1 overflow-y-auto">
             <SearchResults
               results={searchResults}
               isLoading={isSearching}
               selectedNiche={selectedNiche}
+              viewMode={searchMode === "grid" ? "grid" : "list"}
+              isQuickScan={searchMode === "quick"}
             />
           </div>
         )}
@@ -146,6 +197,7 @@ const Index = () => {
                 <button
                   type="button"
                   onClick={() => setSearchMode("search")}
+                  title="Standard search - pick a niche"
                   className={cn(
                     "p-2 rounded-md transition-colors",
                     searchMode === "search" ? "bg-background shadow-sm" : "hover:bg-background/50",
@@ -155,10 +207,13 @@ const Index = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setSearchMode("neural")}
+                  onClick={handleQuickScan}
+                  title="Quick scan - analyze multiple niches"
+                  disabled={isSearching}
                   className={cn(
                     "p-2 rounded-md transition-colors",
-                    searchMode === "neural" ? "bg-background shadow-sm" : "hover:bg-background/50",
+                    searchMode === "quick" ? "bg-background shadow-sm" : "hover:bg-background/50",
+                    isSearching && "opacity-50 cursor-not-allowed"
                   )}
                 >
                   <Zap className="h-4 w-4" />
@@ -166,6 +221,7 @@ const Index = () => {
                 <button
                   type="button"
                   onClick={() => setSearchMode("grid")}
+                  title="Grid view - compact layout"
                   className={cn(
                     "p-2 rounded-md transition-colors",
                     searchMode === "grid" ? "bg-background shadow-sm" : "hover:bg-background/50",
