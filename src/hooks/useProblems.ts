@@ -31,12 +31,19 @@ interface DBProblem {
   updated_at: string;
 }
 
+// Generic source from DB - can be TikTok/YouTube format or Reddit format
 interface SourceFromDB {
-  source: string;
-  metric: string;
-  value: string;
+  // TikTok/YouTube format
+  source?: string;
+  metric?: string;
+  value?: string;
   change?: number;
   icon?: string;
+  // Reddit format
+  name?: string;
+  trend?: string;
+  mentions?: number;
+  sentiment?: string;
 }
 
 interface HiddenInsightFromDB {
@@ -53,15 +60,28 @@ const uuidToMockId = Object.entries(problemIdMap).reduce((acc, [mockId, uuid]) =
 
 // Convert DB problem to MarketProblem format for compatibility
 function dbToMarketProblem(dbProblem: DBProblem): MarketProblem {
-  // Parse JSONB sources
+  // Parse JSONB sources - handle both TikTok/YouTube and Reddit formats
   const sources: TrendSignal[] = Array.isArray(dbProblem.sources) 
-    ? (dbProblem.sources as SourceFromDB[]).map(s => ({
-        source: s.source as TrendSignal["source"],
-        metric: s.metric,
-        value: s.value,
-        change: s.change || 0,
-        icon: s.icon,
-      }))
+    ? (dbProblem.sources as SourceFromDB[]).map(s => {
+        // Reddit format: has 'name' key
+        if (s.name === 'reddit' || s.source === 'reddit') {
+          return {
+            source: 'reddit' as TrendSignal["source"],
+            name: 'reddit',
+            metric: 'Engagement',
+            value: s.trend || `${s.mentions || 0} comments`,
+            change: 0,
+          };
+        }
+        // Standard TikTok/YouTube format
+        return {
+          source: s.source as TrendSignal["source"],
+          metric: s.metric || '',
+          value: s.value || '',
+          change: s.change || 0,
+          icon: s.icon,
+        };
+      })
     : [];
 
   // Parse JSONB hidden_insight
