@@ -18,14 +18,16 @@ import {
   rectSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Lock, Pin } from "lucide-react";
+import { Lock } from "lucide-react";
 import { MarketProblemCard } from "@/components/MarketProblemCard";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useUserPins } from "@/hooks/useUserPins";
 import type { MarketProblem } from "@/data/marketIntelligence";
 
 const FREE_CARD_LIMIT = 12;
+const STORAGE_KEY = "mothership_problems_order";
 
 interface MasonryGridProps {
   problems: MarketProblem[];
@@ -71,25 +73,24 @@ function DragOverlayCard({ problem }: { problem: MarketProblem }) {
   );
 }
 
-const STORAGE_KEY = "mothership_problems_order";
-const PINNED_KEY = "mothership_pinned_problems";
 export function MasonryGrid({ problems }: MasonryGridProps) {
   const [orderedProblems, setOrderedProblems] = useState<MarketProblem[]>([]);
-  const [pinnedIds, setPinnedIds] = useState<Set<string>>(new Set());
   const [activeId, setActiveId] = useState<string | null>(null);
   const { hasPremiumAccess, isLoading: subscriptionLoading } = useSubscription();
   const { isAuthenticated } = useAuth();
   const isMobile = useIsMobile();
+  
+  // Use database-backed pins for authenticated users
+  const { pinnedIds, togglePin } = useUserPins();
 
   // Determine if we should blur cards beyond the limit
-  // Blur for: logged-out users OR logged-in users without premium
   const shouldBlurExcess = !isAuthenticated || (!hasPremiumAccess && !subscriptionLoading);
 
   // Disable drag and drop on mobile
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: isMobile ? Infinity : 8, // Infinity effectively disables on mobile
+        distance: isMobile ? Infinity : 8,
       },
     }),
     useSensor(KeyboardSensor, {
@@ -97,27 +98,14 @@ export function MasonryGrid({ problems }: MasonryGridProps) {
     })
   );
 
-  // Load saved order and pinned state from localStorage
+  // Load saved order from localStorage
   useEffect(() => {
-    // Load pinned IDs
-    const savedPinned = localStorage.getItem(PINNED_KEY);
-    if (savedPinned) {
-      try {
-        const pinnedArray: string[] = JSON.parse(savedPinned);
-        setPinnedIds(new Set(pinnedArray));
-      } catch {
-        setPinnedIds(new Set());
-      }
-    }
-
-    // Load saved order
     const savedOrder = localStorage.getItem(STORAGE_KEY);
     if (savedOrder) {
       try {
         const orderIds: string[] = JSON.parse(savedOrder);
         const problemMap = new Map(problems.map((p) => [p.id, p]));
         
-        // First add problems in saved order
         const ordered: MarketProblem[] = [];
         for (const id of orderIds) {
           const problem = problemMap.get(id);
@@ -127,7 +115,6 @@ export function MasonryGrid({ problems }: MasonryGridProps) {
           }
         }
         
-        // Then add any new problems not in saved order
         for (const problem of problemMap.values()) {
           ordered.push(problem);
         }
@@ -149,18 +136,8 @@ export function MasonryGrid({ problems }: MasonryGridProps) {
   }, [orderedProblems, pinnedIds]);
 
   const handleTogglePin = useCallback((problemId: string) => {
-    setPinnedIds(prev => {
-      const next = new Set(prev);
-      if (next.has(problemId)) {
-        next.delete(problemId);
-      } else {
-        next.add(problemId);
-      }
-      // Save to localStorage
-      localStorage.setItem(PINNED_KEY, JSON.stringify([...next]));
-      return next;
-    });
-  }, []);
+    togglePin(problemId);
+  }, [togglePin]);
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
     setActiveId(event.active.id as string);
@@ -179,7 +156,6 @@ export function MasonryGrid({ problems }: MasonryGridProps) {
         const [removed] = newItems.splice(oldIndex, 1);
         newItems.splice(newIndex, 0, removed);
 
-        // Save new order to localStorage
         localStorage.setItem(STORAGE_KEY, JSON.stringify(newItems.map((p) => p.id)));
 
         return newItems;
@@ -216,7 +192,6 @@ export function MasonryGrid({ problems }: MasonryGridProps) {
                     <div className="blur-sm pointer-events-none select-none">
                       <MarketProblemCard problem={problem} delay={0} />
                     </div>
-                    {/* Show lock overlay only on first blurred card */}
                     {index === FREE_CARD_LIMIT && (
                       <div className="absolute inset-0 flex items-center justify-center bg-background/60 rounded-xl">
                         <div className="text-center p-4">
