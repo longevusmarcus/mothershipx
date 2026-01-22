@@ -168,7 +168,9 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                       <div className="flex flex-col sm:items-start items-center gap-1">
                         <span className="text-sm text-muted-foreground line-through">$99.99/month</span>
                         <div className="inline-flex items-baseline">
-                          <span className="text-4xl sm:text-5xl font-semibold tracking-tight">${SUBSCRIPTION_PRICE}</span>
+                          <span className="text-4xl sm:text-5xl font-semibold tracking-tight">
+                            ${SUBSCRIPTION_PRICE}
+                          </span>
                           <span className="text-muted-foreground ml-1.5 text-base">/month</span>
                         </div>
                       </div>
@@ -212,7 +214,7 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                       transition={{ delay: 1, duration: 0.4 }}
                     >
                       <p className="text-center sm:text-left text-xs sm:text-sm text-muted-foreground">
-                        Or pay $5 per Arena challenge (NO search & library access)
+                        Or pay $5 per Arena challenge (NO search access, NO library access, NO free hackathons)
                       </p>
                       <p className="text-center sm:text-left text-xs text-muted-foreground/60">
                         Cancel anytime • Secured by Stripe
