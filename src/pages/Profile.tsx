@@ -223,9 +223,6 @@ export default function Profile() {
       <div className="w-full max-w-full overflow-hidden space-y-4">
         
         {/* Header row */}
-        <div className="flex flex-col gap-1 mb-2">
-          <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">Profile</h1>
-        </div>
         <div className="flex items-center gap-1.5 shrink-0">
           <div className="flex items-center gap-1.5 shrink-0">
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleShareProfile}>
