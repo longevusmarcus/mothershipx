@@ -18,7 +18,7 @@ import {
   rectSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Lock } from "lucide-react";
+import { Lock, Pin } from "lucide-react";
 import { MarketProblemCard } from "@/components/MarketProblemCard";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/contexts/AuthContext";
@@ -34,9 +34,11 @@ interface SortableCardProps {
   problem: MarketProblem;
   index: number;
   isDragging?: boolean;
+  isPinned?: boolean;
+  onTogglePin?: (problemId: string) => void;
 }
 
-function SortableCard({ problem, index, isDragging }: SortableCardProps) {
+function SortableCard({ problem, index, isDragging, isPinned, onTogglePin }: SortableCardProps) {
   const {
     attributes,
     listeners,
@@ -55,7 +57,7 @@ function SortableCard({ problem, index, isDragging }: SortableCardProps) {
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <MarketProblemCard problem={problem} delay={0} />
+      <MarketProblemCard problem={problem} delay={0} isPinned={isPinned} onTogglePin={onTogglePin} />
     </div>
   );
 }
@@ -69,15 +71,17 @@ function DragOverlayCard({ problem }: { problem: MarketProblem }) {
 }
 
 const STORAGE_KEY = "mothership_problems_order";
-
+const PINNED_KEY = "mothership_pinned_problems";
 export function MasonryGrid({ problems }: MasonryGridProps) {
   const [orderedProblems, setOrderedProblems] = useState<MarketProblem[]>([]);
+  const [pinnedIds, setPinnedIds] = useState<Set<string>>(new Set());
   const [activeId, setActiveId] = useState<string | null>(null);
   const { hasPremiumAccess, isLoading: subscriptionLoading } = useSubscription();
   const { isAuthenticated } = useAuth();
 
   // Determine if we should blur cards beyond the limit
-  const shouldBlurExcess = isAuthenticated && !hasPremiumAccess && !subscriptionLoading;
+  // Blur for: logged-out users OR logged-in users without premium
+  const shouldBlurExcess = !isAuthenticated || (!hasPremiumAccess && !subscriptionLoading);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -90,8 +94,20 @@ export function MasonryGrid({ problems }: MasonryGridProps) {
     })
   );
 
-  // Load saved order from localStorage and merge with current problems
+  // Load saved order and pinned state from localStorage
   useEffect(() => {
+    // Load pinned IDs
+    const savedPinned = localStorage.getItem(PINNED_KEY);
+    if (savedPinned) {
+      try {
+        const pinnedArray: string[] = JSON.parse(savedPinned);
+        setPinnedIds(new Set(pinnedArray));
+      } catch {
+        setPinnedIds(new Set());
+      }
+    }
+
+    // Load saved order
     const savedOrder = localStorage.getItem(STORAGE_KEY);
     if (savedOrder) {
       try {
@@ -121,6 +137,27 @@ export function MasonryGrid({ problems }: MasonryGridProps) {
       setOrderedProblems(problems);
     }
   }, [problems]);
+
+  // Sort problems with pinned items first
+  const sortedProblems = useMemo(() => {
+    const pinned = orderedProblems.filter(p => pinnedIds.has(p.id));
+    const unpinned = orderedProblems.filter(p => !pinnedIds.has(p.id));
+    return [...pinned, ...unpinned];
+  }, [orderedProblems, pinnedIds]);
+
+  const handleTogglePin = useCallback((problemId: string) => {
+    setPinnedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(problemId)) {
+        next.delete(problemId);
+      } else {
+        next.add(problemId);
+      }
+      // Save to localStorage
+      localStorage.setItem(PINNED_KEY, JSON.stringify([...next]));
+      return next;
+    });
+  }, []);
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
     setActiveId(event.active.id as string);
@@ -152,7 +189,7 @@ export function MasonryGrid({ problems }: MasonryGridProps) {
     [activeId, orderedProblems]
   );
 
-  if (orderedProblems.length === 0) {
+  if (sortedProblems.length === 0) {
     return null;
   }
 
@@ -163,10 +200,11 @@ export function MasonryGrid({ problems }: MasonryGridProps) {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <SortableContext items={orderedProblems.map((p) => p.id)} strategy={rectSortingStrategy}>
+      <SortableContext items={sortedProblems.map((p) => p.id)} strategy={rectSortingStrategy}>
         <div className="columns-1 sm:columns-2 lg:columns-3 gap-4">
-          {orderedProblems.map((problem, index) => {
+          {sortedProblems.map((problem, index) => {
             const isBlurred = shouldBlurExcess && index >= FREE_CARD_LIMIT;
+            const isPinned = pinnedIds.has(problem.id);
             
             return (
               <div key={problem.id} className="break-inside-avoid mb-4 relative">
@@ -182,14 +220,19 @@ export function MasonryGrid({ problems }: MasonryGridProps) {
                           <Lock className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                           <p className="text-sm font-medium">Subscribe to unlock all problems</p>
                           <p className="text-xs text-muted-foreground mt-1">
-                            {orderedProblems.length - FREE_CARD_LIMIT}+ more discoveries waiting
+                            {sortedProblems.length - FREE_CARD_LIMIT}+ more discoveries waiting
                           </p>
                         </div>
                       </div>
                     )}
                   </div>
                 ) : (
-                  <SortableCard problem={problem} index={index} />
+                  <SortableCard 
+                    problem={problem} 
+                    index={index} 
+                    isPinned={isPinned}
+                    onTogglePin={handleTogglePin}
+                  />
                 )}
               </div>
             );

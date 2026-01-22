@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { AlertTriangle, CheckCircle2 } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Lock, Diamond } from "lucide-react";
 
 interface FitVerificationPanelProps {
   sentimentFitScore: number;
@@ -82,21 +82,35 @@ export function FitVerificationPanel({
         </div>
       </div>
 
-      {/* Quantitative Signals */}
-      <div className="space-y-3">
-        <p className="text-xs text-muted-foreground uppercase tracking-wide">Quantitative Signals</p>
-        <div className="grid grid-cols-3 gap-3">
-          <div className="p-3 rounded-lg bg-secondary/20 text-center">
-            <p className="text-lg font-semibold">{adoptionVelocity}</p>
-            <p className="text-[10px] text-muted-foreground">Users/week</p>
+      {/* Quantitative Signals - Diamond Locked */}
+      <div className="space-y-3 relative">
+        <div className="flex items-center gap-2">
+          <p className="text-xs text-muted-foreground uppercase tracking-wide">Quantitative Signals</p>
+          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-primary/10 text-primary">
+            <Diamond className="h-2.5 w-2.5" />
+            Diamond
+          </span>
+        </div>
+        <div className="relative">
+          <div className="grid grid-cols-3 gap-3 blur-sm pointer-events-none select-none">
+            <div className="p-3 rounded-lg bg-secondary/20 text-center">
+              <p className="text-lg font-semibold">{adoptionVelocity}</p>
+              <p className="text-[10px] text-muted-foreground">Users/week</p>
+            </div>
+            <div className="p-3 rounded-lg bg-secondary/20 text-center">
+              <p className="text-lg font-semibold">{revenuePresent ? revenueAmount : "—"}</p>
+              <p className="text-[10px] text-muted-foreground">{revenuePresent ? "Revenue" : "No revenue"}</p>
+            </div>
+            <div className="p-3 rounded-lg bg-secondary/20 text-center">
+              <p className="text-lg font-semibold">{buildMomentum}%</p>
+              <p className="text-[10px] text-muted-foreground">Build momentum</p>
+            </div>
           </div>
-          <div className="p-3 rounded-lg bg-secondary/20 text-center">
-            <p className="text-lg font-semibold">{revenuePresent ? revenueAmount : "—"}</p>
-            <p className="text-[10px] text-muted-foreground">{revenuePresent ? "Revenue" : "No revenue"}</p>
-          </div>
-          <div className="p-3 rounded-lg bg-secondary/20 text-center">
-            <p className="text-lg font-semibold">{buildMomentum}%</p>
-            <p className="text-[10px] text-muted-foreground">Build momentum</p>
+          <div className="absolute inset-0 flex items-center justify-center bg-background/40 rounded-lg">
+            <div className="text-center">
+              <Lock className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
+              <p className="text-xs text-muted-foreground">Diamond members only</p>
+            </div>
           </div>
         </div>
       </div>

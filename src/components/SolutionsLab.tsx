@@ -1134,17 +1134,6 @@ export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPai
         </Button>
       </div>
 
-      {/* AI Suggested Banner */}
-      <div className="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-secondary/20">
-        <Sparkles className="h-4 w-4 text-muted-foreground" />
-        <div className="flex-1 min-w-0">
-          <p className="text-sm">AI analyzed this trend</p>
-          <p className="text-xs text-muted-foreground truncate">
-            Collaborative solutions based on market signals & pain points
-          </p>
-        </div>
-        <span className="text-xs text-muted-foreground px-2 py-0.5 rounded-full bg-secondary">AI</span>
-      </div>
 
       {/* New Idea Form */}
       <AnimatePresence>
