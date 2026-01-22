@@ -12,7 +12,7 @@ export function SourceSignals({ sources, layout = "horizontal" }: SourceSignalsP
     <div className={`flex ${layout === "grid" ? "flex-wrap" : "overflow-x-auto touch-scroll"} gap-3`}>
       {sources.map((signal, index) => (
         <motion.div
-          key={signal.source}
+          key={`${signal.source}-${signal.metric}-${index}`}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.05 }}
