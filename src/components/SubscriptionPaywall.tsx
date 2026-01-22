@@ -146,7 +146,7 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                     Unlock Premium Access
                   </h2>
                   <p className="text-sm text-muted-foreground">
-                    Subscribe to access {featureLabels[feature]} and more
+                    Subscribe to access searches, dashboards, hackathons, rewards, and more.
                   </p>
                 </motion.div>
 
