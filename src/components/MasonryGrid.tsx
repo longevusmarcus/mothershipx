@@ -24,7 +24,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useUserPins } from "@/hooks/useUserPins";
 import type { MarketProblem } from "@/data/marketIntelligence";
 
-const FREE_CARD_LIMIT = 12;
+const FREE_CARD_LIMIT = 2;
 const STORAGE_KEY = "mothership_problems_order";
 
 interface MasonryGridProps {
