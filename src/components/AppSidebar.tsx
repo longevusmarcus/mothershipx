@@ -3,7 +3,7 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
-  Globe,
+  LayoutGrid,
   Swords,
   Flame,
   PanelLeftClose,
@@ -29,7 +29,7 @@ import {
 
 const navItems = [
   { icon: Plus, label: "New Search", path: "/" },
-  { icon: Globe, label: "Dashboard", path: "/problems" },
+  { icon: LayoutGrid, label: "Dashboard", path: "/problems" },
 ];
 
 interface AppSidebarProps {
