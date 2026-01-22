@@ -141,11 +141,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                       )}
                       <DropdownMenuItem onClick={() => navigate("/profile")} className="gap-2">
                         <User className="h-4 w-4" />
-                        Profile
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => navigate("/settings")} className="gap-2">
-                        <Settings className="h-4 w-4" />
-                        Settings
+                        Profile & Settings
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => window.open("https://docs.lovable.dev", "_blank")} className="gap-2">
                         <Info className="h-4 w-4" />

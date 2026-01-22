@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ScrollToTop } from "@/components/ScrollToTop";
@@ -17,7 +17,6 @@ import SubmitSolution from "./pages/SubmitSolution";
 import LeaderboardPage from "./pages/LeaderboardPage";
 import Profile from "./pages/Profile";
 import PublicProfile from "./pages/PublicProfile";
-import Settings from "./pages/Settings";
 import SubscriptionSuccess from "./pages/SubscriptionSuccess";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -45,7 +44,8 @@ const App = () => (
                 <Route path="/leaderboard" element={<LeaderboardPage />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/profile/:userId" element={<PublicProfile />} />
-                <Route path="/settings" element={<Settings />} />
+                {/* Redirect /settings to /profile */}
+                <Route path="/settings" element={<Navigate to="/profile" replace />} />
                 <Route path="/subscription/success" element={<SubscriptionSuccess />} />
                 <Route path="/auth" element={<Auth />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
