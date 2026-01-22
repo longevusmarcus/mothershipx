@@ -45,7 +45,7 @@ export const CommunityChallenges = () => {
   const memberBenefits = [
     { icon: DollarSign, label: "Win Money", desc: "90% of prize pool" },
     { icon: Megaphone, label: "Free Distribution", desc: "We promote your build" },
-    { icon: Trophy, label: "Free Hackathons", desc: "Access to future events" },
+    { icon: Trophy, label: "Sponsored Hackathons", desc: "Access to future events" },
     { icon: Award, label: "Builder Badge", desc: "Resume & vanity metric" },
     { icon: Link2, label: "Permanent Link", desc: "Showcase forever" },
     { icon: Percent, label: "Top 10 Perks", desc: "Rewards for ranking" },
@@ -178,7 +178,8 @@ export const CommunityChallenges = () => {
         >
           <div className="flex items-center justify-center gap-4 flex-wrap">
             <span className="flex items-center gap-2">
-              <Calendar className="h-3.5 w-3.5" />3 Weekly Challenges
+              <Calendar className="h-3.5 w-3.5" />
+              Weekly Challenges
             </span>
             <ArrowRight className="h-3 w-3 hidden sm:block" />
             <span>$5 Entry</span>
