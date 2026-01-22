@@ -47,6 +47,14 @@ const detectSourceType = (problem: MarketProblem): "reddit" | "youtube" | "tikto
   const hasRedditNameFormat = problem.sources.some((s: any) => s.name === 'reddit');
   
   if (allReddit || hasRedditNameFormat) return "reddit";
+
+  // Heuristic: some older Reddit-scraped rows still have a mixed/legacy `sources` array.
+  // If Reddit is present and the engagement numbers look like Reddit (not TikTok-scale),
+  // render the card with Reddit metrics (upvotes/comments) instead of generic "views".
+  const hasReddit = problem.sources.some((s: any) => ((s?.source || s?.name || "") as string).toLowerCase() === "reddit");
+  const hasYouTube = problem.sources.some((s: any) => ((s?.source || s?.name || "") as string).toLowerCase() === "youtube");
+  const likelyRedditScale = (problem.views ?? 0) > 0 && (problem.views ?? 0) < 20000 && (problem.saves ?? 0) === 0;
+  if (hasReddit && !hasYouTube && likelyRedditScale) return "reddit";
   
   // Otherwise check first source for primary type
   const firstSource = problem.sources[0];
