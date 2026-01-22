@@ -246,7 +246,7 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                         >
                           <item.icon className="h-4 w-4 text-primary" />
                         </motion.div>
-                        <span className="text-sm flex-1">{item.label}</span>
+                        <span className="text-xs flex-1">{item.label}</span>
                         <motion.div
                           initial={{ scale: 0, opacity: 0, rotate: -45 }}
                           animate={{ scale: 1, opacity: 1, rotate: 0 }}
