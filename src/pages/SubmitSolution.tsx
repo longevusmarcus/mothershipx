@@ -481,7 +481,7 @@ const SubmitSolution = () => {
 
                   {/* AI Judging Info */}
                   <div className="p-4 rounded-lg bg-secondary/30 text-sm">
-                    <p className="font-medium mb-2">How AI judges your build</p>
+                    <p className="font-medium mb-2">How AI judges your build (check your email)</p>
                     <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
                       <span>• Code quality & aesthetics</span>
                       <span>• Problem-solution fit</span>
