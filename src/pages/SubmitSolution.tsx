@@ -4,13 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { 
-  ArrowRight,
-  ArrowLeft,
-  CheckCircle2,
-  Loader2,
-  Clock,
-} from "lucide-react";
+import { ArrowRight, ArrowLeft, CheckCircle2, Loader2, Clock } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -19,14 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCreateSubmission } from "@/hooks/useSubmissions";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { AuthModal } from "@/components/AuthModal";
 
 const submissionSchema = z.object({
@@ -35,11 +22,7 @@ const submissionSchema = z.object({
     .trim()
     .min(2, "Product name must be at least 2 characters")
     .max(50, "Product name must be less than 50 characters"),
-  productUrl: z
-    .string()
-    .trim()
-    .url("Please enter a valid URL")
-    .max(200, "URL must be less than 200 characters"),
+  productUrl: z.string().trim().url("Please enter a valid URL").max(200, "URL must be less than 200 characters"),
   demoUrl: z
     .string()
     .trim()
@@ -47,30 +30,10 @@ const submissionSchema = z.object({
     .max(200, "URL must be less than 200 characters")
     .optional()
     .or(z.literal("")),
-  githubRepo: z
-    .string()
-    .trim()
-    .max(200, "URL must be less than 200 characters")
-    .optional()
-    .or(z.literal("")),
-  stripePublicKey: z
-    .string()
-    .trim()
-    .max(100, "Key must be less than 100 characters")
-    .optional()
-    .or(z.literal("")),
-  supabaseProjectUrl: z
-    .string()
-    .trim()
-    .max(200, "URL must be less than 200 characters")
-    .optional()
-    .or(z.literal("")),
-  paymentInfo: z
-    .string()
-    .trim()
-    .max(100, "Payment info must be less than 100 characters")
-    .optional()
-    .or(z.literal("")),
+  githubRepo: z.string().trim().max(200, "URL must be less than 200 characters").optional().or(z.literal("")),
+  stripePublicKey: z.string().trim().max(100, "Key must be less than 100 characters").optional().or(z.literal("")),
+  supabaseProjectUrl: z.string().trim().max(200, "URL must be less than 200 characters").optional().or(z.literal("")),
+  paymentInfo: z.string().trim().max(100, "Payment info must be less than 100 characters").optional().or(z.literal("")),
 });
 
 type SubmissionFormData = z.infer<typeof submissionSchema>;
@@ -110,12 +73,12 @@ const SubmitSolution = () => {
   const navigate = useNavigate();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const createSubmission = useCreateSubmission();
-  
+
   const state = location.state as LocationState | null;
   const challenge = state?.challenge;
   const problem = state?.problem;
   const joinType = state?.joinType || "solo";
-  
+
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionProgress, setSubmissionProgress] = useState(0);
@@ -147,12 +110,12 @@ const SubmitSolution = () => {
     const now = new Date();
     const endsAt = new Date(challenge.endsAt);
     const diff = endsAt.getTime() - now.getTime();
-    
+
     if (diff <= 0) return "Ended";
-    
+
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    
+
     return `${hours}h ${minutes}m`;
   };
 
@@ -165,9 +128,9 @@ const SubmitSolution = () => {
   const handleSubmit = async (data: SubmissionFormData) => {
     setIsSubmitting(true);
     setCurrentStep(1);
-    
+
     const progressInterval = setInterval(() => {
-      setSubmissionProgress(prev => {
+      setSubmissionProgress((prev) => {
         if (prev >= 90) return prev;
         return prev + 10;
       });
@@ -191,16 +154,16 @@ const SubmitSolution = () => {
 
       clearInterval(progressInterval);
       setSubmissionProgress(100);
-      
-      await new Promise(resolve => setTimeout(resolve, 500));
+
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       setIsSubmitting(false);
       setIsSubmitted(true);
       setCurrentStep(2);
-      
+
       toast({
         title: "Build Submitted!",
-        description: challenge 
+        description: challenge
           ? `Your build for "${challenge.title}" is now in the competition.`
           : problem
             ? `Your build for "${problem.title}" has been submitted.`
@@ -211,7 +174,7 @@ const SubmitSolution = () => {
       setIsSubmitting(false);
       setCurrentStep(0);
       setSubmissionProgress(0);
-      
+
       toast({
         title: "Submission Failed",
         description: error instanceof Error ? error.message : "Please try again.",
@@ -244,21 +207,16 @@ const SubmitSolution = () => {
     <AppLayout>
       <div className="max-w-2xl mx-auto">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">
             {challenge ? "Submit Entry" : "Submit Build"}
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            {challenge 
+            {challenge
               ? `Compete for $${challenge.winnerPrize.toFixed(0)} in "${challenge.title}"`
               : problem
                 ? `Submit your build for "${problem.title}"`
-                : "Submit your solution for AI validation"
-            }
+                : "Submit your solution for AI validation"}
           </p>
         </motion.div>
 
@@ -286,14 +244,16 @@ const SubmitSolution = () => {
                   <p className="text-[10px] text-muted-foreground">winner prize</p>
                 </div>
                 <div className="text-right">
-                  <span className={`font-medium ${getTimeRemaining() === "Ended" ? "text-destructive" : "text-warning"}`}>
+                  <span
+                    className={`font-medium ${getTimeRemaining() === "Ended" ? "text-destructive" : "text-warning"}`}
+                  >
                     {getTimeRemaining()}
                   </span>
                   <p className="text-[10px] text-muted-foreground">to submit</p>
                 </div>
               </div>
             </div>
-            
+
             <div className="mt-3 pt-3 border-t border-border">
               <p className="text-xs text-muted-foreground">Example build idea</p>
               <p className="text-sm italic mt-1">"{challenge.example}"</p>
@@ -313,9 +273,7 @@ const SubmitSolution = () => {
               <div className="min-w-0 flex-1">
                 <p className="font-medium truncate">{problem.title}</p>
                 {problem.subtitle && (
-                  <p className="text-sm text-muted-foreground mt-0.5 line-clamp-2">
-                    {problem.subtitle}
-                  </p>
+                  <p className="text-sm text-muted-foreground mt-0.5 line-clamp-2">{problem.subtitle}</p>
                 )}
               </div>
               <div className="flex items-center gap-3 text-sm shrink-0">
@@ -323,12 +281,14 @@ const SubmitSolution = () => {
                   <span className="font-medium">{problem.opportunityScore}</span>
                   <p className="text-[10px] text-muted-foreground">score</p>
                 </div>
-                <Badge 
-                  variant="secondary" 
+                <Badge
+                  variant="secondary"
                   className={`text-[10px] ${
-                    problem.sentiment === 'exploding' ? 'bg-success/10 text-success' :
-                    problem.sentiment === 'rising' ? 'bg-warning/10 text-warning' :
-                    'bg-muted'
+                    problem.sentiment === "exploding"
+                      ? "bg-success/10 text-success"
+                      : problem.sentiment === "rising"
+                        ? "bg-warning/10 text-warning"
+                        : "bg-muted"
                   }`}
                 >
                   {problem.sentiment}
@@ -353,13 +313,15 @@ const SubmitSolution = () => {
             {steps.map((step, index) => (
               <div key={step.id} className="flex items-center">
                 <div className="flex items-center gap-2">
-                  <div className={`h-6 w-6 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
-                    index < currentStep 
-                      ? 'bg-foreground text-background' 
-                      : index === currentStep 
-                        ? 'bg-foreground text-background' 
-                        : 'bg-secondary text-muted-foreground'
-                  }`}>
+                  <div
+                    className={`h-6 w-6 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
+                      index < currentStep
+                        ? "bg-foreground text-background"
+                        : index === currentStep
+                          ? "bg-foreground text-background"
+                          : "bg-secondary text-muted-foreground"
+                    }`}
+                  >
                     {index < currentStep ? (
                       <CheckCircle2 className="h-3.5 w-3.5" />
                     ) : index === 1 && isSubmitting ? (
@@ -368,12 +330,14 @@ const SubmitSolution = () => {
                       index + 1
                     )}
                   </div>
-                  <span className={`text-sm hidden sm:block ${index <= currentStep ? 'text-foreground' : 'text-muted-foreground'}`}>
+                  <span
+                    className={`text-sm hidden sm:block ${index <= currentStep ? "text-foreground" : "text-muted-foreground"}`}
+                  >
                     {step.label}
                   </span>
                 </div>
                 {index < steps.length - 1 && (
-                  <div className={`w-8 sm:w-16 h-px mx-2 ${index < currentStep ? 'bg-foreground' : 'bg-border'}`} />
+                  <div className={`w-8 sm:w-16 h-px mx-2 ${index < currentStep ? "bg-foreground" : "bg-border"}`} />
                 )}
               </div>
             ))}
@@ -409,7 +373,7 @@ const SubmitSolution = () => {
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={form.control}
                       name="productUrl"
@@ -417,17 +381,13 @@ const SubmitSolution = () => {
                         <FormItem>
                           <FormLabel className="text-sm">Live URL</FormLabel>
                           <FormControl>
-                            <Input 
-                              placeholder="https://my-app.lovable.app" 
-                              className="h-10"
-                              {...field} 
-                            />
+                            <Input placeholder="https://my-app.lovable.app" className="h-10" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={form.control}
                       name="demoUrl"
@@ -446,9 +406,7 @@ const SubmitSolution = () => {
                   {/* Integration Fields */}
                   <div className="pt-4 border-t border-border">
                     <p className="text-sm font-medium mb-1">Boost Your Score</p>
-                    <p className="text-xs text-muted-foreground mb-4">
-                      Connect integrations for higher AI ranking
-                    </p>
+                    <p className="text-xs text-muted-foreground mb-4">Connect integrations for higher AI ranking</p>
 
                     <div className="space-y-4">
                       <FormField
@@ -461,11 +419,7 @@ const SubmitSolution = () => {
                               <span className="text-xs text-muted-foreground font-normal">+15 pts</span>
                             </FormLabel>
                             <FormControl>
-                              <Input 
-                                placeholder="https://github.com/username/repo"
-                                className="h-10"
-                                {...field} 
-                              />
+                              <Input placeholder="https://github.com/username/repo" className="h-10" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -499,17 +453,13 @@ const SubmitSolution = () => {
                               <span className="text-xs text-muted-foreground font-normal">+10 pts</span>
                             </FormLabel>
                             <FormControl>
-                              <Input 
-                                placeholder="https://xyzcompany.supabase.co"
-                                className="h-10"
-                                {...field} 
-                              />
+                              <Input placeholder="https://xyzcompany.supabase.co" className="h-10" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
-                      
+
                       <FormField
                         control={form.control}
                         name="paymentInfo"
@@ -517,11 +467,7 @@ const SubmitSolution = () => {
                           <FormItem>
                             <FormLabel className="text-sm">Payment Info</FormLabel>
                             <FormControl>
-                              <Input 
-                                placeholder="IBAN or Stripe Payment Link" 
-                                className="h-10"
-                                {...field} 
-                              />
+                              <Input placeholder="IBAN or Stripe Payment Link" className="h-10" {...field} />
                             </FormControl>
                             <p className="text-xs text-muted-foreground mt-1">
                               How you want to receive prize money if you win
@@ -535,7 +481,7 @@ const SubmitSolution = () => {
 
                   {/* AI Judging Info */}
                   <div className="p-4 rounded-lg bg-secondary/30 text-sm">
-                    <p className="font-medium mb-2">How AI judges your build</p>
+                    <p className="font-medium mb-2">How AI judges your build (check your email)</p>
                     <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
                       <span>• Code quality & aesthetics</span>
                       <span>• Problem-solution fit</span>
@@ -553,13 +499,22 @@ const SubmitSolution = () => {
                       <p className="font-medium">Compete forever on the leaderboard</p>
                     </div>
                     <p className="text-xs text-muted-foreground leading-relaxed">
-                      After AI validation, your build enters the permanent leaderboard where it's continuously judged by the market—real users and revenue signals determine your rank over time.
+                      After AI validation, your build enters the permanent leaderboard where it's continuously judged by
+                      the market—real users and revenue signals determine your rank over time.
                     </p>
                     <div className="flex flex-wrap gap-1.5 pt-1">
-                      <span className="px-2 py-0.5 rounded-full bg-success/10 text-success text-[10px] font-medium">Cash Prizes</span>
-                      <span className="px-2 py-0.5 rounded-full bg-warning/10 text-warning text-[10px] font-medium">Cashback</span>
-                      <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-medium">Perks</span>
-                      <span className="px-2 py-0.5 rounded-full bg-secondary text-foreground text-[10px] font-medium">Glory</span>
+                      <span className="px-2 py-0.5 rounded-full bg-success/10 text-success text-[10px] font-medium">
+                        Cash Prizes
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full bg-warning/10 text-warning text-[10px] font-medium">
+                        Cashback
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-medium">
+                        Perks
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full bg-secondary text-foreground text-[10px] font-medium">
+                        Glory
+                      </span>
                     </div>
                   </div>
 
@@ -569,11 +524,7 @@ const SubmitSolution = () => {
                       <ArrowLeft className="h-4 w-4 mr-1" />
                       Back
                     </Button>
-                    <Button 
-                      type="submit" 
-                      size="sm"
-                      disabled={!form.formState.isValid || form.formState.isSubmitting}
-                    >
+                    <Button type="submit" size="sm" disabled={!form.formState.isValid || form.formState.isSubmitting}>
                       Submit Entry
                       <ArrowRight className="h-4 w-4 ml-1" />
                     </Button>
@@ -596,12 +547,10 @@ const SubmitSolution = () => {
                 <div className="h-12 w-12 rounded-full bg-secondary mx-auto flex items-center justify-center">
                   <Loader2 className="h-5 w-5 animate-spin" />
                 </div>
-                
+
                 <div>
                   <h3 className="font-medium">Submitting your entry</h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    AI is validating your build...
-                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">AI is validating your build...</p>
                 </div>
 
                 <div className="max-w-xs mx-auto">
@@ -628,13 +577,12 @@ const SubmitSolution = () => {
                 <div className="h-12 w-12 rounded-full bg-success/10 mx-auto flex items-center justify-center mb-4">
                   <CheckCircle2 className="h-5 w-5 text-success" />
                 </div>
-                
+
                 <h3 className="font-medium text-lg">Entry Submitted</h3>
                 <p className="text-sm text-muted-foreground mt-1 max-w-sm mx-auto">
-                  {challenge 
+                  {challenge
                     ? `Your build is now competing. AI will rank all entries when the challenge ends.`
-                    : "Your solution has been submitted successfully."
-                  }
+                    : "Your solution has been submitted successfully."}
                 </p>
 
                 {challenge && (
