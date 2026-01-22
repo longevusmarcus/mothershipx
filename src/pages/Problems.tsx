@@ -54,51 +54,28 @@ const Problems = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className="flex items-center gap-2 -mx-4 px-4 sm:mx-0 sm:px-0"
+          className="flex gap-2 overflow-x-auto touch-scroll pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap sm:justify-center scrollbar-hide"
         >
-          {/* Sticky "All" badge */}
-          <motion.div
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            transition={{ duration: 0.15 }}
-            className="flex-shrink-0 z-10 bg-background pr-2 sm:pr-0"
-          >
-            <Badge
-              variant={selectedCategory === "All" ? "default" : "outline"}
-              className={`cursor-pointer transition-all duration-300 whitespace-nowrap ${
-                selectedCategory === "All" 
-                  ? "shadow-sm" 
-                  : "hover:bg-primary/5 hover:border-primary/30"
-              }`}
-              onClick={() => setSelectedCategory("All")}
+          {categories.map((cat) => (
+            <motion.div
+              key={cat}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.15 }}
             >
-              All
-            </Badge>
-          </motion.div>
-
-          {/* Scrollable other categories */}
-          <div className="flex gap-2 overflow-x-auto touch-scroll pb-2 sm:pb-0 sm:flex-wrap sm:justify-center scrollbar-hide">
-            {categories.filter(cat => cat !== "All").map((cat) => (
-              <motion.div
-                key={cat}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ duration: 0.15 }}
+              <Badge
+                variant={selectedCategory === cat ? "default" : "outline"}
+                className={`cursor-pointer transition-all duration-300 whitespace-nowrap flex-shrink-0 ${
+                  selectedCategory === cat 
+                    ? "shadow-sm" 
+                    : "hover:bg-primary/5 hover:border-primary/30"
+                }`}
+                onClick={() => setSelectedCategory(cat)}
               >
-                <Badge
-                  variant={selectedCategory === cat ? "default" : "outline"}
-                  className={`cursor-pointer transition-all duration-300 whitespace-nowrap flex-shrink-0 ${
-                    selectedCategory === cat 
-                      ? "shadow-sm" 
-                      : "hover:bg-primary/5 hover:border-primary/30"
-                  }`}
-                  onClick={() => setSelectedCategory(cat)}
-                >
-                  {cat}
-                </Badge>
-              </motion.div>
-            ))}
-          </div>
+                {cat}
+              </Badge>
+            </motion.div>
+          ))}
         </motion.div>
 
         {/* Problems Masonry Grid with AnimatePresence */}
