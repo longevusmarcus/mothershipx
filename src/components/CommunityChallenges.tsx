@@ -178,8 +178,7 @@ export const CommunityChallenges = () => {
         >
           <div className="flex items-center justify-center gap-4 flex-wrap">
             <span className="flex items-center gap-2">
-              <Calendar className="h-3.5 w-3.5" />
-              Weekly Challenges
+              <Calendar className="h-3.5 w-3.5" />3 Weekly Challenges
             </span>
             <ArrowRight className="h-3 w-3 hidden sm:block" />
             <span>$5 Entry</span>
