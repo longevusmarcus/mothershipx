@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { icon: Plus, label: "New Search", path: "/" },
   { icon: Swords, label: "Arena", path: "/challenges", isCenter: true },
-  { icon: Globe, label: "Library", path: "/problems" },
+  { icon: Globe, label: "Dashboard", path: "/problems" },
 ];
 
 export function MobileBottomNav() {

@@ -25,7 +25,7 @@ export function useDeleteProblem() {
     onSuccess: () => {
       // Invalidate problems list to refresh
       queryClient.invalidateQueries({ queryKey: ["problems"] });
-      toast.success("Problem removed from library");
+      toast.success("Problem removed from dashboard");
     },
     onError: (error) => {
       console.error("Failed to delete problem:", error);

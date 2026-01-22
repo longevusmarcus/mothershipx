@@ -29,7 +29,7 @@ import {
 
 const navItems = [
   { icon: Plus, label: "New Search", path: "/" },
-  { icon: Globe, label: "Library", path: "/problems" },
+  { icon: Globe, label: "Dashboard", path: "/problems" },
 ];
 
 interface AppSidebarProps {
