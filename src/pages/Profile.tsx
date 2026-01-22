@@ -456,10 +456,18 @@ export default function Profile() {
                   >
                     {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : isEditing ? <Check className="h-3.5 w-3.5" /> : <Pencil className="h-3.5 w-3.5" />}
                   </Button>
+                  <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={handleSignOut}>
+                    <LogOut className="h-3.5 w-3.5" />
+                  </Button>
                 </div>
               </div>
+
+              {/* Email */}
+              <p className="text-xs text-muted-foreground truncate mt-0.5">
+                {profile?.email || user?.email || ""}
+              </p>
               
-              <div className="flex flex-wrap items-center gap-1 mt-1">
+              <div className="flex flex-wrap items-center gap-1 mt-1.5">
                 <Badge variant="secondary" className="text-[10px] px-1.5 py-0">{levelTitle}</Badge>
                 {isVerified && (
                   <Tooltip>
@@ -506,7 +514,6 @@ export default function Profile() {
           <TabsList className="w-full justify-start bg-secondary/50 p-1 h-10 overflow-x-auto rounded-lg">
             <TabsTrigger value="overview" className="text-xs px-3 h-8 data-[state=active]:bg-background">Overview</TabsTrigger>
             <TabsTrigger value="achievements" className="text-xs px-3 h-8 data-[state=active]:bg-background">Achievements</TabsTrigger>
-            <TabsTrigger value="account" className="text-xs px-3 h-8 data-[state=active]:bg-background">Account</TabsTrigger>
             <TabsTrigger value="notifications" className="text-xs px-3 h-8 data-[state=active]:bg-background gap-1">
               <Bell className="h-3 w-3" />
               Notifications
@@ -656,50 +663,6 @@ export default function Profile() {
             </div>
           </TabsContent>
 
-          {/* Account Tab */}
-          <TabsContent value="account" className="mt-4">
-            <div className="rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-4 space-y-4">
-              <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                Account
-              </h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <Label className="text-xs text-muted-foreground">Display Name</Label>
-                  <Input
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="Your name"
-                    className="mt-1.5 h-10 bg-secondary/20"
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs text-muted-foreground">Email</Label>
-                  <Input value={profile?.email || user?.email || ""} disabled className="mt-1.5 h-10 bg-muted/20 text-muted-foreground" />
-                </div>
-                <div>
-                  <Label className="text-xs text-muted-foreground">Location</Label>
-                  <Input
-                    value={formData.location}
-                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                    placeholder="City, Country"
-                    className="mt-1.5 h-10 bg-secondary/20"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between pt-4 border-t border-border/50">
-                <Button onClick={handleSave} disabled={isLoading} size="sm">
-                  {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : null}
-                  Save
-                </Button>
-                <Button variant="ghost" onClick={handleSignOut} size="sm" className="text-muted-foreground hover:text-destructive">
-                  <LogOut className="h-4 w-4 mr-1" />
-                  Logout
-                </Button>
-              </div>
-            </div>
-          </TabsContent>
 
           {/* Notifications Tab */}
           <TabsContent value="notifications" className="mt-4 space-y-4">
