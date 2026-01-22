@@ -517,6 +517,7 @@ export type Database = {
           name: string | null
           twitter: string | null
           updated_at: string
+          username: string | null
           website: string | null
         }
         Insert: {
@@ -530,6 +531,7 @@ export type Database = {
           name?: string | null
           twitter?: string | null
           updated_at?: string
+          username?: string | null
           website?: string | null
         }
         Update: {
@@ -543,6 +545,7 @@ export type Database = {
           name?: string | null
           twitter?: string | null
           updated_at?: string
+          username?: string | null
           website?: string | null
         }
         Relationships: []
@@ -1219,6 +1222,7 @@ export type Database = {
           name: string | null
           twitter: string | null
           updated_at: string | null
+          username: string | null
           website: string | null
         }
         Insert: {
@@ -1231,6 +1235,7 @@ export type Database = {
           name?: string | null
           twitter?: string | null
           updated_at?: string | null
+          username?: string | null
           website?: string | null
         }
         Update: {
@@ -1243,6 +1248,7 @@ export type Database = {
           name?: string | null
           twitter?: string | null
           updated_at?: string | null
+          username?: string | null
           website?: string | null
         }
         Relationships: []

@@ -116,12 +116,14 @@ export default function Profile() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     name: "",
+    username: "",
     bio: "",
     location: "",
     website: "",
     github: "",
     twitter: "",
   });
+  const [usernameError, setUsernameError] = useState<string | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   
   const [integrations, setIntegrations] = useState<Integration[]>([
@@ -158,6 +160,7 @@ export default function Profile() {
     if (profile) {
       setFormData({
         name: profile.name || "",
+        username: (profile as any).username || "",
         bio: profile.bio || "",
         location: profile.location || "",
         website: profile.website || "",
@@ -219,22 +222,60 @@ export default function Profile() {
     ? new Date(profile.created_at).toLocaleDateString("en-US", { month: "short", year: "numeric" })
     : "Recently";
 
+  const validateUsername = (username: string): string | null => {
+    if (!username) return null;
+    if (username.length < 3) return "Username must be at least 3 characters";
+    if (username.length > 30) return "Username must be 30 characters or less";
+    if (!/^[a-zA-Z0-9_-]+$/.test(username)) return "Only letters, numbers, _ and - allowed";
+    return null;
+  };
+
   const handleSave = async () => {
+    // Validate username
+    const usernameValidation = validateUsername(formData.username);
+    if (usernameValidation) {
+      setUsernameError(usernameValidation);
+      return;
+    }
+    setUsernameError(null);
+
     setIsLoading(true);
+    
+    // Check if username is taken (if changed)
+    if (formData.username && formData.username !== (profile as any)?.username) {
+      const { data: existing } = await supabase
+        .from("profiles" as never)
+        .select("id")
+        .eq("username", formData.username.toLowerCase())
+        .neq("id", user?.id || "")
+        .single();
+      
+      if (existing) {
+        setUsernameError("This username is already taken");
+        setIsLoading(false);
+        return;
+      }
+    }
+
     const { error } = await updateProfile({
       name: formData.name,
+      username: formData.username.toLowerCase() || null,
       bio: formData.bio,
       location: formData.location,
       website: formData.website,
       github: formData.github,
       twitter: formData.twitter,
-    });
+    } as any);
     setIsLoading(false);
     if (!error) {
       setIsEditing(false);
       toast.success("Profile updated!");
     } else {
-      toast.error("Failed to update profile");
+      if (error.message?.includes("duplicate") || error.message?.includes("unique")) {
+        setUsernameError("This username is already taken");
+      } else {
+        toast.error("Failed to update profile");
+      }
     }
   };
 
@@ -283,7 +324,9 @@ export default function Profile() {
 
   const handleShareProfile = async () => {
     if (!user) return;
-    const profileUrl = `${window.location.origin}/profile/${user.id}`;
+    // Use username if available, otherwise fall back to user id
+    const profileIdentifier = (profile as any)?.username || user.id;
+    const profileUrl = `${window.location.origin}/profile/${profileIdentifier}`;
     
     if (navigator.share) {
       try {
@@ -534,6 +577,35 @@ export default function Profile() {
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="mt-4 space-y-4">
+            {/* Username */}
+            {isEditing && (
+              <div className="rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-4">
+                <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
+                  Username
+                </h3>
+                <div className="space-y-1.5">
+                  <div className="flex items-center">
+                    <span className="text-sm text-muted-foreground mr-1">mothershipx.lovable.app/profile/</span>
+                    <Input
+                      value={formData.username}
+                      onChange={(e) => {
+                        setFormData({ ...formData, username: e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '') });
+                        setUsernameError(null);
+                      }}
+                      placeholder="yourname"
+                      className="h-9 text-sm bg-secondary/20 flex-1"
+                    />
+                  </div>
+                  {usernameError && (
+                    <p className="text-xs text-destructive">{usernameError}</p>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    Letters, numbers, underscores and hyphens only. 3-30 characters.
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Bio */}
             <div className="rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-4">
               <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
