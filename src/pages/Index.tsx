@@ -436,7 +436,7 @@ const Index = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="w-full max-w-2xl px-4 mt-8"
             >
-              <div className="rounded-xl border border-dashed border-muted-foreground/30 bg-card overflow-hidden">
+              <div className="rounded-xl border border-dashed border-muted-foreground/15 bg-card overflow-hidden">
                 {/* Collapsible Header */}
                 <button
                   onClick={() => setDataSourcesExpanded(!dataSourcesExpanded)}
