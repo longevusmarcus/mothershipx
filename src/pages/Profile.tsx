@@ -125,7 +125,7 @@ export default function Profile() {
   const [isOpeningPortal, setIsOpeningPortal] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
-  const [activeSettingsTab, setActiveSettingsTab] = useState<"notifications" | "privacy" | "integrations" | "danger" | null>(null);
+  const [activeTab, setActiveTab] = useState<string>("overview");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     name: "",
@@ -460,15 +460,14 @@ export default function Profile() {
           
           {/* Main Content - Left */}
           <div className="flex-1 min-w-0 space-y-4 order-2 lg:order-1">
-            <Tabs defaultValue="overview" value={activeSettingsTab || "overview"} onValueChange={(v) => {
-              setActiveSettingsTab(v === "overview" || v === "achievements" || v === "builds" ? null : v as any);
+            <Tabs value={activeTab} onValueChange={(v) => {
+              setActiveTab(v);
               window.scrollTo({ top: 0, behavior: "smooth" });
             }} className="w-full">
               <TabsList className="w-full justify-start bg-card border border-border/50 p-1 h-11 overflow-x-auto rounded-lg">
-                <TabsTrigger value="overview" className="text-xs px-4 h-9 data-[state=active]:bg-background data-[state=active]:shadow-sm font-medium" onClick={() => setActiveSettingsTab(null)}>Overview</TabsTrigger>
-                <TabsTrigger value="achievements" className="text-xs px-4 h-9 data-[state=active]:bg-background data-[state=active]:shadow-sm font-medium" onClick={() => setActiveSettingsTab(null)}>Achievements</TabsTrigger>
-                <TabsTrigger value="builds" className="text-xs px-4 h-9 data-[state=active]:bg-background data-[state=active]:shadow-sm font-medium" onClick={() => setActiveSettingsTab(null)}>Builds</TabsTrigger>
-                <div className="flex-1" />
+                <TabsTrigger value="overview" className="text-xs px-4 h-9 data-[state=active]:bg-background data-[state=active]:shadow-sm font-medium">Overview</TabsTrigger>
+                <TabsTrigger value="achievements" className="text-xs px-4 h-9 data-[state=active]:bg-background data-[state=active]:shadow-sm font-medium">Achievements</TabsTrigger>
+                <TabsTrigger value="builds" className="text-xs px-4 h-9 data-[state=active]:bg-background data-[state=active]:shadow-sm font-medium">Builds</TabsTrigger>
                 <TabsTrigger value="notifications" className="text-xs px-3 h-9 data-[state=active]:bg-background data-[state=active]:shadow-sm font-medium gap-1.5">
                   <Bell className="h-3 w-3" />
                   Notifications
@@ -1084,8 +1083,8 @@ export default function Profile() {
 
                 {/* Privacy */}
                 <div 
-                  className={`flex items-center justify-between gap-3 py-2.5 cursor-pointer group hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors ${activeSettingsTab === "privacy" ? "bg-muted/40" : ""}`}
-                  onClick={() => setActiveSettingsTab("privacy")}
+                  className={`flex items-center justify-between gap-3 py-2.5 cursor-pointer group hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors ${activeTab === "privacy" ? "bg-muted/40" : ""}`}
+                  onClick={() => setActiveTab("privacy")}
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-9 h-9 rounded-full bg-muted/50 flex items-center justify-center shrink-0">
@@ -1103,8 +1102,8 @@ export default function Profile() {
 
                 {/* Notifications */}
                 <div 
-                  className={`flex items-center justify-between gap-3 py-2.5 cursor-pointer group hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors ${activeSettingsTab === "notifications" ? "bg-muted/40" : ""}`}
-                  onClick={() => setActiveSettingsTab("notifications")}
+                  className={`flex items-center justify-between gap-3 py-2.5 cursor-pointer group hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors ${activeTab === "notifications" ? "bg-muted/40" : ""}`}
+                  onClick={() => setActiveTab("notifications")}
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-9 h-9 rounded-full bg-muted/50 flex items-center justify-center shrink-0">
@@ -1122,8 +1121,8 @@ export default function Profile() {
 
                 {/* Integrations */}
                 <div 
-                  className={`flex items-center justify-between gap-3 py-2.5 cursor-pointer group hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors ${activeSettingsTab === "integrations" ? "bg-muted/40" : ""}`}
-                  onClick={() => setActiveSettingsTab("integrations")}
+                  className={`flex items-center justify-between gap-3 py-2.5 cursor-pointer group hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors ${activeTab === "integrations" ? "bg-muted/40" : ""}`}
+                  onClick={() => setActiveTab("integrations")}
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-9 h-9 rounded-full bg-muted/50 flex items-center justify-center shrink-0">
@@ -1141,8 +1140,8 @@ export default function Profile() {
 
                 {/* Danger Zone */}
                 <div 
-                  className={`flex items-center justify-between gap-3 py-2.5 cursor-pointer group hover:bg-destructive/10 -mx-2 px-2 rounded-lg transition-colors ${activeSettingsTab === "danger" ? "bg-destructive/10" : ""}`}
-                  onClick={() => setActiveSettingsTab("danger")}
+                  className={`flex items-center justify-between gap-3 py-2.5 cursor-pointer group hover:bg-destructive/10 -mx-2 px-2 rounded-lg transition-colors ${activeTab === "danger" ? "bg-destructive/10" : ""}`}
+                  onClick={() => setActiveTab("danger")}
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-9 h-9 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
