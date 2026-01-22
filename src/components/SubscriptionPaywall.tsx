@@ -111,7 +111,7 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                 transition={{ duration: 0.4, ease: "easeOut" }}
                 className="flex flex-col"
               >
-                <div className="flex flex-col gap-6 sm:grid sm:grid-cols-2 sm:gap-8 sm:items-start">
+                <div className="flex flex-col gap-6 sm:grid sm:grid-cols-2 sm:gap-8 sm:items-stretch">
                   {/* Left column: header + price + CTA */}
                   <div className="flex flex-col">
                     {/* Logo with pulse animation */}
@@ -224,7 +224,7 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
 
                   {/* Right column: features */}
                   <motion.div
-                    className="border border-border/50 rounded-2xl p-4 sm:p-5 space-y-3 bg-secondary/30 backdrop-blur-sm"
+                    className="border border-border/50 rounded-2xl p-4 sm:p-5 space-y-3 bg-secondary/30 backdrop-blur-sm flex flex-col justify-center"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.35, duration: 0.4 }}
