@@ -61,6 +61,9 @@ import {
   Zap,
   Crown,
   ExternalLink as ExternalLinkIcon,
+  Eye,
+  ImageIcon,
+  Plus,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -447,812 +450,501 @@ export default function Profile() {
     <AppLayout>
       <SEO title="Profile" description="Your builder profile and achievements." />
       
-      {/* Dot Grid Background */}
       <div className="relative">
-        <div 
-          className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05] pointer-events-none"
-          style={{
-            backgroundImage: `radial-gradient(circle, currentColor 1px, transparent 1px)`,
-            backgroundSize: '20px 20px',
-          }}
-        />
+        {/* Subtle gradient background */}
+        <div className="absolute inset-0 -z-10 h-32 bg-gradient-to-b from-primary/5 to-transparent" />
       
-      {/* Main container with strict overflow control */}
-      <div className="relative z-10 w-full max-w-full overflow-hidden space-y-4">
+        {/* Reddit-style two-column layout */}
+        <div className="relative z-10 flex flex-col lg:flex-row gap-6 max-w-6xl mx-auto">
+          
+          {/* Main Content - Left */}
+          <div className="flex-1 min-w-0 space-y-4 order-2 lg:order-1">
+            <Tabs defaultValue="overview" className="w-full">
+              <TabsList className="w-full justify-start bg-card border border-border/50 p-1 h-11 overflow-x-auto rounded-lg">
+                <TabsTrigger value="overview" className="text-xs px-4 h-9 data-[state=active]:bg-background data-[state=active]:shadow-sm font-medium">Overview</TabsTrigger>
+                <TabsTrigger value="achievements" className="text-xs px-4 h-9 data-[state=active]:bg-background data-[state=active]:shadow-sm font-medium">Achievements</TabsTrigger>
+                <TabsTrigger value="builds" className="text-xs px-4 h-9 data-[state=active]:bg-background data-[state=active]:shadow-sm font-medium">Builds</TabsTrigger>
+              </TabsList>
 
-        {/* Profile Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="rounded-lg border border-border bg-card/50 backdrop-blur-sm p-5 overflow-hidden"
-        >
-          <div className="flex gap-4">
-            {/* Avatar */}
-            <div className="relative shrink-0">
-              <input type="file" ref={fileInputRef} onChange={handleAvatarUpload} accept="image/*" className="hidden" />
-              <Avatar className={`h-16 w-16 ${isEditing ? "cursor-pointer" : ""}`} onClick={handleAvatarClick}>
-                <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.name || "Avatar"} />
-                <AvatarFallback className="text-lg font-semibold bg-primary/10 text-primary">{initials}</AvatarFallback>
-              </Avatar>
-              {isEditing && (
-                <div className="absolute inset-0 flex items-center justify-center bg-foreground/60 rounded-full opacity-0 hover:opacity-100 transition-opacity cursor-pointer" onClick={handleAvatarClick}>
-                  {isUploadingAvatar ? <Loader2 className="h-4 w-4 text-background animate-spin" /> : <Camera className="h-4 w-4 text-background" />}
-                </div>
-              )}
-            </div>
+              {/* Overview Tab */}
+              <TabsContent value="overview" className="mt-4 space-y-4">
+                {/* My Problems */}
+                <MyProblems />
 
-            {/* Info */}
-            <div className="flex-1 min-w-0 overflow-hidden">
-              {/* Name row with icons */}
-              <div className="flex items-center justify-between gap-2">
-                {isEditing ? (
-                  <Input
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="Your name"
-                    className="font-display text-2xl font-normal tracking-tight h-10 flex-1"
-                  />
-                ) : (
-                  <h2 className="font-display text-2xl font-normal tracking-tight truncate">{profile?.name || "Builder"}</h2>
-                )}
-                <div className="flex items-center gap-0.5 shrink-0">
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleShareProfile}>
-                    <Share2 className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button
-                    variant={isEditing ? "default" : "ghost"}
-                    size="icon"
-                    className="h-7 w-7"
-                    onClick={isEditing ? handleSave : () => setIsEditing(true)}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : isEditing ? <Check className="h-3.5 w-3.5" /> : <Pencil className="h-3.5 w-3.5" />}
-                  </Button>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={handleSignOut}>
-                    <LogOut className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-              </div>
+                {/* Arena History */}
+                <ArenaHistory />
+              </TabsContent>
 
-              {/* Email */}
-              <p className="text-xs text-muted-foreground truncate mt-0.5">
-                {profile?.email || user?.email || ""}
-              </p>
-              
-              <div className="flex flex-wrap items-center gap-1 mt-1.5">
-                <Badge variant="secondary" className="text-[10px] px-1.5 py-0">{levelTitle}</Badge>
-                {isVerified && (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Badge variant="default" className="text-[10px] px-1.5 py-0 gap-0.5">
-                        <ShieldCheck className="h-2.5 w-2.5" />
-                        Verified
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" className="max-w-[180px]">
-                      <p className="text-xs">Verified GitHub, Stripe & Supabase</p>
-                    </TooltipContent>
-                  </Tooltip>
-                )}
-              </div>
-
-              <div className="flex items-center gap-3 text-xs text-muted-foreground mt-2">
-                {formData.location && (
-                  <span className="flex items-center gap-1 truncate">
-                    <MapPin className="h-3 w-3 shrink-0" />
-                    <span className="truncate">{formData.location}</span>
-                  </span>
-                )}
-                <span className="flex items-center gap-1 shrink-0">
-                  <Calendar className="h-3 w-3" />
-                  {joinedDate}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* XP Bar */}
-          <div className="mt-5 pt-4 border-t border-border/50">
-            <div className="flex items-center justify-between text-xs mb-2">
-              <span className="text-muted-foreground">Level {userStats?.currentLevel || 1}</span>
-              <span className="text-muted-foreground">{userStats?.totalXp || 0} / {xpProgress.nextLevelXp} XP</span>
-            </div>
-            <Progress value={xpProgress.percentage} className="h-1.5" />
-          </div>
-        </motion.div>
-
-        {/* Tabs */}
-        <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="w-full justify-start bg-secondary/50 p-1 h-10 overflow-x-auto rounded-lg">
-            <TabsTrigger value="overview" className="text-xs px-3 h-8 data-[state=active]:bg-background">Overview</TabsTrigger>
-            <TabsTrigger value="achievements" className="text-xs px-3 h-8 data-[state=active]:bg-background">Achievements</TabsTrigger>
-            <TabsTrigger value="notifications" className="text-xs px-3 h-8 data-[state=active]:bg-background gap-1">
-              <Bell className="h-3 w-3" />
-              Notifications
-            </TabsTrigger>
-            <TabsTrigger value="privacy" className="text-xs px-3 h-8 data-[state=active]:bg-background gap-1">
-              <Shield className="h-3 w-3" />
-              Privacy
-            </TabsTrigger>
-            <TabsTrigger value="integrations" className="text-xs px-3 h-8 data-[state=active]:bg-background gap-1">
-              <Link2 className="h-3 w-3" />
-              Integrations
-            </TabsTrigger>
-            <TabsTrigger value="danger" className="text-xs px-3 h-8 data-[state=active]:bg-background gap-1">
-              <AlertTriangle className="h-3 w-3" />
-              Danger
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Overview Tab */}
-          <TabsContent value="overview" className="mt-4 space-y-4">
-            {/* Username */}
-            {isEditing && (
-              <div className="rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-4">
-                <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
-                  Username
-                </h3>
-                <div className="space-y-1.5">
-                  <div className="flex items-center">
-                    <span className="text-sm text-muted-foreground mr-1">mothershipx.lovable.app/profile/</span>
-                    <Input
-                      value={formData.username}
-                      onChange={(e) => {
-                        setFormData({ ...formData, username: e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '') });
-                        setUsernameError(null);
-                      }}
-                      placeholder="yourname"
-                      className="h-9 text-sm bg-secondary/20 flex-1"
-                    />
-                  </div>
-                  {usernameError && (
-                    <p className="text-xs text-destructive">{usernameError}</p>
-                  )}
-                  <p className="text-xs text-muted-foreground">
-                    Letters, numbers, underscores and hyphens only. 3-30 characters.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Bio */}
-            <div className="rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-4">
-              <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
-                About
-              </h3>
-              {isEditing ? (
-                <Textarea
-                  value={formData.bio}
-                  onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                  rows={3}
-                  placeholder="Short bio..."
-                  className="resize-none text-sm bg-secondary/20"
-                />
-              ) : (
-                <p className="text-sm text-muted-foreground break-words">
-                  {formData.bio || "No bio yet."}
-                </p>
-              )}
-            </div>
-
-            {/* Links */}
-            <div className="rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-4">
-              <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
-                Links
-              </h3>
-              {isEditing ? (
-                <div className="space-y-2">
-                  <Input
-                    value={formData.website}
-                    onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                    placeholder="yoursite.com"
-                    className="h-9 text-sm bg-secondary/20"
-                  />
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input
-                      value={formData.github}
-                      onChange={(e) => setFormData({ ...formData, github: e.target.value })}
-                      placeholder="GitHub"
-                      className="h-9 text-sm bg-secondary/20"
-                    />
-                    <Input
-                      value={formData.twitter}
-                      onChange={(e) => setFormData({ ...formData, twitter: e.target.value })}
-                      placeholder="Twitter"
-                      className="h-9 text-sm bg-secondary/20"
-                    />
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {(formData.website || formData.github || formData.twitter) ? (
-                    <>
-                      {formData.website && (
-                        <a href={`https://${formData.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs text-muted-foreground hover:text-primary transition-colors truncate group">
-                          <LinkIcon className="h-3 w-3 shrink-0" />
-                          <span className="truncate group-hover:underline">{formData.website}</span>
-                          <ExternalLink className="h-3 w-3 shrink-0 opacity-50" />
-                        </a>
-                      )}
-                      {formData.github && (
-                        <a href={`https://github.com/${formData.github}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs text-muted-foreground hover:text-primary transition-colors truncate group">
-                          <LinkIcon className="h-3 w-3 shrink-0" />
-                          <span className="truncate group-hover:underline">github.com/{formData.github}</span>
-                          <ExternalLink className="h-3 w-3 shrink-0 opacity-50" />
-                        </a>
-                      )}
-                      {formData.twitter && (
-                        <a href={`https://twitter.com/${formData.twitter}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs text-muted-foreground hover:text-primary transition-colors truncate group">
-                          <LinkIcon className="h-3 w-3 shrink-0" />
-                          <span className="truncate group-hover:underline">@{formData.twitter}</span>
-                          <ExternalLink className="h-3 w-3 shrink-0 opacity-50" />
-                        </a>
-                      )}
-                    </>
-                  ) : (
-                    <p className="text-xs text-muted-foreground/60">No links added.</p>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* My Problems */}
-            <MyProblems />
-
-            {/* Arena History */}
-            <ArenaHistory />
-          </TabsContent>
-
-          {/* Achievements Tab */}
-          <TabsContent value="achievements" className="mt-4 space-y-4 overflow-visible">
-            {/* Streak Card */}
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="rounded-lg border border-border/50 bg-gradient-to-br from-orange-500/10 via-amber-500/5 to-transparent backdrop-blur-sm p-4 overflow-visible"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="relative">
-                    <motion.div 
-                      className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 flex items-center justify-center shadow-lg"
-                      animate={{ 
-                        boxShadow: streakData.currentStreak > 0 
-                          ? ["0 0 20px rgba(251,191,36,0.3)", "0 0 30px rgba(251,191,36,0.5)", "0 0 20px rgba(251,191,36,0.3)"]
-                          : "0 0 0px transparent"
-                      }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    >
-                      <Zap className="h-7 w-7 text-white" />
-                    </motion.div>
-                    {streakData.isActiveToday && (
-                      <motion.div 
-                        className="absolute -bottom-1 -right-1 w-5 h-5 bg-success rounded-full flex items-center justify-center border-2 border-background"
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ type: "spring", stiffness: 500 }}
-                      >
-                        <Check className="h-3 w-3 text-white" />
-                      </motion.div>
-                    )}
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold">{streakData.currentStreak}</p>
-                    <p className="text-xs text-muted-foreground">day streak</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-medium text-muted-foreground">Best: {streakData.longestStreak} days</p>
-                  <p className="text-xs text-muted-foreground/70">
-                    {streakData.isActiveToday ? "Active today ✓" : "Be active to maintain!"}
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Reddit-style Achievement Summary Card */}
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-4 overflow-visible"
-            >
-              <h3 className="text-xs font-medium text-primary uppercase tracking-wider mb-4">
-                Achievements
-              </h3>
-              
-              {/* Achievement Badges Row */}
-              <div className="flex items-center gap-3 mb-4 overflow-visible">
-                <div className="flex -space-x-2 overflow-visible">
-                  {achievementDefs.slice(0, 4).map((achievement) => {
-                    const isUnlocked = userStats ? achievement.check(userStats) : false;
-                    return (
-                      <div key={achievement.id} className="relative z-0 hover:z-10 transition-all">
-                        <AchievementBadge
-                          icon={achievement.icon}
-                          name={achievement.name}
-                          description={achievement.description}
-                          isUnlocked={isUnlocked}
-                          size="sm"
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm truncate">
-                    {achievementDefs
-                      .filter(a => userStats ? a.check(userStats) : false)
-                      .slice(0, 2)
-                      .map(a => a.name)
-                      .join(', ') || 'No achievements yet'}
-                    {userStats && achievementDefs.filter(a => a.check(userStats)).length > 2 && (
-                      <span className="text-muted-foreground">
-                        {' '}+{achievementDefs.filter(a => a.check(userStats)).length - 2} more
-                      </span>
-                    )}
-                  </p>
-                </div>
-              </div>
-              
-              <Separator className="mb-4 opacity-30" />
-              
-              {/* Stats Row */}
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                  {userStats ? achievementDefs.filter(a => a.check(userStats)).length : 0} of {achievementDefs.length} unlocked
-                </span>
-                <Badge variant="secondary" className="text-xs">
-                  {userStats ? Math.round((achievementDefs.filter(a => a.check(userStats)).length / achievementDefs.length) * 100) : 0}% complete
-                </Badge>
-              </div>
-            </motion.div>
-
-            {/* All Achievements Grid - Trophy Case */}
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-4 overflow-visible"
-            >
-              <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-4">
-                Trophy Case
-              </h3>
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 overflow-visible">
-                {achievementDefs.map((achievement, index) => {
-                  const isUnlocked = userStats ? achievement.check(userStats) : false;
-                  return (
-                    <motion.div 
-                      key={achievement.id}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.05 * index }}
-                      className="flex flex-col items-center gap-2"
-                    >
-                      <AchievementBadge
-                        icon={achievement.icon}
-                        name={achievement.name}
-                        description={achievement.description}
-                        isUnlocked={isUnlocked}
-                        size="md"
-                      />
-                      <div className="text-center">
-                        <p className={`text-[10px] font-medium truncate max-w-[60px] ${isUnlocked ? "text-foreground" : "text-muted-foreground/50"}`}>
-                          {achievement.name}
-                        </p>
-                        {isUnlocked && (
-                          <motion.div
+              {/* Achievements Tab */}
+              <TabsContent value="achievements" className="mt-4 space-y-4 overflow-visible">
+                {/* Streak Card */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="rounded-xl border border-border/50 bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-transparent backdrop-blur-sm p-5 overflow-visible"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="relative">
+                        <motion.div 
+                          className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 flex items-center justify-center shadow-lg"
+                          animate={{ 
+                            boxShadow: streakData.currentStreak > 0 
+                              ? ["0 0 20px rgba(251,191,36,0.3)", "0 0 30px rgba(251,191,36,0.5)", "0 0 20px rgba(251,191,36,0.3)"]
+                              : "0 0 0px transparent"
+                          }}
+                          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                        >
+                          <Zap className="h-7 w-7 text-white" />
+                        </motion.div>
+                        {streakData.isActiveToday && (
+                          <motion.div 
+                            className="absolute -bottom-1 -right-1 w-5 h-5 bg-success rounded-full flex items-center justify-center border-2 border-background"
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            transition={{ type: "spring", stiffness: 500, delay: 0.1 }}
+                            transition={{ type: "spring", stiffness: 500 }}
                           >
-                            <CheckCircle2 className="h-3 w-3 text-success mx-auto mt-0.5" />
+                            <Check className="h-3 w-3 text-white" />
                           </motion.div>
                         )}
                       </div>
-                    </motion.div>
-                  );
-                })}
+                      <div>
+                        <p className="text-2xl font-bold">{streakData.currentStreak}</p>
+                        <p className="text-xs text-muted-foreground">day streak</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-medium text-muted-foreground">Best: {streakData.longestStreak} days</p>
+                      <p className="text-xs text-muted-foreground/70">
+                        {streakData.isActiveToday ? "Active today ✓" : "Be active to maintain!"}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Trophy Case */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm p-5 overflow-visible"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-[11px] font-medium text-primary uppercase tracking-wider">
+                      Trophy Case
+                    </h3>
+                    <span className="text-xs text-muted-foreground">
+                      {userStats ? achievementDefs.filter(a => a.check(userStats)).length : 0} unlocked
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3 overflow-visible">
+                    {achievementDefs.map((achievement, index) => {
+                      const isUnlocked = userStats ? achievement.check(userStats) : false;
+                      return (
+                        <motion.div 
+                          key={achievement.id}
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: 0.03 * index }}
+                          className="flex flex-col items-center gap-1.5"
+                        >
+                          <AchievementBadge
+                            icon={achievement.icon}
+                            name={achievement.name}
+                            description={achievement.description}
+                            isUnlocked={isUnlocked}
+                            size="sm"
+                          />
+                          <p className={`text-[9px] font-medium text-center leading-tight max-w-[50px] ${isUnlocked ? "text-foreground" : "text-muted-foreground/40"}`}>
+                            {achievement.name}
+                          </p>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              </TabsContent>
+
+              {/* Builds Tab */}
+              <TabsContent value="builds" className="mt-4 space-y-4">
+                <ArenaHistory />
+              </TabsContent>
+            </Tabs>
+          </div>
+
+          {/* Sidebar - Right (Reddit-style) */}
+          <div className="w-full lg:w-80 shrink-0 order-1 lg:order-2 space-y-4">
+            {/* Profile Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-xl border border-border bg-card overflow-hidden"
+            >
+              {/* Banner gradient */}
+              <div className="h-16 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent relative">
+                {isEditing && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-2 right-2 h-7 w-7 bg-background/80 hover:bg-background"
+                  >
+                    <Camera className="h-3.5 w-3.5" />
+                  </Button>
+                )}
+              </div>
+              
+              {/* Avatar overlapping banner */}
+              <div className="px-4 -mt-10 relative z-10">
+                <input type="file" ref={fileInputRef} onChange={handleAvatarUpload} accept="image/*" className="hidden" />
+                <div className="relative inline-block">
+                  <Avatar 
+                    className={`h-20 w-20 border-4 border-card ${isEditing ? "cursor-pointer" : ""}`} 
+                    onClick={handleAvatarClick}
+                  >
+                    <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.name || "Avatar"} />
+                    <AvatarFallback className="text-xl font-semibold bg-primary/10 text-primary">{initials}</AvatarFallback>
+                  </Avatar>
+                  {isEditing && (
+                    <div 
+                      className="absolute inset-0 flex items-center justify-center bg-foreground/60 rounded-full opacity-0 hover:opacity-100 transition-opacity cursor-pointer" 
+                      onClick={handleAvatarClick}
+                    >
+                      {isUploadingAvatar ? <Loader2 className="h-5 w-5 text-background animate-spin" /> : <Camera className="h-5 w-5 text-background" />}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Profile info */}
+              <div className="p-4 pt-2 space-y-4">
+                {/* Name and badges */}
+                <div>
+                  {isEditing ? (
+                    <Input
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="Your name"
+                      className="font-semibold text-lg h-9 mb-1"
+                    />
+                  ) : (
+                    <h2 className="font-semibold text-lg">{profile?.name || "Builder"}</h2>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    u/{(profile as any)?.username || user?.email?.split('@')[0] || "builder"}
+                  </p>
+                  
+                  <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                    <Badge variant="secondary" className="text-[10px] px-2 py-0.5 rounded-full">{levelTitle}</Badge>
+                    {isVerified && (
+                      <Badge variant="default" className="text-[10px] px-2 py-0.5 gap-0.5 rounded-full">
+                        <ShieldCheck className="h-2.5 w-2.5" />
+                        Verified
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+
+                {/* Share button */}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full h-9 text-xs font-medium gap-2"
+                  onClick={handleShareProfile}
+                >
+                  <Share2 className="h-3.5 w-3.5" />
+                  Share
+                </Button>
+
+                {/* Stats grid - Reddit style */}
+                <div className="grid grid-cols-2 gap-4 pt-2">
+                  <div>
+                    <p className="text-lg font-semibold">{userStats?.totalXp || 0}</p>
+                    <p className="text-[11px] text-muted-foreground">XP</p>
+                  </div>
+                  <div>
+                    <p className="text-lg font-semibold">{userStats?.solutionsShipped || 0}</p>
+                    <p className="text-[11px] text-muted-foreground">Contributions</p>
+                  </div>
+                  <div>
+                    <p className="text-lg font-semibold">{joinedDate.split(' ')[0]}</p>
+                    <p className="text-[11px] text-muted-foreground">Joined</p>
+                  </div>
+                  <div>
+                    <p className="text-lg font-semibold">{userStats?.challengesWon || 0}</p>
+                    <p className="text-[11px] text-muted-foreground">Wins</p>
+                  </div>
+                </div>
+
+                {/* Achievement summary */}
+                <Separator className="opacity-50" />
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-[11px] font-medium text-primary uppercase tracking-wider">Achievements</h3>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex -space-x-1.5">
+                      {achievementDefs.slice(0, 5).map((achievement) => {
+                        const isUnlocked = userStats ? achievement.check(userStats) : false;
+                        const Icon = achievement.icon;
+                        return (
+                          <div
+                            key={achievement.id}
+                            className={`w-7 h-7 rounded-full flex items-center justify-center border-2 border-card ${
+                              isUnlocked 
+                                ? "bg-gradient-to-br from-amber-400 via-orange-500 to-red-500" 
+                                : "bg-muted/50 grayscale opacity-40"
+                            }`}
+                          >
+                            <Icon className={`h-3 w-3 ${isUnlocked ? "text-white" : "text-muted-foreground"}`} />
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <span className="text-xs text-muted-foreground">
+                      +{achievementDefs.length - 5} more
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {userStats ? achievementDefs.filter(a => a.check(userStats)).length : 0} unlocked
+                  </p>
+                </div>
               </div>
             </motion.div>
-          </TabsContent>
 
-
-          {/* Notifications Tab */}
-          <TabsContent value="notifications" className="mt-4 space-y-4">
-            {settingsLoading ? (
-              <Skeleton className="h-32 w-full" />
-            ) : (
-              <>
-                <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-                  <CardHeader className="p-4">
-                    <CardTitle className="text-sm font-medium">Email Notifications</CardTitle>
-                    <CardDescription className="text-xs">Choose which emails you'd like to receive</CardDescription>
-                  </CardHeader>
-                  <CardContent className="p-4 pt-0 space-y-4">
-                    <div className="flex items-center justify-between gap-3 py-2">
-                      <div className="space-y-0.5 min-w-0">
-                        <Label className="text-sm">Daily Digest</Label>
-                        <p className="text-xs text-muted-foreground">Receive a daily summary of platform activity</p>
-                      </div>
-                      <Switch checked={settings.email_digest} onCheckedChange={(checked) => updateSetting("email_digest", checked)} />
+            {/* Settings Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="rounded-xl border border-border bg-card p-4"
+            >
+              <h3 className="text-[11px] font-medium text-primary uppercase tracking-wider mb-3">Settings</h3>
+              
+              <div className="space-y-1">
+                {/* Profile Settings */}
+                <div 
+                  className="flex items-center justify-between gap-3 py-2.5 cursor-pointer group hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors"
+                  onClick={() => setIsEditing(true)}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-9 h-9 rounded-full bg-muted/50 flex items-center justify-center shrink-0">
+                      <User className="h-4 w-4 text-muted-foreground" />
                     </div>
-                    <Separator className="opacity-50" />
-                    <div className="flex items-center justify-between gap-3 py-2">
-                      <div className="space-y-0.5 min-w-0">
-                        <Label className="text-sm flex items-center gap-2">
-                          <Rocket className="h-3.5 w-3.5 text-primary" />
-                          New Problems
-                        </Label>
-                        <p className="text-xs text-muted-foreground">Get notified when new problems are posted</p>
-                      </div>
-                      <Switch checked={settings.new_problems} onCheckedChange={(checked) => updateSetting("new_problems", checked)} />
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium">Profile</p>
+                      <p className="text-[11px] text-muted-foreground truncate">Customize your profile</p>
                     </div>
-                    <Separator className="opacity-50" />
-                    <div className="flex items-center justify-between gap-3 py-2">
-                      <div className="space-y-0.5 min-w-0">
-                        <Label className="text-sm flex items-center gap-2">
-                          <Trophy className="h-3.5 w-3.5 text-warning" />
-                          Leaderboard Updates
-                        </Label>
-                        <p className="text-xs text-muted-foreground">Know when your rank changes</p>
-                      </div>
-                      <Switch checked={settings.leaderboard_updates} onCheckedChange={(checked) => updateSetting("leaderboard_updates", checked)} />
-                    </div>
-                    <Separator className="opacity-50" />
-                    <div className="flex items-center justify-between gap-3 py-2">
-                      <div className="space-y-0.5 min-w-0">
-                        <Label className="text-sm flex items-center gap-2">
-                          <Check className="h-3.5 w-3.5 text-success" />
-                          Build Verification
-                        </Label>
-                        <p className="text-xs text-muted-foreground">Updates on your build verification status</p>
-                      </div>
-                      <Switch checked={settings.build_verification} onCheckedChange={(checked) => updateSetting("build_verification", checked)} />
-                    </div>
-                    <Separator className="opacity-50" />
-                    <div className="flex items-center justify-between gap-3 py-2">
-                      <div className="space-y-0.5 min-w-0">
-                        <Label className="text-sm">Weekly Report</Label>
-                        <p className="text-xs text-muted-foreground">Summary of your weekly progress and insights</p>
-                      </div>
-                      <Switch checked={settings.weekly_report} onCheckedChange={(checked) => updateSetting("weekly_report", checked)} />
-                    </div>
-                    <Separator className="opacity-50" />
-                    <div className="flex items-center justify-between gap-3 py-2">
-                      <div className="space-y-0.5 min-w-0">
-                        <Label className="text-sm">Marketing Emails</Label>
-                        <p className="text-xs text-muted-foreground">Product updates and promotional content</p>
-                      </div>
-                      <Switch checked={settings.marketing_emails} onCheckedChange={(checked) => updateSetting("marketing_emails", checked)} />
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-                  <CardHeader className="p-4">
-                    <CardTitle className="text-sm font-medium">In-App Notifications</CardTitle>
-                    <CardDescription className="text-xs">Configure how you receive notifications in the app</CardDescription>
-                  </CardHeader>
-                  <CardContent className="p-4 pt-0 space-y-4">
-                    <div className="flex items-center justify-between gap-3 py-2">
-                      <div className="space-y-0.5 min-w-0">
-                        <Label className="text-sm">Push Notifications</Label>
-                        <p className="text-xs text-muted-foreground">Receive browser push notifications</p>
-                      </div>
-                      <Switch checked={settings.push_notifications} onCheckedChange={(checked) => updateSetting("push_notifications", checked)} />
-                    </div>
-                    <Separator className="opacity-50" />
-                    <div className="flex items-center justify-between gap-3 py-2">
-                      <div className="space-y-0.5 min-w-0">
-                        <Label className="text-sm">In-App Alerts</Label>
-                        <p className="text-xs text-muted-foreground">Show notification badges and alerts</p>
-                      </div>
-                      <Switch checked={settings.in_app_notifications} onCheckedChange={(checked) => updateSetting("in_app_notifications", checked)} />
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <div className="flex justify-end">
-                  <Button onClick={saveSettings} disabled={isSaving || !hasChanges} size="sm">
-                    {isSaving ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Saving...</> : "Save Changes"}
+                  </div>
+                  <Button variant="secondary" size="sm" className="h-7 px-3 text-xs shrink-0">
+                    {isEditing ? "Editing" : "Update"}
                   </Button>
                 </div>
-              </>
-            )}
-          </TabsContent>
 
-          {/* Privacy Tab */}
-          <TabsContent value="privacy" className="mt-4 space-y-4">
-            {settingsLoading ? (
-              <Skeleton className="h-32 w-full" />
-            ) : (
-              <>
-                <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-                  <CardHeader className="p-4">
-                    <CardTitle className="flex items-center gap-2 text-sm font-medium">
-                      <Globe className="h-4 w-4" />
-                      Profile Visibility
-                    </CardTitle>
-                    <CardDescription className="text-xs">Control who can see your profile and activity</CardDescription>
-                  </CardHeader>
-                  <CardContent className="p-4 pt-0 space-y-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="space-y-0.5 min-w-0">
-                        <Label className="text-sm">Profile Status</Label>
-                        <p className="text-xs text-muted-foreground">Who can view your profile page</p>
-                      </div>
-                      <Select value={settings.profile_visibility} onValueChange={(value) => updateSetting("profile_visibility", value as "public" | "builders" | "private")}>
-                        <SelectTrigger className="w-32 text-xs">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="public"><span className="flex items-center gap-2"><Globe className="h-3.5 w-3.5" />Public</span></SelectItem>
-                          <SelectItem value="builders"><span className="flex items-center gap-2"><Users className="h-3.5 w-3.5" />Builders</span></SelectItem>
-                          <SelectItem value="private"><span className="flex items-center gap-2"><Lock className="h-3.5 w-3.5" />Private</span></SelectItem>
-                        </SelectContent>
-                      </Select>
+                {/* Privacy */}
+                <div 
+                  className="flex items-center justify-between gap-3 py-2.5 cursor-pointer group hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors"
+                  onClick={() => {
+                    const tabs = document.querySelector('[data-state="active"][value="overview"]')?.closest('[role="tablist"]');
+                    // Navigate to privacy settings
+                  }}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-9 h-9 rounded-full bg-muted/50 flex items-center justify-center shrink-0">
+                      <Eye className="h-4 w-4 text-muted-foreground" />
                     </div>
-                    <Separator />
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="space-y-0.5 min-w-0">
-                        <Label className="text-sm flex items-center gap-2"><Mail className="h-3.5 w-3.5" />Show Email Address</Label>
-                        <p className="text-xs text-muted-foreground">Display your email on your public profile</p>
-                      </div>
-                      <Switch checked={settings.show_email} onCheckedChange={(checked) => updateSetting("show_email", checked)} />
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium">Curate your profile</p>
+                      <p className="text-[11px] text-muted-foreground truncate">Manage visibility settings</p>
                     </div>
-                    <Separator />
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="space-y-0.5 min-w-0">
-                        <Label className="text-sm flex items-center gap-2"><Rocket className="h-3.5 w-3.5" />Show Builds</Label>
-                        <p className="text-xs text-muted-foreground">Display your builds on your profile</p>
-                      </div>
-                      <Switch checked={settings.show_builds} onCheckedChange={(checked) => updateSetting("show_builds", checked)} />
-                    </div>
-                    <Separator />
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="space-y-0.5 min-w-0">
-                        <Label className="text-sm flex items-center gap-2"><Zap className="h-3.5 w-3.5" />Show Stats</Label>
-                        <p className="text-xs text-muted-foreground">Display your statistics publicly</p>
-                      </div>
-                      <Switch checked={settings.show_stats} onCheckedChange={(checked) => updateSetting("show_stats", checked)} />
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-                  <CardHeader className="p-4">
-                    <CardTitle className="flex items-center gap-2 text-sm font-medium">
-                      <Users className="h-4 w-4" />
-                      Community Settings
-                    </CardTitle>
-                    <CardDescription className="text-xs">Manage how you interact with other builders</CardDescription>
-                  </CardHeader>
-                  <CardContent className="p-4 pt-0 space-y-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="space-y-0.5 min-w-0">
-                        <Label className="text-sm">Collaboration Requests</Label>
-                        <p className="text-xs text-muted-foreground">Allow others to send you collab requests</p>
-                      </div>
-                      <Switch checked={settings.allow_collab_requests} onCheckedChange={(checked) => updateSetting("allow_collab_requests", checked)} />
-                    </div>
-                    <Separator />
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="space-y-0.5 min-w-0">
-                        <Label className="text-sm flex items-center gap-2"><Trophy className="h-3.5 w-3.5 text-warning" />Leaderboard Visibility</Label>
-                        <p className="text-xs text-muted-foreground">Appear on the public leaderboard</p>
-                      </div>
-                      <Switch checked={settings.show_on_leaderboard} onCheckedChange={(checked) => updateSetting("show_on_leaderboard", checked)} />
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <div className="flex justify-end">
-                  <Button onClick={saveSettings} disabled={isSaving || !hasChanges} size="sm">
-                    {isSaving ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Saving...</> : "Save Privacy Settings"}
+                  </div>
+                  <Button variant="secondary" size="sm" className="h-7 px-3 text-xs shrink-0">
+                    Update
                   </Button>
                 </div>
-              </>
-            )}
-          </TabsContent>
 
-          {/* Integrations Tab */}
-          <TabsContent value="integrations" className="mt-4 space-y-4">
-            <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-              <CardHeader className="p-4">
-                <CardTitle className="flex items-center gap-2 text-sm font-medium">
-                  <Link2 className="h-4 w-4" />
-                  Connected Services
-                </CardTitle>
-                <CardDescription className="text-xs">Connect external services to verify your builds</CardDescription>
-              </CardHeader>
-              <CardContent className="p-4 pt-0 space-y-3">
-                {integrations.map((integration, index) => (
-                  <motion.div
-                    key={integration.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl border border-border/50 bg-muted/20 hover:bg-muted/40 transition-colors"
+                {/* Avatar */}
+                <div 
+                  className="flex items-center justify-between gap-3 py-2.5 cursor-pointer group hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors"
+                  onClick={handleAvatarClick}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-9 h-9 rounded-full bg-muted/50 flex items-center justify-center shrink-0">
+                      <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium">Avatar</p>
+                      <p className="text-[11px] text-muted-foreground truncate">Style your avatar</p>
+                    </div>
+                  </div>
+                  <Button variant="secondary" size="sm" className="h-7 px-3 text-xs shrink-0">
+                    Update
+                  </Button>
+                </div>
+
+                {/* Notifications */}
+                <div 
+                  className="flex items-center justify-between gap-3 py-2.5 cursor-pointer group hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-9 h-9 rounded-full bg-muted/50 flex items-center justify-center shrink-0">
+                      <Bell className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium">Notifications</p>
+                      <p className="text-[11px] text-muted-foreground truncate">Manage alerts</p>
+                    </div>
+                  </div>
+                  <Button variant="secondary" size="sm" className="h-7 px-3 text-xs shrink-0">
+                    Update
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Social Links Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="rounded-xl border border-border bg-card p-4"
+            >
+              <h3 className="text-[11px] font-medium text-primary uppercase tracking-wider mb-3">Social Links</h3>
+              
+              <div className="flex flex-wrap gap-2">
+                {formData.website && (
+                  <a
+                    href={`https://${formData.website}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/50 hover:bg-secondary transition-colors text-xs"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-xl bg-background border border-border/50">
-                        <integration.icon className="h-4 w-4" />
-                      </div>
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-medium text-sm">{integration.name}</span>
-                          {integration.connected && (
-                            <Badge variant="secondary" className="bg-success/10 text-success border-success/20 text-[10px]">
-                              <Check className="h-2.5 w-2.5 mr-0.5" />Connected
-                            </Badge>
-                          )}
-                        </div>
-                        <p className="text-xs text-muted-foreground truncate">{integration.description}</p>
-                        {integration.connected && integration.username && (
-                          <p className="text-[10px] text-muted-foreground mt-0.5 truncate">
-                            {integration.username} • {integration.connectedAt}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 ml-auto sm:ml-0">
-                      {integration.connected ? (
-                        <>
-                          <Button variant="ghost" size="sm" className="gap-1 h-8 text-xs">
-                            <ExternalLink className="h-3 w-3" />View
-                          </Button>
-                          <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8" onClick={() => handleDisconnect(integration.id)}>
-                            <X className="h-3.5 w-3.5" />
-                          </Button>
-                        </>
-                      ) : (
-                        <Button variant="outline" size="sm" onClick={handleConnect} className="h-8 text-xs">Connect</Button>
-                      )}
-                    </div>
-                  </motion.div>
-                ))}
-              </CardContent>
-            </Card>
-
-            {/* Subscription Management */}
-            <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-              <CardHeader className="p-4">
-                <CardTitle className="flex items-center gap-2 text-sm font-medium">
-                  <Crown className="h-4 w-4 text-warning" />
-                  Subscription
-                </CardTitle>
-                <CardDescription className="text-xs">Manage your premium subscription</CardDescription>
-              </CardHeader>
-              <CardContent className="p-4 pt-0">
-                {subLoading ? (
-                  <Skeleton className="h-20 w-full" />
-                ) : hasPremiumAccess ? (
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3 rounded-xl border border-warning/20 bg-warning/5">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-xl bg-warning/10 border border-warning/20">
-                        <Crown className="h-4 w-4 text-warning" />
-                      </div>
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-medium text-sm">Premium Member</span>
-                          <Badge variant="secondary" className="bg-warning/10 text-warning border-warning/20 text-[10px]">Active</Badge>
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          ${SUBSCRIPTION_PRICE}/month • {subscriptionEnd ? `Renews ${new Date(subscriptionEnd).toLocaleDateString()}` : "Active subscription"}
-                        </p>
-                      </div>
-                    </div>
-                    <Button variant="outline" size="sm" onClick={handleOpenPortal} disabled={isOpeningPortal} className="h-8 text-xs w-full sm:w-auto">
-                      {isOpeningPortal ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : <ExternalLinkIcon className="h-3 w-3 mr-1.5" />}
-                      Manage Subscription
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3 rounded-xl border border-border/50 bg-muted/20">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-xl bg-muted border border-border/50">
-                        <Crown className="h-4 w-4 text-muted-foreground" />
-                      </div>
-                      <div className="min-w-0">
-                        <span className="font-medium text-sm block">Free Plan</span>
-                        <p className="text-xs text-muted-foreground">Upgrade to unlock unlimited AI searches and more</p>
-                      </div>
-                    </div>
-                    <Button size="sm" onClick={() => setShowPaywall(true)} className="h-8 text-xs w-full sm:w-auto">Upgrade to Premium</Button>
-                  </div>
+                    <LinkIcon className="h-3 w-3" />
+                    {formData.website}
+                  </a>
                 )}
-              </CardContent>
-            </Card>
-
-            <Card className="border-dashed border-border/50 bg-card/50 backdrop-blur-sm">
-              <CardContent className="py-6">
-                <div className="text-center">
-                  <div className="p-2.5 rounded-full bg-muted/50 inline-block mb-2">
-                    <Zap className="h-5 w-5 text-muted-foreground" />
+                {formData.github && (
+                  <a
+                    href={`https://github.com/${formData.github}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/50 hover:bg-secondary transition-colors text-xs"
+                  >
+                    <Github className="h-3 w-3" />
+                    {formData.github}
+                  </a>
+                )}
+                {formData.twitter && (
+                  <a
+                    href={`https://twitter.com/${formData.twitter}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/50 hover:bg-secondary transition-colors text-xs"
+                  >
+                    <X className="h-3 w-3" />
+                    @{formData.twitter}
+                  </a>
+                )}
+                
+                {isEditing ? (
+                  <div className="w-full mt-2 space-y-2">
+                    <Input
+                      value={formData.website}
+                      onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                      placeholder="yoursite.com"
+                      className="h-8 text-xs"
+                    />
+                    <div className="grid grid-cols-2 gap-2">
+                      <Input
+                        value={formData.github}
+                        onChange={(e) => setFormData({ ...formData, github: e.target.value })}
+                        placeholder="GitHub username"
+                        className="h-8 text-xs"
+                      />
+                      <Input
+                        value={formData.twitter}
+                        onChange={(e) => setFormData({ ...formData, twitter: e.target.value })}
+                        placeholder="Twitter handle"
+                        className="h-8 text-xs"
+                      />
+                    </div>
                   </div>
-                  <h3 className="font-medium text-sm mb-1">More Integrations Coming Soon</h3>
-                  <p className="text-xs text-muted-foreground">We're adding more services like Vercel, Railway, and Analytics.</p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                ) : (!formData.website && !formData.github && !formData.twitter) && (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-dashed border-border hover:border-primary/50 hover:bg-primary/5 transition-all text-xs text-muted-foreground hover:text-foreground"
+                  >
+                    <Plus className="h-3 w-3" />
+                    Add Social Link
+                  </button>
+                )}
+              </div>
+            </motion.div>
 
-          {/* Danger Zone Tab */}
-          <TabsContent value="danger" className="mt-4">
-            <Card className="border-destructive/30">
-              <CardHeader className="p-4">
-                <CardTitle className="flex items-center gap-2 text-destructive text-sm font-medium">
-                  <AlertTriangle className="h-4 w-4" />
-                  Danger Zone
-                </CardTitle>
-                <CardDescription className="text-xs">Irreversible actions that affect your account</CardDescription>
-              </CardHeader>
-              <CardContent className="p-4 pt-0 space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl border border-destructive/20 bg-destructive/5">
-                  <div className="min-w-0">
-                    <Label className="text-sm">Export Data</Label>
-                    <p className="text-xs text-muted-foreground">Download all your data including builds and stats</p>
+            {/* Subscription Card */}
+            {!hasPremiumAccess && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="rounded-xl border border-warning/30 bg-warning/5 p-4"
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-9 h-9 rounded-full bg-warning/20 flex items-center justify-center">
+                    <Crown className="h-4 w-4 text-warning" />
                   </div>
-                  <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={handleExportData}>Export</Button>
-                </div>
-
-                <Separator />
-
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl border border-destructive/20 bg-destructive/5">
-                  <div className="min-w-0">
-                    <Label className="text-destructive text-sm">Delete All Builds</Label>
-                    <p className="text-xs text-muted-foreground">Permanently delete all your submitted builds</p>
+                  <div>
+                    <p className="text-sm font-medium">Upgrade to Pro</p>
+                    <p className="text-[11px] text-muted-foreground">Unlock unlimited features</p>
                   </div>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="destructive" size="sm" className="gap-2 w-full sm:w-auto" disabled={isDeleting}>
-                        {isDeleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
-                        Delete Builds
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                        <AlertDialogDescription>This action cannot be undone. This will permanently delete all your builds and remove your submissions from our servers.</AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteBuilds} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete All Builds</AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
                 </div>
+                <Button 
+                  size="sm" 
+                  className="w-full h-8 text-xs"
+                  onClick={() => setShowPaywall(true)}
+                >
+                  Upgrade Now
+                </Button>
+              </motion.div>
+            )}
 
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl border border-destructive/30 bg-destructive/10">
-                  <div className="min-w-0">
-                    <Label className="text-destructive text-sm">Delete Account</Label>
-                    <p className="text-xs text-muted-foreground">Permanently delete your account and all data</p>
-                  </div>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="destructive" size="sm" className="gap-2 w-full sm:w-auto">
-                        <AlertTriangle className="h-3.5 w-3.5" />
-                        Delete Account
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete your account?</AlertDialogTitle>
-                        <AlertDialogDescription>This will permanently delete your account, all your builds, settings, and data. This action cannot be undone.</AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteAccount} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete Account</AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
+            {/* Action buttons when editing */}
+            {isEditing && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex gap-2"
+              >
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex-1 h-9"
+                  onClick={() => setIsEditing(false)}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  size="sm" 
+                  className="flex-1 h-9"
+                  onClick={handleSave}
+                  disabled={isLoading}
+                >
+                  {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save Changes"}
+                </Button>
+              </motion.div>
+            )}
+
+            {/* Sign out */}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="w-full h-9 text-xs text-muted-foreground hover:text-destructive justify-start gap-2"
+              onClick={handleSignOut}
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              Sign Out
+            </Button>
+          </div>
+        </div>
       </div>
       <SubscriptionPaywall open={showPaywall} onOpenChange={setShowPaywall} />
       <BuilderVerificationModal open={showVerificationModal} onOpenChange={setShowVerificationModal} onVerified={handleVerificationComplete} />
