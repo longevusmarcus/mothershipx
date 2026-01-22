@@ -246,11 +246,27 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                         </motion.div>
                         <span className="text-sm flex-1">{item.label}</span>
                         <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ delay: 0.6 + item.delay, type: "spring", stiffness: 500 }}
+                          initial={{ scale: 0, opacity: 0, rotate: -45 }}
+                          animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                          transition={{ 
+                            delay: 0.8 + (i * 0.15), 
+                            type: "spring", 
+                            stiffness: 400,
+                            damping: 15
+                          }}
                         >
-                          <Check className="h-4 w-4 text-success shrink-0" />
+                          <motion.div
+                            animate={{ 
+                              scale: [1, 1.2, 1],
+                            }}
+                            transition={{ 
+                              delay: 1.0 + (i * 0.15),
+                              duration: 0.3,
+                              ease: "easeOut"
+                            }}
+                          >
+                            <Check className="h-4 w-4 text-success shrink-0" />
+                          </motion.div>
                         </motion.div>
                       </motion.div>
                     ))}
