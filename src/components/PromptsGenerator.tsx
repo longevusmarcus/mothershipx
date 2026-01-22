@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Sparkles, 
   Copy, 
   Check, 
   Zap, 
@@ -21,7 +20,6 @@ import {
   Chrome,
   Monitor,
   Cpu,
-  Database,
   Shield,
   CreditCard,
   Mail,
@@ -29,6 +27,7 @@ import {
   Users,
   Bot,
   Palette,
+  RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -476,27 +475,30 @@ export function PromptsGenerator({ problem, competitors, solutions }: PromptsGen
           )}
 
           {/* Generate Button */}
-          <Button
-            onClick={generatePrompts}
-            disabled={isGenerating}
-            size="lg"
-            className="w-full relative overflow-hidden group"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-            <span className="relative flex items-center gap-2">
-              {isGenerating ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Generating Custom Prompts...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="h-4 w-4" />
-                  Generate Expert Prompts
-                </>
-              )}
-            </span>
-          </Button>
+          <div className="relative group">
+            {/* Glow effect */}
+            <div className="absolute -inset-1 bg-gradient-to-r from-primary via-primary/50 to-primary rounded-xl blur-lg opacity-0 group-hover:opacity-40 transition-all duration-500" />
+            <Button
+              onClick={generatePrompts}
+              disabled={isGenerating}
+              size="lg"
+              className="relative w-full bg-foreground text-background hover:bg-foreground/90 border-0 shadow-lg transition-all duration-300 group-hover:shadow-primary/20 group-hover:shadow-xl"
+            >
+              <span className="flex items-center gap-2.5">
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Generating Custom Prompts...
+                  </>
+                ) : (
+                  <>
+                    <Terminal className="h-4 w-4" />
+                    Generate Expert Prompts
+                  </>
+                )}
+              </span>
+            </Button>
+          </div>
 
           <p className="text-xs text-muted-foreground text-center">
             AI analyzes the problem + your preferences to craft 3 unique approaches
@@ -544,7 +546,7 @@ export function PromptsGenerator({ problem, competitors, solutions }: PromptsGen
             {isGenerating ? (
               <Loader2 className="h-3 w-3 animate-spin mr-1" />
             ) : (
-              <Sparkles className="h-3 w-3 mr-1" />
+              <RefreshCw className="h-3 w-3 mr-1" />
             )}
             Regenerate
           </Button>
