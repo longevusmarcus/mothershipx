@@ -40,7 +40,7 @@ const Problems = () => {
   return (
     <AppLayout>
       <SEO
-        title="Library"
+        title="Dashboard"
         description="Discover real problems and trends from 10+ data sources. Find market opportunities and build solutions."
       />
       <div className="space-y-6">
@@ -50,7 +50,7 @@ const Problems = () => {
           animate={{ opacity: 1, y: 0 }}
           className="text-center"
         >
-          <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">Library</h1>
+          <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">Dashboard</h1>
           <p className="text-sm text-muted-foreground mt-1">
             {filteredProblems.length} problems and trends discovered
           </p>

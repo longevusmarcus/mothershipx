@@ -82,12 +82,12 @@ export function SearchResults({
                       </>
                     )}
                     {viralCount > 0 && (
-                      <span className="text-success"> {viralCount} meet virality criteria and were added to the Library.</span>
+                      <span className="text-success"> {viralCount} meet virality criteria and were added to the Dashboard.</span>
                     )}
                   </p>
                 </div>
 
-                {/* View Library Button */}
+                {/* View Dashboard Button */}
                 {viralCount > 0 && (
                   <Button
                     variant="outline"
@@ -96,7 +96,7 @@ export function SearchResults({
                     className="gap-2"
                   >
                     <Library className="h-4 w-4" />
-                    View in Library ({viralCount})
+                    View in Dashboard ({viralCount})
                   </Button>
                 )}
               </div>

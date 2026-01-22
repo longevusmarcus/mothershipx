@@ -241,14 +241,14 @@ export function SearchResultCard({ result, delay = 0, isLatest = false, compact 
         {result.addedToLibrary && (
           <div className="flex items-center gap-2 text-xs text-success pt-2 border-t border-border">
             <CheckCircle2 className="h-3.5 w-3.5" />
-            <span>Added to Library</span>
+            <span>Added to Dashboard</span>
           </div>
         )}
         
         {result.isViral && !result.addedToLibrary && (
           <div className="flex items-center gap-2 text-xs text-primary pt-2 border-t border-border">
             <Sparkles className="h-3.5 w-3.5" />
-            <span>Meets virality criteria - Adding to Library...</span>
+            <span>Meets virality criteria - Adding to Dashboard...</span>
           </div>
         )}
       </div>

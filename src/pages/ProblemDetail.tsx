@@ -158,7 +158,7 @@ const ProblemDetail = () => {
           <h2 className="font-medium mb-2">Problem not found</h2>
           <p className="text-sm text-muted-foreground mb-4">This opportunity does not exist.</p>
           <Link to="/problems">
-            <Button size="sm">Browse Library</Button>
+            <Button size="sm">Browse Dashboard</Button>
           </Link>
         </div>
       </AppLayout>
@@ -247,7 +247,7 @@ const ProblemDetail = () => {
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Library
+          Back to Dashboard
         </Link>
 
         {/* Hero Card */}
