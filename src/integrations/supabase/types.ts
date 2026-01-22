@@ -673,6 +673,36 @@ export type Database = {
           },
         ]
       }
+      rate_limits: {
+        Row: {
+          created_at: string
+          endpoint: string
+          id: string
+          identifier: string
+          request_count: number
+          window_key: string
+          window_start: string
+        }
+        Insert: {
+          created_at?: string
+          endpoint: string
+          id?: string
+          identifier: string
+          request_count?: number
+          window_key: string
+          window_start?: string
+        }
+        Update: {
+          created_at?: string
+          endpoint?: string
+          id?: string
+          identifier?: string
+          request_count?: number
+          window_key?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       search_cache: {
         Row: {
           created_at: string
@@ -1308,6 +1338,16 @@ export type Database = {
     }
     Functions: {
       calculate_user_streak: { Args: { p_user_id: string }; Returns: number }
+      check_rate_limit: {
+        Args: {
+          p_endpoint: string
+          p_identifier: string
+          p_max_requests?: number
+          p_window_minutes?: number
+        }
+        Returns: Json
+      }
+      cleanup_rate_limits: { Args: never; Returns: number }
       has_premium_access: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
