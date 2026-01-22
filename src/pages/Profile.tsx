@@ -317,9 +317,9 @@ export default function Profile() {
 
           {/* XP Bar - Terminal Style */}
           <div className="mt-5 pt-4 border-t border-border/50">
-            <div className="flex items-center justify-between font-mono text-xs mb-2">
-              <span className="text-muted-foreground">level_{userStats?.currentLevel || 1}</span>
-              <span className="text-muted-foreground">{userStats?.totalXp || 0} / {xpProgress.nextLevelXp} <span className="text-primary">XP</span></span>
+            <div className="flex items-center justify-between text-xs mb-2">
+              <span className="text-muted-foreground">Level {userStats?.currentLevel || 1}</span>
+              <span className="text-muted-foreground">{userStats?.totalXp || 0} / {xpProgress.nextLevelXp} XP</span>
             </div>
             <Progress value={xpProgress.percentage} className="h-1.5" />
           </div>
@@ -327,19 +327,18 @@ export default function Profile() {
 
         {/* Tabs - Terminal Style */}
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="w-full justify-start bg-secondary/30 backdrop-blur-sm p-1 h-10 overflow-x-auto border border-border/50 rounded-lg">
-            <TabsTrigger value="overview" className="font-mono text-xs px-4 h-8 data-[state=active]:bg-background">./overview</TabsTrigger>
-            <TabsTrigger value="achievements" className="font-mono text-xs px-4 h-8 data-[state=active]:bg-background">./achievements</TabsTrigger>
-            <TabsTrigger value="account" className="font-mono text-xs px-4 h-8 data-[state=active]:bg-background">./account</TabsTrigger>
+          <TabsList className="w-full justify-start bg-secondary/50 p-1 h-10 overflow-x-auto rounded-lg">
+            <TabsTrigger value="overview" className="text-xs px-4 h-8 data-[state=active]:bg-background">Overview</TabsTrigger>
+            <TabsTrigger value="achievements" className="text-xs px-4 h-8 data-[state=active]:bg-background">Achievements</TabsTrigger>
+            <TabsTrigger value="account" className="text-xs px-4 h-8 data-[state=active]:bg-background">Account</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="mt-4 space-y-4">
             {/* Bio - Terminal Style */}
             <div className="rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-4">
-              <h3 className="font-mono text-xs text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
-                <span className="text-primary">&gt;</span>
-                about
+              <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
+                About
               </h3>
               {isEditing ? (
                 <Textarea
@@ -347,7 +346,7 @@ export default function Profile() {
                   onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                   rows={3}
                   placeholder="Short bio..."
-                  className="resize-none text-sm font-mono bg-secondary/20"
+                  className="resize-none text-sm bg-secondary/20"
                 />
               ) : (
                 <p className="text-sm text-muted-foreground break-words">
@@ -358,9 +357,8 @@ export default function Profile() {
 
             {/* Links - Terminal Style */}
             <div className="rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-4">
-              <h3 className="font-mono text-xs text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
-                <span className="text-primary">&gt;</span>
-                links
+              <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
+                Links
               </h3>
               {isEditing ? (
                 <div className="space-y-2">
@@ -368,20 +366,20 @@ export default function Profile() {
                     value={formData.website}
                     onChange={(e) => setFormData({ ...formData, website: e.target.value })}
                     placeholder="yoursite.com"
-                    className="h-9 text-sm font-mono bg-secondary/20"
+                    className="h-9 text-sm bg-secondary/20"
                   />
                   <div className="grid grid-cols-2 gap-2">
                     <Input
                       value={formData.github}
                       onChange={(e) => setFormData({ ...formData, github: e.target.value })}
                       placeholder="GitHub"
-                      className="h-9 text-sm font-mono bg-secondary/20"
+                      className="h-9 text-sm bg-secondary/20"
                     />
                     <Input
                       value={formData.twitter}
                       onChange={(e) => setFormData({ ...formData, twitter: e.target.value })}
                       placeholder="Twitter"
-                      className="h-9 text-sm font-mono bg-secondary/20"
+                      className="h-9 text-sm bg-secondary/20"
                     />
                   </div>
                 </div>
@@ -390,29 +388,29 @@ export default function Profile() {
                   {(formData.website || formData.github || formData.twitter) ? (
                     <>
                       {formData.website && (
-                        <a href={`https://${formData.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 font-mono text-xs text-muted-foreground hover:text-primary transition-colors truncate group">
-                          <span className="text-primary">&gt;</span>
+                        <a href={`https://${formData.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs text-muted-foreground hover:text-primary transition-colors truncate group">
+                          <LinkIcon className="h-3 w-3 shrink-0" />
                           <span className="truncate group-hover:underline">{formData.website}</span>
                           <ExternalLink className="h-3 w-3 shrink-0 opacity-50" />
                         </a>
                       )}
                       {formData.github && (
-                        <a href={`https://github.com/${formData.github}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 font-mono text-xs text-muted-foreground hover:text-primary transition-colors truncate group">
-                          <span className="text-primary">&gt;</span>
+                        <a href={`https://github.com/${formData.github}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs text-muted-foreground hover:text-primary transition-colors truncate group">
+                          <LinkIcon className="h-3 w-3 shrink-0" />
                           <span className="truncate group-hover:underline">github.com/{formData.github}</span>
                           <ExternalLink className="h-3 w-3 shrink-0 opacity-50" />
                         </a>
                       )}
                       {formData.twitter && (
-                        <a href={`https://twitter.com/${formData.twitter}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 font-mono text-xs text-muted-foreground hover:text-primary transition-colors truncate group">
-                          <span className="text-primary">&gt;</span>
+                        <a href={`https://twitter.com/${formData.twitter}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs text-muted-foreground hover:text-primary transition-colors truncate group">
+                          <LinkIcon className="h-3 w-3 shrink-0" />
                           <span className="truncate group-hover:underline">@{formData.twitter}</span>
                           <ExternalLink className="h-3 w-3 shrink-0 opacity-50" />
                         </a>
                       )}
                     </>
                   ) : (
-                    <p className="font-mono text-xs text-muted-foreground/60">No links added.</p>
+                    <p className="text-xs text-muted-foreground/60">No links added.</p>
                   )}
                 </div>
               )}
