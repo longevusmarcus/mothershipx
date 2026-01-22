@@ -8,7 +8,7 @@ import { WelcomeChatbot } from "@/components/WelcomeChatbot";
 import { AuthModal } from "@/components/AuthModal";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 import { User, Settings, Info, LogOut, LogIn, Crown } from "lucide-react";
 import {
   DropdownMenu,

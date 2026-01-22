@@ -5,7 +5,7 @@ import { ArrowRight, TrendingUp, Eye, Bookmark, Share2, Trash2, ArrowUp, Message
 import { Badge } from "@/components/ui/badge";
 import { AuthModal } from "@/components/AuthModal";
 import { useAuth } from "@/contexts/AuthContext";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 import { useDeleteProblem } from "@/hooks/useDeleteProblem";
 import type { MarketProblem } from "@/data/marketIntelligence";
 

@@ -71,7 +71,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useUserStats, getXpProgress, getLevelTitle } from "@/hooks/useUserStats";
 import { useIsBuilderVerified } from "@/hooks/useBuilderVerification";
 import { useUserSettings } from "@/hooks/useUserSettings";
-import { useSubscription, SUBSCRIPTION_PRICE } from "@/hooks/useSubscription";
+import { useSubscription, SUBSCRIPTION_PRICE } from "@/contexts/SubscriptionContext";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { MyProblems } from "@/components/MyProblems";
 import { ArenaHistory } from "@/components/ArenaHistory";

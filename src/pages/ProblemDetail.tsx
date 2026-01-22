@@ -41,7 +41,7 @@ import { useProblemBuilders } from "@/hooks/useProblemBuilders";
 import { useRefreshProblem } from "@/hooks/useRefreshProblem";
 import { useCompetitors } from "@/hooks/useCompetitors";
 import { useAuth } from "@/contexts/AuthContext";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 import { cn } from "@/lib/utils";
 
 const formatNumber = (num: number): string => {

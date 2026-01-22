@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 
@@ -15,7 +15,21 @@ export const SUBSCRIPTION_PRICE_ID = "price_1SrxbZ2LCwPxHz0nC7VtOgeS";
 export const SUBSCRIPTION_PRODUCT_ID = "prod_TpcrDIRieLAbv5";
 export const SUBSCRIPTION_PRICE = 29.99;
 
-export function useSubscription() {
+interface SubscriptionContextType extends SubscriptionStatus {
+  hasPremiumAccess: boolean;
+  checkSubscription: () => Promise<void>;
+  createCheckout: (priceId?: string) => Promise<string>;
+  openCustomerPortal: () => Promise<void>;
+}
+
+const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
+
+// Cache to prevent duplicate calls within short time window
+let lastCheckTime = 0;
+let cachedStatus: SubscriptionStatus | null = null;
+const CACHE_DURATION_MS = 5000; // 5 second cache
+
+export function SubscriptionProvider({ children }: { children: ReactNode }) {
   const { user, isAuthenticated } = useAuth();
   const [status, setStatus] = useState<SubscriptionStatus>({
     subscribed: false,
@@ -23,8 +37,9 @@ export function useSubscription() {
     role: "user",
     isLoading: true,
   });
+  const checkInProgressRef = useRef(false);
 
-  const checkSubscription = useCallback(async () => {
+  const checkSubscription = useCallback(async (force = false) => {
     if (!isAuthenticated || !user) {
       setStatus({
         subscribed: false,
@@ -32,8 +47,23 @@ export function useSubscription() {
         role: "user",
         isLoading: false,
       });
+      cachedStatus = null;
       return;
     }
+
+    // Return cached result if available and not forced
+    const now = Date.now();
+    if (!force && cachedStatus && (now - lastCheckTime) < CACHE_DURATION_MS) {
+      setStatus(cachedStatus);
+      return;
+    }
+
+    // Prevent concurrent checks
+    if (checkInProgressRef.current) {
+      return;
+    }
+
+    checkInProgressRef.current = true;
 
     try {
       const { data, error } = await supabase.functions.invoke("check-subscription");
@@ -41,20 +71,27 @@ export function useSubscription() {
       if (error) {
         console.error("Error checking subscription:", error);
         setStatus(prev => ({ ...prev, isLoading: false }));
+        checkInProgressRef.current = false;
         return;
       }
 
-      setStatus({
+      const newStatus: SubscriptionStatus = {
         subscribed: data.subscribed || false,
         isAdmin: data.isAdmin || false,
         role: data.role || "user",
         subscriptionEnd: data.subscription_end,
         priceId: data.price_id,
         isLoading: false,
-      });
+      };
+
+      setStatus(newStatus);
+      cachedStatus = newStatus;
+      lastCheckTime = Date.now();
     } catch (error) {
       console.error("Failed to check subscription:", error);
       setStatus(prev => ({ ...prev, isLoading: false }));
+    } finally {
+      checkInProgressRef.current = false;
     }
   }, [isAuthenticated, user]);
 
@@ -63,15 +100,15 @@ export function useSubscription() {
     checkSubscription();
   }, [checkSubscription]);
 
-  // Periodic refresh every 60 seconds
+  // Periodic refresh every 5 minutes (reduced from 60 seconds)
   useEffect(() => {
     if (!isAuthenticated) return;
     
-    const interval = setInterval(checkSubscription, 60000);
+    const interval = setInterval(() => checkSubscription(true), 300000); // 5 minutes
     return () => clearInterval(interval);
   }, [isAuthenticated, checkSubscription]);
 
-  const createCheckout = async (priceId?: string) => {
+  const createCheckout = useCallback(async (priceId?: string) => {
     if (!isAuthenticated) {
       throw new Error("User must be authenticated");
     }
@@ -84,9 +121,9 @@ export function useSubscription() {
     if (data.error) throw new Error(data.error);
     
     return data.url;
-  };
+  }, [isAuthenticated]);
 
-  const openCustomerPortal = async () => {
+  const openCustomerPortal = useCallback(async () => {
     if (!isAuthenticated) {
       throw new Error("User must be authenticated");
     }
@@ -99,16 +136,29 @@ export function useSubscription() {
     if (data.url) {
       window.open(data.url, "_blank");
     }
-  };
+  }, [isAuthenticated]);
 
-  // Check if user has premium access (admin or subscriber)
   const hasPremiumAccess = status.isAdmin || status.subscribed;
 
-  return {
-    ...status,
-    hasPremiumAccess,
-    checkSubscription,
-    createCheckout,
-    openCustomerPortal,
-  };
+  return (
+    <SubscriptionContext.Provider
+      value={{
+        ...status,
+        hasPremiumAccess,
+        checkSubscription: () => checkSubscription(true),
+        createCheckout,
+        openCustomerPortal,
+      }}
+    >
+      {children}
+    </SubscriptionContext.Provider>
+  );
+}
+
+export function useSubscription() {
+  const context = useContext(SubscriptionContext);
+  if (context === undefined) {
+    throw new Error("useSubscription must be used within a SubscriptionProvider");
+  }
+  return context;
 }

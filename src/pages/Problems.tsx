@@ -7,7 +7,7 @@ import { MasonryGrid } from "@/components/MasonryGrid";
 import { Badge } from "@/components/ui/badge";
 import { useProblems } from "@/hooks/useProblems";
 import { useCategories } from "@/hooks/useCategories";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 import { useAuth } from "@/contexts/AuthContext";
 
 const Problems = () => {

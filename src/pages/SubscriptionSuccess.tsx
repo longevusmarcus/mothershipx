@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Check, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppLayout } from "@/components/AppLayout";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 import { usePaywallAnalytics } from "@/hooks/usePaywallAnalytics";
 import logoIcon from "@/assets/logo-icon.png";
 
