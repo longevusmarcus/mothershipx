@@ -12,6 +12,38 @@ const logStep = (step: string, details?: unknown) => {
   console.log(`[CHECK-SUBSCRIPTION] ${step}${detailsStr}`);
 };
 
+// Retry helper with exponential backoff
+async function withRetry<T>(
+  fn: () => Promise<T>,
+  options: { maxRetries?: number; baseDelayMs?: number; operationName?: string } = {}
+): Promise<T> {
+  const { maxRetries = 3, baseDelayMs = 200, operationName = "operation" } = options;
+  let lastError: Error | null = null;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      const isRetryable = lastError.message.includes("connection") || 
+                          lastError.message.includes("reset") ||
+                          lastError.message.includes("timeout") ||
+                          lastError.message.includes("SendRequest");
+      
+      if (!isRetryable || attempt === maxRetries) {
+        logStep(`${operationName} failed after ${attempt} attempt(s)`, { error: lastError.message });
+        throw lastError;
+      }
+
+      const delayMs = baseDelayMs * Math.pow(2, attempt - 1);
+      logStep(`${operationName} attempt ${attempt} failed, retrying in ${delayMs}ms`, { error: lastError.message });
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+    }
+  }
+
+  throw lastError;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -35,7 +67,13 @@ serve(async (req) => {
     logStep("Authorization header found");
 
     const token = authHeader.replace("Bearer ", "");
-    const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
+    
+    // Use retry for auth call to handle transient network errors
+    const { data: userData, error: userError } = await withRetry(
+      () => supabaseClient.auth.getUser(token),
+      { operationName: "auth.getUser", maxRetries: 3, baseDelayMs: 300 }
+    );
+    
     if (userError) throw new Error(`Authentication error: ${userError.message}`);
     const user = userData.user;
     if (!user?.email) throw new Error("User not authenticated or email not available");
