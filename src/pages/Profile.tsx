@@ -488,6 +488,55 @@ export default function Profile() {
 
               {/* Overview Tab */}
               <TabsContent value="overview" className="mt-4 space-y-4">
+                {/* Subscription Management */}
+                <Card className="border-border/50 bg-card">
+                  <CardHeader className="p-4">
+                    <CardTitle className="flex items-center gap-2 text-sm font-medium">
+                      <Crown className="h-4 w-4 text-warning" />
+                      Subscription
+                    </CardTitle>
+                    <CardDescription className="text-xs">Manage your premium subscription</CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-4 pt-0">
+                    {subLoading ? (
+                      <Skeleton className="h-20 w-full" />
+                    ) : hasPremiumAccess ? (
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3 rounded-xl border border-warning/20 bg-warning/5">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 rounded-xl bg-warning/10 border border-warning/20">
+                            <Crown className="h-4 w-4 text-warning" />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-medium text-sm">Premium Member</span>
+                              <Badge variant="secondary" className="bg-warning/10 text-warning border-warning/20 text-[10px]">Active</Badge>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              ${SUBSCRIPTION_PRICE}/month • {subscriptionEnd ? `Renews ${new Date(subscriptionEnd).toLocaleDateString()}` : "Active subscription"}
+                            </p>
+                          </div>
+                        </div>
+                        <Button variant="outline" size="sm" onClick={() => openCustomerPortal()} className="h-8 text-xs w-full sm:w-auto">
+                          Manage Subscription
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3 rounded-xl border border-border/50 bg-muted/20">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 rounded-xl bg-muted border border-border/50">
+                            <Crown className="h-4 w-4 text-muted-foreground" />
+                          </div>
+                          <div className="min-w-0">
+                            <span className="font-medium text-sm block">Free Plan</span>
+                            <p className="text-xs text-muted-foreground">Upgrade to unlock unlimited AI searches and more</p>
+                          </div>
+                        </div>
+                        <Button size="sm" onClick={() => setShowPaywall(true)} className="h-8 text-xs w-full sm:w-auto">Upgrade to Premium</Button>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
                 {/* My Problems */}
                 <MyProblems />
 
@@ -784,55 +833,6 @@ export default function Profile() {
                         </div>
                       </motion.div>
                     ))}
-                  </CardContent>
-                </Card>
-
-                {/* Subscription Management */}
-                <Card className="border-border/50 bg-card">
-                  <CardHeader className="p-4">
-                    <CardTitle className="flex items-center gap-2 text-sm font-medium">
-                      <Crown className="h-4 w-4 text-warning" />
-                      Subscription
-                    </CardTitle>
-                    <CardDescription className="text-xs">Manage your premium subscription</CardDescription>
-                  </CardHeader>
-                  <CardContent className="p-4 pt-0">
-                    {subLoading ? (
-                      <Skeleton className="h-20 w-full" />
-                    ) : hasPremiumAccess ? (
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3 rounded-xl border border-warning/20 bg-warning/5">
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 rounded-xl bg-warning/10 border border-warning/20">
-                            <Crown className="h-4 w-4 text-warning" />
-                          </div>
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className="font-medium text-sm">Premium Member</span>
-                              <Badge variant="secondary" className="bg-warning/10 text-warning border-warning/20 text-[10px]">Active</Badge>
-                            </div>
-                            <p className="text-xs text-muted-foreground">
-                              ${SUBSCRIPTION_PRICE}/month • {subscriptionEnd ? `Renews ${new Date(subscriptionEnd).toLocaleDateString()}` : "Active subscription"}
-                            </p>
-                          </div>
-                        </div>
-                        <Button variant="outline" size="sm" onClick={() => openCustomerPortal()} className="h-8 text-xs w-full sm:w-auto">
-                          Manage Subscription
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3 rounded-xl border border-border/50 bg-muted/20">
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 rounded-xl bg-muted border border-border/50">
-                            <Crown className="h-4 w-4 text-muted-foreground" />
-                          </div>
-                          <div className="min-w-0">
-                            <span className="font-medium text-sm block">Free Plan</span>
-                            <p className="text-xs text-muted-foreground">Upgrade to unlock unlimited AI searches and more</p>
-                          </div>
-                        </div>
-                        <Button size="sm" onClick={() => setShowPaywall(true)} className="h-8 text-xs w-full sm:w-auto">Upgrade to Premium</Button>
-                      </div>
-                    )}
                   </CardContent>
                 </Card>
               </TabsContent>
