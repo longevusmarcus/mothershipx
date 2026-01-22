@@ -38,12 +38,9 @@ export function SubredditSelector({ selectedSubreddit, onSelect, disabled }: Sub
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-2 mb-4">
-        <img src={logoReddit} alt="Reddit" className="h-4 w-4" />
-        <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
-          Select a subreddit to analyze (currently 1)
-        </span>
-      </div>
+      <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-4">
+        Select a subreddit to analyze (currently 1)
+      </p>
 
       <div className="grid gap-3">
         {SUBREDDITS.map((subreddit, index) => {
