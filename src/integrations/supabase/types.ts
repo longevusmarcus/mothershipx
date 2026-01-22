@@ -1036,6 +1036,35 @@ export type Database = {
         }
         Relationships: []
       }
+      user_problem_pins: {
+        Row: {
+          id: string
+          pinned_at: string
+          problem_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          pinned_at?: string
+          problem_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          pinned_at?: string
+          problem_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_problem_pins_problem_id_fkey"
+            columns: ["problem_id"]
+            isOneToOne: false
+            referencedRelation: "problems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
