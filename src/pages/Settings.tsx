@@ -7,13 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -86,16 +80,8 @@ export default function Settings() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { signOut } = useAuth();
-  const {
-    settings,
-    isLoading,
-    isSaving,
-    hasChanges,
-    isAuthenticated,
-    updateSetting,
-    saveSettings,
-  } = useUserSettings();
-  
+  const { settings, isLoading, isSaving, hasChanges, isAuthenticated, updateSetting, saveSettings } = useUserSettings();
+
   const { hasPremiumAccess, subscriptionEnd, openCustomerPortal, isLoading: subLoading } = useSubscription();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isOpeningPortal, setIsOpeningPortal] = useState(false);
@@ -134,14 +120,12 @@ export default function Settings() {
   // Fetch existing verification data to show connected integrations
   useEffect(() => {
     const fetchVerificationData = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data } = await supabase
-        .from("builder_verifications")
-        .select("*")
-        .eq("user_id", user.id)
-        .single();
+      const { data } = await supabase.from("builder_verifications").select("*").eq("user_id", user.id).single();
 
       if (data) {
         setIntegrations((prev) =>
@@ -171,7 +155,7 @@ export default function Settings() {
               };
             }
             return integration;
-          })
+          }),
         );
       }
     };
@@ -205,7 +189,9 @@ export default function Settings() {
   };
 
   const handleDisconnect = async (integrationId: string) => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
 
     const updateData: Record<string, null> = {};
@@ -213,18 +199,11 @@ export default function Settings() {
     if (integrationId === "stripe") updateData.stripe_public_key = null;
     if (integrationId === "supabase") updateData.supabase_project_key = null;
 
-    const { error } = await supabase
-      .from("builder_verifications")
-      .update(updateData)
-      .eq("user_id", user.id);
+    const { error } = await supabase.from("builder_verifications").update(updateData).eq("user_id", user.id);
 
     if (!error) {
       setIntegrations((prev) =>
-        prev.map((i) =>
-          i.id === integrationId
-            ? { ...i, connected: false, username: null, connectedAt: null }
-            : i
-        )
+        prev.map((i) => (i.id === integrationId ? { ...i, connected: false, username: null, connectedAt: null } : i)),
       );
       toast({
         title: "Disconnected",
@@ -247,9 +226,9 @@ export default function Settings() {
         .from("submissions")
         .delete()
         .eq("user_id", (await supabase.auth.getUser()).data.user?.id || "");
-      
+
       if (error) throw error;
-      
+
       toast({
         title: "Builds deleted",
         description: "All your builds have been permanently deleted.",
@@ -285,12 +264,8 @@ export default function Settings() {
                 <LogIn className="h-8 w-8 text-muted-foreground" />
               </div>
               <h2 className="text-xl font-semibold">Sign in required</h2>
-              <p className="text-muted-foreground">
-                Please sign in to access your settings.
-              </p>
-              <Button onClick={() => setShowAuthModal(true)}>
-                Sign In
-              </Button>
+              <p className="text-muted-foreground">Please sign in to access your settings.</p>
+              <Button onClick={() => setShowAuthModal(true)}>Sign In</Button>
             </CardContent>
           </Card>
         </div>
@@ -303,14 +278,14 @@ export default function Settings() {
     <AppLayout>
       <div className="relative p-4 sm:p-6 space-y-4 sm:space-y-6 max-w-4xl mx-auto">
         {/* Dot Grid Background */}
-        <div 
+        <div
           className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05] pointer-events-none"
           style={{
             backgroundImage: `radial-gradient(circle, currentColor 1px, transparent 1px)`,
-            backgroundSize: '20px 20px',
+            backgroundSize: "20px 20px",
           }}
         />
-        
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -318,9 +293,6 @@ export default function Settings() {
           className="relative z-10"
         >
           <div className="mb-6 text-center">
-            <p className="font-mono text-xs text-muted-foreground tracking-widest uppercase mb-2">
-              ~/settings
-            </p>
             <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">Settings</h1>
             <p className="text-sm text-muted-foreground mt-2">
               Manage your notifications, privacy, and connected services
@@ -332,19 +304,31 @@ export default function Settings() {
           ) : (
             <Tabs defaultValue="notifications" className="space-y-4 sm:space-y-6">
               <TabsList className="bg-secondary/30 backdrop-blur-sm border border-border/50 p-1 w-full justify-start overflow-x-auto flex-nowrap rounded-lg">
-                <TabsTrigger value="notifications" className="gap-1.5 font-mono text-xs px-3 whitespace-nowrap data-[state=active]:bg-background">
+                <TabsTrigger
+                  value="notifications"
+                  className="gap-1.5 font-mono text-xs px-3 whitespace-nowrap data-[state=active]:bg-background"
+                >
                   <Bell className="h-3.5 w-3.5" />
                   ./notifs
                 </TabsTrigger>
-                <TabsTrigger value="privacy" className="gap-1.5 font-mono text-xs px-3 whitespace-nowrap data-[state=active]:bg-background">
+                <TabsTrigger
+                  value="privacy"
+                  className="gap-1.5 font-mono text-xs px-3 whitespace-nowrap data-[state=active]:bg-background"
+                >
                   <Shield className="h-3.5 w-3.5" />
                   ./privacy
                 </TabsTrigger>
-                <TabsTrigger value="integrations" className="gap-1.5 font-mono text-xs px-3 whitespace-nowrap data-[state=active]:bg-background">
+                <TabsTrigger
+                  value="integrations"
+                  className="gap-1.5 font-mono text-xs px-3 whitespace-nowrap data-[state=active]:bg-background"
+                >
                   <Link2 className="h-3.5 w-3.5" />
                   ./integs
                 </TabsTrigger>
-                <TabsTrigger value="danger" className="gap-1.5 font-mono text-xs px-3 whitespace-nowrap data-[state=active]:bg-background">
+                <TabsTrigger
+                  value="danger"
+                  className="gap-1.5 font-mono text-xs px-3 whitespace-nowrap data-[state=active]:bg-background"
+                >
                   <AlertTriangle className="h-3.5 w-3.5" />
                   ./danger
                 </TabsTrigger>
@@ -365,9 +349,7 @@ export default function Settings() {
                     <div className="flex items-center justify-between gap-3 py-2">
                       <div className="space-y-0.5 min-w-0">
                         <Label className="font-mono text-sm">daily_digest</Label>
-                        <p className="text-xs text-muted-foreground">
-                          Receive a daily summary of platform activity
-                        </p>
+                        <p className="text-xs text-muted-foreground">Receive a daily summary of platform activity</p>
                       </div>
                       <Switch
                         checked={settings.email_digest}
@@ -381,9 +363,7 @@ export default function Settings() {
                           <Rocket className="h-3.5 w-3.5 text-primary" />
                           new_problems
                         </Label>
-                        <p className="text-xs text-muted-foreground">
-                          Get notified when new problems are posted
-                        </p>
+                        <p className="text-xs text-muted-foreground">Get notified when new problems are posted</p>
                       </div>
                       <Switch
                         checked={settings.new_problems}
@@ -397,9 +377,7 @@ export default function Settings() {
                           <Trophy className="h-3.5 w-3.5 text-warning" />
                           leaderboard_updates
                         </Label>
-                        <p className="text-xs text-muted-foreground">
-                          Know when your rank changes
-                        </p>
+                        <p className="text-xs text-muted-foreground">Know when your rank changes</p>
                       </div>
                       <Switch
                         checked={settings.leaderboard_updates}
@@ -413,9 +391,7 @@ export default function Settings() {
                           <Check className="h-3.5 w-3.5 text-success" />
                           build_verification
                         </Label>
-                        <p className="text-xs text-muted-foreground">
-                          Updates on your build verification status
-                        </p>
+                        <p className="text-xs text-muted-foreground">Updates on your build verification status</p>
                       </div>
                       <Switch
                         checked={settings.build_verification}
@@ -426,9 +402,7 @@ export default function Settings() {
                     <div className="flex items-center justify-between gap-3 py-2">
                       <div className="space-y-0.5 min-w-0">
                         <Label className="font-mono text-sm">weekly_report</Label>
-                        <p className="text-xs text-muted-foreground">
-                          Summary of your weekly progress and insights
-                        </p>
+                        <p className="text-xs text-muted-foreground">Summary of your weekly progress and insights</p>
                       </div>
                       <Switch
                         checked={settings.weekly_report}
@@ -439,9 +413,7 @@ export default function Settings() {
                     <div className="flex items-center justify-between gap-3 py-2">
                       <div className="space-y-0.5 min-w-0">
                         <Label className="font-mono text-sm">marketing_emails</Label>
-                        <p className="text-xs text-muted-foreground">
-                          Product updates and promotional content
-                        </p>
+                        <p className="text-xs text-muted-foreground">Product updates and promotional content</p>
                       </div>
                       <Switch
                         checked={settings.marketing_emails}
@@ -465,9 +437,7 @@ export default function Settings() {
                     <div className="flex items-center justify-between gap-3 py-2">
                       <div className="space-y-0.5 min-w-0">
                         <Label className="font-mono text-sm">push_notifications</Label>
-                        <p className="text-xs text-muted-foreground">
-                          Receive browser push notifications
-                        </p>
+                        <p className="text-xs text-muted-foreground">Receive browser push notifications</p>
                       </div>
                       <Switch
                         checked={settings.push_notifications}
@@ -478,9 +448,7 @@ export default function Settings() {
                     <div className="flex items-center justify-between gap-3 py-2">
                       <div className="space-y-0.5 min-w-0">
                         <Label className="font-mono text-sm">in_app_alerts</Label>
-                        <p className="text-xs text-muted-foreground">
-                          Show notification badges and alerts
-                        </p>
+                        <p className="text-xs text-muted-foreground">Show notification badges and alerts</p>
                       </div>
                       <Switch
                         checked={settings.in_app_notifications}
@@ -491,12 +459,7 @@ export default function Settings() {
                 </Card>
 
                 <div className="flex justify-end gap-2">
-                  <Button 
-                    onClick={saveSettings} 
-                    disabled={isSaving || !hasChanges} 
-                    size="sm" 
-                    className="font-mono"
-                  >
+                  <Button onClick={saveSettings} disabled={isSaving || !hasChanges} size="sm" className="font-mono">
                     {isSaving ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -525,13 +488,13 @@ export default function Settings() {
                     <div className="flex items-start sm:items-center justify-between gap-3">
                       <div className="space-y-0.5 min-w-0">
                         <Label className="font-medium text-sm">Profile Status</Label>
-                        <p className="text-xs sm:text-sm text-muted-foreground">
-                          Who can view your profile page
-                        </p>
+                        <p className="text-xs sm:text-sm text-muted-foreground">Who can view your profile page</p>
                       </div>
                       <Select
                         value={settings.profile_visibility}
-                        onValueChange={(value) => updateSetting("profile_visibility", value as "public" | "builders" | "private")}
+                        onValueChange={(value) =>
+                          updateSetting("profile_visibility", value as "public" | "builders" | "private")
+                        }
                       >
                         <SelectTrigger className="w-28 sm:w-40 text-xs sm:text-sm">
                           <SelectValue />
@@ -581,9 +544,7 @@ export default function Settings() {
                           <Rocket className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                           Show Builds
                         </Label>
-                        <p className="text-xs sm:text-sm text-muted-foreground">
-                          Display your builds on your profile
-                        </p>
+                        <p className="text-xs sm:text-sm text-muted-foreground">Display your builds on your profile</p>
                       </div>
                       <Switch
                         checked={settings.show_builds}
@@ -597,9 +558,7 @@ export default function Settings() {
                           <Zap className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                           Show Stats
                         </Label>
-                        <p className="text-xs sm:text-sm text-muted-foreground">
-                          Display your statistics publicly
-                        </p>
+                        <p className="text-xs sm:text-sm text-muted-foreground">Display your statistics publicly</p>
                       </div>
                       <Switch
                         checked={settings.show_stats}
@@ -639,9 +598,7 @@ export default function Settings() {
                           <Trophy className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-500" />
                           Leaderboard Visibility
                         </Label>
-                        <p className="text-xs sm:text-sm text-muted-foreground">
-                          Appear on the public leaderboard
-                        </p>
+                        <p className="text-xs sm:text-sm text-muted-foreground">Appear on the public leaderboard</p>
                       </div>
                       <Switch
                         checked={settings.show_on_leaderboard}
@@ -652,12 +609,7 @@ export default function Settings() {
                 </Card>
 
                 <div className="flex justify-end gap-2">
-                  <Button 
-                    onClick={saveSettings} 
-                    disabled={isSaving || !hasChanges} 
-                    size="sm" 
-                    className="text-sm"
-                  >
+                  <Button onClick={saveSettings} disabled={isSaving || !hasChanges} size="sm" className="text-sm">
                     {isSaving ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -699,7 +651,10 @@ export default function Settings() {
                             <div className="flex items-center gap-2 flex-wrap">
                               <span className="font-medium text-sm sm:text-base">{integration.name}</span>
                               {integration.connected && (
-                                <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-[10px] sm:text-xs">
+                                <Badge
+                                  variant="secondary"
+                                  className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-[10px] sm:text-xs"
+                                >
                                   <Check className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />
                                   Connected
                                 </Badge>
@@ -754,9 +709,7 @@ export default function Settings() {
                       <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500" />
                       Subscription
                     </CardTitle>
-                    <CardDescription className="text-xs sm:text-sm">
-                      Manage your premium subscription
-                    </CardDescription>
+                    <CardDescription className="text-xs sm:text-sm">Manage your premium subscription</CardDescription>
                   </CardHeader>
                   <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
                     {subLoading ? (
@@ -770,15 +723,18 @@ export default function Settings() {
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
                               <span className="font-medium text-sm sm:text-base">Premium Member</span>
-                              <Badge variant="secondary" className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 text-[10px] sm:text-xs">
+                              <Badge
+                                variant="secondary"
+                                className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 text-[10px] sm:text-xs"
+                              >
                                 Active
                               </Badge>
                             </div>
                             <p className="text-xs sm:text-sm text-muted-foreground">
-                              ${SUBSCRIPTION_PRICE}/month • {subscriptionEnd 
+                              ${SUBSCRIPTION_PRICE}/month •{" "}
+                              {subscriptionEnd
                                 ? `Renews ${new Date(subscriptionEnd).toLocaleDateString()}`
-                                : "Active subscription"
-                              }
+                                : "Active subscription"}
                             </p>
                           </div>
                         </div>
@@ -857,12 +813,7 @@ export default function Settings() {
                           Download all your data including builds and stats
                         </p>
                       </div>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full sm:w-auto"
-                        onClick={handleExportData}
-                      >
+                      <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={handleExportData}>
                         Export
                       </Button>
                     </div>
@@ -878,9 +829,9 @@ export default function Settings() {
                       </div>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button 
-                            variant="destructive" 
-                            size="sm" 
+                          <Button
+                            variant="destructive"
+                            size="sm"
                             className="gap-2 w-full sm:w-auto"
                             disabled={isDeleting}
                           >
@@ -896,13 +847,13 @@ export default function Settings() {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              This action cannot be undone. This will permanently delete all your builds
-                              and remove your submissions from our servers.
+                              This action cannot be undone. This will permanently delete all your builds and remove your
+                              submissions from our servers.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction 
+                            <AlertDialogAction
                               onClick={handleDeleteBuilds}
                               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                             >
@@ -931,13 +882,13 @@ export default function Settings() {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Delete your account?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              This will permanently delete your account, all your builds, settings, and data.
-                              This action cannot be undone.
+                              This will permanently delete your account, all your builds, settings, and data. This
+                              action cannot be undone.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction 
+                            <AlertDialogAction
                               onClick={handleDeleteAccount}
                               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                             >
