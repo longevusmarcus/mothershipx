@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { withRateLimit, RateLimitPresets } from "../_shared/rateLimit.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -48,6 +49,10 @@ serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+
+  // Rate limiting - 60 requests per minute per user/IP
+  const rateLimited = await withRateLimit(req, "check-subscription", RateLimitPresets.standard);
+  if (rateLimited) return rateLimited;
 
   const supabaseClient = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
