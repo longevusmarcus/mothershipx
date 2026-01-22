@@ -318,8 +318,6 @@ export default function Settings() {
           className="relative z-10"
         >
           <div className="mb-6 text-center">
-            <p className="font-mono text-xs text-muted-foreground tracking-widest uppercase mb-2">
-              ~/settings
             </p>
             <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">Settings</h1>
             <p className="text-sm text-muted-foreground mt-2">
