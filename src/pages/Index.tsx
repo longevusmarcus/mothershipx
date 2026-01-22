@@ -310,8 +310,8 @@ const Index = () => {
       />
 
       <div className={cn(
-        "flex flex-col min-h-[calc(100vh-8rem)]",
-        hasSearched ? "justify-start pt-6" : "items-center justify-center"
+        "flex flex-col",
+        hasSearched ? "min-h-0 pt-6" : "min-h-[calc(100vh-8rem)] items-center justify-center"
       )}>
         {/* Title - Only show when not searched */}
         {!hasSearched && (
@@ -327,7 +327,7 @@ const Index = () => {
 
         {/* Search Results - Chat-like vertical display or Grid */}
         {hasSearched && (
-          <div className="w-full max-w-2xl mx-auto px-4 mb-6 flex-1 overflow-y-auto">
+          <div className="w-full max-w-2xl mx-auto px-4 mb-6">
             <SearchResults
               results={searchResults}
               isLoading={isSearching}
@@ -345,7 +345,7 @@ const Index = () => {
           transition={{ duration: 0.5, delay: hasSearched ? 0 : 0.1 }}
           className={cn(
             "w-full max-w-2xl px-4",
-            hasSearched && "sticky bottom-4 mt-auto"
+            hasSearched && "md:sticky md:bottom-4 mt-6"
           )}
         >
           <div className="rounded-xl border border-border bg-card overflow-hidden shadow-lg p-5 space-y-5">
