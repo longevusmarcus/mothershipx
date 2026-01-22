@@ -45,7 +45,7 @@ export const CommunityChallenges = () => {
   const memberBenefits = [
     { icon: DollarSign, label: "Win Money", desc: "90% of prize pool" },
     { icon: Megaphone, label: "Free Distribution", desc: "We promote your build" },
-    { icon: Trophy, label: "Exclusive Hackathons", desc: "Access to future events" },
+    { icon: Trophy, label: "Join Leaderboard", desc: "Access to league events" },
     { icon: Award, label: "Builder Badge", desc: "Resume & vanity metric" },
     { icon: Link2, label: "Permanent Link", desc: "Showcase forever" },
     { icon: Percent, label: "Top 10 Perks", desc: "Rewards for ranking" },
