@@ -157,9 +157,12 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.3, duration: 0.4, type: "spring" }}
                 >
-                  <div className="inline-flex items-baseline">
-                    <span className="text-4xl sm:text-5xl font-semibold tracking-tight">${SUBSCRIPTION_PRICE}</span>
-                    <span className="text-muted-foreground ml-1.5 text-base">/month</span>
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="text-sm text-muted-foreground line-through">$99.99/month</span>
+                    <div className="inline-flex items-baseline">
+                      <span className="text-4xl sm:text-5xl font-semibold tracking-tight">${SUBSCRIPTION_PRICE}</span>
+                      <span className="text-muted-foreground ml-1.5 text-base">/month</span>
+                    </div>
                   </div>
                 </motion.div>
 
