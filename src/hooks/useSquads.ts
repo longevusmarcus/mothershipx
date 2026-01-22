@@ -59,10 +59,10 @@ export function useSquads(problemId: string) {
 
       if (membersError) throw membersError;
 
-      // Get profiles for members
+      // Get profiles for members using secure public_profiles view
       const userIds = [...new Set(membersData?.map((m) => m.user_id) || [])];
       const { data: profilesData } = await supabase
-        .from("profiles")
+        .from("public_profiles")
         .select("id, name, avatar_url")
         .in("id", userIds);
 
@@ -201,10 +201,10 @@ export function useSquadMessages(squadId: string | null) {
 
       if (error) throw error;
 
-      // Get sender profiles
+      // Get sender profiles using secure public_profiles view
       const userIds = [...new Set(data?.filter((m) => m.user_id).map((m) => m.user_id) || [])];
       const { data: profiles } = await supabase
-        .from("profiles")
+        .from("public_profiles")
         .select("id, name, avatar_url")
         .in("id", userIds);
 

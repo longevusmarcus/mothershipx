@@ -95,9 +95,9 @@ export default function PublicProfile() {
     const fetchProfile = async () => {
       setIsLoading(true);
 
-      // Fetch profile
+      // Fetch profile using the secure public_profiles view (excludes email)
       const { data: profileData, error: profileError } = await supabase
-        .from("profiles")
+        .from("public_profiles")
         .select("*")
         .eq("id", userId)
         .single();

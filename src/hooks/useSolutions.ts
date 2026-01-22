@@ -74,7 +74,7 @@ export function useSolutions(problemId: string) {
         userUpvotes = upvotes?.map((u) => u.solution_id) || [];
       }
 
-      // Get profiles for contributors and creators
+      // Get profiles for contributors and creators using secure public_profiles view
       const allUserIds = [
         ...new Set([
           ...data.map((s) => s.created_by),
@@ -82,7 +82,7 @@ export function useSolutions(problemId: string) {
         ]),
       ];
       const { data: profiles } = await supabase
-        .from("profiles")
+        .from("public_profiles")
         .select("id, name, avatar_url")
         .in("id", allUserIds);
 
