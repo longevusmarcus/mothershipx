@@ -121,11 +121,17 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
               key={item.path}
               to={item.path}
               className={cn(
-                "flex items-center gap-3 px-2 py-2 rounded-md text-sm transition-colors",
+                "group flex items-center gap-3 px-2 py-2 rounded-md text-sm transition-colors",
                 isActive ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground",
               )}
             >
-              <item.icon className="h-4 w-4 shrink-0" />
+              <motion.div
+                whileHover={{ scale: 1.15, rotate: 5 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              >
+                <item.icon className="h-4 w-4 shrink-0 transition-colors group-hover:text-primary" />
+              </motion.div>
               <AnimatePresence mode="wait">
                 {(!collapsed || isMobile) && (
                   <motion.span
@@ -146,13 +152,18 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
         <NavLink
           to="/challenges"
           className={cn(
-            "relative flex items-center gap-3 px-2 py-2 rounded-md text-sm transition-colors overflow-hidden",
+            "group relative flex items-center gap-3 px-2 py-2 rounded-md text-sm transition-colors overflow-hidden",
             location.pathname === "/challenges"
               ? "bg-gradient-to-r from-warning/15 to-destructive/15 text-foreground font-medium"
               : "text-muted-foreground hover:text-foreground hover:bg-gradient-to-r hover:from-warning/10 hover:to-destructive/10",
           )}
         >
-          <div className="relative">
+          <motion.div 
+            className="relative"
+            whileHover={{ scale: 1.15, rotate: -8 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+          >
             <Swords className="h-4 w-4 shrink-0 text-warning" />
             <motion.div
               className="absolute -top-0.5 -right-0.5"
@@ -161,7 +172,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
             >
               <Flame className="h-2 w-2 text-destructive" />
             </motion.div>
-          </div>
+          </motion.div>
           <AnimatePresence mode="wait">
             {(!collapsed || isMobile) && (
               <motion.div
