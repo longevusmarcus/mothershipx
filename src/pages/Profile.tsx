@@ -85,7 +85,13 @@ const achievementDefs = [
   { id: 3, name: "Arena Warrior", description: "Entered 3 challenges", icon: Trophy, check: (stats: any) => stats.challengesEntered >= 3 },
   { id: 4, name: "Challenge Victor", description: "Won a challenge", icon: Award, check: (stats: any) => stats.challengesWon >= 1 },
   { id: 5, name: "Level 5", description: "Reached level 5", icon: Sparkles, check: (stats: any) => stats.currentLevel >= 5 },
-  { id: 6, name: "Elite Builder", description: "Reach level 10", icon: Trophy, check: (stats: any) => stats.currentLevel >= 10 },
+  { id: 6, name: "Elite Builder", description: "Reached level 10", icon: Crown, check: (stats: any) => stats.currentLevel >= 10 },
+  { id: 7, name: "7-Day Streak", description: "Active for 7 consecutive days", icon: Zap, check: (stats: any) => (stats.streak || 0) >= 7 },
+  { id: 8, name: "Collaborator", description: "Joined a squad team", icon: Users, check: (stats: any) => (stats.squadsJoined || 0) >= 1 },
+  { id: 9, name: "Revenue Maker", description: "Earned first revenue", icon: CreditCard, check: (stats: any) => (stats.revenueEarned || 0) > 0 },
+  { id: 10, name: "Prolific", description: "Shipped 10 solutions", icon: Rocket, check: (stats: any) => stats.solutionsShipped >= 10 },
+  { id: 11, name: "Trendsetter", description: "Joined a viral problem", icon: Globe, check: (stats: any) => (stats.viralProblemsJoined || 0) >= 1 },
+  { id: 12, name: "30-Day Streak", description: "Active for 30 consecutive days", icon: Zap, check: (stats: any) => (stats.streak || 0) >= 30 },
 ];
 
 interface Integration {
@@ -695,24 +701,24 @@ export default function Profile() {
           </TabsContent>
 
           {/* Achievements Tab */}
-          <TabsContent value="achievements" className="mt-4 space-y-4">
+          <TabsContent value="achievements" className="mt-4 space-y-4 overflow-visible">
             {/* Reddit-style Achievement Summary Card */}
-            <div className="rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-4">
+            <div className="rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-4 overflow-visible">
               <h3 className="text-xs font-medium text-primary uppercase tracking-wider mb-4">
                 Achievements
               </h3>
               
               {/* Achievement Badges Row */}
-              <div className="flex items-center gap-3 mb-4">
-                <div className="flex -space-x-2">
-                  {achievementDefs.slice(0, 3).map((achievement) => {
+              <div className="flex items-center gap-3 mb-4 overflow-visible">
+                <div className="flex -space-x-2 overflow-visible">
+                  {achievementDefs.slice(0, 4).map((achievement) => {
                     const Icon = achievement.icon;
                     const isUnlocked = userStats ? achievement.check(userStats) : false;
                     return (
-                      <Tooltip key={achievement.id}>
+                      <Tooltip key={achievement.id} delayDuration={100}>
                         <TooltipTrigger asChild>
                           <div 
-                            className={`w-10 h-10 rounded-full flex items-center justify-center border-2 border-background transition-all ${
+                            className={`w-10 h-10 rounded-full flex items-center justify-center border-2 border-background transition-all hover:scale-110 hover:z-10 ${
                               isUnlocked 
                                 ? "bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 shadow-lg shadow-orange-500/20" 
                                 : "bg-muted/50 grayscale opacity-50"
@@ -721,7 +727,7 @@ export default function Profile() {
                             <Icon className={`h-4 w-4 ${isUnlocked ? "text-white" : "text-muted-foreground"}`} />
                           </div>
                         </TooltipTrigger>
-                        <TooltipContent side="top" className="text-xs">
+                        <TooltipContent side="bottom" sideOffset={8} className="text-xs z-[100]">
                           <p className="font-medium">{achievement.name}</p>
                           <p className="text-muted-foreground">{achievement.description}</p>
                         </TooltipContent>
@@ -735,7 +741,7 @@ export default function Profile() {
                       .filter(a => userStats ? a.check(userStats) : false)
                       .slice(0, 2)
                       .map(a => a.name)
-                      .join(', ')}
+                      .join(', ') || 'No achievements yet'}
                     {userStats && achievementDefs.filter(a => a.check(userStats)).length > 2 && (
                       <span className="text-muted-foreground">
                         {' '}+{achievementDefs.filter(a => a.check(userStats)).length - 2} more
@@ -759,16 +765,16 @@ export default function Profile() {
             </div>
 
             {/* All Achievements Grid */}
-            <div className="rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-4">
+            <div className="rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-4 overflow-visible">
               <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-4">
                 Trophy Case
               </h3>
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 overflow-visible">
                 {achievementDefs.map((achievement) => {
                   const Icon = achievement.icon;
                   const isUnlocked = userStats ? achievement.check(userStats) : false;
                   return (
-                    <Tooltip key={achievement.id}>
+                    <Tooltip key={achievement.id} delayDuration={100}>
                       <TooltipTrigger asChild>
                         <div className="flex flex-col items-center gap-2 group cursor-pointer">
                           <div 
@@ -790,7 +796,7 @@ export default function Profile() {
                           </div>
                         </div>
                       </TooltipTrigger>
-                      <TooltipContent side="top" className="text-xs max-w-[150px]">
+                      <TooltipContent side="bottom" sideOffset={8} className="text-xs max-w-[150px] z-[100]">
                         <p className="font-medium">{achievement.name}</p>
                         <p className="text-muted-foreground">{achievement.description}</p>
                         {!isUnlocked && <p className="text-warning mt-1">Not yet unlocked</p>}
