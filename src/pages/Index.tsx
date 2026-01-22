@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Search, Zap, LayoutGrid, ArrowUpRight } from "lucide-react";
+import { Search, Zap, LayoutGrid, ArrowUpRight, ChevronDown } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
@@ -34,6 +34,7 @@ const Index = () => {
   const [selectedChannel, setSelectedChannel] = useState<string | null>(null);
   const [selectedSubreddit, setSelectedSubreddit] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const [dataSourcesExpanded, setDataSourcesExpanded] = useState(true);
   const navigate = useNavigate();
   const { user, profile } = useAuth();
   const { toast } = useToast();
@@ -435,17 +436,46 @@ const Index = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="w-full max-w-2xl px-4 mt-8"
             >
-              <div className="rounded-xl border border-dashed border-muted-foreground/30 bg-card p-5">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="h-9 w-9 rounded-lg bg-secondary/50 flex items-center justify-center">
-                    <Search className="h-4 w-4 text-muted-foreground" />
+              <div className="rounded-xl border border-dashed border-muted-foreground/30 bg-card overflow-hidden">
+                {/* Collapsible Header */}
+                <button
+                  onClick={() => setDataSourcesExpanded(!dataSourcesExpanded)}
+                  className="w-full flex items-center justify-between p-4 hover:bg-secondary/30 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="h-9 w-9 rounded-lg bg-secondary/50 flex items-center justify-center">
+                      <Search className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-sm font-medium">Data Sources</p>
+                      <p className="text-xs text-muted-foreground">Currently scraping TikTok</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium">Data Sources</p>
-                    <p className="text-xs text-muted-foreground">Currently scraping TikTok</p>
-                  </div>
-                </div>
-                <DataSourceSelector onSelectionChange={setSelectedSource} />
+                  <motion.div
+                    animate={{ rotate: dataSourcesExpanded ? 180 : 0 }}
+                    transition={{ duration: 0.2, ease: "easeInOut" }}
+                    className="h-8 w-8 rounded-full flex items-center justify-center hover:bg-secondary/50 transition-colors"
+                  >
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  </motion.div>
+                </button>
+
+                {/* Collapsible Content */}
+                <AnimatePresence initial={false}>
+                  {dataSourcesExpanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: "easeInOut" }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-4 pb-4 pt-1">
+                        <DataSourceSelector onSelectionChange={setSelectedSource} />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </motion.div>
 
