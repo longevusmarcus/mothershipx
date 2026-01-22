@@ -301,15 +301,28 @@ export default function Settings() {
 
   return (
     <AppLayout>
-      <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 max-w-4xl mx-auto">
+      <div className="relative p-4 sm:p-6 space-y-4 sm:space-y-6 max-w-4xl mx-auto">
+        {/* Dot Grid Background */}
+        <div 
+          className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05] pointer-events-none"
+          style={{
+            backgroundImage: `radial-gradient(circle, currentColor 1px, transparent 1px)`,
+            backgroundSize: '20px 20px',
+          }}
+        />
+        
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
+          className="relative z-10"
         >
-          <div className="mb-4 sm:mb-6">
+          <div className="mb-6 text-center">
+            <p className="font-mono text-xs text-muted-foreground tracking-widest uppercase mb-2">
+              ~/settings
+            </p>
             <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">Settings</h1>
-            <p className="text-sm sm:text-base text-muted-foreground">
+            <p className="text-sm text-muted-foreground mt-2">
               Manage your notifications, privacy, and connected services
             </p>
           </div>
@@ -318,43 +331,41 @@ export default function Settings() {
             <SettingsSkeleton />
           ) : (
             <Tabs defaultValue="notifications" className="space-y-4 sm:space-y-6">
-              <TabsList className="bg-muted/50 p-1 w-full justify-start overflow-x-auto flex-nowrap">
-                <TabsTrigger value="notifications" className="gap-1.5 text-xs sm:text-sm px-2 sm:px-3 whitespace-nowrap">
-                  <Bell className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  <span className="hidden xs:inline">Notifications</span>
-                  <span className="xs:hidden">Notifs</span>
+              <TabsList className="bg-secondary/30 backdrop-blur-sm border border-border/50 p-1 w-full justify-start overflow-x-auto flex-nowrap rounded-lg">
+                <TabsTrigger value="notifications" className="gap-1.5 font-mono text-xs px-3 whitespace-nowrap data-[state=active]:bg-background">
+                  <Bell className="h-3.5 w-3.5" />
+                  ./notifs
                 </TabsTrigger>
-                <TabsTrigger value="privacy" className="gap-1.5 text-xs sm:text-sm px-2 sm:px-3 whitespace-nowrap">
-                  <Shield className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  Privacy
+                <TabsTrigger value="privacy" className="gap-1.5 font-mono text-xs px-3 whitespace-nowrap data-[state=active]:bg-background">
+                  <Shield className="h-3.5 w-3.5" />
+                  ./privacy
                 </TabsTrigger>
-                <TabsTrigger value="integrations" className="gap-1.5 text-xs sm:text-sm px-2 sm:px-3 whitespace-nowrap">
-                  <Link2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  <span className="hidden xs:inline">Integrations</span>
-                  <span className="xs:hidden">Integs</span>
+                <TabsTrigger value="integrations" className="gap-1.5 font-mono text-xs px-3 whitespace-nowrap data-[state=active]:bg-background">
+                  <Link2 className="h-3.5 w-3.5" />
+                  ./integs
                 </TabsTrigger>
-                <TabsTrigger value="danger" className="gap-1.5 text-xs sm:text-sm px-2 sm:px-3 whitespace-nowrap">
-                  <AlertTriangle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  Danger
+                <TabsTrigger value="danger" className="gap-1.5 font-mono text-xs px-3 whitespace-nowrap data-[state=active]:bg-background">
+                  <AlertTriangle className="h-3.5 w-3.5" />
+                  ./danger
                 </TabsTrigger>
               </TabsList>
 
               <TabsContent value="notifications" className="space-y-4 sm:space-y-6">
-                <Card>
-                  <CardHeader className="p-4 sm:p-6">
-                    <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                      <Mail className="h-4 w-4 sm:h-5 sm:w-5" />
-                      Email Notifications
+                <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+                  <CardHeader className="p-4 sm:p-5">
+                    <CardTitle className="font-mono text-xs text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                      <span className="text-primary">&gt;</span>
+                      email_notifications
                     </CardTitle>
-                    <CardDescription className="text-xs sm:text-sm">
+                    <CardDescription className="text-xs mt-1">
                       Choose which emails you'd like to receive
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-4 sm:space-y-6">
-                    <div className="flex items-start sm:items-center justify-between gap-3">
+                  <CardContent className="p-4 sm:p-5 pt-0 space-y-4">
+                    <div className="flex items-center justify-between gap-3 py-2">
                       <div className="space-y-0.5 min-w-0">
-                        <Label className="font-medium text-sm">Daily Digest</Label>
-                        <p className="text-xs sm:text-sm text-muted-foreground">
+                        <Label className="font-mono text-sm">daily_digest</Label>
+                        <p className="text-xs text-muted-foreground">
                           Receive a daily summary of platform activity
                         </p>
                       </div>
@@ -363,14 +374,14 @@ export default function Settings() {
                         onCheckedChange={(checked) => updateSetting("email_digest", checked)}
                       />
                     </div>
-                    <Separator />
-                    <div className="flex items-start sm:items-center justify-between gap-3">
+                    <Separator className="opacity-50" />
+                    <div className="flex items-center justify-between gap-3 py-2">
                       <div className="space-y-0.5 min-w-0">
-                        <Label className="font-medium text-sm flex items-center gap-2">
-                          <Rocket className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
-                          New Problem Alerts
+                        <Label className="font-mono text-sm flex items-center gap-2">
+                          <Rocket className="h-3.5 w-3.5 text-primary" />
+                          new_problems
                         </Label>
-                        <p className="text-xs sm:text-sm text-muted-foreground">
+                        <p className="text-xs text-muted-foreground">
                           Get notified when new problems are posted
                         </p>
                       </div>
@@ -379,14 +390,14 @@ export default function Settings() {
                         onCheckedChange={(checked) => updateSetting("new_problems", checked)}
                       />
                     </div>
-                    <Separator />
-                    <div className="flex items-start sm:items-center justify-between gap-3">
+                    <Separator className="opacity-50" />
+                    <div className="flex items-center justify-between gap-3 py-2">
                       <div className="space-y-0.5 min-w-0">
-                        <Label className="font-medium text-sm flex items-center gap-2">
-                          <Trophy className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-500" />
-                          Leaderboard Updates
+                        <Label className="font-mono text-sm flex items-center gap-2">
+                          <Trophy className="h-3.5 w-3.5 text-warning" />
+                          leaderboard_updates
                         </Label>
-                        <p className="text-xs sm:text-sm text-muted-foreground">
+                        <p className="text-xs text-muted-foreground">
                           Know when your rank changes
                         </p>
                       </div>
@@ -395,14 +406,14 @@ export default function Settings() {
                         onCheckedChange={(checked) => updateSetting("leaderboard_updates", checked)}
                       />
                     </div>
-                    <Separator />
-                    <div className="flex items-start sm:items-center justify-between gap-3">
+                    <Separator className="opacity-50" />
+                    <div className="flex items-center justify-between gap-3 py-2">
                       <div className="space-y-0.5 min-w-0">
-                        <Label className="font-medium text-sm flex items-center gap-2">
-                          <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-500" />
-                          Build Verification
+                        <Label className="font-mono text-sm flex items-center gap-2">
+                          <Check className="h-3.5 w-3.5 text-success" />
+                          build_verification
                         </Label>
-                        <p className="text-xs sm:text-sm text-muted-foreground">
+                        <p className="text-xs text-muted-foreground">
                           Updates on your build verification status
                         </p>
                       </div>
@@ -411,11 +422,11 @@ export default function Settings() {
                         onCheckedChange={(checked) => updateSetting("build_verification", checked)}
                       />
                     </div>
-                    <Separator />
-                    <div className="flex items-start sm:items-center justify-between gap-3">
+                    <Separator className="opacity-50" />
+                    <div className="flex items-center justify-between gap-3 py-2">
                       <div className="space-y-0.5 min-w-0">
-                        <Label className="font-medium text-sm">Weekly Report</Label>
-                        <p className="text-xs sm:text-sm text-muted-foreground">
+                        <Label className="font-mono text-sm">weekly_report</Label>
+                        <p className="text-xs text-muted-foreground">
                           Summary of your weekly progress and insights
                         </p>
                       </div>
@@ -424,11 +435,11 @@ export default function Settings() {
                         onCheckedChange={(checked) => updateSetting("weekly_report", checked)}
                       />
                     </div>
-                    <Separator />
-                    <div className="flex items-start sm:items-center justify-between gap-3">
+                    <Separator className="opacity-50" />
+                    <div className="flex items-center justify-between gap-3 py-2">
                       <div className="space-y-0.5 min-w-0">
-                        <Label className="font-medium text-sm">Marketing Emails</Label>
-                        <p className="text-xs sm:text-sm text-muted-foreground">
+                        <Label className="font-mono text-sm">marketing_emails</Label>
+                        <p className="text-xs text-muted-foreground">
                           Product updates and promotional content
                         </p>
                       </div>
@@ -440,21 +451,21 @@ export default function Settings() {
                   </CardContent>
                 </Card>
 
-                <Card>
-                  <CardHeader className="p-4 sm:p-6">
-                    <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                      <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5" />
-                      In-App Notifications
+                <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+                  <CardHeader className="p-4 sm:p-5">
+                    <CardTitle className="font-mono text-xs text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                      <span className="text-primary">&gt;</span>
+                      in_app_notifications
                     </CardTitle>
-                    <CardDescription className="text-xs sm:text-sm">
+                    <CardDescription className="text-xs mt-1">
                       Configure how you receive notifications in the app
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-4 sm:space-y-6">
-                    <div className="flex items-start sm:items-center justify-between gap-3">
+                  <CardContent className="p-4 sm:p-5 pt-0 space-y-4">
+                    <div className="flex items-center justify-between gap-3 py-2">
                       <div className="space-y-0.5 min-w-0">
-                        <Label className="font-medium text-sm">Push Notifications</Label>
-                        <p className="text-xs sm:text-sm text-muted-foreground">
+                        <Label className="font-mono text-sm">push_notifications</Label>
+                        <p className="text-xs text-muted-foreground">
                           Receive browser push notifications
                         </p>
                       </div>
@@ -463,11 +474,11 @@ export default function Settings() {
                         onCheckedChange={(checked) => updateSetting("push_notifications", checked)}
                       />
                     </div>
-                    <Separator />
-                    <div className="flex items-start sm:items-center justify-between gap-3">
+                    <Separator className="opacity-50" />
+                    <div className="flex items-center justify-between gap-3 py-2">
                       <div className="space-y-0.5 min-w-0">
-                        <Label className="font-medium text-sm">In-App Alerts</Label>
-                        <p className="text-xs sm:text-sm text-muted-foreground">
+                        <Label className="font-mono text-sm">in_app_alerts</Label>
+                        <p className="text-xs text-muted-foreground">
                           Show notification badges and alerts
                         </p>
                       </div>
@@ -484,15 +495,15 @@ export default function Settings() {
                     onClick={saveSettings} 
                     disabled={isSaving || !hasChanges} 
                     size="sm" 
-                    className="text-sm"
+                    className="font-mono"
                   >
                     {isSaving ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Saving...
+                        saving...
                       </>
                     ) : (
-                      "Save Preferences"
+                      "./save"
                     )}
                   </Button>
                 </div>

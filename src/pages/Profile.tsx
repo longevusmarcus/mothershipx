@@ -219,14 +219,24 @@ export default function Profile() {
     <AppLayout>
       <SEO title="Profile" description="Your builder profile and achievements." />
       
+      {/* Dot Grid Background */}
+      <div className="relative">
+        <div 
+          className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05] pointer-events-none"
+          style={{
+            backgroundImage: `radial-gradient(circle, currentColor 1px, transparent 1px)`,
+            backgroundSize: '20px 20px',
+          }}
+        />
+      
       {/* Main container with strict overflow control */}
-      <div className="w-full max-w-full overflow-hidden space-y-4">
+      <div className="relative z-10 w-full max-w-full overflow-hidden space-y-4">
 
-        {/* Profile Card - Compact */}
+        {/* Profile Card - Terminal Style */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-xl border border-border bg-card p-4 overflow-hidden"
+          className="rounded-lg border border-border bg-card/50 backdrop-blur-sm p-5 overflow-hidden"
         >
           <div className="flex gap-4">
             {/* Avatar */}
@@ -305,31 +315,31 @@ export default function Profile() {
             </div>
           </div>
 
-          {/* XP Bar */}
-          <div className="mt-4 pt-3 border-t border-border">
-            <div className="flex items-center justify-between text-xs mb-1">
-              <span className="text-muted-foreground">Level {userStats?.currentLevel || 1}</span>
-              <span className="text-muted-foreground">{userStats?.totalXp || 0} / {xpProgress.nextLevelXp} XP</span>
+          {/* XP Bar - Terminal Style */}
+          <div className="mt-5 pt-4 border-t border-border/50">
+            <div className="flex items-center justify-between font-mono text-xs mb-2">
+              <span className="text-muted-foreground">level_{userStats?.currentLevel || 1}</span>
+              <span className="text-muted-foreground">{userStats?.totalXp || 0} / {xpProgress.nextLevelXp} <span className="text-primary">XP</span></span>
             </div>
-            <Progress value={xpProgress.percentage} className="h-1" />
+            <Progress value={xpProgress.percentage} className="h-1.5" />
           </div>
         </motion.div>
 
-        {/* Tabs */}
+        {/* Tabs - Terminal Style */}
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="w-full justify-start bg-muted/50 p-1 h-9 overflow-x-auto">
-            <TabsTrigger value="overview" className="text-xs px-3 h-7">Overview</TabsTrigger>
-            <TabsTrigger value="achievements" className="text-xs px-3 h-7">Achievements</TabsTrigger>
-            <TabsTrigger value="account" className="text-xs px-3 h-7">Account</TabsTrigger>
+          <TabsList className="w-full justify-start bg-secondary/30 backdrop-blur-sm p-1 h-10 overflow-x-auto border border-border/50 rounded-lg">
+            <TabsTrigger value="overview" className="font-mono text-xs px-4 h-8 data-[state=active]:bg-background">./overview</TabsTrigger>
+            <TabsTrigger value="achievements" className="font-mono text-xs px-4 h-8 data-[state=active]:bg-background">./achievements</TabsTrigger>
+            <TabsTrigger value="account" className="font-mono text-xs px-4 h-8 data-[state=active]:bg-background">./account</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="mt-4 space-y-4">
-            {/* Bio */}
-            <div className="rounded-xl border border-border bg-card p-4">
-              <h3 className="text-sm font-medium mb-2 flex items-center gap-2">
-                <User className="h-3.5 w-3.5 text-muted-foreground" />
-                About
+            {/* Bio - Terminal Style */}
+            <div className="rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-4">
+              <h3 className="font-mono text-xs text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+                <span className="text-primary">&gt;</span>
+                about
               </h3>
               {isEditing ? (
                 <Textarea
@@ -337,7 +347,7 @@ export default function Profile() {
                   onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                   rows={3}
                   placeholder="Short bio..."
-                  className="resize-none text-sm"
+                  className="resize-none text-sm font-mono bg-secondary/20"
                 />
               ) : (
                 <p className="text-sm text-muted-foreground break-words">
@@ -346,11 +356,11 @@ export default function Profile() {
               )}
             </div>
 
-            {/* Links */}
-            <div className="rounded-xl border border-border bg-card p-4">
-              <h3 className="text-sm font-medium mb-2 flex items-center gap-2">
-                <LinkIcon className="h-3.5 w-3.5 text-muted-foreground" />
-                Links
+            {/* Links - Terminal Style */}
+            <div className="rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-4">
+              <h3 className="font-mono text-xs text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+                <span className="text-primary">&gt;</span>
+                links
               </h3>
               {isEditing ? (
                 <div className="space-y-2">
@@ -358,48 +368,51 @@ export default function Profile() {
                     value={formData.website}
                     onChange={(e) => setFormData({ ...formData, website: e.target.value })}
                     placeholder="yoursite.com"
-                    className="h-8 text-sm"
+                    className="h-9 text-sm font-mono bg-secondary/20"
                   />
                   <div className="grid grid-cols-2 gap-2">
                     <Input
                       value={formData.github}
                       onChange={(e) => setFormData({ ...formData, github: e.target.value })}
                       placeholder="GitHub"
-                      className="h-8 text-sm"
+                      className="h-9 text-sm font-mono bg-secondary/20"
                     />
                     <Input
                       value={formData.twitter}
                       onChange={(e) => setFormData({ ...formData, twitter: e.target.value })}
                       placeholder="Twitter"
-                      className="h-8 text-sm"
+                      className="h-9 text-sm font-mono bg-secondary/20"
                     />
                   </div>
                 </div>
               ) : (
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   {(formData.website || formData.github || formData.twitter) ? (
                     <>
                       {formData.website && (
-                        <a href={`https://${formData.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground truncate">
-                          <ExternalLink className="h-3 w-3 shrink-0" />
-                          <span className="truncate">{formData.website}</span>
+                        <a href={`https://${formData.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 font-mono text-xs text-muted-foreground hover:text-primary transition-colors truncate group">
+                          <span className="text-primary">&gt;</span>
+                          <span className="truncate group-hover:underline">{formData.website}</span>
+                          <ExternalLink className="h-3 w-3 shrink-0 opacity-50" />
                         </a>
                       )}
                       {formData.github && (
-                        <a href={`https://github.com/${formData.github}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground truncate">
-                          <ExternalLink className="h-3 w-3 shrink-0" />
-                          <span className="truncate">github.com/{formData.github}</span>
+                        <a href={`https://github.com/${formData.github}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 font-mono text-xs text-muted-foreground hover:text-primary transition-colors truncate group">
+                          <span className="text-primary">&gt;</span>
+                          <span className="truncate group-hover:underline">github.com/{formData.github}</span>
+                          <ExternalLink className="h-3 w-3 shrink-0 opacity-50" />
                         </a>
                       )}
                       {formData.twitter && (
-                        <a href={`https://twitter.com/${formData.twitter}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground truncate">
-                          <ExternalLink className="h-3 w-3 shrink-0" />
-                          <span className="truncate">@{formData.twitter}</span>
+                        <a href={`https://twitter.com/${formData.twitter}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 font-mono text-xs text-muted-foreground hover:text-primary transition-colors truncate group">
+                          <span className="text-primary">&gt;</span>
+                          <span className="truncate group-hover:underline">@{formData.twitter}</span>
+                          <ExternalLink className="h-3 w-3 shrink-0 opacity-50" />
                         </a>
                       )}
                     </>
                   ) : (
-                    <p className="text-sm text-muted-foreground">No links added.</p>
+                    <p className="font-mono text-xs text-muted-foreground/60">No links added.</p>
                   )}
                 </div>
               )}
@@ -414,36 +427,38 @@ export default function Profile() {
 
           {/* Achievements Tab */}
           <TabsContent value="achievements" className="mt-4">
-            <div className="rounded-xl border border-border bg-card p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-medium flex items-center gap-2">
-                  <Award className="h-3.5 w-3.5 text-muted-foreground" />
-                  Achievements
+            <div className="rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-mono text-xs text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                  <span className="text-primary">&gt;</span>
+                  achievements
                 </h3>
-                <Badge variant="secondary" className="text-[10px]">
+                <span className="font-mono text-xs text-muted-foreground">
                   {userStats ? achievementDefs.filter(a => a.check(userStats)).length : 0}/{achievementDefs.length}
-                </Badge>
+                </span>
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-3">
                 {achievementDefs.map((achievement) => {
                   const Icon = achievement.icon;
                   const isUnlocked = userStats ? achievement.check(userStats) : false;
                   return (
                     <div
                       key={achievement.id}
-                      className={`flex items-center gap-2 p-2.5 rounded-lg border transition-colors ${
-                        isUnlocked ? "border-border bg-muted/30" : "border-border/50 opacity-40"
+                      className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${
+                        isUnlocked 
+                          ? "border-primary/30 bg-primary/5" 
+                          : "border-border/30 opacity-40"
                       }`}
                     >
-                      <div className={`p-1.5 rounded-md shrink-0 ${isUnlocked ? "bg-primary/10" : "bg-muted"}`}>
-                        <Icon className={`h-3.5 w-3.5 ${isUnlocked ? "text-primary" : "text-muted-foreground"}`} />
+                      <div className={`p-2 rounded-md shrink-0 ${isUnlocked ? "bg-primary/10" : "bg-muted/50"}`}>
+                        <Icon className={`h-4 w-4 ${isUnlocked ? "text-primary" : "text-muted-foreground"}`} />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1">
-                          <span className="text-xs font-medium truncate">{achievement.name}</span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-mono text-xs font-medium truncate">{achievement.name}</span>
                           {isUnlocked && <CheckCircle2 className="h-3 w-3 text-success shrink-0" />}
                         </div>
-                        <p className="text-[10px] text-muted-foreground truncate">{achievement.description}</p>
+                        <p className="font-mono text-[10px] text-muted-foreground truncate">{achievement.description}</p>
                       </div>
                     </div>
                   );
@@ -454,50 +469,51 @@ export default function Profile() {
 
           {/* Account Tab */}
           <TabsContent value="account" className="mt-4">
-            <div className="rounded-xl border border-border bg-card p-4 space-y-4">
-              <h3 className="text-sm font-medium flex items-center gap-2">
-                <User className="h-3.5 w-3.5 text-muted-foreground" />
-                Account
+            <div className="rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-4 space-y-4">
+              <h3 className="font-mono text-xs text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                <span className="text-primary">&gt;</span>
+                account
               </h3>
               
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <div>
-                  <Label className="text-xs text-muted-foreground">Display Name</Label>
+                  <Label className="font-mono text-xs text-muted-foreground">display_name</Label>
                   <Input
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="Your name"
-                    className="mt-1 h-9"
+                    className="mt-1.5 h-10 font-mono bg-secondary/20"
                   />
                 </div>
                 <div>
-                  <Label className="text-xs text-muted-foreground">Email</Label>
-                  <Input value={profile?.email || user?.email || ""} disabled className="mt-1 h-9 bg-muted/30" />
+                  <Label className="font-mono text-xs text-muted-foreground">email</Label>
+                  <Input value={profile?.email || user?.email || ""} disabled className="mt-1.5 h-10 font-mono bg-muted/20 text-muted-foreground" />
                 </div>
                 <div>
-                  <Label className="text-xs text-muted-foreground">Location</Label>
+                  <Label className="font-mono text-xs text-muted-foreground">location</Label>
                   <Input
                     value={formData.location}
                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                     placeholder="City, Country"
-                    className="mt-1 h-9"
+                    className="mt-1.5 h-10 font-mono bg-secondary/20"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-3 border-t border-border">
-                <Button onClick={handleSave} disabled={isLoading} size="sm">
+              <div className="flex items-center justify-between pt-4 border-t border-border/50">
+                <Button onClick={handleSave} disabled={isLoading} size="sm" className="font-mono">
                   {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : null}
-                  Save
+                  ./save
                 </Button>
-                <Button variant="ghost" onClick={handleSignOut} size="sm" className="text-muted-foreground hover:text-destructive">
+                <Button variant="ghost" onClick={handleSignOut} size="sm" className="font-mono text-muted-foreground hover:text-destructive">
                   <LogOut className="h-4 w-4 mr-1" />
-                  Sign Out
+                  ./logout
                 </Button>
               </div>
             </div>
           </TabsContent>
         </Tabs>
+      </div>
       </div>
     </AppLayout>
   );
