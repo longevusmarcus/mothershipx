@@ -15,9 +15,38 @@ import {
   Code2,
   Loader2,
   AlertCircle,
+  Settings2,
+  Smartphone,
+  Globe,
+  Chrome,
+  Monitor,
+  Cpu,
+  Database,
+  Shield,
+  CreditCard,
+  Mail,
+  BarChart3,
+  Users,
+  Bot,
+  Palette,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Slider } from "@/components/ui/slider";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabaseClient";
 import { cn } from "@/lib/utils";
@@ -51,6 +80,67 @@ interface PromptsGeneratorProps {
   solutions?: any[];
 }
 
+interface PromptConfig {
+  framework: string;
+  complexity: number;
+  features: {
+    auth: boolean;
+    payments: boolean;
+    analytics: boolean;
+    email: boolean;
+    admin: boolean;
+    ai: boolean;
+    realtime: boolean;
+    darkMode: boolean;
+  };
+  techStack: string[];
+  designStyle: string;
+}
+
+const frameworks = [
+  { id: "lovable", name: "Lovable (React + Vite)", icon: Rocket, description: "Modern React SPA" },
+  { id: "nextjs", name: "Next.js", icon: Globe, description: "Full-stack React framework" },
+  { id: "mobile-react-native", name: "React Native", icon: Smartphone, description: "Cross-platform mobile" },
+  { id: "mobile-flutter", name: "Flutter", icon: Smartphone, description: "Cross-platform mobile" },
+  { id: "chrome-extension", name: "Chrome Extension", icon: Chrome, description: "Browser extension" },
+  { id: "desktop-electron", name: "Electron", icon: Monitor, description: "Desktop application" },
+  { id: "api-only", name: "API Backend", icon: Cpu, description: "Backend service only" },
+];
+
+const techStackOptions = [
+  { id: "supabase", name: "Supabase", category: "Backend" },
+  { id: "firebase", name: "Firebase", category: "Backend" },
+  { id: "prisma", name: "Prisma + PostgreSQL", category: "Backend" },
+  { id: "mongodb", name: "MongoDB", category: "Backend" },
+  { id: "tailwind", name: "Tailwind CSS", category: "Styling" },
+  { id: "shadcn", name: "shadcn/ui", category: "Components" },
+  { id: "framer", name: "Framer Motion", category: "Animations" },
+  { id: "stripe", name: "Stripe", category: "Payments" },
+  { id: "clerk", name: "Clerk", category: "Auth" },
+  { id: "resend", name: "Resend", category: "Email" },
+  { id: "openai", name: "OpenAI", category: "AI" },
+];
+
+const designStyles = [
+  { id: "minimal", name: "Minimal & Clean", description: "Simple, focused UI" },
+  { id: "modern", name: "Modern SaaS", description: "Professional, polished look" },
+  { id: "playful", name: "Playful & Bold", description: "Vibrant colors, fun animations" },
+  { id: "dark-luxe", name: "Dark Luxe", description: "Dark mode first, premium feel" },
+  { id: "brutalist", name: "Brutalist", description: "Raw, unconventional design" },
+  { id: "glassmorphism", name: "Glassmorphism", description: "Frosted glass effects" },
+];
+
+const featureOptions = [
+  { id: "auth", name: "Authentication", icon: Shield, description: "User signup/login" },
+  { id: "payments", name: "Payments", icon: CreditCard, description: "Stripe integration" },
+  { id: "analytics", name: "Analytics", icon: BarChart3, description: "Usage tracking" },
+  { id: "email", name: "Email", icon: Mail, description: "Transactional emails" },
+  { id: "admin", name: "Admin Dashboard", icon: Users, description: "User management" },
+  { id: "ai", name: "AI Features", icon: Bot, description: "LLM integration" },
+  { id: "realtime", name: "Real-time", icon: Zap, description: "Live updates" },
+  { id: "darkMode", name: "Dark Mode", icon: Palette, description: "Theme switching" },
+];
+
 const promptIcons = {
   mvp: Rocket,
   fullstack: Layers,
@@ -58,15 +148,32 @@ const promptIcons = {
 };
 
 const promptColors = {
-  mvp: "from-emerald-500/20 to-teal-500/20 border-emerald-500/30",
-  fullstack: "from-blue-500/20 to-indigo-500/20 border-blue-500/30",
-  differentiator: "from-purple-500/20 to-pink-500/20 border-purple-500/30",
+  mvp: "from-success/20 to-success/10 border-success/30",
+  fullstack: "from-primary/20 to-primary/10 border-primary/30",
+  differentiator: "from-accent/20 to-accent/10 border-accent/30",
 };
 
 const promptAccents = {
-  mvp: "text-emerald-500",
-  fullstack: "text-blue-500",
-  differentiator: "text-purple-500",
+  mvp: "text-success",
+  fullstack: "text-primary",
+  differentiator: "text-accent-foreground",
+};
+
+const defaultConfig: PromptConfig = {
+  framework: "lovable",
+  complexity: 3,
+  features: {
+    auth: true,
+    payments: false,
+    analytics: false,
+    email: false,
+    admin: false,
+    ai: false,
+    realtime: false,
+    darkMode: true,
+  },
+  techStack: ["supabase", "tailwind", "shadcn"],
+  designStyle: "modern",
 };
 
 export function PromptsGenerator({ problem, competitors, solutions }: PromptsGeneratorProps) {
@@ -76,6 +183,24 @@ export function PromptsGenerator({ problem, competitors, solutions }: PromptsGen
   const [error, setError] = useState<string | null>(null);
   const [expandedPrompt, setExpandedPrompt] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [showConfig, setShowConfig] = useState(false);
+  const [config, setConfig] = useState<PromptConfig>(defaultConfig);
+
+  const updateFeature = (feature: keyof PromptConfig["features"], value: boolean) => {
+    setConfig(prev => ({
+      ...prev,
+      features: { ...prev.features, [feature]: value }
+    }));
+  };
+
+  const toggleTechStack = (tech: string) => {
+    setConfig(prev => ({
+      ...prev,
+      techStack: prev.techStack.includes(tech)
+        ? prev.techStack.filter(t => t !== tech)
+        : [...prev.techStack, tech]
+    }));
+  };
 
   const generatePrompts = async () => {
     setIsGenerating(true);
@@ -83,7 +208,7 @@ export function PromptsGenerator({ problem, competitors, solutions }: PromptsGen
 
     try {
       const { data, error: fnError } = await supabase.functions.invoke("generate-prompts", {
-        body: { problem, competitors, solutions },
+        body: { problem, competitors, solutions, config },
       });
 
       if (fnError) throw fnError;
@@ -145,73 +270,224 @@ export function PromptsGenerator({ problem, competitors, solutions }: PromptsGen
     return promptAccents.differentiator;
   };
 
+  const selectedFramework = frameworks.find(f => f.id === config.framework);
+  const enabledFeatures = Object.entries(config.features).filter(([_, v]) => v).length;
+
   if (prompts.length === 0) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-xl border border-border bg-gradient-to-br from-card via-card to-secondary/20 p-8"
+        className="rounded-xl border border-border bg-gradient-to-br from-card via-card to-secondary/20 p-6"
       >
-        <div className="text-center space-y-6">
-          {/* Hero section */}
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="h-32 w-32 rounded-full bg-gradient-to-r from-primary/20 via-purple-500/20 to-pink-500/20 blur-3xl" />
-            </div>
-            <motion.div
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-              className="relative"
-            >
-              <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-purple-500/20 border border-primary/20 flex items-center justify-center mb-4">
-                <Terminal className="h-8 w-8 text-primary" />
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="text-center space-y-3">
+            <div className="relative inline-block">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="h-20 w-20 rounded-full bg-gradient-to-r from-primary/30 to-accent/30 blur-2xl" />
               </div>
-            </motion.div>
+              <div className="relative mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/20 flex items-center justify-center">
+                <Terminal className="h-7 w-7 text-primary" />
+              </div>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold">Senior Prompt Engineering</h3>
+              <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+                Generate production-ready prompts with custom framework and feature preferences.
+              </p>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <h3 className="text-xl font-semibold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-              Senior Prompt Engineering
-            </h3>
-            <p className="text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
-              Generate production-ready prompts crafted by AI with 15+ years of simulated expertise. 
-              Each prompt includes design systems, database schemas, and edge case handling.
-            </p>
-          </div>
+          {/* Configuration Panel */}
+          <Collapsible open={showConfig} onOpenChange={setShowConfig}>
+            <CollapsibleTrigger asChild>
+              <Button variant="outline" className="w-full justify-between">
+                <span className="flex items-center gap-2">
+                  <Settings2 className="h-4 w-4" />
+                  Customize Generation
+                </span>
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="text-xs">
+                    {selectedFramework?.name}
+                  </Badge>
+                  <Badge variant="secondary" className="text-xs">
+                    {enabledFeatures} features
+                  </Badge>
+                  <ChevronDown className={cn(
+                    "h-4 w-4 transition-transform",
+                    showConfig && "rotate-180"
+                  )} />
+                </div>
+              </Button>
+            </CollapsibleTrigger>
 
-          {/* Features */}
-          <div className="flex flex-wrap justify-center gap-2">
-            {["Design Systems", "Database Schemas", "Auth Flows", "Edge Cases", "Accessibility"].map((feature) => (
-              <Badge key={feature} variant="secondary" className="text-xs">
-                {feature}
-              </Badge>
-            ))}
-          </div>
+            <CollapsibleContent className="pt-4 space-y-6">
+              {/* Framework Selection */}
+              <div className="space-y-3">
+                <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Framework / Platform
+                </Label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {frameworks.map((fw) => {
+                    const Icon = fw.icon;
+                    const isSelected = config.framework === fw.id;
+                    return (
+                      <button
+                        key={fw.id}
+                        onClick={() => setConfig(prev => ({ ...prev, framework: fw.id }))}
+                        className={cn(
+                          "p-3 rounded-lg border text-left transition-all",
+                          isSelected
+                            ? "border-primary bg-primary/10"
+                            : "border-border hover:border-primary/50 hover:bg-secondary/50"
+                        )}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <Icon className={cn("h-4 w-4", isSelected ? "text-primary" : "text-muted-foreground")} />
+                          <span className="text-xs font-medium truncate">{fw.name}</span>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground">{fw.description}</p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Complexity Slider */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    Target Complexity
+                  </Label>
+                  <Badge variant="outline" className="text-xs">
+                    {config.complexity === 1 && "Weekend Project"}
+                    {config.complexity === 2 && "MVP"}
+                    {config.complexity === 3 && "Production Ready"}
+                    {config.complexity === 4 && "Enterprise"}
+                    {config.complexity === 5 && "Full Platform"}
+                  </Badge>
+                </div>
+                <Slider
+                  value={[config.complexity]}
+                  onValueChange={([v]) => setConfig(prev => ({ ...prev, complexity: v }))}
+                  min={1}
+                  max={5}
+                  step={1}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-[10px] text-muted-foreground">
+                  <span>Simple</span>
+                  <span>Complex</span>
+                </div>
+              </div>
+
+              {/* Features Toggle */}
+              <div className="space-y-3">
+                <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Features to Include
+                </Label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {featureOptions.map((feature) => {
+                    const Icon = feature.icon;
+                    const isEnabled = config.features[feature.id as keyof PromptConfig["features"]];
+                    return (
+                      <button
+                        key={feature.id}
+                        onClick={() => updateFeature(feature.id as keyof PromptConfig["features"], !isEnabled)}
+                        className={cn(
+                          "p-2.5 rounded-lg border text-left transition-all",
+                          isEnabled
+                            ? "border-primary bg-primary/10"
+                            : "border-border hover:border-primary/50"
+                        )}
+                      >
+                        <div className="flex items-center gap-2">
+                          <Icon className={cn("h-3.5 w-3.5", isEnabled ? "text-primary" : "text-muted-foreground")} />
+                          <span className="text-xs font-medium">{feature.name}</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Tech Stack */}
+              <div className="space-y-3">
+                <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Preferred Tech Stack
+                </Label>
+                <div className="flex flex-wrap gap-1.5">
+                  {techStackOptions.map((tech) => {
+                    const isSelected = config.techStack.includes(tech.id);
+                    return (
+                      <Badge
+                        key={tech.id}
+                        variant={isSelected ? "default" : "outline"}
+                        className={cn(
+                          "cursor-pointer transition-all text-xs",
+                          isSelected ? "" : "hover:bg-secondary"
+                        )}
+                        onClick={() => toggleTechStack(tech.id)}
+                      >
+                        {tech.name}
+                      </Badge>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Design Style */}
+              <div className="space-y-3">
+                <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Design Style
+                </Label>
+                <Select
+                  value={config.designStyle}
+                  onValueChange={(v) => setConfig(prev => ({ ...prev, designStyle: v }))}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {designStyles.map((style) => (
+                      <SelectItem key={style.id} value={style.id}>
+                        <div className="flex flex-col">
+                          <span>{style.name}</span>
+                          <span className="text-xs text-muted-foreground">{style.description}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
 
           {error && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="flex items-center justify-center gap-2 text-destructive text-sm"
+              className="flex items-center justify-center gap-2 text-destructive text-sm p-3 rounded-lg bg-destructive/10"
             >
               <AlertCircle className="h-4 w-4" />
               <span>{error}</span>
             </motion.div>
           )}
 
+          {/* Generate Button */}
           <Button
             onClick={generatePrompts}
             disabled={isGenerating}
             size="lg"
-            className="relative overflow-hidden group"
+            className="w-full relative overflow-hidden group"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-primary via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-primary opacity-0 group-hover:opacity-100 transition-opacity" />
             <span className="relative flex items-center gap-2">
               {isGenerating ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Generating Prompts...
+                  Generating Custom Prompts...
                 </>
               ) : (
                 <>
@@ -222,8 +498,8 @@ export function PromptsGenerator({ problem, competitors, solutions }: PromptsGen
             </span>
           </Button>
 
-          <p className="text-xs text-muted-foreground">
-            Uses Gemini 3 Flash to analyze the problem and generate 3 unique approaches
+          <p className="text-xs text-muted-foreground text-center">
+            AI analyzes the problem + your preferences to craft 3 unique approaches
           </p>
         </div>
       </motion.div>
@@ -235,28 +511,44 @@ export function PromptsGenerator({ problem, competitors, solutions }: PromptsGen
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary/20 to-purple-500/20 flex items-center justify-center">
+          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
             <Code2 className="h-4 w-4 text-primary" />
           </div>
           <div>
             <h3 className="text-sm font-medium">Generated Prompts</h3>
-            <p className="text-xs text-muted-foreground">Click to expand, copy to use</p>
+            <p className="text-xs text-muted-foreground">
+              {selectedFramework?.name} • {enabledFeatures} features • {designStyles.find(s => s.id === config.designStyle)?.name}
+            </p>
           </div>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={generatePrompts}
-          disabled={isGenerating}
-          className="text-xs"
-        >
-          {isGenerating ? (
-            <Loader2 className="h-3 w-3 animate-spin mr-1" />
-          ) : (
-            <Sparkles className="h-3 w-3 mr-1" />
-          )}
-          Regenerate
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setPrompts([]);
+              setShowConfig(true);
+            }}
+            className="text-xs"
+          >
+            <Settings2 className="h-3 w-3 mr-1" />
+            Reconfigure
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={generatePrompts}
+            disabled={isGenerating}
+            className="text-xs"
+          >
+            {isGenerating ? (
+              <Loader2 className="h-3 w-3 animate-spin mr-1" />
+            ) : (
+              <Sparkles className="h-3 w-3 mr-1" />
+            )}
+            Regenerate
+          </Button>
+        </div>
       </div>
 
       {/* Prompts list */}
@@ -282,7 +574,7 @@ export function PromptsGenerator({ problem, competitors, solutions }: PromptsGen
                 {/* Header */}
                 <button
                   onClick={() => setExpandedPrompt(isExpanded ? null : prompt.id)}
-                  className="w-full p-4 flex items-start justify-between text-left hover:bg-white/5 transition-colors"
+                  className="w-full p-4 flex items-start justify-between text-left hover:bg-background/5 transition-colors"
                 >
                   <div className="flex items-start gap-3">
                     <div className={cn("p-2 rounded-lg bg-background/50", accentClass)}>
@@ -297,7 +589,7 @@ export function PromptsGenerator({ problem, competitors, solutions }: PromptsGen
                               key={i}
                               className={cn(
                                 "h-1.5 w-1.5 rounded-full",
-                                i < prompt.complexity ? accentClass.replace("text-", "bg-") : "bg-muted"
+                                i < prompt.complexity ? "bg-primary" : "bg-muted"
                               )}
                             />
                           ))}
