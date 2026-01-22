@@ -39,10 +39,10 @@ export function useProblemBuilders(problemId: string) {
       if (error) throw error;
       if (!data || data.length === 0) return [];
 
-      // Get profiles for builders
+      // Get profiles for builders using secure public_profiles view
       const userIds = data.map((b) => b.user_id);
       const { data: profiles } = await supabase
-        .from("profiles")
+        .from("public_profiles")
         .select("id, name, avatar_url, bio, github, website")
         .in("id", userIds);
 
