@@ -1052,11 +1052,90 @@ export default function Profile() {
               </div>
             </motion.div>
 
-            {/* Settings Card */}
+            {/* Social Links Card */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
+              className="rounded-xl border border-border bg-card p-4"
+            >
+              <h3 className="text-[11px] font-medium text-primary uppercase tracking-wider mb-3">Social Links</h3>
+              
+              <div className="flex flex-wrap gap-2">
+                {formData.website && (
+                  <a
+                    href={`https://${formData.website}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/50 hover:bg-secondary transition-colors text-xs"
+                  >
+                    <LinkIcon className="h-3 w-3" />
+                    {formData.website}
+                  </a>
+                )}
+                {formData.github && (
+                  <a
+                    href={`https://github.com/${formData.github}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/50 hover:bg-secondary transition-colors text-xs"
+                  >
+                    <Github className="h-3 w-3" />
+                    {formData.github}
+                  </a>
+                )}
+                {formData.twitter && (
+                  <a
+                    href={`https://twitter.com/${formData.twitter}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/50 hover:bg-secondary transition-colors text-xs"
+                  >
+                    <X className="h-3 w-3" />
+                    @{formData.twitter}
+                  </a>
+                )}
+                
+                {isEditing ? (
+                  <div className="w-full mt-2 space-y-2">
+                    <Input
+                      value={formData.website}
+                      onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                      placeholder="yoursite.com"
+                      className="h-8 text-xs"
+                    />
+                    <div className="grid grid-cols-2 gap-2">
+                      <Input
+                        value={formData.github}
+                        onChange={(e) => setFormData({ ...formData, github: e.target.value })}
+                        placeholder="GitHub username"
+                        className="h-8 text-xs"
+                      />
+                      <Input
+                        value={formData.twitter}
+                        onChange={(e) => setFormData({ ...formData, twitter: e.target.value })}
+                        placeholder="Twitter handle"
+                        className="h-8 text-xs"
+                      />
+                    </div>
+                  </div>
+                ) : (!formData.website && !formData.github && !formData.twitter) && (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-dashed border-border hover:border-primary/50 hover:bg-primary/5 transition-all text-xs text-muted-foreground hover:text-foreground"
+                  >
+                    <Plus className="h-3 w-3" />
+                    Add Social Link
+                  </button>
+                )}
+              </div>
+            </motion.div>
+
+            {/* Settings Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
               className="rounded-xl border border-border bg-card p-4"
             >
               <h3 className="text-[11px] font-medium text-primary uppercase tracking-wider mb-3">Settings</h3>
@@ -1156,85 +1235,6 @@ export default function Profile() {
                     Update
                   </Button>
                 </div>
-              </div>
-            </motion.div>
-
-            {/* Social Links Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 }}
-              className="rounded-xl border border-border bg-card p-4"
-            >
-              <h3 className="text-[11px] font-medium text-primary uppercase tracking-wider mb-3">Social Links</h3>
-              
-              <div className="flex flex-wrap gap-2">
-                {formData.website && (
-                  <a
-                    href={`https://${formData.website}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/50 hover:bg-secondary transition-colors text-xs"
-                  >
-                    <LinkIcon className="h-3 w-3" />
-                    {formData.website}
-                  </a>
-                )}
-                {formData.github && (
-                  <a
-                    href={`https://github.com/${formData.github}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/50 hover:bg-secondary transition-colors text-xs"
-                  >
-                    <Github className="h-3 w-3" />
-                    {formData.github}
-                  </a>
-                )}
-                {formData.twitter && (
-                  <a
-                    href={`https://twitter.com/${formData.twitter}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/50 hover:bg-secondary transition-colors text-xs"
-                  >
-                    <X className="h-3 w-3" />
-                    @{formData.twitter}
-                  </a>
-                )}
-                
-                {isEditing ? (
-                  <div className="w-full mt-2 space-y-2">
-                    <Input
-                      value={formData.website}
-                      onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                      placeholder="yoursite.com"
-                      className="h-8 text-xs"
-                    />
-                    <div className="grid grid-cols-2 gap-2">
-                      <Input
-                        value={formData.github}
-                        onChange={(e) => setFormData({ ...formData, github: e.target.value })}
-                        placeholder="GitHub username"
-                        className="h-8 text-xs"
-                      />
-                      <Input
-                        value={formData.twitter}
-                        onChange={(e) => setFormData({ ...formData, twitter: e.target.value })}
-                        placeholder="Twitter handle"
-                        className="h-8 text-xs"
-                      />
-                    </div>
-                  </div>
-                ) : (!formData.website && !formData.github && !formData.twitter) && (
-                  <button
-                    onClick={() => setIsEditing(true)}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-dashed border-border hover:border-primary/50 hover:bg-primary/5 transition-all text-xs text-muted-foreground hover:text-foreground"
-                  >
-                    <Plus className="h-3 w-3" />
-                    Add Social Link
-                  </button>
-                )}
               </div>
             </motion.div>
 
