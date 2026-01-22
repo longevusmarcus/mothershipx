@@ -24,12 +24,14 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useUserPins } from "@/hooks/useUserPins";
 import type { MarketProblem } from "@/data/marketIntelligence";
 
-const FREE_CARD_LIMIT = 2;
+const FREE_CARD_LIMIT_ALL = 12;
+const FREE_CARD_LIMIT_CATEGORY = 2;
 const STORAGE_KEY = "mothership_problems_order";
 
 interface MasonryGridProps {
   problems: MarketProblem[];
   shouldBlurExcess: boolean;
+  isAllCategory?: boolean;
 }
 
 interface SortableCardProps {
@@ -72,7 +74,8 @@ function DragOverlayCard({ problem }: { problem: MarketProblem }) {
   );
 }
 
-export function MasonryGrid({ problems, shouldBlurExcess }: MasonryGridProps) {
+export function MasonryGrid({ problems, shouldBlurExcess, isAllCategory = true }: MasonryGridProps) {
+  const freeCardLimit = isAllCategory ? FREE_CARD_LIMIT_ALL : FREE_CARD_LIMIT_CATEGORY;
   const [orderedProblems, setOrderedProblems] = useState<MarketProblem[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const isMobile = useIsMobile();
@@ -176,7 +179,7 @@ export function MasonryGrid({ problems, shouldBlurExcess }: MasonryGridProps) {
       <SortableContext items={sortedProblems.map((p) => p.id)} strategy={rectSortingStrategy}>
         <div className="columns-1 sm:columns-2 lg:columns-3 gap-4">
           {sortedProblems.map((problem, index) => {
-            const isBlurred = shouldBlurExcess && index >= FREE_CARD_LIMIT;
+              const isBlurred = shouldBlurExcess && index >= freeCardLimit;
             const isPinned = pinnedIds.has(problem.id);
             
             return (
@@ -186,13 +189,13 @@ export function MasonryGrid({ problems, shouldBlurExcess }: MasonryGridProps) {
                     <div className="blur-sm pointer-events-none select-none">
                       <MarketProblemCard problem={problem} delay={0} />
                     </div>
-                    {index === FREE_CARD_LIMIT && (
+                    {index === freeCardLimit && (
                       <div className="absolute inset-0 flex items-center justify-center bg-background/60 rounded-xl">
                         <div className="text-center p-4">
                           <Lock className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                           <p className="text-sm font-medium">Subscribe to unlock all problems</p>
                           <p className="text-xs text-muted-foreground mt-1">
-                            {sortedProblems.length - FREE_CARD_LIMIT}+ more discoveries waiting
+                            {sortedProblems.length - freeCardLimit}+ more discoveries waiting
                           </p>
                         </div>
                       </div>
