@@ -303,43 +303,42 @@ export default function Settings() {
             <SettingsSkeleton />
           ) : (
             <Tabs defaultValue="notifications" className="space-y-4 sm:space-y-6">
-              <TabsList className="bg-secondary/30 backdrop-blur-sm border border-border/50 p-1 w-full justify-start overflow-x-auto flex-nowrap rounded-lg">
+              <TabsList className="bg-secondary/50 p-1 w-full justify-start overflow-x-auto flex-nowrap rounded-lg">
                 <TabsTrigger
                   value="notifications"
-                  className="gap-1.5 font-mono text-xs px-3 whitespace-nowrap data-[state=active]:bg-background"
+                  className="gap-1.5 text-xs px-3 whitespace-nowrap data-[state=active]:bg-background"
                 >
                   <Bell className="h-3.5 w-3.5" />
-                  ./notifs
+                  Notifications
                 </TabsTrigger>
                 <TabsTrigger
                   value="privacy"
-                  className="gap-1.5 font-mono text-xs px-3 whitespace-nowrap data-[state=active]:bg-background"
+                  className="gap-1.5 text-xs px-3 whitespace-nowrap data-[state=active]:bg-background"
                 >
                   <Shield className="h-3.5 w-3.5" />
-                  ./privacy
+                  Privacy
                 </TabsTrigger>
                 <TabsTrigger
                   value="integrations"
-                  className="gap-1.5 font-mono text-xs px-3 whitespace-nowrap data-[state=active]:bg-background"
+                  className="gap-1.5 text-xs px-3 whitespace-nowrap data-[state=active]:bg-background"
                 >
                   <Link2 className="h-3.5 w-3.5" />
-                  ./integs
+                  Integrations
                 </TabsTrigger>
                 <TabsTrigger
                   value="danger"
-                  className="gap-1.5 font-mono text-xs px-3 whitespace-nowrap data-[state=active]:bg-background"
+                  className="gap-1.5 text-xs px-3 whitespace-nowrap data-[state=active]:bg-background"
                 >
                   <AlertTriangle className="h-3.5 w-3.5" />
-                  ./danger
+                  Danger
                 </TabsTrigger>
               </TabsList>
 
               <TabsContent value="notifications" className="space-y-4 sm:space-y-6">
                 <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
                   <CardHeader className="p-4 sm:p-5">
-                    <CardTitle className="font-mono text-xs text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                      <span className="text-primary">&gt;</span>
-                      email_notifications
+                    <CardTitle className="text-sm font-medium">
+                      Email Notifications
                     </CardTitle>
                     <CardDescription className="text-xs mt-1">
                       Choose which emails you'd like to receive
@@ -348,7 +347,7 @@ export default function Settings() {
                   <CardContent className="p-4 sm:p-5 pt-0 space-y-4">
                     <div className="flex items-center justify-between gap-3 py-2">
                       <div className="space-y-0.5 min-w-0">
-                        <Label className="font-mono text-sm">daily_digest</Label>
+                        <Label className="text-sm">Daily Digest</Label>
                         <p className="text-xs text-muted-foreground">Receive a daily summary of platform activity</p>
                       </div>
                       <Switch
@@ -359,9 +358,9 @@ export default function Settings() {
                     <Separator className="opacity-50" />
                     <div className="flex items-center justify-between gap-3 py-2">
                       <div className="space-y-0.5 min-w-0">
-                        <Label className="font-mono text-sm flex items-center gap-2">
+                        <Label className="text-sm flex items-center gap-2">
                           <Rocket className="h-3.5 w-3.5 text-primary" />
-                          new_problems
+                          New Problems
                         </Label>
                         <p className="text-xs text-muted-foreground">Get notified when new problems are posted</p>
                       </div>
@@ -373,9 +372,9 @@ export default function Settings() {
                     <Separator className="opacity-50" />
                     <div className="flex items-center justify-between gap-3 py-2">
                       <div className="space-y-0.5 min-w-0">
-                        <Label className="font-mono text-sm flex items-center gap-2">
+                        <Label className="text-sm flex items-center gap-2">
                           <Trophy className="h-3.5 w-3.5 text-warning" />
-                          leaderboard_updates
+                          Leaderboard Updates
                         </Label>
                         <p className="text-xs text-muted-foreground">Know when your rank changes</p>
                       </div>
@@ -387,9 +386,9 @@ export default function Settings() {
                     <Separator className="opacity-50" />
                     <div className="flex items-center justify-between gap-3 py-2">
                       <div className="space-y-0.5 min-w-0">
-                        <Label className="font-mono text-sm flex items-center gap-2">
+                        <Label className="text-sm flex items-center gap-2">
                           <Check className="h-3.5 w-3.5 text-success" />
-                          build_verification
+                          Build Verification
                         </Label>
                         <p className="text-xs text-muted-foreground">Updates on your build verification status</p>
                       </div>
@@ -401,7 +400,7 @@ export default function Settings() {
                     <Separator className="opacity-50" />
                     <div className="flex items-center justify-between gap-3 py-2">
                       <div className="space-y-0.5 min-w-0">
-                        <Label className="font-mono text-sm">weekly_report</Label>
+                        <Label className="text-sm">Weekly Report</Label>
                         <p className="text-xs text-muted-foreground">Summary of your weekly progress and insights</p>
                       </div>
                       <Switch
@@ -412,7 +411,7 @@ export default function Settings() {
                     <Separator className="opacity-50" />
                     <div className="flex items-center justify-between gap-3 py-2">
                       <div className="space-y-0.5 min-w-0">
-                        <Label className="font-mono text-sm">marketing_emails</Label>
+                        <Label className="text-sm">Marketing Emails</Label>
                         <p className="text-xs text-muted-foreground">Product updates and promotional content</p>
                       </div>
                       <Switch
@@ -425,9 +424,8 @@ export default function Settings() {
 
                 <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
                   <CardHeader className="p-4 sm:p-5">
-                    <CardTitle className="font-mono text-xs text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                      <span className="text-primary">&gt;</span>
-                      in_app_notifications
+                    <CardTitle className="text-sm font-medium">
+                      In-App Notifications
                     </CardTitle>
                     <CardDescription className="text-xs mt-1">
                       Configure how you receive notifications in the app
@@ -436,7 +434,7 @@ export default function Settings() {
                   <CardContent className="p-4 sm:p-5 pt-0 space-y-4">
                     <div className="flex items-center justify-between gap-3 py-2">
                       <div className="space-y-0.5 min-w-0">
-                        <Label className="font-mono text-sm">push_notifications</Label>
+                        <Label className="text-sm">Push Notifications</Label>
                         <p className="text-xs text-muted-foreground">Receive browser push notifications</p>
                       </div>
                       <Switch
@@ -447,7 +445,7 @@ export default function Settings() {
                     <Separator className="opacity-50" />
                     <div className="flex items-center justify-between gap-3 py-2">
                       <div className="space-y-0.5 min-w-0">
-                        <Label className="font-mono text-sm">in_app_alerts</Label>
+                        <Label className="text-sm">In-App Alerts</Label>
                         <p className="text-xs text-muted-foreground">Show notification badges and alerts</p>
                       </div>
                       <Switch
@@ -459,14 +457,14 @@ export default function Settings() {
                 </Card>
 
                 <div className="flex justify-end gap-2">
-                  <Button onClick={saveSettings} disabled={isSaving || !hasChanges} size="sm" className="font-mono">
+                  <Button onClick={saveSettings} disabled={isSaving || !hasChanges} size="sm">
                     {isSaving ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        saving...
+                        Saving...
                       </>
                     ) : (
-                      "./save"
+                      "Save Changes"
                     )}
                   </Button>
                 </div>
@@ -595,7 +593,7 @@ export default function Settings() {
                     <div className="flex items-start sm:items-center justify-between gap-3">
                       <div className="space-y-0.5 min-w-0">
                         <Label className="font-medium text-sm flex items-center gap-2">
-                          <Trophy className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-500" />
+                          <Trophy className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-warning" />
                           Leaderboard Visibility
                         </Label>
                         <p className="text-xs sm:text-sm text-muted-foreground">Appear on the public leaderboard</p>
@@ -653,7 +651,7 @@ export default function Settings() {
                               {integration.connected && (
                                 <Badge
                                   variant="secondary"
-                                  className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-[10px] sm:text-xs"
+                                  className="bg-success/10 text-success border-success/20 text-[10px] sm:text-xs"
                                 >
                                   <Check className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />
                                   Connected
@@ -706,7 +704,7 @@ export default function Settings() {
                 <Card>
                   <CardHeader className="p-4 sm:p-6">
                     <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                      <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500" />
+                      <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
                       Subscription
                     </CardTitle>
                     <CardDescription className="text-xs sm:text-sm">Manage your premium subscription</CardDescription>
@@ -715,17 +713,17 @@ export default function Settings() {
                     {subLoading ? (
                       <Skeleton className="h-20 w-full" />
                     ) : hasPremiumAccess ? (
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3 sm:p-4 rounded-xl border border-amber-500/20 bg-amber-500/5">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3 sm:p-4 rounded-xl border border-warning/20 bg-warning/5">
                         <div className="flex items-center gap-3 sm:gap-4">
-                          <div className="p-2 sm:p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                            <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500" />
+                          <div className="p-2 sm:p-2.5 rounded-xl bg-warning/10 border border-warning/20">
+                            <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
                           </div>
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
                               <span className="font-medium text-sm sm:text-base">Premium Member</span>
                               <Badge
                                 variant="secondary"
-                                className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 text-[10px] sm:text-xs"
+                                className="bg-warning/10 text-warning border-warning/20 text-[10px] sm:text-xs"
                               >
                                 Active
                               </Badge>
