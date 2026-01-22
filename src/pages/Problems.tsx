@@ -51,25 +51,6 @@ const Problems = () => {
             {filteredProblems.length} problems and trends discovered
           </p>
         </motion.div>
-
-        {/* Search */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
-            <input
-              type="text"
-              placeholder="search problems, niches, opportunities..."
-              className="w-full pl-9 pr-4 py-3 text-sm bg-card border border-border rounded-lg focus:outline-none focus:ring-0 focus:border-border placeholder:text-muted-foreground/60 placeholder:font-light placeholder:tracking-wide placeholder:lowercase"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-        </motion.div>
-
         {/* Categories */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
