@@ -32,3 +32,6 @@ verify_jwt = false
 
 [functions.search-youtube]
 verify_jwt = false
+
+[functions.generate-prompts]
+verify_jwt = false
