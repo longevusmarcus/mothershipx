@@ -1166,6 +1166,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      is_profile_public: { Args: { _profile_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "subscriber" | "user"
