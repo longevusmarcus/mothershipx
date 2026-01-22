@@ -1,11 +1,11 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Plus, Globe, Swords } from "lucide-react";
+import { Plus, LayoutGrid, Swords } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { icon: Plus, label: "New Search", path: "/" },
   { icon: Swords, label: "Arena", path: "/challenges", isCenter: true },
-  { icon: Globe, label: "Dashboard", path: "/problems" },
+  { icon: LayoutGrid, label: "Dashboard", path: "/problems" },
 ];
 
 export function MobileBottomNav() {
