@@ -65,8 +65,8 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-md p-0 gap-0 border-border bg-card overflow-hidden h-[100dvh] sm:h-auto sm:max-h-[90vh] rounded-none sm:rounded-xl">
-        <div className="relative h-full sm:h-auto flex flex-col">
+      <DialogContent className="sm:max-w-md p-0 gap-0 border-border bg-card overflow-hidden h-[100dvh] sm:h-auto sm:max-h-[85vh] rounded-none sm:rounded-xl">
+        <div className="relative h-full sm:h-auto sm:max-h-[85vh] flex flex-col overflow-y-auto">
           {/* Animated background gradient */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <motion.div
