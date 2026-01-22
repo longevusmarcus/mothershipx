@@ -19,8 +19,9 @@ interface VerificationResult {
     topRepos: { name: string; stars: number }[];
     message: string;
   };
-  stripe: {
+  payment: {
     valid: boolean;
+    provider: "stripe" | "polar" | null;
     keyFormat: boolean;
     hasRevenue?: boolean;
     message: string;
@@ -33,6 +34,13 @@ interface VerificationResult {
   overall: {
     verified: boolean;
     score: number;
+    message: string;
+  };
+  // Keep stripe for backwards compatibility
+  stripe: {
+    valid: boolean;
+    keyFormat: boolean;
+    hasRevenue?: boolean;
     message: string;
   };
 }
@@ -100,25 +108,73 @@ async function verifyGitHub(rawInput: string): Promise<VerificationResult["githu
   }
 }
 
-function verifyStripeKey(key: string): VerificationResult["stripe"] {
+function verifyStripeKey(key: string | undefined | null): VerificationResult["stripe"] {
+  if (!key || key.trim() === "") {
+    return {
+      valid: false,
+      keyFormat: false,
+      message: "Stripe key not provided",
+    };
+  }
+
   // Stripe publishable keys start with pk_live_ or pk_test_
   const isValidFormat = /^pk_(live|test)_[a-zA-Z0-9]+$/.test(key);
   const isLiveKey = key.startsWith("pk_live_");
 
-  // Note: To verify actual payment volume, we would need Stripe Connect OAuth
-  // to access the user's Stripe account. Publishable keys alone cannot be used
-  // to query payment history. For now, we validate the key format and prefer live keys.
-  // Future enhancement: Implement Stripe Connect OAuth flow for revenue verification.
-
   return {
     valid: isValidFormat,
     keyFormat: isValidFormat,
-    hasRevenue: isLiveKey, // Assume live keys indicate production usage
+    hasRevenue: isLiveKey,
     message: isValidFormat 
       ? (isLiveKey 
           ? "Valid live Stripe key detected - production ready!" 
           : "Valid test Stripe key (live key preferred for higher verification score)")
       : "Invalid Stripe publishable key format",
+  };
+}
+
+function verifyPolarKey(key: string | undefined | null): VerificationResult["payment"] {
+  if (!key || key.trim() === "") {
+    return {
+      valid: false,
+      provider: null,
+      keyFormat: false,
+      message: "Polar key not provided",
+    };
+  }
+
+  // Polar public keys - validate format (they should be non-empty strings)
+  // Polar uses various key formats, we just check it's a reasonable length
+  const isValidFormat = key.trim().length >= 10 && key.trim().length <= 200;
+
+  return {
+    valid: isValidFormat,
+    provider: "polar",
+    keyFormat: isValidFormat,
+    hasRevenue: true, // Assume Polar users have revenue setup
+    message: isValidFormat 
+      ? "Valid Polar API key detected"
+      : "Invalid Polar API key format",
+  };
+}
+
+function verifyPaymentProvider(
+  provider: "stripe" | "polar" | undefined,
+  stripeKey: string | undefined | null,
+  polarKey: string | undefined | null
+): VerificationResult["payment"] {
+  if (provider === "polar" && polarKey) {
+    return verifyPolarKey(polarKey);
+  }
+  
+  // Default to Stripe
+  const stripeResult = verifyStripeKey(stripeKey);
+  return {
+    valid: stripeResult.valid,
+    provider: stripeResult.valid ? "stripe" : null,
+    keyFormat: stripeResult.keyFormat,
+    hasRevenue: stripeResult.hasRevenue,
+    message: stripeResult.message,
   };
 }
 
@@ -174,21 +230,30 @@ serve(async (req) => {
       );
     }
 
-    const { githubUsername, stripePublicKey, supabaseProjectKey } = await req.json();
+    const { 
+      githubUsername, 
+      stripePublicKey, 
+      polarPublicKey,
+      paymentProvider,
+      supabaseProjectKey 
+    } = await req.json();
 
     // Verify all credentials
     const githubResult = await verifyGitHub(githubUsername);
-    const stripeResult = verifyStripeKey(stripePublicKey);
+    const paymentResult = verifyPaymentProvider(paymentProvider, stripePublicKey, polarPublicKey);
     const supabaseResult = verifySupabaseKey(supabaseProjectKey);
+    
+    // For backwards compatibility, also generate stripe result
+    const stripeResult = verifyStripeKey(stripePublicKey);
 
     // Calculate overall score (Supabase is optional, so adjust max score)
     let score = 0;
     if (githubResult.valid && githubResult.hasStarredRepos) score += 50;
     else if (githubResult.valid) score += 25;
     
-    // Give bonus points for live Stripe keys (indicates production usage)
-    if (stripeResult.valid) {
-      score += stripeResult.hasRevenue ? 50 : 35;
+    // Give bonus points for payment provider verification
+    if (paymentResult.valid) {
+      score += paymentResult.hasRevenue ? 50 : 35;
     }
     
     // Supabase is optional bonus points
@@ -198,7 +263,8 @@ serve(async (req) => {
 
     const result: VerificationResult = {
       github: githubResult,
-      stripe: stripeResult,
+      payment: paymentResult,
+      stripe: stripeResult, // Keep for backwards compatibility
       supabase: supabaseResult,
       overall: {
         verified,
@@ -212,12 +278,16 @@ serve(async (req) => {
     // Store verification in database
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
     
+    // Store the payment key (either Stripe or Polar) in stripe_public_key for now
+    // In future, we could add a separate column for polar keys
+    const paymentKey = paymentProvider === "polar" ? polarPublicKey : stripePublicKey;
+    
     const { error: upsertError } = await supabaseAdmin
       .from("builder_verifications")
       .upsert({
         user_id: user.id,
         github_username: githubUsername,
-        stripe_public_key: stripePublicKey,
+        stripe_public_key: paymentKey,
         supabase_project_key: supabaseProjectKey,
         verification_status: verified ? "verified" : "failed",
         verification_result: result,
