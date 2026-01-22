@@ -58,7 +58,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
     }
   }, [location.pathname]);
 
-  const sidebarWidth = isMobile ? 280 : (collapsed ? 56 : 256);
+  const sidebarWidth = isMobile ? 280 : collapsed ? 56 : 256;
 
   const handleSignOut = async () => {
     await signOut();
@@ -78,10 +78,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
       initial={false}
       animate={{ width: sidebarWidth }}
       transition={{ duration: 0.15, ease: "easeOut" }}
-      className={cn(
-        "h-screen bg-sidebar flex flex-col",
-        isMobile ? "w-70" : "sticky top-0"
-      )}
+      className={cn("h-screen bg-sidebar flex flex-col", isMobile ? "w-70" : "sticky top-0")}
     >
       {/* Header */}
       <div className="h-14 flex items-center justify-between px-4">
@@ -97,12 +94,9 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
             </motion.span>
           )}
         </AnimatePresence>
-        
+
         {isMobile ? (
-          <button
-            onClick={onClose}
-            className="p-1.5 hover:bg-sidebar-accent rounded-md transition-colors"
-          >
+          <button onClick={onClose} className="p-1.5 hover:bg-sidebar-accent rounded-md transition-colors">
             <X className="h-4 w-4 text-muted-foreground" />
           </button>
         ) : (
@@ -110,10 +104,9 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
             onClick={() => setCollapsed(!collapsed)}
             className="p-1.5 hover:bg-sidebar-accent rounded-md transition-colors"
           >
-            <PanelLeftClose className={cn(
-              "h-4 w-4 text-muted-foreground transition-transform",
-              collapsed && "rotate-180"
-            )} />
+            <PanelLeftClose
+              className={cn("h-4 w-4 text-muted-foreground transition-transform", collapsed && "rotate-180")}
+            />
           </button>
         )}
       </div>
@@ -122,16 +115,14 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
       <nav className="flex-1 px-3 py-2 space-y-0.5">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
-          
+
           return (
             <NavLink
               key={item.path}
               to={item.path}
               className={cn(
                 "flex items-center gap-3 px-2 py-2 rounded-md text-sm transition-colors",
-                isActive
-                  ? "text-foreground font-medium"
-                  : "text-muted-foreground hover:text-foreground"
+                isActive ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground",
               )}
             >
               <item.icon className="h-4 w-4 shrink-0" />
@@ -158,7 +149,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
             "relative flex items-center gap-3 px-2 py-2 rounded-md text-sm transition-colors overflow-hidden",
             location.pathname === "/challenges"
               ? "bg-gradient-to-r from-warning/15 to-destructive/15 text-foreground font-medium"
-              : "text-muted-foreground hover:text-foreground hover:bg-gradient-to-r hover:from-warning/10 hover:to-destructive/10"
+              : "text-muted-foreground hover:text-foreground hover:bg-gradient-to-r hover:from-warning/10 hover:to-destructive/10",
           )}
         >
           <div className="relative">
@@ -192,7 +183,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
         <div
           className={cn(
             "flex items-center gap-3 px-2 py-2 rounded-md text-sm cursor-not-allowed opacity-50",
-            "text-muted-foreground"
+            "text-muted-foreground",
           )}
           title="Coming soon"
         >
@@ -205,10 +196,8 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
                 exit={{ opacity: 0, width: 0 }}
                 className="flex items-center gap-2 overflow-hidden whitespace-nowrap"
               >
-                <span>Leaderboards</span>
-                <span className="text-[8px] bg-muted text-muted-foreground px-1 py-0.5 rounded font-medium">
-                  SOON
-                </span>
+                <span>Leaderboard</span>
+                <span className="text-[8px] bg-muted text-muted-foreground px-1 py-0.5 rounded font-medium">SOON</span>
               </motion.div>
             )}
           </AnimatePresence>
@@ -240,9 +229,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-48 bg-popover">
-              <DropdownMenuItem onClick={() => navigate("/profile")}>
-                Profile & Settings
-              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/profile")}>Profile & Settings</DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <a href="https://mothership.io" target="_blank" rel="noopener noreferrer" className="flex items-center">
                   <ExternalLink className="h-4 w-4 mr-2" />
