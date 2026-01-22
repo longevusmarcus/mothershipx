@@ -252,10 +252,10 @@ export default function Profile() {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="Your name"
-                    className="text-base font-semibold h-8 flex-1"
+                    className="font-display text-2xl font-normal tracking-tight h-10 flex-1"
                   />
                 ) : (
-                  <h2 className="text-lg font-semibold truncate">{profile?.name || "Builder"}</h2>
+                  <h2 className="font-display text-2xl font-normal tracking-tight truncate">{profile?.name || "Builder"}</h2>
                 )}
                 <div className="flex items-center gap-0.5 shrink-0">
                   <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleShareProfile}>
