@@ -221,10 +221,15 @@ export default function Profile() {
       
       {/* Main container with strict overflow control */}
       <div className="w-full max-w-full overflow-hidden space-y-4">
-        
-        {/* Header row */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          <div className="flex items-center gap-1.5 shrink-0">
+
+        {/* Profile Card - Compact */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-xl border border-border bg-card p-4 overflow-hidden"
+        >
+          {/* Top right icons */}
+          <div className="flex items-center justify-end gap-1 mb-3">
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleShareProfile}>
               <Share2 className="h-4 w-4" />
             </Button>
@@ -232,7 +237,7 @@ export default function Profile() {
               <Settings className="h-4 w-4" />
             </Button>
             <Button
-              variant={isEditing ? "default" : "outline"}
+              variant={isEditing ? "default" : "ghost"}
               size="icon"
               className="h-8 w-8"
               onClick={isEditing ? handleSave : () => setIsEditing(true)}
@@ -241,14 +246,7 @@ export default function Profile() {
               {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : isEditing ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
             </Button>
           </div>
-        </div>
 
-        {/* Profile Card - Compact */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="rounded-xl border border-border bg-card p-4 overflow-hidden"
-        >
           <div className="flex gap-4">
             {/* Avatar */}
             <div className="relative shrink-0">
