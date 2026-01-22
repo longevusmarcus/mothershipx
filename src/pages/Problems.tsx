@@ -94,7 +94,7 @@ const Problems = () => {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
           >
-            <MasonryGrid problems={filteredProblems} shouldBlurExcess={shouldBlurExcess} />
+            <MasonryGrid problems={filteredProblems} shouldBlurExcess={shouldBlurExcess} isAllCategory={selectedCategory === "all"} />
           </motion.div>
         </AnimatePresence>
 
