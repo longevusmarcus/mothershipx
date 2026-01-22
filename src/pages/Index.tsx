@@ -154,10 +154,20 @@ const Index = () => {
   };
 
   const handleAuthSuccess = () => {
-    // After successful auth, perform the search
+    // After successful auth, check subscription before proceeding
     if (pendingNiche) {
-      performSearch(pendingNiche);
+      const nicheToSearch = pendingNiche;
       setPendingNiche(null);
+      
+      // Re-check subscription - if not premium, show paywall
+      if (!hasPremiumAccess && !subscriptionLoading) {
+        setPendingNiche(nicheToSearch);
+        setShowPaywall(true);
+        return;
+      }
+      
+      // User has premium access, perform the search
+      performSearch(nicheToSearch);
     }
   };
 
