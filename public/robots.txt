@@ -12,5 +12,4 @@ Allow: /
 
 User-agent: *
 Allow: /
-
-Sitemap: https://mothershipx.lovable.app/sitemap.xml
+Sitemap: https://bbkhiwrgqilaokowhtxg.supabase.co/functions/v1/sitemap
