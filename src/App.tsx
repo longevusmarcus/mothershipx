@@ -7,6 +7,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import Index from "./pages/Index";
 import Problems from "./pages/Problems";
 import ProblemDetail from "./pages/ProblemDetail";
@@ -28,31 +29,33 @@ const App = () => (
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <ScrollToTop />
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/problems" element={<Problems />} />
-                <Route path="/problems/:id" element={<ProblemDetail />} />
-                <Route path="/challenges" element={<Challenges />} />
-                <Route path="/challenges/:id/results" element={<ChallengeResults />} />
-                <Route path="/builds" element={<Builds />} />
-                <Route path="/submit" element={<SubmitSolution />} />
-                <Route path="/leaderboard" element={<LeaderboardPage />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/profile/:userId" element={<PublicProfile />} />
-                {/* Redirect /settings to /profile */}
-                <Route path="/settings" element={<Navigate to="/profile" replace />} />
-                <Route path="/subscription/success" element={<SubscriptionSuccess />} />
-                <Route path="/auth" element={<Auth />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
+          <SubscriptionProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <ScrollToTop />
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/problems" element={<Problems />} />
+                  <Route path="/problems/:id" element={<ProblemDetail />} />
+                  <Route path="/challenges" element={<Challenges />} />
+                  <Route path="/challenges/:id/results" element={<ChallengeResults />} />
+                  <Route path="/builds" element={<Builds />} />
+                  <Route path="/submit" element={<SubmitSolution />} />
+                  <Route path="/leaderboard" element={<LeaderboardPage />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/profile/:userId" element={<PublicProfile />} />
+                  {/* Redirect /settings to /profile */}
+                  <Route path="/settings" element={<Navigate to="/profile" replace />} />
+                  <Route path="/subscription/success" element={<SubscriptionSuccess />} />
+                  <Route path="/auth" element={<Auth />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </TooltipProvider>
+          </SubscriptionProvider>
         </AuthProvider>
       </QueryClientProvider>
     </HelmetProvider>

@@ -33,7 +33,7 @@ import { PaywallModal } from "@/components/PaywallModal";
 import { SubscriptionPaywall } from "@/components/SubscriptionPaywall";
 import { AuthModal } from "@/components/AuthModal";
 import { BuilderVerificationModal } from "@/components/BuilderVerificationModal";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 import { supabase } from "@/lib/supabaseClient";
 
 interface ChallengeCardProps {

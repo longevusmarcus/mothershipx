@@ -4,7 +4,7 @@ import { Loader2, ArrowRight, Check, Zap, Globe, Swords, Users, Trophy, Sparkles
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { useSubscription, SUBSCRIPTION_PRICE } from "@/hooks/useSubscription";
+import { useSubscription, SUBSCRIPTION_PRICE } from "@/contexts/SubscriptionContext";
 import { usePaywallAnalytics } from "@/hooks/usePaywallAnalytics";
 import logoIcon from "@/assets/logo-icon.png";
 

@@ -17,7 +17,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { AuthModal } from "@/components/AuthModal";
 import { SubscriptionPaywall } from "@/components/SubscriptionPaywall";
 import { useToast } from "@/hooks/use-toast";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 import type { SearchResult } from "@/components/SearchResultCard";
 
 type SearchMode = "search" | "quick" | "grid";
