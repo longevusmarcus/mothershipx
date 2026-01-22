@@ -57,7 +57,7 @@ const Problems = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <div className="relative max-w-xl">
+          <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
             <input
               type="text"
