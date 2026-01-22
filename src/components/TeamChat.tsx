@@ -8,8 +8,6 @@ import {
   Trophy,
   Zap,
   Bot,
-  Phone,
-  Video,
   Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -110,17 +108,9 @@ export function TeamChat({
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <Phone className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <Video className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onClose}>
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onClose}>
+                <X className="h-4 w-4" />
+              </Button>
             </div>
 
             {/* Team Stats */}
