@@ -481,7 +481,7 @@ const SubmitSolution = () => {
 
                   {/* AI Judging Info */}
                   <div className="p-4 rounded-lg bg-secondary/30 text-sm">
-                    <p className="font-medium mb-2">How AI judges your build (check your email)</p>
+                    <p className="font-medium mb-2">How AI judges your build</p>
                     <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
                       <span>• Code quality & aesthetics</span>
                       <span>• Problem-solution fit</span>
@@ -496,7 +496,7 @@ const SubmitSolution = () => {
                       <div className="h-6 w-6 rounded-full bg-gradient-to-br from-warning/20 to-success/20 flex items-center justify-center">
                         <span className="text-xs">🏆</span>
                       </div>
-                      <p className="font-medium">Compete forever on the leaderboard</p>
+                      <p className="font-medium">Compete forever on the leaderboard (soon)</p>
                     </div>
                     <p className="text-xs text-muted-foreground leading-relaxed">
                       After AI validation, your build enters the permanent leaderboard where it's continuously judged by
