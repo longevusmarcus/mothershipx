@@ -22,6 +22,7 @@ import { Lock, Pin } from "lucide-react";
 import { MarketProblemCard } from "@/components/MarketProblemCard";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/contexts/AuthContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 import type { MarketProblem } from "@/data/marketIntelligence";
 
 const FREE_CARD_LIMIT = 12;
@@ -78,15 +79,17 @@ export function MasonryGrid({ problems }: MasonryGridProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const { hasPremiumAccess, isLoading: subscriptionLoading } = useSubscription();
   const { isAuthenticated } = useAuth();
+  const isMobile = useIsMobile();
 
   // Determine if we should blur cards beyond the limit
   // Blur for: logged-out users OR logged-in users without premium
   const shouldBlurExcess = !isAuthenticated || (!hasPremiumAccess && !subscriptionLoading);
 
+  // Disable drag and drop on mobile
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: isMobile ? Infinity : 8, // Infinity effectively disables on mobile
       },
     }),
     useSensor(KeyboardSensor, {
