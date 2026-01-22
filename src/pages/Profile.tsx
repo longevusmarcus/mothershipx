@@ -225,7 +225,6 @@ export default function Profile() {
         {/* Header row */}
         <div className="flex flex-col gap-1 mb-2">
           <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">Profile</h1>
-          <p className="text-sm text-muted-foreground">Manage your profile and track progress</p>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
           <div className="flex items-center gap-1.5 shrink-0">
