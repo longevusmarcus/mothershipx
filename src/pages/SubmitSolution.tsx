@@ -496,7 +496,7 @@ const SubmitSolution = () => {
                       <div className="h-6 w-6 rounded-full bg-gradient-to-br from-warning/20 to-success/20 flex items-center justify-center">
                         <span className="text-xs">🏆</span>
                       </div>
-                      <p className="font-medium">Compete forever on the leaderboard (soon)</p>
+                      <p className="font-medium">Compete forever on our leaderboards (soon)</p>
                     </div>
                     <p className="text-xs text-muted-foreground leading-relaxed">
                       After AI validation, your build enters the permanent leaderboard where it's continuously judged by
