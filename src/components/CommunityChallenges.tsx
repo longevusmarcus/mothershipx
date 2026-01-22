@@ -57,7 +57,7 @@ export const CommunityChallenges = () => {
     <div className="relative min-h-[80vh]">
       {/* Dot Grid Background */}
       <div 
-        className="absolute inset-0 opacity-[0.03] dark:opacity-[0.08] pointer-events-none"
+        className="absolute inset-0 opacity-[0.08] dark:opacity-[0.08] pointer-events-none"
         style={{
           backgroundImage: `radial-gradient(circle, currentColor 1px, transparent 1px)`,
           backgroundSize: '24px 24px',
