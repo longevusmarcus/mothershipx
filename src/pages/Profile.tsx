@@ -72,11 +72,13 @@ import { useUserStats, getXpProgress, getLevelTitle } from "@/hooks/useUserStats
 import { useIsBuilderVerified } from "@/hooks/useBuilderVerification";
 import { useUserSettings } from "@/hooks/useUserSettings";
 import { useSubscription, SUBSCRIPTION_PRICE } from "@/contexts/SubscriptionContext";
+import { useStreak } from "@/hooks/useStreak";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { MyProblems } from "@/components/MyProblems";
 import { ArenaHistory } from "@/components/ArenaHistory";
 import { SubscriptionPaywall } from "@/components/SubscriptionPaywall";
 import { BuilderVerificationModal } from "@/components/BuilderVerificationModal";
+import { AchievementBadge } from "@/components/AchievementBadge";
 
 // Achievement definitions
 const achievementDefs = [
@@ -111,6 +113,7 @@ export default function Profile() {
   const { isVerified, verification } = useIsBuilderVerified();
   const { settings, isLoading: settingsLoading, isSaving, hasChanges, updateSetting, saveSettings } = useUserSettings();
   const { hasPremiumAccess, subscriptionEnd, openCustomerPortal, isLoading: subLoading } = useSubscription();
+  const { streakData } = useStreak();
   
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -702,8 +705,58 @@ export default function Profile() {
 
           {/* Achievements Tab */}
           <TabsContent value="achievements" className="mt-4 space-y-4 overflow-visible">
+            {/* Streak Card */}
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-lg border border-border/50 bg-gradient-to-br from-orange-500/10 via-amber-500/5 to-transparent backdrop-blur-sm p-4 overflow-visible"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <motion.div 
+                      className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 flex items-center justify-center shadow-lg"
+                      animate={{ 
+                        boxShadow: streakData.currentStreak > 0 
+                          ? ["0 0 20px rgba(251,191,36,0.3)", "0 0 30px rgba(251,191,36,0.5)", "0 0 20px rgba(251,191,36,0.3)"]
+                          : "0 0 0px transparent"
+                      }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    >
+                      <Zap className="h-7 w-7 text-white" />
+                    </motion.div>
+                    {streakData.isActiveToday && (
+                      <motion.div 
+                        className="absolute -bottom-1 -right-1 w-5 h-5 bg-success rounded-full flex items-center justify-center border-2 border-background"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring", stiffness: 500 }}
+                      >
+                        <Check className="h-3 w-3 text-white" />
+                      </motion.div>
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">{streakData.currentStreak}</p>
+                    <p className="text-xs text-muted-foreground">day streak</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-medium text-muted-foreground">Best: {streakData.longestStreak} days</p>
+                  <p className="text-xs text-muted-foreground/70">
+                    {streakData.isActiveToday ? "Active today ✓" : "Be active to maintain!"}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
             {/* Reddit-style Achievement Summary Card */}
-            <div className="rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-4 overflow-visible">
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-4 overflow-visible"
+            >
               <h3 className="text-xs font-medium text-primary uppercase tracking-wider mb-4">
                 Achievements
               </h3>
@@ -712,26 +765,17 @@ export default function Profile() {
               <div className="flex items-center gap-3 mb-4 overflow-visible">
                 <div className="flex -space-x-2 overflow-visible">
                   {achievementDefs.slice(0, 4).map((achievement) => {
-                    const Icon = achievement.icon;
                     const isUnlocked = userStats ? achievement.check(userStats) : false;
                     return (
-                      <Tooltip key={achievement.id} delayDuration={100}>
-                        <TooltipTrigger asChild>
-                          <div 
-                            className={`w-10 h-10 rounded-full flex items-center justify-center border-2 border-background transition-all hover:scale-110 hover:z-10 ${
-                              isUnlocked 
-                                ? "bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 shadow-lg shadow-orange-500/20" 
-                                : "bg-muted/50 grayscale opacity-50"
-                            }`}
-                          >
-                            <Icon className={`h-4 w-4 ${isUnlocked ? "text-white" : "text-muted-foreground"}`} />
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent side="bottom" sideOffset={8} className="text-xs z-[100]">
-                          <p className="font-medium">{achievement.name}</p>
-                          <p className="text-muted-foreground">{achievement.description}</p>
-                        </TooltipContent>
-                      </Tooltip>
+                      <div key={achievement.id} className="relative z-0 hover:z-10 transition-all">
+                        <AchievementBadge
+                          icon={achievement.icon}
+                          name={achievement.name}
+                          description={achievement.description}
+                          isUnlocked={isUnlocked}
+                          size="sm"
+                        />
+                      </div>
                     );
                   })}
                 </div>
@@ -756,56 +800,61 @@ export default function Profile() {
               {/* Stats Row */}
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">
-                  {userStats ? achievementDefs.filter(a => a.check(userStats)).length : 0} unlocked
+                  {userStats ? achievementDefs.filter(a => a.check(userStats)).length : 0} of {achievementDefs.length} unlocked
                 </span>
-                <Button variant="outline" size="sm" className="text-xs h-7">
-                  View All
-                </Button>
+                <Badge variant="secondary" className="text-xs">
+                  {userStats ? Math.round((achievementDefs.filter(a => a.check(userStats)).length / achievementDefs.length) * 100) : 0}% complete
+                </Badge>
               </div>
-            </div>
+            </motion.div>
 
-            {/* All Achievements Grid */}
-            <div className="rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-4 overflow-visible">
+            {/* All Achievements Grid - Trophy Case */}
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-4 overflow-visible"
+            >
               <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-4">
                 Trophy Case
               </h3>
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 overflow-visible">
-                {achievementDefs.map((achievement) => {
-                  const Icon = achievement.icon;
+                {achievementDefs.map((achievement, index) => {
                   const isUnlocked = userStats ? achievement.check(userStats) : false;
                   return (
-                    <Tooltip key={achievement.id} delayDuration={100}>
-                      <TooltipTrigger asChild>
-                        <div className="flex flex-col items-center gap-2 group cursor-pointer">
-                          <div 
-                            className={`w-12 h-12 rounded-full flex items-center justify-center transition-all group-hover:scale-110 ${
-                              isUnlocked 
-                                ? "bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 shadow-lg shadow-orange-500/20" 
-                                : "bg-muted/30 border border-border/50"
-                            }`}
+                    <motion.div 
+                      key={achievement.id}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.05 * index }}
+                      className="flex flex-col items-center gap-2"
+                    >
+                      <AchievementBadge
+                        icon={achievement.icon}
+                        name={achievement.name}
+                        description={achievement.description}
+                        isUnlocked={isUnlocked}
+                        size="md"
+                      />
+                      <div className="text-center">
+                        <p className={`text-[10px] font-medium truncate max-w-[60px] ${isUnlocked ? "text-foreground" : "text-muted-foreground/50"}`}>
+                          {achievement.name}
+                        </p>
+                        {isUnlocked && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", stiffness: 500, delay: 0.1 }}
                           >
-                            <Icon className={`h-5 w-5 ${isUnlocked ? "text-white" : "text-muted-foreground/50"}`} />
-                          </div>
-                          <div className="text-center">
-                            <p className={`text-[10px] font-medium truncate max-w-[60px] ${isUnlocked ? "text-foreground" : "text-muted-foreground/50"}`}>
-                              {achievement.name}
-                            </p>
-                            {isUnlocked && (
-                              <CheckCircle2 className="h-3 w-3 text-success mx-auto mt-0.5" />
-                            )}
-                          </div>
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom" sideOffset={8} className="text-xs max-w-[150px] z-[100]">
-                        <p className="font-medium">{achievement.name}</p>
-                        <p className="text-muted-foreground">{achievement.description}</p>
-                        {!isUnlocked && <p className="text-warning mt-1">Not yet unlocked</p>}
-                      </TooltipContent>
-                    </Tooltip>
+                            <CheckCircle2 className="h-3 w-3 text-success mx-auto mt-0.5" />
+                          </motion.div>
+                        )}
+                      </div>
+                    </motion.div>
                   );
                 })}
               </div>
-            </div>
+            </motion.div>
           </TabsContent>
 
 

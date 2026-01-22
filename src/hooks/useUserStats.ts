@@ -13,6 +13,13 @@ export interface UserStats {
   challengesEntered: number;
   challengesWon: number;
   totalPrizeWon: number;
+  // Streak data
+  streak: number;
+  longestStreak: number;
+  // Additional stats for achievements
+  squadsJoined: number;
+  revenueEarned: number;
+  viralProblemsJoined: number;
 }
 
 // XP rewards for different activities
@@ -73,6 +80,11 @@ export function useUserStats() {
           challengesEntered: 0,
           challengesWon: 0,
           totalPrizeWon: 0,
+          streak: 0,
+          longestStreak: 0,
+          squadsJoined: 0,
+          revenueEarned: 0,
+          viralProblemsJoined: 0,
         };
       }
 
@@ -83,6 +95,9 @@ export function useUserStats() {
         submissionsResult,
         challengeJoinsResult,
         rankingsResult,
+        squadMembersResult,
+        profileResult,
+        viralProblemsResult,
       ] = await Promise.all([
         // Count problems joined
         supabase
@@ -99,7 +114,7 @@ export function useUserStats() {
         // Get submissions with scores
         supabase
           .from("submissions")
-          .select("id, total_score, sentiment_fit_score, status")
+          .select("id, total_score, sentiment_fit_score, status, revenue_amount")
           .eq("user_id", user.id),
         
         // Count challenge entries
@@ -113,18 +128,46 @@ export function useUserStats() {
           .from("rankings")
           .select("id, is_winner, prize_won, rank")
           .eq("user_id", user.id),
+        
+        // Count squads joined
+        supabase
+          .from("squad_members")
+          .select("id", { count: "exact" })
+          .eq("user_id", user.id),
+        
+        // Get streak data from profile
+        supabase
+          .from("profiles")
+          .select("current_streak, longest_streak")
+          .eq("id", user.id)
+          .single(),
+        
+        // Count viral problems joined
+        supabase
+          .from("problem_builders")
+          .select("problem_id, problems!inner(is_viral)")
+          .eq("user_id", user.id)
+          .eq("problems.is_viral", true),
       ]);
 
       const problemsJoined = problemBuildersResult.count || 0;
       const solutionsCount = solutionsResult.count || 0;
-      const solutions = solutionsResult.data || [];
       const submissions = submissionsResult.data || [];
       const challengesEntered = challengeJoinsResult.count || 0;
       const rankings = rankingsResult.data || [];
+      const squadsJoined = squadMembersResult.count || 0;
+      const viralProblemsJoined = viralProblemsResult.data?.length || 0;
+      
+      // Get streak from profile
+      const streak = profileResult.data?.current_streak || 0;
+      const longestStreak = profileResult.data?.longest_streak || 0;
 
       // Calculate solutions shipped (validated submissions + created solutions)
       const validatedSubmissions = submissions.filter(s => s.status === "validated" || s.status === "ranked" || s.status === "winner").length;
       const solutionsShipped = solutionsCount + validatedSubmissions;
+
+      // Calculate total revenue earned
+      const revenueEarned = submissions.reduce((sum, s) => sum + (s.revenue_amount || 0), 0);
 
       // Calculate average fit score from submissions
       const scoresWithFit = submissions.filter(s => s.sentiment_fit_score !== null);
@@ -153,7 +196,7 @@ export function useUserStats() {
         }
       });
 
-      const { level, xpToNext, nextLevelXp } = calculateLevel(totalXp);
+      const { level, xpToNext } = calculateLevel(totalXp);
 
       return {
         problemsJoined,
@@ -166,6 +209,11 @@ export function useUserStats() {
         challengesEntered,
         challengesWon,
         totalPrizeWon,
+        streak,
+        longestStreak,
+        squadsJoined,
+        revenueEarned,
+        viralProblemsJoined,
       };
     },
     enabled: !!user,
