@@ -17,6 +17,7 @@ import {
   ArrowUp,
   MessageSquare,
   Plus,
+  Terminal,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { FitVerificationPanel } from "@/components/FitVerificationPanel";
@@ -27,6 +28,7 @@ import { HiddenInsightCard } from "@/components/HiddenInsightCard";
 import { TeamFormation } from "@/components/TeamFormation";
 import { SubscriptionPaywall } from "@/components/SubscriptionPaywall";
 import { SubscriptionLoadingGate } from "@/components/SubscriptionLoadingGate";
+import { PromptsGenerator } from "@/components/PromptsGenerator";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -408,6 +410,10 @@ const ProblemDetail = () => {
             <TabsTrigger value="competitors" className="text-xs data-[state=active]:bg-background">
               Competitors
             </TabsTrigger>
+            <TabsTrigger value="prompts" className="text-xs data-[state=active]:bg-background gap-1">
+              <Terminal className="h-3 w-3" />
+              Prompts
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" forceMount className={`mt-4 space-y-4 ${activeTab !== "overview" ? "hidden" : ""}`}>
@@ -682,6 +688,26 @@ const ProblemDetail = () => {
                 )}
               </div>
             </div>
+          </TabsContent>
+
+          {/* Prompts Tab */}
+          <TabsContent value="prompts" forceMount className={`mt-4 ${activeTab !== "prompts" ? "hidden" : ""}`}>
+            <PromptsGenerator
+              problem={{
+                id: problem.id,
+                title: problem.title,
+                subtitle: problem.subtitle,
+                category: problem.category,
+                niche: problem.niche,
+                painPoints: problem.painPoints,
+                marketSize: problem.marketSize,
+                opportunityScore: problem.opportunityScore,
+                sentiment: problem.sentiment,
+                sources: problem.sources,
+                hiddenInsight: problem.hiddenInsight,
+              }}
+              competitors={competitors}
+            />
           </TabsContent>
         </Tabs>
       </div>
