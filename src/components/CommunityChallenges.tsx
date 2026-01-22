@@ -64,6 +64,14 @@ export const CommunityChallenges = () => {
         }}
       />
 
+      {/* Scan Line Overlay */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div 
+          className="absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-primary/20 to-transparent animate-scan-line"
+          style={{ top: 0 }}
+        />
+      </div>
+
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

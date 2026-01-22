@@ -238,10 +238,18 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
         </div>
 
         {/* Title Row */}
-        <div className="mb-4">
+        <div className="mb-4 group/title">
           <div className="flex items-center gap-2 font-mono mb-1">
             <span className="text-muted-foreground">&gt;</span>
-            <h3 className="font-medium text-base">{challenge.title}</h3>
+            <h3 className="font-medium text-base relative">
+              <span className="group-hover/title:opacity-0 transition-opacity duration-200">
+                {challenge.title}
+              </span>
+              <span className="absolute inset-0 opacity-0 group-hover/title:opacity-100 transition-opacity duration-200 whitespace-nowrap overflow-hidden">
+                {challenge.title}
+                <span className="inline-block w-[2px] h-[1em] bg-primary ml-0.5 align-middle animate-typing-cursor" />
+              </span>
+            </h3>
             {challenge.isToday && (
               <span className="font-mono text-[10px] text-primary uppercase tracking-wider">
                 today
