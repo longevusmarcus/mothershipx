@@ -510,10 +510,13 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           created_at: string
+          current_streak: number
           email: string | null
           github: string | null
           id: string
+          last_activity_date: string | null
           location: string | null
+          longest_streak: number
           name: string | null
           twitter: string | null
           updated_at: string
@@ -524,10 +527,13 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
+          current_streak?: number
           email?: string | null
           github?: string | null
           id: string
+          last_activity_date?: string | null
           location?: string | null
+          longest_streak?: number
           name?: string | null
           twitter?: string | null
           updated_at?: string
@@ -538,10 +544,13 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
+          current_streak?: number
           email?: string | null
           github?: string | null
           id?: string
+          last_activity_date?: string | null
           location?: string | null
+          longest_streak?: number
           name?: string | null
           twitter?: string | null
           updated_at?: string
@@ -1072,6 +1081,33 @@ export type Database = {
         }
         Relationships: []
       }
+      user_activity: {
+        Row: {
+          activities_count: number
+          activity_date: string
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activities_count?: number
+          activity_date?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activities_count?: number
+          activity_date?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_problem_pins: {
         Row: {
           id: string
@@ -1255,6 +1291,7 @@ export type Database = {
       }
     }
     Functions: {
+      calculate_user_streak: { Args: { p_user_id: string }; Returns: number }
       has_premium_access: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
@@ -1273,6 +1310,7 @@ export type Database = {
         Returns: undefined
       }
       is_profile_public: { Args: { _profile_id: string }; Returns: boolean }
+      record_user_activity: { Args: { p_user_id: string }; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "subscriber" | "user"
