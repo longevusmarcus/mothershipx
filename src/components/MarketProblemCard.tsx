@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, TrendingUp, Eye, Bookmark, Share2, Trash2, ArrowUp, MessageSquare } from "lucide-react";
+import { ArrowRight, TrendingUp, Eye, Bookmark, Share2, Trash2, ArrowUp, MessageSquare, Pin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { AuthModal } from "@/components/AuthModal";
 import { useAuth } from "@/contexts/AuthContext";
@@ -12,6 +12,8 @@ import type { MarketProblem } from "@/data/marketIntelligence";
 interface MarketProblemCardProps {
   problem: MarketProblem;
   delay?: number;
+  isPinned?: boolean;
+  onTogglePin?: (problemId: string) => void;
 }
 
 const formatNumber = (num: number): string => {
@@ -45,7 +47,7 @@ const detectSourceType = (problem: MarketProblem): "reddit" | "youtube" | "tikto
   return "default";
 };
 
-export function MarketProblemCard({ problem, delay = 0 }: MarketProblemCardProps) {
+export function MarketProblemCard({ problem, delay = 0, isPinned = false, onTogglePin }: MarketProblemCardProps) {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { isAdmin } = useSubscription();
@@ -67,6 +69,11 @@ export function MarketProblemCard({ problem, delay = 0 }: MarketProblemCardProps
     }
   };
 
+  const handleTogglePin = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onTogglePin?.(problem.id);
+  };
+
   const sentiment = getSentimentLabel(problem.sentiment);
   const sourceType = detectSourceType(problem);
 
@@ -84,14 +91,25 @@ export function MarketProblemCard({ problem, delay = 0 }: MarketProblemCardProps
     >
       <div
         onClick={handleCardClick}
-        className="relative rounded-xl border border-border bg-card p-4 cursor-pointer hover:border-foreground/20 hover:shadow-lg transition-all duration-200 group"
+        className={`relative rounded-xl border bg-card p-4 cursor-pointer hover:border-foreground/20 hover:shadow-lg transition-all duration-200 group ${isPinned ? 'border-primary/50 ring-1 ring-primary/20' : 'border-border'}`}
       >
+        {/* Pin button */}
+        {isAuthenticated && onTogglePin && (
+          <button
+            onClick={handleTogglePin}
+            className={`absolute top-2 right-2 p-1.5 rounded-md transition-all z-10 ${isPinned ? 'text-primary bg-primary/10' : 'opacity-0 group-hover:opacity-100 hover:bg-secondary text-muted-foreground hover:text-foreground'}`}
+            title={isPinned ? "Unpin card" : "Pin to top"}
+          >
+            <Pin className={`h-3.5 w-3.5 ${isPinned ? 'fill-current' : ''}`} />
+          </button>
+        )}
+        
         {/* Admin delete button */}
         {isAdmin && (
           <button
             onClick={handleDelete}
             disabled={deleteProblem.isPending}
-            className="absolute top-2 right-2 p-1.5 rounded-md opacity-0 group-hover:opacity-100 hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all z-10"
+            className={`absolute top-2 p-1.5 rounded-md opacity-0 group-hover:opacity-100 hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all z-10 ${isAuthenticated && onTogglePin ? 'right-10' : 'right-2'}`}
             title="Remove from library"
           >
             <Trash2 className="h-3.5 w-3.5" />
