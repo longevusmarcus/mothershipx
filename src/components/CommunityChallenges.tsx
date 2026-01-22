@@ -37,9 +37,9 @@ export const CommunityChallenges = () => {
   const totalParticipants = allChallenges.reduce((acc, c) => acc + c.participants, 0);
 
   const proofRequirements = [
-    { icon: Database, label: "Supabase", desc: "Public project key" },
-    { icon: CreditCard, label: "Stripe", desc: "Public API key" },
+    { icon: CreditCard, label: "Stripe / Polar", desc: "Public API key" },
     { icon: Github, label: "GitHub", desc: "Profile with stars" },
+    { icon: Database, label: "Supabase", desc: "Optional", optional: true },
   ];
 
   const memberBenefits = [
@@ -82,7 +82,7 @@ export const CommunityChallenges = () => {
               ~/arena
             </p>
             <h1 className="font-mono text-xl sm:text-2xl font-medium tracking-wider uppercase">
-              Builder Arena
+              Hacker Arena
             </h1>
             <p className="font-mono text-xs text-muted-foreground tracking-wide">
               A private builder club • Prove you ship • Compete for prizes
@@ -138,9 +138,9 @@ export const CommunityChallenges = () => {
               {proofRequirements.map((req, i) => (
                 <div key={i} className="flex items-center gap-3 font-mono text-sm">
                   <span className="text-muted-foreground">&gt;</span>
-                  <req.icon className="h-4 w-4 text-muted-foreground" />
-                  <span>{req.label}</span>
-                  <span className="text-muted-foreground text-xs">— {req.desc}</span>
+                  <req.icon className={`h-4 w-4 ${req.optional ? "text-muted-foreground/50" : "text-muted-foreground"}`} />
+                  <span className={req.optional ? "text-muted-foreground" : ""}>{req.label}</span>
+                  <span className={`text-xs ${req.optional ? "text-muted-foreground/50 italic" : "text-muted-foreground"}`}>— {req.desc}</span>
                 </div>
               ))}
             </div>
