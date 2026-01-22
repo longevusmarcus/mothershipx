@@ -20,8 +20,27 @@ function formatValue(n: number): string {
   return n.toString();
 }
 
-function generateFreshSources(views: number, demandVelocity: number, competitionGap: number): TrendSignal[] {
-  // Add some randomness to simulate real-time data changes
+function generateFreshSources(views: number, shares: number, demandVelocity: number, competitionGap: number, existingSources: any[]): TrendSignal[] {
+  // Check if this is a Reddit-only problem (has 'name' key = 'reddit' or only reddit sources)
+  const isRedditOnly = existingSources?.some((s: any) => s.name === 'reddit') ||
+    (existingSources?.length === 1 && existingSources[0]?.source === 'reddit');
+  
+  if (isRedditOnly) {
+    // Preserve Reddit-only format with fresh variation
+    const upvoteVariation = Math.round(views * (0.95 + Math.random() * 0.1));
+    const commentVariation = Math.round(shares * (0.95 + Math.random() * 0.1));
+    
+    return [
+      {
+        source: "reddit",
+        name: "reddit",
+        trend: `${upvoteVariation} upvotes`,
+        mentions: commentVariation,
+      } as any
+    ];
+  }
+  
+  // Standard TikTok/Google Trends/Reddit format for non-Reddit-only problems
   const viewVariation = Math.round(views * (0.95 + Math.random() * 0.1));
   const demandVariation = Math.round(demandVelocity + (Math.random() * 10 - 5));
   const gapVariation = Math.round(competitionGap + (Math.random() * 8 - 4));
@@ -282,8 +301,8 @@ serve(async (req) => {
         )));
       }
       
-      // Generate fresh sources based on updated metrics
-      const freshSources = generateFreshSources(views, demandVelocity, competitionGap);
+      // Generate fresh sources based on updated metrics (preserving Reddit-only format)
+      const freshSources = generateFreshSources(views, shares, demandVelocity, competitionGap, problem.sources);
       
       // Generate or update hidden insight if missing
       let hiddenInsight = problem.hidden_insight;
