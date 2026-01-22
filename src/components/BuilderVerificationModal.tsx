@@ -69,12 +69,19 @@ const verificationSchema = z.object({
     .trim()
     .min(1, "GitHub username or URL is required")
     .max(200, "GitHub value is too long"),
+  paymentProvider: z.enum(["stripe", "polar"]),
   stripePublicKey: z
     .string()
     .trim()
-    .min(1, "Stripe key is required")
-    .regex(/^pk_(live|test)_/, "Must be a Stripe publishable key (pk_...)")
-    .max(200, "Stripe key is too long"),
+    .max(200, "Stripe key is too long")
+    .optional()
+    .or(z.literal("")),
+  polarPublicKey: z
+    .string()
+    .trim()
+    .max(200, "Polar key is too long")
+    .optional()
+    .or(z.literal("")),
   supabaseProjectKey: z
     .string()
     .trim()
@@ -85,7 +92,21 @@ const verificationSchema = z.object({
     )
     .optional()
     .or(z.literal("")),
-});
+}).refine(
+  (data) => {
+    if (data.paymentProvider === "stripe") {
+      return data.stripePublicKey && /^pk_(live|test)_/.test(data.stripePublicKey);
+    }
+    if (data.paymentProvider === "polar") {
+      return data.polarPublicKey && data.polarPublicKey.length > 0;
+    }
+    return false;
+  },
+  {
+    message: "Please provide a valid API key for your selected payment provider",
+    path: ["stripePublicKey"],
+  }
+);
 
 export function BuilderVerificationModal({
   open,
@@ -99,7 +120,9 @@ export function BuilderVerificationModal({
   
   const [formData, setFormData] = useState({
     githubUsername: "",
+    paymentProvider: "stripe" as "stripe" | "polar",
     stripePublicKey: "",
+    polarPublicKey: "",
     supabaseProjectKey: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -130,7 +153,9 @@ export function BuilderVerificationModal({
         // Pre-fill form with existing data
         setFormData({
           githubUsername: data.github_username || "",
+          paymentProvider: data.stripe_public_key ? "stripe" : "polar",
           stripePublicKey: data.stripe_public_key || "",
+          polarPublicKey: "",
           supabaseProjectKey: data.supabase_project_key || "",
         });
       }
@@ -247,25 +272,74 @@ export function BuilderVerificationModal({
                 </p>
               </div>
 
-              {/* Stripe */}
-              <div className="space-y-2">
-                <Label htmlFor="stripe" className="flex items-center gap-2">
+              {/* Payment Provider Selection */}
+              <div className="space-y-3">
+                <Label className="flex items-center gap-2">
                   <CreditCard className="h-4 w-4" />
-                  Stripe Publishable Key
+                  Payment Provider
                 </Label>
-                <Input
-                  id="stripe"
-                  placeholder="pk_live_..."
-                  value={formData.stripePublicKey}
-                  onChange={(e) => handleInputChange("stripePublicKey", e.target.value)}
-                  className={errors.stripePublicKey ? "border-destructive" : ""}
-                />
-                {errors.stripePublicKey && (
-                  <p className="text-xs text-destructive">{errors.stripePublicKey}</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleInputChange("paymentProvider", "stripe")}
+                    className={`p-3 rounded-lg border text-left transition-all ${
+                      formData.paymentProvider === "stripe"
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <p className="font-medium text-sm">Stripe</p>
+                    <p className="text-xs text-muted-foreground">pk_live_...</p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleInputChange("paymentProvider", "polar")}
+                    className={`p-3 rounded-lg border text-left transition-all ${
+                      formData.paymentProvider === "polar"
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <p className="font-medium text-sm">Polar</p>
+                    <p className="text-xs text-muted-foreground">Public API key</p>
+                  </button>
+                </div>
+
+                {formData.paymentProvider === "stripe" && (
+                  <div className="space-y-2">
+                    <Input
+                      id="stripe"
+                      placeholder="pk_live_..."
+                      value={formData.stripePublicKey}
+                      onChange={(e) => handleInputChange("stripePublicKey", e.target.value)}
+                      className={errors.stripePublicKey ? "border-destructive" : ""}
+                    />
+                    {errors.stripePublicKey && (
+                      <p className="text-xs text-destructive">{errors.stripePublicKey}</p>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      Live key preferred (shows you have paying customers)
+                    </p>
+                  </div>
                 )}
-                <p className="text-xs text-muted-foreground">
-                  Live key preferred (shows you have paying customers)
-                </p>
+
+                {formData.paymentProvider === "polar" && (
+                  <div className="space-y-2">
+                    <Input
+                      id="polar"
+                      placeholder="Your Polar public key"
+                      value={formData.polarPublicKey}
+                      onChange={(e) => handleInputChange("polarPublicKey", e.target.value)}
+                      className={errors.polarPublicKey ? "border-destructive" : ""}
+                    />
+                    {errors.polarPublicKey && (
+                      <p className="text-xs text-destructive">{errors.polarPublicKey}</p>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      Your public API key from Polar dashboard
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Supabase */}
