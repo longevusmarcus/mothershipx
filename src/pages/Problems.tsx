@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Search } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
 import { MasonryGrid } from "@/components/MasonryGrid";
@@ -31,8 +30,6 @@ const Problems = () => {
     return matchesSearch;
   });
 
-  
-
   return (
     <AppLayout>
       <SEO
@@ -51,6 +48,7 @@ const Problems = () => {
             {filteredProblems.length} problems and trends discovered
           </p>
         </motion.div>
+
         {/* Categories */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -59,25 +57,39 @@ const Problems = () => {
           className="flex gap-2 overflow-x-auto touch-scroll pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap justify-center"
         >
           {categories.map((cat) => (
-            <Badge
+            <motion.div
               key={cat}
-              variant={selectedCategory === cat ? "default" : "outline"}
-              className="cursor-pointer hover:bg-primary/10 transition-colors whitespace-nowrap flex-shrink-0"
-              onClick={() => setSelectedCategory(cat)}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.15 }}
             >
-              {cat}
-            </Badge>
+              <Badge
+                variant={selectedCategory === cat ? "default" : "outline"}
+                className={`cursor-pointer transition-all duration-300 whitespace-nowrap flex-shrink-0 ${
+                  selectedCategory === cat 
+                    ? "shadow-sm" 
+                    : "hover:bg-primary/5 hover:border-primary/30"
+                }`}
+                onClick={() => setSelectedCategory(cat)}
+              >
+                {cat}
+              </Badge>
+            </motion.div>
           ))}
         </motion.div>
 
-        {/* Problems Masonry Grid */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          <MasonryGrid problems={filteredProblems} />
-        </motion.div>
+        {/* Problems Masonry Grid with AnimatePresence */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={selectedCategory}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+          >
+            <MasonryGrid problems={filteredProblems} />
+          </motion.div>
+        </AnimatePresence>
 
         {filteredProblems.length === 0 && !isLoading && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12">
