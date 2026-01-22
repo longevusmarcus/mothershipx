@@ -158,7 +158,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
               : "text-muted-foreground hover:text-foreground hover:bg-gradient-to-r hover:from-warning/10 hover:to-destructive/10",
           )}
         >
-          <motion.div 
+          <motion.div
             className="relative"
             whileHover={{ scale: 1.15, rotate: -8 }}
             whileTap={{ scale: 0.95 }}
@@ -207,7 +207,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
                 exit={{ opacity: 0, width: 0 }}
                 className="flex items-center gap-2 overflow-hidden whitespace-nowrap"
               >
-                <span>Leaderboard</span>
+                <span>League</span>
                 <span className="text-[8px] bg-muted text-muted-foreground px-1 py-0.5 rounded font-medium">SOON</span>
               </motion.div>
             )}
