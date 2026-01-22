@@ -261,9 +261,6 @@ export default function Profile() {
                   <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleShareProfile}>
                     <Share2 className="h-3.5 w-3.5" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigate("/settings")}>
-                    <Settings className="h-3.5 w-3.5" />
-                  </Button>
                   <Button
                     variant={isEditing ? "default" : "ghost"}
                     size="icon"
