@@ -16,8 +16,43 @@ interface ProblemData {
   sentiment: string;
   sources?: any[];
   hiddenInsight?: any;
-  competitors?: any[];
 }
+
+interface PromptConfig {
+  framework: string;
+  complexity: number;
+  features: {
+    auth: boolean;
+    payments: boolean;
+    analytics: boolean;
+    email: boolean;
+    admin: boolean;
+    ai: boolean;
+    realtime: boolean;
+    darkMode: boolean;
+  };
+  techStack: string[];
+  designStyle: string;
+}
+
+const frameworkDescriptions: Record<string, string> = {
+  "lovable": "React + Vite + TypeScript SPA with Tailwind CSS, shadcn/ui components, and Supabase backend",
+  "nextjs": "Next.js 14+ with App Router, Server Components, Server Actions, and full-stack capabilities",
+  "mobile-react-native": "React Native with Expo, React Navigation, and NativeWind for styling",
+  "mobile-flutter": "Flutter with Material Design 3, Provider/Riverpod state management, and Dart",
+  "chrome-extension": "Chrome Extension Manifest V3 with React popup, content scripts, and background service worker",
+  "desktop-electron": "Electron app with React renderer, IPC communication, and native OS integrations",
+  "api-only": "Backend API with Node.js/Deno, REST/GraphQL endpoints, database models, and authentication",
+};
+
+const designStyleDescriptions: Record<string, string> = {
+  "minimal": "Clean whitespace, subtle shadows, monochromatic palette with single accent color, system fonts, minimal borders",
+  "modern": "Rounded corners, gradient accents, frosted glass cards, smooth transitions, professional color palette",
+  "playful": "Vibrant colors, bouncy animations, emoji accents, bold typography, rounded shapes, micro-interactions",
+  "dark-luxe": "Dark backgrounds (#0a0a0a), gold/purple accents, subtle gradients, premium feel, elegant typography",
+  "brutalist": "Bold black borders, raw HTML aesthetic, high contrast, unconventional layouts, system fonts",
+  "glassmorphism": "Frosted glass effects, blur backdrops, transparency layers, soft shadows, gradient borders",
+};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -25,16 +60,26 @@ serve(async (req) => {
   }
 
   try {
-    const { problem, competitors, solutions } = await req.json() as {
+    const { problem, competitors, solutions, config } = await req.json() as {
       problem: ProblemData;
       competitors?: any[];
       solutions?: any[];
+      config?: PromptConfig;
     };
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
+
+    // Default config if not provided
+    const finalConfig: PromptConfig = config || {
+      framework: "lovable",
+      complexity: 3,
+      features: { auth: true, payments: false, analytics: false, email: false, admin: false, ai: false, realtime: false, darkMode: true },
+      techStack: ["supabase", "tailwind", "shadcn"],
+      designStyle: "modern",
+    };
 
     // Build comprehensive context
     const competitorContext = competitors?.length 
@@ -49,27 +94,59 @@ serve(async (req) => {
       ? `\n\nHidden Market Insight: ${problem.hiddenInsight.insight || JSON.stringify(problem.hiddenInsight)}`
       : '';
 
-    const systemPrompt = `You are a legendary senior prompt engineer with 15+ years of experience building enterprise SaaS products. You specialize in crafting precise, actionable prompts that developers can use with AI coding tools like Lovable, Cursor, or Claude to build production-ready applications.
+    // Build feature requirements
+    const enabledFeatures = Object.entries(finalConfig.features)
+      .filter(([_, enabled]) => enabled)
+      .map(([feature]) => {
+        const descriptions: Record<string, string> = {
+          auth: "User authentication with signup, login, password reset, and session management",
+          payments: "Stripe integration with subscription plans, checkout flow, and customer portal",
+          analytics: "Usage tracking, event logging, and dashboard with key metrics",
+          email: "Transactional emails with Resend/SendGrid for notifications and onboarding",
+          admin: "Admin dashboard for user management, content moderation, and system settings",
+          ai: "AI/LLM integration for intelligent features, content generation, or chat",
+          realtime: "Real-time updates with WebSockets or Supabase Realtime for live collaboration",
+          darkMode: "Light/dark mode toggle with system preference detection and persistent choice",
+        };
+        return descriptions[feature] || feature;
+      });
+
+    const frameworkDesc = frameworkDescriptions[finalConfig.framework] || finalConfig.framework;
+    const designDesc = designStyleDescriptions[finalConfig.designStyle] || finalConfig.designStyle;
+
+    const complexityDescriptions: Record<number, string> = {
+      1: "Weekend project - single page, minimal features, quick prototype",
+      2: "MVP - core functionality only, 2-3 pages, basic polish",
+      3: "Production-ready - complete feature set, responsive, error handling, loading states",
+      4: "Enterprise - scalable architecture, comprehensive testing, security hardening, documentation",
+      5: "Full platform - multi-tenant, extensive admin tools, API, integrations, advanced analytics",
+    };
+
+    const systemPrompt = `You are a legendary senior prompt engineer with 15+ years of experience building enterprise applications. You specialize in crafting precise, actionable prompts for AI coding tools like Lovable, Cursor, and Claude.
 
 Your prompts are known for being:
-- Hyper-specific and technically precise
-- Including design system specifications
-- Covering edge cases and error handling
-- Specifying database schemas and API structures
-- Including accessibility and performance requirements
+- Hyper-specific with exact technical requirements
+- Including complete design system specifications
+- Covering error states, loading states, and edge cases
+- Specifying database schemas with relationships
+- Including authentication and authorization patterns
 - Production-ready from day one
 
-You understand that great prompts include:
-1. Clear product vision and user personas
-2. Detailed technical architecture
-3. Specific UI/UX requirements with design tokens
-4. Database schema and relationships
-5. API endpoints and data flow
-6. Authentication and authorization patterns
-7. Error handling and edge cases
-8. Performance and accessibility requirements`;
+CRITICAL FRAMEWORK CONTEXT:
+The user wants to build for: ${frameworkDesc}
 
-    const userPrompt = `Based on this market opportunity, generate 3 distinct, production-ready prompts that a developer could paste into Lovable or similar AI coding tools to build a complete solution.
+DESIGN STYLE:
+${designDesc}
+
+COMPLEXITY LEVEL: ${finalConfig.complexity}/5
+${complexityDescriptions[finalConfig.complexity]}
+
+REQUIRED FEATURES:
+${enabledFeatures.length > 0 ? enabledFeatures.map(f => `- ${f}`).join('\n') : '- Basic functionality only'}
+
+PREFERRED TECH STACK: ${finalConfig.techStack.join(', ')}`;
+
+    const userPrompt = `Based on this market opportunity and the user's specific preferences, generate 3 distinct, production-ready prompts.
 
 ## Market Opportunity
 Title: ${problem.title}
@@ -85,53 +162,54 @@ ${competitorContext}
 ${solutionContext}
 ${hiddenInsightContext}
 
-## Requirements for Each Prompt
+## User Preferences
+- Framework: ${finalConfig.framework} (${frameworkDesc})
+- Target Complexity: ${finalConfig.complexity}/5 (${complexityDescriptions[finalConfig.complexity]})
+- Design Style: ${finalConfig.designStyle} (${designDesc})
+- Tech Stack: ${finalConfig.techStack.join(', ')}
+- Features: ${enabledFeatures.length > 0 ? enabledFeatures.join(', ') : 'Basic only'}
 
-Generate exactly 3 prompts with these characteristics:
+## Generate 3 Prompts
 
-### Prompt 1: "The MVP Sprint"
-A focused, ship-fast prompt for building a minimal viable product in one session. Include:
-- Core feature set (3-4 features max)
-- Simple but elegant UI with dark/light mode
-- Basic auth and data persistence
-- Mobile-responsive design
+### Prompt 1: "Quick Start"
+Aligned with user's complexity preference. Focus on getting something working fast with their chosen tech stack. Include:
+- Core value proposition feature
+- Clean implementation of ${finalConfig.designStyle} design
+- ${enabledFeatures.slice(0, 2).join(' and ') || 'Basic functionality'}
 
-### Prompt 2: "The Full Stack"
-A comprehensive prompt for building a complete SaaS application. Include:
-- Complete feature set addressing all pain points
-- Advanced UI with animations and micro-interactions
-- Full auth flow with social logins
-- Subscription/payment integration
-- Admin dashboard
-- Email notifications
-- Analytics tracking
+### Prompt 2: "Complete Solution"  
+Full implementation with all requested features. Include:
+- All pain points addressed
+- Complete ${finalConfig.framework} setup
+- All requested features: ${enabledFeatures.join(', ') || 'core features'}
+- Comprehensive ${finalConfig.designStyle} design system
+- Error handling and loading states
 
-### Prompt 3: "The Differentiator"
-A creative prompt that takes an unconventional approach to solve the problem. Include:
-- Unique angle that competitors haven't explored
-- Innovative UX patterns
-- Viral/growth mechanics built-in
-- Community features
-- AI-powered features where relevant
+### Prompt 3: "Market Dominator"
+Strategic approach to beat competitors. Include:
+- Unique differentiators not seen in competitor analysis
+- Growth mechanics and viral loops
+- Advanced ${finalConfig.designStyle} design with premium polish
+- Features that justify premium pricing
 
-For each prompt, provide:
-1. A catchy title
-2. The estimated build complexity (1-5 scale)
-3. Key differentiators from competitors
-4. The complete prompt text (ready to paste)
+For each prompt, the prompt text MUST:
+1. Be specific to ${finalConfig.framework} with correct syntax and patterns
+2. Include exact ${finalConfig.designStyle} design specifications
+3. Reference ${finalConfig.techStack.join(', ')} implementation details
+4. Be immediately usable - copy-paste ready
 
-Format your response as valid JSON with this structure:
+Format response as JSON:
 {
   "prompts": [
     {
-      "id": "mvp",
+      "id": "quick-start",
       "title": "string",
-      "subtitle": "string",
-      "complexity": number,
-      "estimatedTime": "string",
-      "differentiators": ["string"],
-      "tags": ["string"],
-      "prompt": "string (the full prompt text)"
+      "subtitle": "string (one-line description)",
+      "complexity": number (1-5),
+      "estimatedTime": "string (e.g., '2-3 hours')",
+      "differentiators": ["string", "string", "string"],
+      "tags": ["string"] (include framework, key features),
+      "prompt": "string (the complete, detailed prompt - 500+ words)"
     }
   ]
 }`;
