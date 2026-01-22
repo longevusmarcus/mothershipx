@@ -93,27 +93,29 @@ export function AppLayout({ children }: AppLayoutProps) {
               {isAuthenticated ? (
                 <>
                   {/* Desktop - avatar with premium badge */}
-                  <TooltipProvider>
+              {hasPremiumAccess ? (
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Link to="/profile" className="hidden md:flex relative">
                           <div className="h-9 w-9 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground text-sm font-bold hover:opacity-90 transition-opacity">
                             {initials}
                           </div>
-                          {hasPremiumAccess && (
-                            <div className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-amber-500 flex items-center justify-center ring-2 ring-background">
-                              <Crown className="h-2.5 w-2.5 text-white" />
-                            </div>
-                          )}
+                          <div className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-amber-500 flex items-center justify-center ring-2 ring-background">
+                            <Crown className="h-2.5 w-2.5 text-white" />
+                          </div>
                         </Link>
                       </TooltipTrigger>
-                      {hasPremiumAccess && (
-                        <TooltipContent>
-                          <p>Premium Member</p>
-                        </TooltipContent>
-                      )}
+                      <TooltipContent>
+                        <p>Premium Member</p>
+                      </TooltipContent>
                     </Tooltip>
-                  </TooltipProvider>
+                  ) : (
+                    <Link to="/profile" className="hidden md:flex relative">
+                      <div className="h-9 w-9 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground text-sm font-bold hover:opacity-90 transition-opacity">
+                        {initials}
+                      </div>
+                    </Link>
+                  )}
                   
                   {/* Mobile - dropdown menu with premium badge */}
                   <DropdownMenu>
