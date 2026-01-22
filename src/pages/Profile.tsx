@@ -695,40 +695,107 @@ export default function Profile() {
           </TabsContent>
 
           {/* Achievements Tab */}
-          <TabsContent value="achievements" className="mt-4">
+          <TabsContent value="achievements" className="mt-4 space-y-4">
+            {/* Reddit-style Achievement Summary Card */}
             <div className="rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-4">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Achievements
-                </h3>
-                <span className="text-xs text-muted-foreground">
-                  {userStats ? achievementDefs.filter(a => a.check(userStats)).length : 0}/{achievementDefs.length}
-                </span>
+              <h3 className="text-xs font-medium text-primary uppercase tracking-wider mb-4">
+                Achievements
+              </h3>
+              
+              {/* Achievement Badges Row */}
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex -space-x-2">
+                  {achievementDefs.slice(0, 3).map((achievement) => {
+                    const Icon = achievement.icon;
+                    const isUnlocked = userStats ? achievement.check(userStats) : false;
+                    return (
+                      <Tooltip key={achievement.id}>
+                        <TooltipTrigger asChild>
+                          <div 
+                            className={`w-10 h-10 rounded-full flex items-center justify-center border-2 border-background transition-all ${
+                              isUnlocked 
+                                ? "bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 shadow-lg shadow-orange-500/20" 
+                                : "bg-muted/50 grayscale opacity-50"
+                            }`}
+                          >
+                            <Icon className={`h-4 w-4 ${isUnlocked ? "text-white" : "text-muted-foreground"}`} />
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="text-xs">
+                          <p className="font-medium">{achievement.name}</p>
+                          <p className="text-muted-foreground">{achievement.description}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    );
+                  })}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm truncate">
+                    {achievementDefs
+                      .filter(a => userStats ? a.check(userStats) : false)
+                      .slice(0, 2)
+                      .map(a => a.name)
+                      .join(', ')}
+                    {userStats && achievementDefs.filter(a => a.check(userStats)).length > 2 && (
+                      <span className="text-muted-foreground">
+                        {' '}+{achievementDefs.filter(a => a.check(userStats)).length - 2} more
+                      </span>
+                    )}
+                  </p>
+                </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              
+              <Separator className="mb-4 opacity-30" />
+              
+              {/* Stats Row */}
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">
+                  {userStats ? achievementDefs.filter(a => a.check(userStats)).length : 0} unlocked
+                </span>
+                <Button variant="outline" size="sm" className="text-xs h-7">
+                  View All
+                </Button>
+              </div>
+            </div>
+
+            {/* All Achievements Grid */}
+            <div className="rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-4">
+              <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-4">
+                Trophy Case
+              </h3>
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
                 {achievementDefs.map((achievement) => {
                   const Icon = achievement.icon;
                   const isUnlocked = userStats ? achievement.check(userStats) : false;
                   return (
-                    <div
-                      key={achievement.id}
-                      className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${
-                        isUnlocked 
-                          ? "border-primary/30 bg-primary/5" 
-                          : "border-border/30 opacity-40"
-                      }`}
-                    >
-                      <div className={`p-2 rounded-md shrink-0 ${isUnlocked ? "bg-primary/10" : "bg-muted/50"}`}>
-                        <Icon className={`h-4 w-4 ${isUnlocked ? "text-primary" : "text-muted-foreground"}`} />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-xs font-medium truncate">{achievement.name}</span>
-                          {isUnlocked && <CheckCircle2 className="h-3 w-3 text-success shrink-0" />}
+                    <Tooltip key={achievement.id}>
+                      <TooltipTrigger asChild>
+                        <div className="flex flex-col items-center gap-2 group cursor-pointer">
+                          <div 
+                            className={`w-12 h-12 rounded-full flex items-center justify-center transition-all group-hover:scale-110 ${
+                              isUnlocked 
+                                ? "bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 shadow-lg shadow-orange-500/20" 
+                                : "bg-muted/30 border border-border/50"
+                            }`}
+                          >
+                            <Icon className={`h-5 w-5 ${isUnlocked ? "text-white" : "text-muted-foreground/50"}`} />
+                          </div>
+                          <div className="text-center">
+                            <p className={`text-[10px] font-medium truncate max-w-[60px] ${isUnlocked ? "text-foreground" : "text-muted-foreground/50"}`}>
+                              {achievement.name}
+                            </p>
+                            {isUnlocked && (
+                              <CheckCircle2 className="h-3 w-3 text-success mx-auto mt-0.5" />
+                            )}
+                          </div>
                         </div>
-                        <p className="text-[10px] text-muted-foreground truncate">{achievement.description}</p>
-                      </div>
-                    </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="text-xs max-w-[150px]">
+                        <p className="font-medium">{achievement.name}</p>
+                        <p className="text-muted-foreground">{achievement.description}</p>
+                        {!isUnlocked && <p className="text-warning mt-1">Not yet unlocked</p>}
+                      </TooltipContent>
+                    </Tooltip>
                   );
                 })}
               </div>
