@@ -34,6 +34,7 @@ export function ProblemCard({
   const navigate = useNavigate();
   const slotsRemaining = slotsTotal - slotsFilled;
   const fillPercentage = (slotsFilled / slotsTotal) * 100;
+  const isAlmostFull = fillPercentage >= 90;
 
   const sentimentColors = {
     high: "text-success",
@@ -79,9 +80,14 @@ export function ProblemCard({
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs">
               <span className="text-muted-foreground">Capacity</span>
-              <span className="font-medium">{slotsFilled}/{slotsTotal}</span>
+              <div className="flex items-center gap-2">
+                {isAlmostFull && (
+                  <span className="text-[10px] text-warning animate-pulse">Filling fast</span>
+                )}
+                <span className={`font-medium ${isAlmostFull ? "text-warning" : ""}`}>{slotsFilled}/{slotsTotal}</span>
+              </div>
             </div>
-            <Progress value={fillPercentage} size="sm" indicatorColor={fillPercentage > 80 ? "warning" : "default"} />
+            <Progress value={fillPercentage} size="sm" indicatorColor={fillPercentage >= 90 ? "warning" : "default"} />
           </div>
 
           <div className="flex items-center justify-between text-xs">
