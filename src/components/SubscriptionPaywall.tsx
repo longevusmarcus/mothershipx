@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, ArrowRight, Check, Zap, Globe, Swords, Users, Trophy, Sparkles } from "lucide-react";
+import { Loader2, ArrowRight, Check, Zap, Globe, Swords, Users, Trophy, Sparkles, FlaskConical, MessageSquareText } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -19,7 +19,9 @@ const features = [
   { icon: Globe, label: "Full problem dashboard access", delay: 0.1 },
   { icon: Swords, label: "Free Arena challenge entry", delay: 0.2 },
   { icon: Users, label: "Builder matching/Networking", delay: 0.3 },
-  { icon: Trophy, label: "Weekly prizes", delay: 0.4 },
+  { icon: FlaskConical, label: "Solution lab & market analysis", delay: 0.4 },
+  { icon: MessageSquareText, label: "Problem-to-solution prompts", delay: 0.5 },
+  { icon: Trophy, label: "Weekly prizes", delay: 0.6 },
 ];
 
 export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: SubscriptionPaywallProps) {
