@@ -7,6 +7,8 @@ import { MasonryGrid } from "@/components/MasonryGrid";
 import { Badge } from "@/components/ui/badge";
 import { useProblems } from "@/hooks/useProblems";
 import { useCategories } from "@/hooks/useCategories";
+import { useSubscription } from "@/hooks/useSubscription";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Problems = () => {
   const [searchParams] = useSearchParams();
@@ -16,6 +18,11 @@ const Problems = () => {
 
   const { data: problems = [], isLoading } = useProblems(selectedCategory);
   const { data: categories = ["All"] } = useCategories();
+  const { hasPremiumAccess, isLoading: subscriptionLoading } = useSubscription();
+  const { isAuthenticated } = useAuth();
+
+  // Calculate blur at page level so it doesn't reset on category change
+  const shouldBlurExcess = !isAuthenticated || (!hasPremiumAccess && !subscriptionLoading);
 
   // Update search query when URL params change
   useEffect(() => {
@@ -87,7 +94,7 @@ const Problems = () => {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
           >
-            <MasonryGrid problems={filteredProblems} />
+            <MasonryGrid problems={filteredProblems} shouldBlurExcess={shouldBlurExcess} />
           </motion.div>
         </AnimatePresence>
 

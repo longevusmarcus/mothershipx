@@ -20,8 +20,6 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { Lock } from "lucide-react";
 import { MarketProblemCard } from "@/components/MarketProblemCard";
-import { useSubscription } from "@/hooks/useSubscription";
-import { useAuth } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useUserPins } from "@/hooks/useUserPins";
 import type { MarketProblem } from "@/data/marketIntelligence";
@@ -31,6 +29,7 @@ const STORAGE_KEY = "mothership_problems_order";
 
 interface MasonryGridProps {
   problems: MarketProblem[];
+  shouldBlurExcess: boolean;
 }
 
 interface SortableCardProps {
@@ -73,18 +72,13 @@ function DragOverlayCard({ problem }: { problem: MarketProblem }) {
   );
 }
 
-export function MasonryGrid({ problems }: MasonryGridProps) {
+export function MasonryGrid({ problems, shouldBlurExcess }: MasonryGridProps) {
   const [orderedProblems, setOrderedProblems] = useState<MarketProblem[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const { hasPremiumAccess, isLoading: subscriptionLoading } = useSubscription();
-  const { isAuthenticated } = useAuth();
   const isMobile = useIsMobile();
   
   // Use database-backed pins for authenticated users
   const { pinnedIds, togglePin } = useUserPins();
-
-  // Determine if we should blur cards beyond the limit
-  const shouldBlurExcess = !isAuthenticated || (!hasPremiumAccess && !subscriptionLoading);
 
   // Disable drag and drop on mobile
   const sensors = useSensors(
