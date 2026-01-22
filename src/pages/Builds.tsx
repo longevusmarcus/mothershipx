@@ -14,7 +14,8 @@ import {
   Lock,
   Users,
   DollarSign,
-  Target
+  Target,
+  Loader2
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/AppLayout";
@@ -24,45 +25,8 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { WaitlistForm } from "@/components/WaitlistForm";
 import { useWaitlistCount } from "@/hooks/useWaitlist";
-
-const myBuilds = [
-  {
-    id: "1",
-    name: "OnboardFlow",
-    problem: "SaaS Onboarding",
-    status: "live",
-    fitScore: 78,
-    adoption: 245,
-    revenue: "$1,240",
-    rank: 4,
-    url: "https://onboardflow.app",
-    github: "alexchen/onboardflow",
-  },
-  {
-    id: "2",
-    name: "MeetSum AI",
-    problem: "Meeting Transcription",
-    status: "building",
-    fitScore: 45,
-    adoption: 0,
-    revenue: "$0",
-    rank: null,
-    url: null,
-    github: "alexchen/meetsum",
-  },
-  {
-    id: "3",
-    name: "InvoiceGen",
-    problem: "Freelancer Legal Docs",
-    status: "submitted",
-    fitScore: 62,
-    adoption: 34,
-    revenue: "$0",
-    rank: 12,
-    url: "https://invoicegen.io",
-    github: "alexchen/invoicegen",
-  },
-];
+import { useUserBuilds, useUserBuildStats } from "@/hooks/useUserBuilds";
+import { useAuth } from "@/contexts/AuthContext";
 
 const acceleratorFeatures = [
   {
@@ -94,6 +58,23 @@ const acceleratorFeatures = [
 const Builds = () => {
   const navigate = useNavigate();
   const { data: waitlistCount = 0 } = useWaitlistCount("builds");
+  const { data: builds = [], isLoading: buildsLoading } = useUserBuilds();
+  const { stats, isLoading: statsLoading } = useUserBuildStats();
+  const { isAuthenticated } = useAuth();
+
+  const isLoading = buildsLoading || statsLoading;
+
+  // Show placeholder builds if user has none (for preview effect)
+  const displayBuilds = builds.length > 0 ? builds : [
+    { id: "placeholder-1", name: "Your First Build", problem: "Waiting for submission", status: "pending" as const, fitScore: 0, adoption: 0, revenue: "$0", rank: null, url: null, github: null, problemId: null, createdAt: "" },
+  ];
+
+  const displayStats = builds.length > 0 ? stats : {
+    totalBuilds: 0,
+    liveBuilds: 0,
+    totalRevenue: 0,
+    avgFitScore: 0,
+  };
 
   return (
     <AppLayout>
@@ -189,16 +170,16 @@ const Builds = () => {
             </motion.div>
           </div>
 
-          {/* Blurred Content Preview */}
+          {/* Blurred Content Preview - Now using real data */}
           <div className="filter blur-[2px] pointer-events-none select-none opacity-60">
             {/* Stats Summary */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
               {[
-                { label: "Total Builds", value: "3", icon: Rocket },
-                { label: "Live Solutions", value: "2", icon: CheckCircle2 },
-                { label: "Total Revenue", value: "$1,240", icon: DollarSign },
-                { label: "Avg Fit Score", value: "62%", icon: Target },
-              ].map((stat, index) => (
+                { label: "Total Builds", value: isLoading ? "..." : String(displayStats.totalBuilds), icon: Rocket },
+                { label: "Live Solutions", value: isLoading ? "..." : String(displayStats.liveBuilds), icon: CheckCircle2 },
+                { label: "Total Revenue", value: isLoading ? "..." : `$${displayStats.totalRevenue.toLocaleString()}`, icon: DollarSign },
+                { label: "Avg Fit Score", value: isLoading ? "..." : `${displayStats.avgFitScore}%`, icon: Target },
+              ].map((stat) => (
                 <Card key={stat.label} variant="elevated" className="p-4">
                   <div className="flex items-center gap-2 mb-1">
                     <stat.icon className="h-4 w-4 text-muted-foreground" />
@@ -211,37 +192,51 @@ const Builds = () => {
 
             {/* Builds List Preview */}
             <div className="space-y-3">
-              {myBuilds.map((build) => (
-                <Card key={build.id} variant="elevated">
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                      <div className="flex-1 space-y-1">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold">{build.name}</h3>
-                          <Badge variant="secondary" className="text-[10px]">
-                            {build.status}
-                          </Badge>
-                        </div>
-                        <p className="text-xs text-muted-foreground">{build.problem}</p>
-                      </div>
-                      <div className="flex items-center gap-4 sm:gap-6">
-                        <div className="text-center">
-                          <p className="text-lg font-bold">{build.fitScore}%</p>
-                          <p className="text-[10px] text-muted-foreground">Fit Score</p>
-                        </div>
-                        <div className="text-center">
-                          <p className="text-lg font-bold text-success">{build.revenue}</p>
-                          <p className="text-[10px] text-muted-foreground">Revenue</p>
-                        </div>
-                        <div className="text-center">
-                          <p className="text-lg font-bold">{build.adoption}</p>
-                          <p className="text-[10px] text-muted-foreground">Users</p>
-                        </div>
-                      </div>
-                    </div>
+              {isLoading ? (
+                <Card variant="elevated">
+                  <CardContent className="p-6 flex items-center justify-center">
+                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                   </CardContent>
                 </Card>
-              ))}
+              ) : displayBuilds.length === 0 ? (
+                <Card variant="elevated">
+                  <CardContent className="p-6 text-center text-muted-foreground">
+                    No builds yet. Submit a solution to get started!
+                  </CardContent>
+                </Card>
+              ) : (
+                displayBuilds.map((build) => (
+                  <Card key={build.id} variant="elevated">
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                        <div className="flex-1 space-y-1">
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-semibold">{build.name}</h3>
+                            <Badge variant="secondary" className="text-[10px]">
+                              {build.status}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-muted-foreground">{build.problem}</p>
+                        </div>
+                        <div className="flex items-center gap-4 sm:gap-6">
+                          <div className="text-center">
+                            <p className="text-lg font-bold">{build.fitScore}%</p>
+                            <p className="text-[10px] text-muted-foreground">Fit Score</p>
+                          </div>
+                          <div className="text-center">
+                            <p className="text-lg font-bold text-success">{build.revenue}</p>
+                            <p className="text-[10px] text-muted-foreground">Revenue</p>
+                          </div>
+                          <div className="text-center">
+                            <p className="text-lg font-bold">{build.adoption}</p>
+                            <p className="text-[10px] text-muted-foreground">Users</p>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
             </div>
           </div>
         </div>
