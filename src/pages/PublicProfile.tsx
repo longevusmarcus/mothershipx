@@ -32,6 +32,7 @@ import { toast } from "sonner";
 
 interface PublicProfile {
   id: string;
+  username: string | null;
   name: string | null;
   bio: string | null;
   location: string | null;
@@ -95,12 +96,18 @@ export default function PublicProfile() {
     const fetchProfile = async () => {
       setIsLoading(true);
 
+      // Check if userId is a UUID or username
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);
+
       // Fetch profile using the secure public_profiles view (excludes email)
-      const { data: profileData, error: profileError } = await supabase
-        .from("public_profiles")
-        .select("*")
-        .eq("id", userId)
-        .single();
+      // Use type assertion to bypass generated types until they're regenerated
+      const baseQuery = supabase.from("public_profiles" as never).select("*");
+      
+      const query = isUuid 
+        ? baseQuery.eq("id", userId)
+        : baseQuery.eq("username", userId.toLowerCase());
+
+      const { data: profileData, error: profileError } = await query.single();
 
       if (profileError || !profileData) {
         setNotFound(true);
@@ -108,13 +115,16 @@ export default function PublicProfile() {
         return;
       }
 
-      setProfile(profileData);
+      const typedProfile = profileData as unknown as PublicProfile;
+      setProfile(typedProfile);
+
+      const profileId = typedProfile.id;
 
       // Check visibility setting
       const { data: settingsData } = await supabase
         .from("user_settings")
         .select("profile_visibility, show_builds, show_stats")
-        .eq("user_id", userId)
+        .eq("user_id", profileId)
         .single();
 
       // If profile is private, show not found
@@ -128,7 +138,7 @@ export default function PublicProfile() {
       const { data: verificationData } = await supabase
         .from("builder_verifications")
         .select("verification_status")
-        .eq("user_id", userId)
+        .eq("user_id", profileId)
         .single();
 
       setIsVerified(verificationData?.verification_status === "verified");
@@ -136,10 +146,10 @@ export default function PublicProfile() {
       // Fetch stats if allowed
       if (settingsData?.show_stats !== false) {
         const [problemBuilders, submissions, challengeJoins, rankings] = await Promise.all([
-          supabase.from("problem_builders").select("id", { count: "exact" }).eq("user_id", userId),
-          supabase.from("submissions").select("id", { count: "exact" }).eq("user_id", userId),
-          supabase.from("challenge_joins").select("id", { count: "exact" }).eq("user_id", userId),
-          supabase.from("rankings").select("id, is_winner").eq("user_id", userId),
+          supabase.from("problem_builders").select("id", { count: "exact" }).eq("user_id", profileId),
+          supabase.from("submissions").select("id", { count: "exact" }).eq("user_id", profileId),
+          supabase.from("challenge_joins").select("id", { count: "exact" }).eq("user_id", profileId),
+          supabase.from("rankings").select("id, is_winner").eq("user_id", profileId),
         ]);
 
         const wins = rankings.data?.filter((r) => r.is_winner).length || 0;
@@ -176,7 +186,7 @@ export default function PublicProfile() {
             challenge_id,
             challenges (id, title)
           `)
-          .eq("user_id", userId)
+          .eq("user_id", profileId)
           .order("created_at", { ascending: false })
           .limit(10);
 
