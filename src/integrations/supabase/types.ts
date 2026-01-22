@@ -1175,7 +1175,45 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string | null
+          github: string | null
+          id: string | null
+          location: string | null
+          name: string | null
+          twitter: string | null
+          updated_at: string | null
+          website: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          github?: string | null
+          id?: string | null
+          location?: string | null
+          name?: string | null
+          twitter?: string | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          github?: string | null
+          id?: string | null
+          location?: string | null
+          name?: string | null
+          twitter?: string | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_premium_access: { Args: { _user_id: string }; Returns: boolean }
