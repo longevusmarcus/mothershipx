@@ -50,7 +50,7 @@ export function ProblemCard({
     >
       <Card
         variant={isLocked ? "default" : "interactive"}
-        className={`relative overflow-hidden ${isLocked ? "opacity-60" : ""}`}
+        className={`relative overflow-hidden ${isLocked ? "opacity-60" : ""} ${isAlmostFull && !isLocked ? "hover:animate-subtle-shake" : ""}`}
         onClick={isLocked ? undefined : () => { onClick?.(); navigate(`/problems/${id}`); }}
       >
         {isLocked && (
