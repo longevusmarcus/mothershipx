@@ -6,8 +6,6 @@ import {
   Clock,
   Users,
   User,
-  Zap,
-  DollarSign,
   ChevronRight,
   Crown,
   Vote,
@@ -16,9 +14,7 @@ import {
   LogIn,
   Send,
   Shield,
-  Sparkles,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -207,64 +203,71 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.3 }}
     >
-      <div className="rounded-lg border border-border bg-card p-5">
-        {/* Header Row */}
-        <div className="flex items-start justify-between gap-4 mb-4">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-2">
+      <div className="rounded-lg border border-border bg-card/50 backdrop-blur-sm p-6">
+        {/* Terminal Header */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-xs border border-border px-2 py-1 rounded">
+              ./challenge
+            </span>
+            <div className="flex items-center gap-2 font-mono text-xs">
               {isActive && (
-                <span className="flex items-center gap-1 text-xs text-success font-medium">
-                  <Zap className="h-3 w-3" />
-                  {statusLabel}
+                <span className="flex items-center gap-1.5 text-success">
+                  <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
+                  Live
                 </span>
               )}
               {isVoting && (
-                <span className="flex items-center gap-1 text-xs text-warning font-medium">
+                <span className="flex items-center gap-1.5 text-warning">
                   <Vote className="h-3 w-3" />
-                  {statusLabel}
+                  Voting
                 </span>
               )}
               {isCompleted && (
-                <span className="flex items-center gap-1 text-xs text-muted-foreground font-medium">
+                <span className="flex items-center gap-1.5 text-muted-foreground">
                   <CheckCircle2 className="h-3 w-3" />
-                  {statusLabel}
-                </span>
-              )}
-              <span className={`text-xs px-1.5 py-0.5 rounded ${getDifficultyColor(challenge.difficulty)}`}>
-                {challenge.difficulty}
-              </span>
-              {challenge.isToday && (
-                <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded font-medium">
-                  TODAY
+                  Completed
                 </span>
               )}
             </div>
-            <h3 className="font-semibold text-base">{challenge.title}</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Trend: <span className="text-foreground">{challenge.trend}</span>
-            </p>
           </div>
-
-          <div className="text-right shrink-0">
-            <div className="flex items-center gap-1 text-success font-semibold text-lg">
-              <DollarSign className="h-4 w-4" />
-              {challenge.prizePool}
-            </div>
+          <div className="text-right font-mono">
+            <span className="text-success text-lg font-medium">${challenge.prizePool}</span>
             <p className="text-[10px] text-muted-foreground">prize pool</p>
           </div>
         </div>
 
+        {/* Title Row */}
+        <div className="mb-4">
+          <div className="flex items-center gap-2 font-mono mb-1">
+            <span className="text-muted-foreground">&gt;</span>
+            <h3 className="font-medium text-base">{challenge.title}</h3>
+            {challenge.isToday && (
+              <span className="font-mono text-[10px] text-primary uppercase tracking-wider">
+                today
+              </span>
+            )}
+          </div>
+          <p className="font-mono text-xs text-muted-foreground pl-5">
+            trend: <span className="text-foreground">{challenge.trend}</span>
+            <span className="mx-2">•</span>
+            <span className={`${getDifficultyColor(challenge.difficulty)}`}>
+              {challenge.difficulty}
+            </span>
+          </p>
+        </div>
+
         {/* Why This Challenge */}
-        <div className="bg-secondary/30 rounded-md p-3 mb-4">
-          <p className="text-xs text-muted-foreground mb-1">Why this challenge?</p>
+        <div className="border border-border/50 rounded-md p-4 mb-4 bg-secondary/20">
+          <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Why this challenge?</p>
           <p className="text-sm">{challenge.whyRelevant}</p>
           
           {/* Sources */}
-          <div className="flex flex-wrap gap-2 mt-3">
+          <div className="flex flex-wrap gap-2 mt-4">
             {challenge.sources.map((src, idx) => (
               <div
                 key={idx}
-                className="flex items-center gap-1.5 text-xs bg-background rounded px-2 py-1"
+                className="flex items-center gap-1.5 font-mono text-xs bg-background/50 border border-border/30 rounded px-2.5 py-1"
               >
                 <span>{getSourceIcon(src.source)}</span>
                 <span className="text-muted-foreground">{src.metric}:</span>
@@ -273,8 +276,8 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
             ))}
           </div>
           
-          <div className="flex items-center gap-4 mt-3 pt-2 border-t border-border/50 text-xs">
-            <span className="flex items-center gap-1 text-success">
+          <div className="flex items-center gap-4 mt-4 pt-3 border-t border-border/30 font-mono text-xs">
+            <span className="flex items-center gap-1.5 text-success">
               <TrendingUp className="h-3 w-3" />
               {challenge.trendGrowth} growth
             </span>
@@ -283,48 +286,48 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
         </div>
 
         {/* Description */}
-        <p className="text-sm text-muted-foreground mb-3">{challenge.description}</p>
+        <p className="text-sm text-muted-foreground mb-4">{challenge.description}</p>
 
         {/* Example */}
-        <div className="bg-secondary/30 rounded-md p-3 mb-4">
-          <p className="text-xs text-muted-foreground mb-1">Example build</p>
-          <p className="text-sm italic">"{challenge.example}"</p>
+        <div className="border border-border/50 rounded-md p-4 mb-4 bg-secondary/20">
+          <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Example build</p>
+          <p className="text-sm italic text-muted-foreground">"{challenge.example}"</p>
         </div>
 
-        {/* Stats */}
-        <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4">
-          <span className="flex items-center gap-1">
+        {/* Stats Row */}
+        <div className="flex items-center gap-6 font-mono text-xs text-muted-foreground mb-4">
+          <span className="flex items-center gap-1.5">
             <Users className="h-3.5 w-3.5" />
-            {challenge.participants}/{challenge.maxParticipants} joined
+            {challenge.participants}/{challenge.maxParticipants}
           </span>
-          <span className="flex items-center gap-1">
+          <span className="flex items-center gap-1.5">
             <User className="h-3.5 w-3.5" />
             {challenge.soloParticipants} solo
           </span>
-          <span className="flex items-center gap-1">
+          <span className="flex items-center gap-1.5">
             <Users className="h-3.5 w-3.5" />
             {challenge.teamCount} teams
           </span>
         </div>
 
         {/* Time & Prize */}
-        <div className="flex items-center justify-between text-xs mb-4">
-          <span className={`flex items-center gap-1 ${isActive ? "text-success" : "text-muted-foreground"}`}>
+        <div className="flex items-center justify-between font-mono text-xs mb-4 py-3 border-t border-b border-border/30">
+          <span className={`flex items-center gap-1.5 ${isActive ? "text-success" : "text-muted-foreground"}`}>
             <Clock className="h-3.5 w-3.5" />
             {timeRemaining}
           </span>
-          <span className="flex items-center gap-1 text-muted-foreground">
+          <span className="flex items-center gap-1.5 text-muted-foreground">
             <Crown className="h-3.5 w-3.5 text-warning" />
-            Winner takes <span className="text-success font-medium ml-1">${challenge.winnerPrize.toFixed(0)}</span>
+            Winner: <span className="text-success font-medium ml-1">${challenge.winnerPrize.toFixed(0)}</span>
           </span>
         </div>
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-1.5 mb-4">
+        <div className="flex flex-wrap gap-2 mb-4">
           {challenge.tags.map((tag) => (
-            <Badge key={tag} variant="secondary" className="text-[10px] px-2 py-0.5 font-normal">
+            <span key={tag} className="font-mono text-[10px] px-2 py-1 rounded border border-border/50 bg-secondary/30 text-muted-foreground">
               {tag}
-            </Badge>
+            </span>
           ))}
         </div>
 
@@ -332,13 +335,13 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
         {isActive ? (
           isAuthenticated ? (
             hasJoined ? (
-              <div className="space-y-2">
-                <div className="flex items-center justify-center gap-2 py-2 text-sm text-success">
-                  <CheckCircle2 className="h-4 w-4" />
-                  Joined as {existingJoin?.join_type === "team" ? "Team" : "Solo"}
+              <div className="space-y-3">
+                <div className="flex items-center justify-center gap-2 py-2 font-mono text-xs text-success">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  Joined as {existingJoin?.join_type === "team" ? "team" : "solo"}
                 </div>
                 <Button 
-                  className="w-full"
+                  className="w-full font-mono"
                   onClick={() => navigate("/submit", {
                     state: {
                       challenge: {
@@ -359,28 +362,28 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
                   })}
                 >
                   <Send className="h-4 w-4 mr-2" />
-                  Submit Your Build
+                  ./submit-build
                 </Button>
               </div>
             ) : (
               <Dialog open={isJoinDialogOpen} onOpenChange={setIsJoinDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="w-full">
+                  <Button className="w-full font-mono">
                     {isVerified ? (
                       <Shield className="h-4 w-4 mr-2 text-success" />
                     ) : (
                       <Trophy className="h-4 w-4 mr-2" />
                     )}
-                    Join Challenge – $5 Entry
+                    ./join – $5 entry
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-md">
                   <DialogHeader>
-                    <DialogTitle>Join "{challenge.title}"</DialogTitle>
-                    <DialogDescription>
+                    <DialogTitle className="font-mono">&gt; {challenge.title}</DialogTitle>
+                    <DialogDescription className="font-mono text-xs">
                       {isVerified 
-                        ? "You're a verified builder! Choose how you want to compete."
-                        : "Choose how to compete. You'll need to verify your builder status first."}
+                        ? "Verified builder — choose your mode."
+                        : "Choose mode. Verification required first."}
                     </DialogDescription>
                   </DialogHeader>
 
@@ -388,61 +391,61 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
                     <div className="grid grid-cols-2 gap-3">
                       <button
                         onClick={() => handleJoin("solo")}
-                        className={`p-4 rounded-lg border-2 transition-all ${
+                        className={`p-4 rounded-lg border transition-all font-mono ${
                           joinType === "solo"
                             ? "border-primary bg-primary/5"
                             : "border-border hover:border-primary/50"
                         }`}
                       >
-                        <User className="h-6 w-6 mx-auto mb-2" />
-                        <p className="font-medium text-sm">Solo</p>
-                        <p className="text-xs text-muted-foreground">Build alone</p>
+                        <User className="h-5 w-5 mx-auto mb-2" />
+                        <p className="font-medium text-sm">&gt; solo</p>
+                        <p className="text-[10px] text-muted-foreground">Build alone</p>
                       </button>
                       <button
                         onClick={() => handleJoin("team")}
-                        className={`p-4 rounded-lg border-2 transition-all ${
+                        className={`p-4 rounded-lg border transition-all font-mono ${
                           joinType === "team"
                             ? "border-primary bg-primary/5"
                             : "border-border hover:border-primary/50"
                         }`}
                       >
-                        <Users className="h-6 w-6 mx-auto mb-2" />
-                        <p className="font-medium text-sm">Team</p>
-                        <p className="text-xs text-muted-foreground">Up to 4 members</p>
+                        <Users className="h-5 w-5 mx-auto mb-2" />
+                        <p className="font-medium text-sm">&gt; team</p>
+                        <p className="text-[10px] text-muted-foreground">Up to 4 members</p>
                       </button>
                     </div>
 
-                    <div className="bg-secondary/50 rounded-lg p-4 space-y-2 text-sm">
+                    <div className="border border-border rounded-lg p-4 space-y-2 font-mono text-xs">
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Entry Fee</span>
+                        <span className="text-muted-foreground">entry_fee:</span>
                         <span>$5.00</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Current Pool</span>
+                        <span className="text-muted-foreground">current_pool:</span>
                         <span className="text-success">${challenge.prizePool}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Winner Prize</span>
+                        <span className="text-muted-foreground">winner_prize:</span>
                         <span className="font-medium text-success">${challenge.winnerPrize.toFixed(2)}</span>
                       </div>
                     </div>
 
-                    <div className="p-3 bg-secondary/30 rounded-lg text-sm space-y-1">
+                    <div className="p-3 border border-border/50 rounded-lg font-mono text-xs space-y-1">
                       <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
-                        <span className="font-medium">48h Build Sprint</span>
+                        <Clock className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                        <span className="font-medium">48h sprint</span>
                       </div>
-                      <p className="text-xs text-muted-foreground pl-6">
-                        Ship what you can. Finished or not—just show progress.
+                      <p className="text-[10px] text-muted-foreground pl-5">
+                        Ship what you can. Progress counts.
                       </p>
                     </div>
 
                     <Button
-                      className="w-full"
+                      className="w-full font-mono"
                       disabled={!joinType || isProcessing}
                       onClick={handleConfirmJoin}
                     >
-                      {joinType ? `Continue as ${joinType === "solo" ? "Solo" : "Team"}` : "Select Solo or Team"}
+                      {joinType ? `./continue --mode=${joinType}` : "Select mode"}
                       <ChevronRight className="h-4 w-4 ml-1" />
                     </Button>
                   </div>
@@ -450,23 +453,23 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
               </Dialog>
             )
           ) : (
-            <Button variant="outline" className="w-full" onClick={handleAuthClick}>
+            <Button variant="outline" className="w-full font-mono" onClick={handleAuthClick}>
               <LogIn className="h-4 w-4 mr-2" />
-              Sign in to Join
+              ./sign-in
             </Button>
           )
         ) : isVoting ? (
-          <Button variant="outline" className="w-full" disabled>
+          <Button variant="outline" className="w-full font-mono" disabled>
             <Vote className="h-4 w-4 mr-2" />
-            Voting in Progress
+            ./voting-in-progress
           </Button>
         ) : (
           <Button 
             variant="ghost" 
-            className="w-full text-muted-foreground"
+            className="w-full font-mono text-muted-foreground"
             onClick={() => navigate(`/challenges/${challenge.id}/results`)}
           >
-            View Results
+            ./view-results
             <ChevronRight className="h-4 w-4 ml-1" />
           </Button>
         )}

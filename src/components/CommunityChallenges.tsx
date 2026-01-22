@@ -6,7 +6,6 @@ import {
   Calendar,
   Loader2,
   Shield,
-  Star,
   Github,
   CreditCard,
   Database,
@@ -17,7 +16,8 @@ import {
   Percent,
   Headphones,
   Users,
-  Lock,
+  Terminal,
+  ArrowRight,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChallengeCard } from "./ChallengeCard";
@@ -54,135 +54,216 @@ export const CommunityChallenges = () => {
   ];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.1 }}
-      className="space-y-6"
-    >
-      {/* Header with Exclusive Badge */}
-      <div>
-        <div className="flex items-center gap-2 mb-1">
-          <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">Arena</h1>
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning/10 text-warning text-[10px] font-medium border border-warning/20">
-            <Lock className="h-2.5 w-2.5" />
-            EXCLUSIVE
-          </span>
-        </div>
-        <p className="text-sm text-muted-foreground">A private builder club • Prove you ship • Compete for prizes</p>
-      </div>
+    <div className="relative min-h-[80vh]">
+      {/* Dot Grid Background */}
+      <div 
+        className="absolute inset-0 opacity-[0.03] dark:opacity-[0.08] pointer-events-none"
+        style={{
+          backgroundImage: `radial-gradient(circle, currentColor 1px, transparent 1px)`,
+          backgroundSize: '24px 24px',
+        }}
+      />
 
-      {/* Stats Row */}
-      <div className="flex items-center gap-6 text-sm">
-        <div className="flex items-center gap-2">
-          <span className="text-muted-foreground">Total paid:</span>
-          <span className="font-medium text-success">${totalPrizesPaid.toFixed(0)}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-muted-foreground">Members:</span>
-          <span className="font-medium">{totalParticipants}</span>
-        </div>
-      </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        className="relative z-10 space-y-10"
+      >
+        {/* Hero Section */}
+        <div className="pt-8 pb-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-center max-w-2xl mx-auto space-y-4"
+          >
+            <p className="font-mono text-xs text-muted-foreground tracking-widest uppercase">
+              ~/arena
+            </p>
+            <h1 className="font-mono text-xl sm:text-2xl font-medium tracking-wider uppercase">
+              Builder Arena
+            </h1>
+            <p className="font-mono text-xs text-muted-foreground tracking-wide">
+              A private builder club • Prove you ship • Compete for prizes
+            </p>
+          </motion.div>
 
-      {/* Proof Required Section */}
-      <div className="rounded-lg border border-border bg-card p-4">
-        <div className="flex items-center gap-2 mb-3">
-          <Shield className="h-4 w-4 text-primary" />
-          <h3 className="text-sm font-medium">Proof Required to Join</h3>
-        </div>
-        <p className="text-xs text-muted-foreground mb-3">
-          Show us you've built something real. We verify builders to keep the arena exclusive.
-        </p>
-        <div className="grid grid-cols-3 gap-2">
-          {proofRequirements.map((req, i) => (
-            <div key={i} className="p-2.5 rounded-md bg-secondary/50 border border-border/50">
-              <req.icon className="h-4 w-4 text-muted-foreground mb-1.5" />
-              <p className="text-xs font-medium">{req.label}</p>
-              <p className="text-[10px] text-muted-foreground">{req.desc}</p>
+          {/* Stats Row */}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="flex items-center justify-center gap-8 mt-8 font-mono text-xs"
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground">&gt; Total paid:</span>
+              <span className="text-success">${totalPrizesPaid.toFixed(0)}</span>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Member Benefits Section */}
-      <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
-        <div className="flex items-center gap-2 mb-3">
-          <Star className="h-4 w-4 text-primary" />
-          <h3 className="text-sm font-medium">What You Get</h3>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          {memberBenefits.map((benefit, i) => (
-            <div key={i} className="p-2.5 rounded-md bg-background/50 border border-border/50">
-              <benefit.icon className="h-3.5 w-3.5 text-primary mb-1" />
-              <p className="text-xs font-medium">{benefit.label}</p>
-              <p className="text-[10px] text-muted-foreground">{benefit.desc}</p>
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground">&gt; Members:</span>
+              <span>{totalParticipants}</span>
             </div>
-          ))}
+          </motion.div>
         </div>
-      </div>
 
-      {/* How it Works */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {[
-          { icon: Calendar, label: "Weekly Challenges", desc: "3 challenges/week" },
-          { label: "$5 Entry", desc: "Verified builders only" },
-          { icon: Flame, label: "48h Sprint", desc: "Build & submit" },
-          { icon: Trophy, label: "AI Judges", desc: "Win 90% pool" },
-        ].map((step, i) => (
-          <div key={i} className="p-3 rounded-lg border border-border bg-card">
-            <p className="text-sm font-medium">{step.label}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">{step.desc}</p>
+        {/* Two Column Cards */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="grid md:grid-cols-2 gap-4"
+        >
+          {/* Proof Required Card */}
+          <div className="rounded-lg border border-border bg-card/50 backdrop-blur-sm p-6">
+            <div className="flex items-center justify-between mb-4">
+              <span className="font-mono text-xs border border-border px-2 py-1 rounded">
+                ./verify
+              </span>
+              <span className="font-mono text-xs text-primary">
+                Required
+              </span>
+            </div>
+            
+            <div className="flex items-center gap-2 mb-4 font-mono">
+              <span className="text-muted-foreground">&gt;</span>
+              <h3 className="text-lg font-medium tracking-wide">proof-of-ship</h3>
+            </div>
+
+            <p className="text-sm text-muted-foreground mb-6">
+              Show us you've built something real. We verify builders to keep the arena exclusive.
+            </p>
+
+            <div className="space-y-2">
+              {proofRequirements.map((req, i) => (
+                <div key={i} className="flex items-center gap-3 font-mono text-sm">
+                  <span className="text-muted-foreground">&gt;</span>
+                  <req.icon className="h-4 w-4 text-muted-foreground" />
+                  <span>{req.label}</span>
+                  <span className="text-muted-foreground text-xs">— {req.desc}</span>
+                </div>
+              ))}
+            </div>
           </div>
-        ))}
-      </div>
 
-      {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="h-9 p-1 bg-secondary/50">
-          <TabsTrigger value="today" className="gap-2 text-xs data-[state=active]:bg-background">
-            <Flame className="h-3.5 w-3.5" />
-            Today
-          </TabsTrigger>
-          <TabsTrigger value="past" className="gap-2 text-xs data-[state=active]:bg-background">
-            <Calendar className="h-3.5 w-3.5" />
-            Past
-          </TabsTrigger>
-        </TabsList>
+          {/* Member Benefits Card */}
+          <div className="rounded-lg border border-primary/20 bg-primary/5 backdrop-blur-sm p-6">
+            <div className="flex items-center justify-between mb-4">
+              <span className="font-mono text-xs border border-primary/30 px-2 py-1 rounded">
+                ./benefits
+              </span>
+              <span className="font-mono text-xs text-success">
+                Unlocked
+              </span>
+            </div>
+            
+            <div className="flex items-center gap-2 mb-4 font-mono">
+              <span className="text-muted-foreground">&gt;</span>
+              <h3 className="text-lg font-medium tracking-wide">what-you-get</h3>
+            </div>
 
-        <TabsContent value="today" className="mt-4">
-          {loadingToday ? (
-            <div className="py-12 text-center">
-              <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground mb-3" />
-              <p className="text-sm text-muted-foreground">Loading...</p>
-            </div>
-          ) : todaysChallenge ? (
-            <ChallengeCard challenge={todaysChallenge} />
-          ) : (
-            <div className="py-12 text-center border border-dashed border-border rounded-lg">
-              <Trophy className="h-8 w-8 mx-auto text-muted-foreground/30 mb-3" />
-              <p className="text-sm text-muted-foreground">No challenge today. Check back tomorrow!</p>
-            </div>
-          )}
-        </TabsContent>
+            <p className="text-sm text-muted-foreground mb-6">
+              Join verified builders competing for prizes and perks.
+            </p>
 
-        <TabsContent value="past" className="mt-4 space-y-3">
-          {loadingPast ? (
-            <div className="py-12 text-center">
-              <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground mb-3" />
-              <p className="text-sm text-muted-foreground">Loading...</p>
+            <div className="grid grid-cols-2 gap-2">
+              {memberBenefits.slice(0, 6).map((benefit, i) => (
+                <div key={i} className="flex items-center gap-2 font-mono text-xs">
+                  <span className="text-primary">&gt;</span>
+                  <span>{benefit.label}</span>
+                </div>
+              ))}
             </div>
-          ) : pastChallenges.length > 0 ? (
-            pastChallenges.map((challenge, index) => (
-              <ChallengeCard key={challenge.id} challenge={challenge} delay={index * 0.05} />
-            ))
-          ) : (
-            <div className="py-12 text-center border border-dashed border-border rounded-lg">
-              <Calendar className="h-8 w-8 mx-auto text-muted-foreground/30 mb-3" />
-              <p className="text-sm text-muted-foreground">No past challenges yet.</p>
+          </div>
+        </motion.div>
+
+        {/* How it Works */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="text-center font-mono text-sm text-muted-foreground py-4"
+        >
+          <div className="flex items-center justify-center gap-4 flex-wrap">
+            <span className="flex items-center gap-2">
+              <Calendar className="h-3.5 w-3.5" />
+              Weekly Challenges
+            </span>
+            <ArrowRight className="h-3 w-3 hidden sm:block" />
+            <span>$5 Entry</span>
+            <ArrowRight className="h-3 w-3 hidden sm:block" />
+            <span className="flex items-center gap-2">
+              <Flame className="h-3.5 w-3.5" />
+              48h Sprint
+            </span>
+            <ArrowRight className="h-3 w-3 hidden sm:block" />
+            <span className="flex items-center gap-2">
+              <Trophy className="h-3.5 w-3.5" />
+              Win 90%
+            </span>
+          </div>
+        </motion.div>
+
+        {/* Tabs */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+        >
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <div className="flex items-center justify-between mb-6">
+              <TabsList className="h-9 p-1 bg-secondary/50 font-mono">
+                <TabsTrigger value="today" className="gap-2 text-xs data-[state=active]:bg-background">
+                  <Terminal className="h-3.5 w-3.5" />
+                  ./today
+                </TabsTrigger>
+                <TabsTrigger value="past" className="gap-2 text-xs data-[state=active]:bg-background">
+                  <Calendar className="h-3.5 w-3.5" />
+                  ./archive
+                </TabsTrigger>
+              </TabsList>
             </div>
-          )}
-        </TabsContent>
-      </Tabs>
-    </motion.div>
+
+            <TabsContent value="today" className="mt-0">
+              {loadingToday ? (
+                <div className="py-16 text-center">
+                  <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground mb-3" />
+                  <p className="font-mono text-xs text-muted-foreground">loading...</p>
+                </div>
+              ) : todaysChallenge ? (
+                <ChallengeCard challenge={todaysChallenge} />
+              ) : (
+                <div className="py-16 text-center border border-dashed border-border rounded-lg">
+                  <Trophy className="h-8 w-8 mx-auto text-muted-foreground/30 mb-3" />
+                  <p className="font-mono text-xs text-muted-foreground">
+                    &gt; No challenge today. Check back tomorrow.
+                  </p>
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent value="past" className="mt-0 space-y-3">
+              {loadingPast ? (
+                <div className="py-16 text-center">
+                  <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground mb-3" />
+                  <p className="font-mono text-xs text-muted-foreground">loading...</p>
+                </div>
+              ) : pastChallenges.length > 0 ? (
+                pastChallenges.map((challenge, index) => (
+                  <ChallengeCard key={challenge.id} challenge={challenge} delay={index * 0.05} />
+                ))
+              ) : (
+                <div className="py-16 text-center border border-dashed border-border rounded-lg">
+                  <Calendar className="h-8 w-8 mx-auto text-muted-foreground/30 mb-3" />
+                  <p className="font-mono text-xs text-muted-foreground">
+                    &gt; No past challenges yet.
+                  </p>
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
+        </motion.div>
+      </motion.div>
+    </div>
   );
 };
