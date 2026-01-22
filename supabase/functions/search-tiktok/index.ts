@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { withRateLimit, RateLimitPresets } from "../_shared/rateLimit.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -386,6 +387,10 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
+
+  // Rate limit: 20 requests per minute (search operation)
+  const rateLimited = await withRateLimit(req, "search-tiktok", RateLimitPresets.search);
+  if (rateLimited) return rateLimited;
 
   try {
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
