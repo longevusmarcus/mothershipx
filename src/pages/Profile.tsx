@@ -228,25 +228,6 @@ export default function Profile() {
           animate={{ opacity: 1, y: 0 }}
           className="rounded-xl border border-border bg-card p-4 overflow-hidden"
         >
-          {/* Top right icons */}
-          <div className="flex items-center justify-end gap-1 mb-3">
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleShareProfile}>
-              <Share2 className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate("/settings")}>
-              <Settings className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={isEditing ? "default" : "ghost"}
-              size="icon"
-              className="h-8 w-8"
-              onClick={isEditing ? handleSave : () => setIsEditing(true)}
-              disabled={isLoading}
-            >
-              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : isEditing ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
-            </Button>
-          </div>
-
           <div className="flex gap-4">
             {/* Avatar */}
             <div className="relative shrink-0">
@@ -264,16 +245,36 @@ export default function Profile() {
 
             {/* Info */}
             <div className="flex-1 min-w-0 overflow-hidden">
-              {isEditing ? (
-                <Input
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Your name"
-                  className="text-base font-semibold h-8 mb-1"
-                />
-              ) : (
-                <h2 className="text-lg font-semibold truncate">{profile?.name || "Builder"}</h2>
-              )}
+              {/* Name row with icons */}
+              <div className="flex items-center justify-between gap-2">
+                {isEditing ? (
+                  <Input
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    placeholder="Your name"
+                    className="text-base font-semibold h-8 flex-1"
+                  />
+                ) : (
+                  <h2 className="text-lg font-semibold truncate">{profile?.name || "Builder"}</h2>
+                )}
+                <div className="flex items-center gap-0.5 shrink-0">
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleShareProfile}>
+                    <Share2 className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigate("/settings")}>
+                    <Settings className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button
+                    variant={isEditing ? "default" : "ghost"}
+                    size="icon"
+                    className="h-7 w-7"
+                    onClick={isEditing ? handleSave : () => setIsEditing(true)}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : isEditing ? <Check className="h-3.5 w-3.5" /> : <Pencil className="h-3.5 w-3.5" />}
+                  </Button>
+                </div>
+              </div>
               
               <div className="flex flex-wrap items-center gap-1 mt-1">
                 <Badge variant="secondary" className="text-[10px] px-1.5 py-0">{levelTitle}</Badge>
