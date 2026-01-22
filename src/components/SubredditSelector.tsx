@@ -39,8 +39,10 @@ export function SubredditSelector({ selectedSubreddit, onSelect, disabled }: Sub
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2 mb-4">
-        <img src={logoReddit} alt="Reddit" className="h-5 w-5" />
-        <span className="text-sm font-medium">Select a subreddit to analyze (currently 1)</span>
+        <img src={logoReddit} alt="Reddit" className="h-4 w-4" />
+        <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
+          Select a subreddit to analyze (currently 1)
+        </span>
       </div>
 
       <div className="grid gap-3">
