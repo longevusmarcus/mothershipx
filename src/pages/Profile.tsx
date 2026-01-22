@@ -427,11 +427,10 @@ export default function Profile() {
           <TabsContent value="achievements" className="mt-4">
             <div className="rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-4">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-mono text-xs text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                  <span className="text-primary">&gt;</span>
-                  achievements
+                <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Achievements
                 </h3>
-                <span className="font-mono text-xs text-muted-foreground">
+                <span className="text-xs text-muted-foreground">
                   {userStats ? achievementDefs.filter(a => a.check(userStats)).length : 0}/{achievementDefs.length}
                 </span>
               </div>
@@ -453,10 +452,10 @@ export default function Profile() {
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5">
-                          <span className="font-mono text-xs font-medium truncate">{achievement.name}</span>
+                          <span className="text-xs font-medium truncate">{achievement.name}</span>
                           {isUnlocked && <CheckCircle2 className="h-3 w-3 text-success shrink-0" />}
                         </div>
-                        <p className="font-mono text-[10px] text-muted-foreground truncate">{achievement.description}</p>
+                        <p className="text-[10px] text-muted-foreground truncate">{achievement.description}</p>
                       </div>
                     </div>
                   );
@@ -468,44 +467,43 @@ export default function Profile() {
           {/* Account Tab */}
           <TabsContent value="account" className="mt-4">
             <div className="rounded-lg border border-border/50 bg-card/50 backdrop-blur-sm p-4 space-y-4">
-              <h3 className="font-mono text-xs text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                <span className="text-primary">&gt;</span>
-                account
+              <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                Account
               </h3>
               
               <div className="space-y-4">
                 <div>
-                  <Label className="font-mono text-xs text-muted-foreground">display_name</Label>
+                  <Label className="text-xs text-muted-foreground">Display Name</Label>
                   <Input
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="Your name"
-                    className="mt-1.5 h-10 font-mono bg-secondary/20"
+                    className="mt-1.5 h-10 bg-secondary/20"
                   />
                 </div>
                 <div>
-                  <Label className="font-mono text-xs text-muted-foreground">email</Label>
-                  <Input value={profile?.email || user?.email || ""} disabled className="mt-1.5 h-10 font-mono bg-muted/20 text-muted-foreground" />
+                  <Label className="text-xs text-muted-foreground">Email</Label>
+                  <Input value={profile?.email || user?.email || ""} disabled className="mt-1.5 h-10 bg-muted/20 text-muted-foreground" />
                 </div>
                 <div>
-                  <Label className="font-mono text-xs text-muted-foreground">location</Label>
+                  <Label className="text-xs text-muted-foreground">Location</Label>
                   <Input
                     value={formData.location}
                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                     placeholder="City, Country"
-                    className="mt-1.5 h-10 font-mono bg-secondary/20"
+                    className="mt-1.5 h-10 bg-secondary/20"
                   />
                 </div>
               </div>
 
               <div className="flex items-center justify-between pt-4 border-t border-border/50">
-                <Button onClick={handleSave} disabled={isLoading} size="sm" className="font-mono">
+                <Button onClick={handleSave} disabled={isLoading} size="sm">
                   {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : null}
-                  ./save
+                  Save
                 </Button>
-                <Button variant="ghost" onClick={handleSignOut} size="sm" className="font-mono text-muted-foreground hover:text-destructive">
+                <Button variant="ghost" onClick={handleSignOut} size="sm" className="text-muted-foreground hover:text-destructive">
                   <LogOut className="h-4 w-4 mr-1" />
-                  ./logout
+                  Logout
                 </Button>
               </div>
             </div>
