@@ -460,7 +460,10 @@ export default function Profile() {
           
           {/* Main Content - Left */}
           <div className="flex-1 min-w-0 space-y-4 order-2 lg:order-1">
-            <Tabs defaultValue="overview" value={activeSettingsTab || "overview"} onValueChange={(v) => setActiveSettingsTab(v === "overview" || v === "achievements" || v === "builds" ? null : v as any)} className="w-full">
+            <Tabs defaultValue="overview" value={activeSettingsTab || "overview"} onValueChange={(v) => {
+              setActiveSettingsTab(v === "overview" || v === "achievements" || v === "builds" ? null : v as any);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }} className="w-full">
               <TabsList className="w-full justify-start bg-card border border-border/50 p-1 h-11 overflow-x-auto rounded-lg">
                 <TabsTrigger value="overview" className="text-xs px-4 h-9 data-[state=active]:bg-background data-[state=active]:shadow-sm font-medium" onClick={() => setActiveSettingsTab(null)}>Overview</TabsTrigger>
                 <TabsTrigger value="achievements" className="text-xs px-4 h-9 data-[state=active]:bg-background data-[state=active]:shadow-sm font-medium" onClick={() => setActiveSettingsTab(null)}>Achievements</TabsTrigger>
