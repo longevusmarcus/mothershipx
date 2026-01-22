@@ -305,10 +305,7 @@ const Index = () => {
 
   return (
     <AppLayout>
-      <SEO
-        title="Mothership Search"
-        description="Discover real problems and trends from 10+ data sources. Build solutions together with our community of builders."
-      />
+      <SEO />
 
       <div className={cn(
         "flex flex-col",
