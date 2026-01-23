@@ -39,7 +39,8 @@ export const mockChallenges: DailyChallenge[] = [
     title: "Couple Conflict Resolver",
     trend: "Relationship Arguments",
     description: "Build an app that helps couples settle disputes fairly. Who's right? Let AI decide!",
-    example: "Build a 'Couple Who Wins' app where each partner presents their case and AI picks a winner based on logic & fairness.",
+    example:
+      "Build a 'Couple Who Wins' app where each partner presents their case and AI picks a winner based on logic & fairness.",
     prizePool: 1000,
     participants: 10,
     maxParticipants: 200,
@@ -51,9 +52,10 @@ export const mockChallenges: DailyChallenge[] = [
     isToday: true,
     status: "active",
     winnerPrize: 900,
-    whyRelevant: "Couples arguing about chores & decisions is trending on TikTok. 'Who's right' videos get millions of views. People want a neutral AI judge.",
+    whyRelevant:
+      "Couples arguing about chores & decisions is trending on TikTok. 'Who's right' videos get millions of views. People want a neutral AI judge.",
     sources: [
-      { source: "tiktok", metric: "Views this week", value: "12.4M" },
+      { source: "tiktok", metric: "Views this week", value: "500.4k" },
       { source: "google_trends", metric: "Search growth", value: "+340%" },
     ],
     trendGrowth: "+340%",
@@ -76,7 +78,8 @@ export const mockChallenges: DailyChallenge[] = [
     isToday: false,
     status: "voting",
     winnerPrize: 900,
-    whyRelevant: "Screen time guilt is at an all-time high. Gen Z actively seeking dopamine detox solutions. Huge viral potential.",
+    whyRelevant:
+      "Screen time guilt is at an all-time high. Gen Z actively seeking dopamine detox solutions. Huge viral potential.",
     sources: [
       { source: "tiktok", metric: "Hashtag views", value: "8.2M" },
       { source: "google_trends", metric: "Search growth", value: "+180%" },
@@ -102,7 +105,8 @@ export const mockChallenges: DailyChallenge[] = [
     isToday: false,
     status: "completed",
     winnerPrize: 900,
-    whyRelevant: "'Rate my outfit' posts dominate social. AI fashion tools are exploding. People want honest feedback without asking friends.",
+    whyRelevant:
+      "'Rate my outfit' posts dominate social. AI fashion tools are exploding. People want honest feedback without asking friends.",
     sources: [
       { source: "tiktok", metric: "Creator videos", value: "45K" },
       { source: "google_trends", metric: "Search growth", value: "+420%" },
@@ -115,7 +119,8 @@ export const mockChallenges: DailyChallenge[] = [
     title: "Side Hustle Validator",
     trend: "Passive Income FOMO",
     description: "Create a reality-check tool for viral 'get rich' schemes.",
-    example: "Paste a TikTok side hustle idea, get AI analysis of actual ROI, time investment, and success probability.",
+    example:
+      "Paste a TikTok side hustle idea, get AI analysis of actual ROI, time investment, and success probability.",
     prizePool: 1000,
     participants: 10,
     maxParticipants: 200,
@@ -127,7 +132,8 @@ export const mockChallenges: DailyChallenge[] = [
     isToday: false,
     status: "completed",
     winnerPrize: 900,
-    whyRelevant: "Fake 'get rich' content floods TikTok. Users are desperate to know what's real. Scam-busting content goes viral.",
+    whyRelevant:
+      "Fake 'get rich' content floods TikTok. Users are desperate to know what's real. Scam-busting content goes viral.",
     sources: [
       { source: "tiktok", metric: "Related hashtags", value: "28M views" },
       { source: "freelancer", metric: "Related gigs", value: "1.2K" },
@@ -141,12 +147,12 @@ export const mockChallenges: DailyChallenge[] = [
 export const getTimeRemaining = (endsAt: Date): string => {
   const now = new Date();
   const diff = endsAt.getTime() - now.getTime();
-  
+
   if (diff <= 0) return "Ended";
-  
+
   const hours = Math.floor(diff / (1000 * 60 * 60));
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  
+
   if (hours > 0) {
     return `${hours}h ${minutes}m left`;
   }
