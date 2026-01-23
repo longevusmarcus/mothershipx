@@ -278,6 +278,17 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
         )}
       </div>
 
+      {/* Legal Links - always visible at bottom */}
+      <div className="px-4 pb-3 flex items-center justify-center gap-3 text-[10px] text-muted-foreground/60">
+        <NavLink to="/privacy" className="hover:text-muted-foreground transition-colors">
+          Privacy
+        </NavLink>
+        <span>·</span>
+        <NavLink to="/terms" className="hover:text-muted-foreground transition-colors">
+          Terms
+        </NavLink>
+      </div>
+
       <AuthModal open={showAuthModal} onOpenChange={setShowAuthModal} />
     </motion.aside>
   );
