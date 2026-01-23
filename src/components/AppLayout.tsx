@@ -174,17 +174,6 @@ export function AppLayout({ children }: AppLayoutProps) {
           {children}
         </main>
 
-        {/* Footer */}
-        <footer className="hidden md:flex border-t border-border py-4 px-6 text-xs text-muted-foreground justify-center gap-4">
-          <Link to="/privacy" className="hover:text-foreground transition-colors">
-            Privacy Policy
-          </Link>
-          <span>·</span>
-          <Link to="/terms" className="hover:text-foreground transition-colors">
-            Terms of Service
-          </Link>
-        </footer>
-
         {/* Mobile Bottom Nav */}
         <MobileBottomNav />
       </div>

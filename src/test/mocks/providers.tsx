@@ -13,6 +13,7 @@ export const mockAuthContext = {
   isLoading: false,
   signIn: vi.fn().mockResolvedValue({ error: null }),
   signUp: vi.fn().mockResolvedValue({ error: null }),
+  signInWithGoogle: vi.fn().mockResolvedValue({ error: null }),
   signOut: vi.fn().mockResolvedValue(undefined),
   resetPassword: vi.fn().mockResolvedValue({ error: null }),
   updateProfile: vi.fn().mockResolvedValue({ error: null }),
