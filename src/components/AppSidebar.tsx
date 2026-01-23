@@ -26,6 +26,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import logoIcon from "@/assets/logo-icon.png";
 
 const navItems = [
   { icon: Plus, label: "New Search", path: "/" },
@@ -42,6 +43,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
     return saved === "true";
   });
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [headerHovered, setHeaderHovered] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const isMobile = onClose !== undefined;
@@ -81,10 +83,15 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
       className={cn("h-screen bg-sidebar flex flex-col", isMobile ? "w-70" : "sticky top-0")}
     >
       {/* Header */}
-      <div className="h-14 flex items-center justify-between px-4">
+      <div 
+        className="h-14 flex items-center justify-between px-4"
+        onMouseEnter={() => setHeaderHovered(true)}
+        onMouseLeave={() => setHeaderHovered(false)}
+      >
         <AnimatePresence mode="wait">
-          {(!collapsed || isMobile) && (
+          {(!collapsed || isMobile) ? (
             <motion.span
+              key="full-logo"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -92,6 +99,39 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
             >
               Mothership<span className="font-accent italic">X</span>
             </motion.span>
+          ) : (
+            <motion.div
+              key="icon-logo"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex items-center justify-center w-full"
+            >
+              <AnimatePresence mode="wait">
+                {headerHovered ? (
+                  <motion.button
+                    key="expand-btn"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    onClick={() => setCollapsed(false)}
+                    className="p-1.5 hover:bg-sidebar-accent rounded-md transition-colors"
+                  >
+                    <PanelLeftClose className="h-4 w-4 text-muted-foreground rotate-180" />
+                  </motion.button>
+                ) : (
+                  <motion.img
+                    key="logo-icon"
+                    src={logoIcon}
+                    alt="Mothership"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    className="h-6 w-6 object-contain"
+                  />
+                )}
+              </AnimatePresence>
+            </motion.div>
           )}
         </AnimatePresence>
 
@@ -99,16 +139,14 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
           <button onClick={onClose} className="p-1.5 hover:bg-sidebar-accent rounded-md transition-colors">
             <X className="h-4 w-4 text-muted-foreground" />
           </button>
-        ) : (
+        ) : !collapsed ? (
           <button
-            onClick={() => setCollapsed(!collapsed)}
+            onClick={() => setCollapsed(true)}
             className="p-1.5 hover:bg-sidebar-accent rounded-md transition-colors"
           >
-            <PanelLeftClose
-              className={cn("h-4 w-4 text-muted-foreground transition-transform", collapsed && "rotate-180")}
-            />
+            <PanelLeftClose className="h-4 w-4 text-muted-foreground" />
           </button>
-        )}
+        ) : null}
       </div>
 
       {/* Navigation */}
