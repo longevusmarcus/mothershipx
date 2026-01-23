@@ -170,7 +170,7 @@ export default function Privacy() {
               If you have questions about this Privacy Policy or wish to exercise your rights, please contact us at:
             </p>
             <p className="mt-2">
-              <strong>Email:</strong> privacy@mothershipx.io
+              <strong>Email:</strong> support@mothership.io
             </p>
           </section>
         </div>
