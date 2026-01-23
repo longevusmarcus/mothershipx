@@ -29,8 +29,8 @@ interface VerificationResult {
   github: {
     valid: boolean;
     username: string;
-    hasStarredRepos: boolean;
-    totalStars: number;
+    hasEnoughRepos: boolean;
+    repoCount: number;
     topRepos: { name: string; stars: number }[];
     message: string;
   };
@@ -419,7 +419,7 @@ export function BuilderVerificationModal({
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <p className="font-medium text-sm">GitHub</p>
-                      {result.github.valid && result.github.hasStarredRepos ? (
+                      {result.github.valid && result.github.hasEnoughRepos ? (
                         <CheckCircle2 className="h-4 w-4 text-success" />
                       ) : (
                         <XCircle className="h-4 w-4 text-destructive" />
