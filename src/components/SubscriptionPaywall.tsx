@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, ArrowRight, Check, Zap, Globe, Swords, Users, Trophy, Sparkles, FlaskConical, MessageSquareText, X } from "lucide-react";
+import { Loader2, ArrowRight, Check, Zap, Globe, Swords, Users, Trophy, Sparkles, FlaskConical, MessageSquareText } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -24,18 +24,6 @@ const features = [
   { icon: Trophy, label: "Weekly prizes", delay: 0.6 },
 ];
 
-const notDoing = [
-  "paying to browse ideas",
-  "paying for insights",
-  "paying for another platform",
-];
-
-const actuallyDoing = [
-  "paying to enter markets",
-  "paying to compete for validated demand",
-  "paying to get distribution + rewards",
-];
-
 export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: SubscriptionPaywallProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const { createCheckout } = useSubscription();
@@ -47,6 +35,12 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
       trackPaywallView(feature);
     }
   }, [open, feature, trackPaywallView]);
+
+  const featureLabels = {
+    search: "AI-powered searches",
+    problem: "problem dashboards",
+    arena: "Arena challenges",
+  };
 
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen && open) {
@@ -73,8 +67,13 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
+      {/*
+        Desktop goal: show *all* paywall content without scrolling.
+        Solution: switch to a wider (2-col) desktop layout to reduce vertical height.
+        Mobile keeps full-height (100dvh) behavior.
+      */}
       <DialogContent className="p-0 gap-0 border-border bg-card overflow-hidden h-[100dvh] sm:h-auto rounded-none sm:rounded-xl sm:max-w-2xl">
-        <div className="relative h-full sm:h-auto flex flex-col overflow-y-auto">
+        <div className="relative h-full sm:h-auto flex flex-col">
           {/* Animated background gradient */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <motion.div
@@ -154,10 +153,10 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                       transition={{ delay: 0.2, duration: 0.4 }}
                     >
                       <h2 className="text-xl sm:text-2xl font-display font-medium tracking-tight mb-2">
-                        Unlock MothershipX
+                        Unlock Premium Access
                       </h2>
                       <p className="text-sm text-muted-foreground">
-                        Enter real markets, compete on validated demand, and earn rewards.
+                        Subscribe to access searches, dashboards, hackathons, rewards, and more.
                       </p>
                     </motion.div>
 
@@ -211,16 +210,16 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
 
                     {/* Footer text */}
                     <motion.div
-                      className="mt-5 space-y-1"
+                      className="mt-5 space-y-2"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 1, duration: 0.4 }}
                     >
                       <p className="text-center sm:text-left text-xs sm:text-sm text-muted-foreground">
-                        Or pay $5 per Arena challenge (NO search & dashboard access)
+                        Or pay $5 per Arena challenge (NO search & dashboard access, NO free hackathons)
                       </p>
                       <p className="text-center sm:text-left text-xs text-muted-foreground/60">
-                        Cancel anytime. One win pays for the year.
+                        Cancel anytime • Secured by Stripe
                       </p>
                     </motion.div>
                   </div>
@@ -275,56 +274,6 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                     ))}
                   </motion.div>
                 </div>
-
-                {/* Why $29? Explainer */}
-                <motion.div
-                  className="mt-6 border border-border/50 rounded-2xl p-4 sm:p-5 bg-secondary/20 backdrop-blur-sm"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5, duration: 0.4 }}
-                >
-                  <h3 className="text-sm font-medium mb-4 text-center sm:text-left">Why $29?</h3>
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* What you're NOT doing */}
-                    <div className="space-y-2">
-                      <p className="text-xs text-muted-foreground font-medium mb-2">What you're NOT doing:</p>
-                      {notDoing.map((item, i) => (
-                        <motion.div
-                          key={i}
-                          className="flex items-center gap-2"
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.6 + (i * 0.1), duration: 0.3 }}
-                        >
-                          <div className="h-5 w-5 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
-                            <X className="h-3 w-3 text-destructive" />
-                          </div>
-                          <span className="text-xs text-muted-foreground">{item}</span>
-                        </motion.div>
-                      ))}
-                    </div>
-
-                    {/* What you ARE doing */}
-                    <div className="space-y-2">
-                      <p className="text-xs text-muted-foreground font-medium mb-2">What you ARE doing:</p>
-                      {actuallyDoing.map((item, i) => (
-                        <motion.div
-                          key={i}
-                          className="flex items-center gap-2"
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.7 + (i * 0.1), duration: 0.3 }}
-                        >
-                          <div className="h-5 w-5 rounded-full bg-success/10 flex items-center justify-center shrink-0">
-                            <Check className="h-3 w-3 text-success" />
-                          </div>
-                          <span className="text-xs text-foreground">{item}</span>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
               </motion.div>
             </AnimatePresence>
           </div>
