@@ -13,8 +13,8 @@ export interface BuilderVerification {
     github?: {
       valid: boolean;
       username: string;
-      hasStarredRepos: boolean;
-      totalStars: number;
+      hasEnoughRepos: boolean;
+      repoCount: number;
       topRepos: { name: string; stars: number }[];
       message: string;
     };

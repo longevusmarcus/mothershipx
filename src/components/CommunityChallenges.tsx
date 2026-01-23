@@ -38,7 +38,7 @@ export const CommunityChallenges = () => {
 
   const proofRequirements = [
     { icon: CreditCard, label: "Stripe / Polar", desc: "Public API key" },
-    { icon: Github, label: "GitHub", desc: "Profile with at least 1 star" },
+    { icon: Github, label: "GitHub", desc: "At least 3 public repositories" },
     { icon: Database, label: "Supabase", desc: "Optional", optional: true },
   ];
 

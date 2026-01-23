@@ -14,8 +14,8 @@ interface VerificationResult {
   github: {
     valid: boolean;
     username: string;
-    hasStarredRepos: boolean;
-    totalStars: number;
+    hasEnoughRepos: boolean;
+    repoCount: number;
     topRepos: { name: string; stars: number }[];
     message: string;
   };
@@ -58,6 +58,7 @@ function extractGitHubUsername(input: string): string {
 
 async function verifyGitHub(rawInput: string): Promise<VerificationResult["github"]> {
   const username = extractGitHubUsername(rawInput);
+  const MIN_REPOS_REQUIRED = 3;
   
   try {
     // Fetch user repos
@@ -72,36 +73,37 @@ async function verifyGitHub(rawInput: string): Promise<VerificationResult["githu
       return {
         valid: false,
         username,
-        hasStarredRepos: false,
-        totalStars: 0,
+        hasEnoughRepos: false,
+        repoCount: 0,
         topRepos: [],
         message: "GitHub profile not found",
       };
     }
 
     const repos = await response.json();
-    const starredRepos = repos.filter((repo: any) => repo.stargazers_count >= 1);
-    const totalStars = repos.reduce((sum: number, repo: any) => sum + repo.stargazers_count, 0);
-    const topRepos = starredRepos
+    const publicRepos = repos.filter((repo: any) => !repo.private);
+    const repoCount = publicRepos.length;
+    const hasEnoughRepos = repoCount >= MIN_REPOS_REQUIRED;
+    const topRepos = publicRepos
       .slice(0, 3)
       .map((repo: any) => ({ name: repo.name, stars: repo.stargazers_count }));
 
     return {
       valid: true,
       username,
-      hasStarredRepos: starredRepos.length > 0,
-      totalStars,
+      hasEnoughRepos,
+      repoCount,
       topRepos,
-      message: starredRepos.length > 0 
-        ? `Found ${starredRepos.length} repos with stars (${totalStars} total stars)`
-        : "No repos with stars found",
+      message: hasEnoughRepos 
+        ? `Found ${repoCount} public repositories`
+        : `Only ${repoCount} public repositories found (minimum ${MIN_REPOS_REQUIRED} required)`,
     };
   } catch (error) {
     return {
       valid: false,
       username,
-      hasStarredRepos: false,
-      totalStars: 0,
+      hasEnoughRepos: false,
+      repoCount: 0,
       topRepos: [],
       message: "Failed to verify GitHub profile",
     };
@@ -256,7 +258,7 @@ serve(async (req) => {
 
     // Calculate overall score (Supabase is optional, so adjust max score)
     let score = 0;
-    if (githubResult.valid && githubResult.hasStarredRepos) score += 50;
+    if (githubResult.valid && githubResult.hasEnoughRepos) score += 50;
     else if (githubResult.valid) score += 25;
     
     // Give bonus points for payment provider verification
