@@ -37,7 +37,7 @@ export const CommunityChallenges = () => {
   const totalParticipants = allChallenges.reduce((acc, c) => acc + c.participants, 0);
 
   const proofRequirements = [
-    { icon: CreditCard, label: "Stripe / Polar", desc: "Public API key" },
+    { icon: CreditCard, label: "Stripe/Polar", desc: "Public API key" },
     { icon: Github, label: "GitHub", desc: "At least 3 public repositories" },
     { icon: Database, label: "Supabase", desc: "Optional", optional: true },
   ];
