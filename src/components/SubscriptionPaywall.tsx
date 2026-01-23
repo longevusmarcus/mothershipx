@@ -169,7 +169,7 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                         Unlock MothershipX
                       </h2>
                       <p className="text-sm text-muted-foreground">
-                        Enter real markets, compete on validated demand, and earn rewards.
+                        Enter live markets where demand is already proven, compete to serve it, and earn rewards.
                       </p>
                     </motion.div>
 
@@ -202,7 +202,7 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                         onClick={() => setShowWhyExplainer(!showWhyExplainer)}
                         className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors group mx-auto sm:mx-0"
                       >
-                        <span className="underline underline-offset-2 decoration-dashed">Why $29?</span>
+                        <span className="underline underline-offset-2 decoration-dashed">Learn More</span>
                         <motion.div animate={{ rotate: showWhyExplainer ? 180 : 0 }} transition={{ duration: 0.2 }}>
                           <ChevronDown className="h-3 w-3" />
                         </motion.div>
@@ -230,7 +230,7 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                                 <p className="text-foreground mb-1.5 font-medium">What you ARE doing:</p>
                                 <div className="space-y-1 text-foreground/90">
                                   <p>✓ paying to enter pre-validated markets</p>
-                                  <p>✓ paying to compete for pre-validated demand</p>
+                                  <p>✓ paying to compete for validated demand</p>
                                   <p>✓ paying to get distribution + rewards</p>
                                 </div>
                               </div>
