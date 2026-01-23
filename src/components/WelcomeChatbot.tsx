@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 const WELCOME_SHOWN_KEY = "mothershipx_welcome_shown";
 
 const WELCOME_STEP_1 =
-  "Welcome, builder :) MothershipX helps builders like you identify what the market already wants, so you can compete to ship the best solution—backed by real demand and revenue signals—while earning rewards every week.";
+  "Welcome, builder :) MothershipX helps builders like you spot emerging problems and behavior trends, compete to build the best solution, and earn rewards backed by real outcome.";
 
 const TOTAL_STEPS = 2;
 
