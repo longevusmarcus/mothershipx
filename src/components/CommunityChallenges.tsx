@@ -45,7 +45,7 @@ export const CommunityChallenges = () => {
   const memberBenefits = [
     { icon: DollarSign, label: "Revenue & cash rewards" },
     { icon: Trophy, label: "Graduation into live markets" },
-    { icon: Megaphone, label: "Ongoing distribution" },
+    { icon: Megaphone, label: "Ongoing distribution fro Mothership" },
     { icon: Link2, label: "Permanent market presence" },
     { icon: Award, label: "Builder reputation & rank" },
     { icon: Users, label: "Access to future high-signal markets" },
