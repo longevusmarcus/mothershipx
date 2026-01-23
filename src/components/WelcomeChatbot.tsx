@@ -63,7 +63,8 @@ export function WelcomeChatbot() {
 
         {/* Description */}
         <p className="text-sm leading-relaxed text-foreground pt-1">
-          We supercharge your Lovable experience so you know what to build, with whom, and get rewarded every day.
+          We supercharge your Lovable experience—so you know what to build, who to work with, who to compete against,
+          and earn rewards every week.
         </p>
       </div>
     );
