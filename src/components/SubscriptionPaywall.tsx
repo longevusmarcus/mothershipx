@@ -279,7 +279,7 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                     >
                       <p className="text-center sm:text-left text-xs text-muted-foreground">
                         Cancel anytime.{" "}
-                        <span className="text-foreground/80 font-medium">One win pays for the year.</span>
+                        <span className="text-foreground/80 font-medium">One win pays for 5 years.</span>
                       </p>
                       <p className="text-center sm:text-left text-[10px] text-muted-foreground/60">Secured by Stripe</p>
                     </motion.div>
