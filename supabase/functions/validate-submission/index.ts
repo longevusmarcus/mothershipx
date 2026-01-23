@@ -103,9 +103,8 @@ Respond ONLY with valid JSON matching this schema:
     let result: ValidationResult;
     try {
       // Extract JSON from the response (handle markdown code blocks)
-      const jsonMatch = aiContent.match(/```json\n?([\s\S]*?)\n?```/) || 
-                        aiContent.match(/\{[\s\S]*\}/);
-      const jsonStr = jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : aiContent;
+      const jsonMatch = aiContent.match(/```json\n?([\s\S]*?)\n?```/) || aiContent.match(/\{[\s\S]*\}/);
+      const jsonStr = jsonMatch ? jsonMatch[1] || jsonMatch[0] : aiContent;
       result = JSON.parse(jsonStr);
     } catch (parseError) {
       console.error("Failed to parse AI response:", aiContent);
@@ -128,10 +127,10 @@ Respond ONLY with valid JSON matching this schema:
     });
   } catch (error) {
     console.error("Validation error:", error);
-    
+
     // Return fallback scores on error
     const fallback = generateFallbackScores("Unknown", false, false);
-    
+
     return new Response(JSON.stringify(fallback), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
@@ -142,7 +141,7 @@ function buildValidationPrompt(
   productName: string,
   productUrl: string,
   githubRepo?: string,
-  stripePublicKey?: string
+  stripePublicKey?: string,
 ): string {
   let prompt = `Evaluate this hackathon submission:
 
@@ -170,13 +169,9 @@ Provide scores and detailed feedback.`;
   return prompt;
 }
 
-function generateFallbackScores(
-  productName: string,
-  hasGithub: boolean,
-  hasStripe: boolean
-): ValidationResult {
+function generateFallbackScores(productName: string, hasGithub: boolean, hasStripe: boolean): ValidationResult {
   const baseScore = 65 + Math.floor(Math.random() * 15);
-  
+
   return {
     sentimentFitScore: baseScore + Math.floor(Math.random() * 10),
     problemCoveragePercent: baseScore + Math.floor(Math.random() * 15),

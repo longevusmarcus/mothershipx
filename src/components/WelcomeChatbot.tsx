@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 const WELCOME_SHOWN_KEY = "mothershipx_welcome_shown";
 
 const WELCOME_STEP_1 =
-  "Welcome to MothershipX, a social market intelligence platform and hackathon arena empowering builders to ship useful products and win prizes every day.";
+  "Welcome to MothershipX, a social market intelligence platform that surfaces pre-validated demand from real user behavior across TikTok, Reddit, YouTube, and more. Builders compete in market auditions to ship products backed by real users, revenue signals, and weekly cash prizes.";
 
 const TOTAL_STEPS = 2;
 

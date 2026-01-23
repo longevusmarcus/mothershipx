@@ -26,7 +26,7 @@ const Challenges = () => {
         // Invalidate queries to refresh data
         queryClient.invalidateQueries({ queryKey: ["challenges"] });
         queryClient.invalidateQueries({ queryKey: ["challenge-joins"] });
-        
+
         setTimeout(() => {
           setPaymentStatus(null);
           toast.success("You've joined the challenge! Submit your build before time runs out.");
@@ -44,9 +44,9 @@ const Challenges = () => {
     <AppLayout>
       <SEO
         title="Hackathon Arena"
-        description="Join weekly build challenges, compete solo or in teams, and win 90% of the prize pool. AI judges your code quality and aesthetics."
+        description="Join weekly build challenges, compete solo or in teams, and win 90% of the prize pool."
       />
-      
+
       {/* Payment Verification Overlay */}
       <AnimatePresence>
         {paymentStatus && (
@@ -68,9 +68,7 @@ const Challenges = () => {
                     <Loader2 className="h-8 w-8 text-primary animate-spin" />
                   </div>
                   <h3 className="text-lg font-semibold mb-2">Verifying Payment</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Confirming your payment with Stripe...
-                  </p>
+                  <p className="text-sm text-muted-foreground">Confirming your payment with Stripe...</p>
                 </>
               ) : paymentStatus === "success" ? (
                 <>
@@ -83,9 +81,7 @@ const Challenges = () => {
                     <CheckCircle2 className="h-8 w-8 text-success" />
                   </motion.div>
                   <h3 className="text-lg font-semibold mb-2">Payment Confirmed!</h3>
-                  <p className="text-sm text-muted-foreground">
-                    You're in the arena. Good luck!
-                  </p>
+                  <p className="text-sm text-muted-foreground">You're in the arena. Good luck!</p>
                 </>
               ) : null}
             </motion.div>
