@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, ArrowRight, Check, Zap, Globe, Swords, Users, Trophy, Sparkles, FlaskConical, MessageSquareText } from "lucide-react";
+import { Loader2, ArrowRight, Check, Zap, Globe, Swords, Users, Trophy, Sparkles, FlaskConical, MessageSquareText, ChevronDown } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -26,9 +26,9 @@ const features = [
 
 export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: SubscriptionPaywallProps) {
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showWhyExplainer, setShowWhyExplainer] = useState(false);
   const { createCheckout } = useSubscription();
   const { trackPaywallView, trackPaywallDismiss, trackCheckoutStart } = usePaywallAnalytics();
-
   // Track paywall view
   useEffect(() => {
     if (open) {
@@ -153,16 +153,16 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                       transition={{ delay: 0.2, duration: 0.4 }}
                     >
                       <h2 className="text-xl sm:text-2xl font-display font-medium tracking-tight mb-2">
-                        Unlock Premium Access
+                        Unlock MothershipX
                       </h2>
                       <p className="text-sm text-muted-foreground">
-                        Subscribe to access searches, dashboards, hackathons, rewards, and more.
+                        Enter real markets, compete on validated demand, and earn rewards.
                       </p>
                     </motion.div>
 
                     {/* Price */}
                     <motion.div
-                      className="text-center sm:text-left mb-5"
+                      className="text-center sm:text-left mb-4"
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.3, duration: 0.4, type: "spring" }}
@@ -176,6 +176,58 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                           <span className="text-muted-foreground ml-1.5 text-base">/month</span>
                         </div>
                       </div>
+                    </motion.div>
+
+                    {/* Why $29 Explainer */}
+                    <motion.div
+                      className="mb-4"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.35, duration: 0.3 }}
+                    >
+                      <button
+                        onClick={() => setShowWhyExplainer(!showWhyExplainer)}
+                        className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors group mx-auto sm:mx-0"
+                      >
+                        <span className="underline underline-offset-2 decoration-dashed">Why $29?</span>
+                        <motion.div
+                          animate={{ rotate: showWhyExplainer ? 180 : 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <ChevronDown className="h-3 w-3" />
+                        </motion.div>
+                      </button>
+                      
+                      <AnimatePresence>
+                        {showWhyExplainer && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.25, ease: "easeOut" }}
+                            className="overflow-hidden"
+                          >
+                            <div className="mt-3 p-3 rounded-lg bg-secondary/50 border border-border/50 text-xs space-y-3">
+                              <div>
+                                <p className="text-muted-foreground mb-1.5 font-medium">What you're NOT doing:</p>
+                                <div className="space-y-1 text-muted-foreground/80">
+                                  <p>🚫 paying to browse ideas</p>
+                                  <p>🚫 paying for insights</p>
+                                  <p>🚫 paying for another platform</p>
+                                </div>
+                              </div>
+                              <div>
+                                <p className="text-foreground mb-1.5 font-medium">What you ARE doing:</p>
+                                <div className="space-y-1 text-foreground/90">
+                                  <p>✓ paying to enter markets</p>
+                                  <p>✓ paying to compete for validated demand</p>
+                                  <p>✓ paying to get distribution + rewards</p>
+                                </div>
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </motion.div>
 
                     {/* CTA */}
@@ -210,16 +262,16 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
 
                     {/* Footer text */}
                     <motion.div
-                      className="mt-5 space-y-2"
+                      className="mt-4 space-y-1"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 1, duration: 0.4 }}
                     >
-                      <p className="text-center sm:text-left text-xs sm:text-sm text-muted-foreground">
-                        Or pay $5 per Arena challenge (NO search & dashboard access, NO free hackathons)
+                      <p className="text-center sm:text-left text-xs text-muted-foreground">
+                        Cancel anytime. <span className="text-foreground/80 font-medium">One win pays for the year.</span>
                       </p>
-                      <p className="text-center sm:text-left text-xs text-muted-foreground/60">
-                        Cancel anytime • Secured by Stripe
+                      <p className="text-center sm:text-left text-[10px] text-muted-foreground/60">
+                        Secured by Stripe
                       </p>
                     </motion.div>
                   </div>
