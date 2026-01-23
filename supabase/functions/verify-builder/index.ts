@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
+import { verifyBuilderSchema, validateInput, validationErrorResponse } from "../_shared/validation.ts";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -230,13 +230,21 @@ serve(async (req) => {
       );
     }
 
+    const rawBody = await req.json().catch(() => ({}));
+    
+    // Validate input with Zod
+    const validation = validateInput(verifyBuilderSchema, rawBody);
+    if (!validation.success) {
+      return validationErrorResponse(validation, corsHeaders);
+    }
+    
     const { 
       githubUsername, 
       stripePublicKey, 
       polarPublicKey,
       paymentProvider,
       supabaseProjectKey 
-    } = await req.json();
+    } = validation.data!;
 
     // Verify all credentials
     const githubResult = await verifyGitHub(githubUsername);

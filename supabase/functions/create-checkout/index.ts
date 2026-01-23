@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import Stripe from "https://esm.sh/stripe@14.21.0?target=deno";
 import { withRateLimit, RateLimitPresets } from "../_shared/rateLimit.ts";
+import { createCheckoutSchema, validateInput, validationErrorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -48,14 +49,15 @@ serve(async (req) => {
       );
     }
 
-    const { challengeId, joinType, successUrl, cancelUrl } = await req.json();
-
-    if (!challengeId) {
-      return new Response(
-        JSON.stringify({ error: "Missing challengeId" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    const rawBody = await req.json().catch(() => ({}));
+    
+    // Validate input with Zod
+    const validation = validateInput(createCheckoutSchema, rawBody);
+    if (!validation.success) {
+      return validationErrorResponse(validation, corsHeaders);
     }
+    
+    const { challengeId, joinType, successUrl, cancelUrl } = validation.data!;
 
     // Get challenge details
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);

@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { generatePromptsSchema, validateInput, validationErrorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -60,25 +61,36 @@ serve(async (req) => {
   }
 
   try {
-    const { problem, competitors, solutions, config } = await req.json() as {
-      problem: ProblemData;
-      competitors?: any[];
-      solutions?: any[];
-      config?: PromptConfig;
-    };
+    const rawBody = await req.json().catch(() => ({}));
+    
+    // Validate input with Zod
+    const validation = validateInput(generatePromptsSchema, rawBody);
+    if (!validation.success) {
+      return validationErrorResponse(validation, corsHeaders);
+    }
+    
+    const { problem, competitors, solutions, config } = validation.data!;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    // Default config if not provided
-    const finalConfig: PromptConfig = config || {
+    // Default config if not provided (merge with defaults)
+    const defaultConfig: PromptConfig = {
       framework: "lovable",
       complexity: 3,
       features: { auth: true, payments: false, analytics: false, email: false, admin: false, ai: false, realtime: false, darkMode: true },
       techStack: ["supabase", "tailwind", "shadcn"],
       designStyle: "modern",
+    };
+    
+    const finalConfig: PromptConfig = {
+      framework: config?.framework || defaultConfig.framework,
+      complexity: config?.complexity || defaultConfig.complexity,
+      features: { ...defaultConfig.features, ...(config?.features || {}) } as PromptConfig["features"],
+      techStack: config?.techStack || defaultConfig.techStack,
+      designStyle: config?.designStyle || defaultConfig.designStyle,
     };
 
     // Build comprehensive context

@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { withRateLimit, RateLimitPresets } from "../_shared/rateLimit.ts";
+import { searchCompetitorsSchema, validateInput, validationErrorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -345,14 +346,15 @@ serve(async (req) => {
   if (rateLimited) return rateLimited;
 
   try {
-    const { problemId, problemTitle, niche, opportunityScore } = await req.json();
+    const rawBody = await req.json().catch(() => ({}));
     
-    if (!problemTitle) {
-      return new Response(
-        JSON.stringify({ error: "Problem title is required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    // Validate input with Zod
+    const validation = validateInput(searchCompetitorsSchema, rawBody);
+    if (!validation.success) {
+      return validationErrorResponse(validation, corsHeaders);
     }
+    
+    const { problemId, problemTitle, niche, opportunityScore } = validation.data!;
 
     const SERP_API_KEY = Deno.env.get("SERP_API_KEY");
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL");

@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { withRateLimit, RateLimitPresets } from "../_shared/rateLimit.ts";
+import { searchTikTokSchema, validateInput, validationErrorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -403,11 +404,15 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    const { niche, forceRefresh } = await req.json();
+    const rawBody = await req.json().catch(() => ({}));
     
-    if (!niche || typeof niche !== 'string') {
-      throw new Error('Niche selection is required');
+    // Validate input with Zod
+    const validation = validateInput(searchTikTokSchema, rawBody);
+    if (!validation.success) {
+      return validationErrorResponse(validation, corsHeaders);
     }
+    
+    const { niche, forceRefresh } = validation.data!;
 
     console.log(`Processing niche: ${niche}, forceRefresh: ${forceRefresh}`);
 

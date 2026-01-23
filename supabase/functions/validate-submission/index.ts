@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { validateSubmissionSchema, validateInput, validationErrorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -39,11 +40,18 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY not configured");
     }
 
-    const body: ValidationRequest = await req.json();
-    const { productUrl, productName, githubRepo, stripePublicKey, challengeId, problemId } = body;
+    const rawBody = await req.json().catch(() => ({}));
+    
+    // Validate input with Zod
+    const validation = validateInput(validateSubmissionSchema, rawBody);
+    if (!validation.success) {
+      return validationErrorResponse(validation, corsHeaders);
+    }
+    
+    const { productUrl, productName, githubRepo, stripePublicKey, challengeId, problemId } = validation.data!;
 
     // Build the AI prompt for validation
-    const prompt = buildValidationPrompt(productName, productUrl, githubRepo, stripePublicKey);
+    const prompt = buildValidationPrompt(productName, productUrl, githubRepo ?? undefined, stripePublicKey ?? undefined);
 
     // Call Lovable AI Gateway
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {

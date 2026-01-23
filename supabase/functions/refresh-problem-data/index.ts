@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { refreshProblemSchema, validateInput, validationErrorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -226,16 +227,23 @@ serve(async (req) => {
     
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    let problemId: string | null = null;
+    let problemId: string | undefined;
     let updateAll = false;
 
     // Check if request has a body
     const contentType = req.headers.get('content-type');
     if (contentType?.includes('application/json')) {
       try {
-        const body = await req.json();
-        problemId = body.problemId || null;
-        updateAll = body.updateAll || false;
+        const rawBody = await req.json();
+        
+        // Validate input with Zod
+        const validation = validateInput(refreshProblemSchema, rawBody);
+        if (!validation.success) {
+          return validationErrorResponse(validation, corsHeaders);
+        }
+        
+        problemId = validation.data!.problemId;
+        updateAll = validation.data!.updateAll || false;
       } catch {
         // No body or invalid JSON, update all
         updateAll = true;
