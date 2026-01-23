@@ -45,14 +45,10 @@ const Problems = () => {
       />
       <div className="space-y-6">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center"
-        >
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
           <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">Dashboard</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            {filteredProblems.length} problems and trends discovered
+            {filteredProblems.length} pre-validated problems and trends to build for in 2026
           </p>
         </motion.div>
 
@@ -73,9 +69,7 @@ const Problems = () => {
               <Badge
                 variant={selectedCategory === cat ? "default" : "outline"}
                 className={`cursor-pointer transition-all duration-300 whitespace-nowrap flex-shrink-0 ${
-                  selectedCategory === cat 
-                    ? "shadow-sm" 
-                    : "hover:bg-primary/5 hover:border-primary/30"
+                  selectedCategory === cat ? "shadow-sm" : "hover:bg-primary/5 hover:border-primary/30"
                 }`}
                 onClick={() => setSelectedCategory(cat)}
               >
@@ -94,7 +88,11 @@ const Problems = () => {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
           >
-            <MasonryGrid problems={filteredProblems} shouldBlurExcess={shouldBlurExcess} isAllCategory={selectedCategory === "all"} />
+            <MasonryGrid
+              problems={filteredProblems}
+              shouldBlurExcess={shouldBlurExcess}
+              isAllCategory={selectedCategory === "all"}
+            />
           </motion.div>
         </AnimatePresence>
 
