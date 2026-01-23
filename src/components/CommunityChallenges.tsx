@@ -28,8 +28,7 @@ const GUIDE_SEEN_KEY = "arena-accordion-guide-seen";
 
 export const CommunityChallenges = () => {
   const [activeTab, setActiveTab] = useState("today");
-  const [proofExpanded, setProofExpanded] = useState(false);
-  const [benefitsExpanded, setBenefitsExpanded] = useState(false);
+  const [cardsExpanded, setCardsExpanded] = useState(false);
   const [showHint, setShowHint] = useState(false);
 
   // First-time interactive guide
@@ -39,15 +38,13 @@ export const CommunityChallenges = () => {
     if (!hasSeenGuide) {
       // Auto-expand after a short delay
       const expandTimer = setTimeout(() => {
-        setProofExpanded(true);
-        setBenefitsExpanded(true);
+        setCardsExpanded(true);
         setShowHint(true);
       }, 800);
 
       // Auto-collapse after showing
       const collapseTimer = setTimeout(() => {
-        setProofExpanded(false);
-        setBenefitsExpanded(false);
+        setCardsExpanded(false);
         setShowHint(false);
         localStorage.setItem(GUIDE_SEEN_KEY, "true");
       }, 3500);
@@ -149,7 +146,7 @@ export const CommunityChallenges = () => {
             </div>
 
             <button
-              onClick={() => setProofExpanded(!proofExpanded)}
+              onClick={() => setCardsExpanded(!cardsExpanded)}
               className="w-full flex items-center justify-between group cursor-pointer"
             >
               <div className="flex items-center gap-2 font-mono">
@@ -170,7 +167,7 @@ export const CommunityChallenges = () => {
               </div>
               <motion.div
                 animate={{ 
-                  rotate: proofExpanded ? 180 : 0,
+                  rotate: cardsExpanded ? 180 : 0,
                   scale: showHint ? [1, 1.2, 1] : 1,
                 }}
                 transition={{ 
@@ -183,7 +180,7 @@ export const CommunityChallenges = () => {
             </button>
 
             <AnimatePresence initial={false}>
-              {proofExpanded && (
+              {cardsExpanded && (
                 <motion.div
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
@@ -224,7 +221,7 @@ export const CommunityChallenges = () => {
             </div>
 
             <button
-              onClick={() => setBenefitsExpanded(!benefitsExpanded)}
+              onClick={() => setCardsExpanded(!cardsExpanded)}
               className="w-full flex items-center justify-between group cursor-pointer"
             >
               <div className="flex items-center gap-2 font-mono">
@@ -245,7 +242,7 @@ export const CommunityChallenges = () => {
               </div>
               <motion.div
                 animate={{ 
-                  rotate: benefitsExpanded ? 180 : 0,
+                  rotate: cardsExpanded ? 180 : 0,
                   scale: showHint ? [1, 1.2, 1] : 1,
                 }}
                 transition={{ 
@@ -258,7 +255,7 @@ export const CommunityChallenges = () => {
             </button>
 
             <AnimatePresence initial={false}>
-              {benefitsExpanded && (
+              {cardsExpanded && (
                 <motion.div
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
