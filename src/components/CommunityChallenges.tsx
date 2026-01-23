@@ -34,7 +34,7 @@ export const CommunityChallenges = () => {
   // First-time interactive guide
   useEffect(() => {
     const hasSeenGuide = localStorage.getItem(GUIDE_SEEN_KEY);
-    
+
     if (!hasSeenGuide) {
       // Auto-expand after a short delay
       const expandTimer = setTimeout(() => {
@@ -109,7 +109,7 @@ export const CommunityChallenges = () => {
             <p className="font-mono text-xs text-muted-foreground tracking-widest uppercase">~/arena</p>
             <h1 className="font-mono text-xl sm:text-2xl font-medium tracking-wider uppercase">Market Audition</h1>
             <p className="font-mono text-xs text-muted-foreground tracking-wide">
-              Serve pre-validated demand • Earn & Compete for rewards • Graduate into live markets
+              Serve verified market demand • Earn & Compete for rewards • Graduate into live markets
             </p>
           </motion.div>
 
@@ -166,16 +166,18 @@ export const CommunityChallenges = () => {
                 </AnimatePresence>
               </div>
               <motion.div
-                animate={{ 
+                animate={{
                   rotate: cardsExpanded ? 180 : 0,
                   scale: showHint ? [1, 1.2, 1] : 1,
                 }}
-                transition={{ 
+                transition={{
                   rotate: { duration: 0.3, ease: "easeInOut" },
-                  scale: { duration: 0.8, repeat: showHint ? Infinity : 0, repeatDelay: 0.3 }
+                  scale: { duration: 0.8, repeat: showHint ? Infinity : 0, repeatDelay: 0.3 },
                 }}
               >
-                <ChevronDown className={`h-4 w-4 transition-colors ${showHint ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`} />
+                <ChevronDown
+                  className={`h-4 w-4 transition-colors ${showHint ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`}
+                />
               </motion.div>
             </button>
 
@@ -241,16 +243,18 @@ export const CommunityChallenges = () => {
                 </AnimatePresence>
               </div>
               <motion.div
-                animate={{ 
+                animate={{
                   rotate: cardsExpanded ? 180 : 0,
                   scale: showHint ? [1, 1.2, 1] : 1,
                 }}
-                transition={{ 
+                transition={{
                   rotate: { duration: 0.3, ease: "easeInOut" },
-                  scale: { duration: 0.8, repeat: showHint ? Infinity : 0, repeatDelay: 0.3 }
+                  scale: { duration: 0.8, repeat: showHint ? Infinity : 0, repeatDelay: 0.3 },
                 }}
               >
-                <ChevronDown className={`h-4 w-4 transition-colors ${showHint ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`} />
+                <ChevronDown
+                  className={`h-4 w-4 transition-colors ${showHint ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`}
+                />
               </motion.div>
             </button>
 

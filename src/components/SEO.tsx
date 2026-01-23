@@ -9,10 +9,11 @@ interface SEOProps {
 }
 
 const defaults = {
-  title: "MothershipX — Pre-Validated Market Demand & Market Auditions for Builders",
-  tagline: "Lovable unlocks creativity. MothershipX unlocks usefulness.",
+  title: "MothershipX — Verified Market Demand Builders Compete to Serve",
+  tagline:
+    "A Verified Database of Problems, Trends, and Unmet Needs for Builders to Compete On. Lovable unlocks creativity. MothershipX unlocks usefulness.",
   description:
-    "MothershipX is a market intelligence platform that surfaces pre-validated demand from real user behavior across TikTok, Reddit, YouTube, and more. Builders compete in market auditions to ship products backed by real users, revenue signals, and weekly cash prizes.",
+    "MothershipX helps builders spot emerging problems and behavior trends, compete to build the best solution, and earn rewards backed by real outcome.",
   image: "/og-image.png",
   type: "website" as const,
 };

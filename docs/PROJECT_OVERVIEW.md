@@ -2,7 +2,7 @@
 
 ## What It Does
 
-**MothershipX** is a market intelligence platform for indie builders. It helps users discover pre-validated market demand by aggregating real signals from TikTok, Reddit, YouTube, and Google Trends.
+**MothershipX** is a market intelligence platform for indie builders. It helps users discover verified market demand by aggregating real signals from TikTok, Reddit, YouTube, and Google Trends.
 
 ### Key Features
 
@@ -18,16 +18,16 @@
 
 ## Tech Stack
 
-| Layer | Technologies |
-|-------|-------------|
-| **Build** | Vite 5.4, TypeScript 5.8 |
-| **UI** | React 18, Tailwind CSS, shadcn/ui, Radix UI, Framer Motion |
-| **State** | React Query (server state), React Context (auth/subscription) |
-| **Forms** | React Hook Form + Zod validation |
-| **Routing** | React Router DOM 7 |
-| **Backend** | Supabase (PostgreSQL + Edge Functions + Auth) |
-| **Payments** | Stripe |
-| **APIs** | TikTok, YouTube, Reddit, Google Trends |
+| Layer        | Technologies                                                  |
+| ------------ | ------------------------------------------------------------- |
+| **Build**    | Vite 5.4, TypeScript 5.8                                      |
+| **UI**       | React 18, Tailwind CSS, shadcn/ui, Radix UI, Framer Motion    |
+| **State**    | React Query (server state), React Context (auth/subscription) |
+| **Forms**    | React Hook Form + Zod validation                              |
+| **Routing**  | React Router DOM 7                                            |
+| **Backend**  | Supabase (PostgreSQL + Edge Functions + Auth)                 |
+| **Payments** | Stripe                                                        |
+| **APIs**     | TikTok, YouTube, Reddit, Google Trends                        |
 
 ---
 
@@ -134,19 +134,19 @@ supabase/
 
 ## Routes
 
-| Path | Page | Description |
-|------|------|-------------|
-| `/` | Index | Home page - search & quick scan |
-| `/problems` | Problems | Dashboard with problem grid |
-| `/problems/:id` | ProblemDetail | Detailed problem view |
-| `/challenges` | Challenges | Market auditions listing |
-| `/challenges/:id/results` | ChallengeResults | Voting & results |
-| `/builds` | Builds | User solutions gallery |
-| `/submit` | SubmitSolution | Submit a solution |
-| `/leaderboard` | LeaderboardPage | Rankings |
-| `/profile` | Profile | User profile & settings |
-| `/profile/:userId` | PublicProfile | Public builder profile |
-| `/auth` | Auth | Login/signup |
+| Path                      | Page             | Description                     |
+| ------------------------- | ---------------- | ------------------------------- |
+| `/`                       | Index            | Home page - search & quick scan |
+| `/problems`               | Problems         | Dashboard with problem grid     |
+| `/problems/:id`           | ProblemDetail    | Detailed problem view           |
+| `/challenges`             | Challenges       | Market auditions listing        |
+| `/challenges/:id/results` | ChallengeResults | Voting & results                |
+| `/builds`                 | Builds           | User solutions gallery          |
+| `/submit`                 | SubmitSolution   | Submit a solution               |
+| `/leaderboard`            | LeaderboardPage  | Rankings                        |
+| `/profile`                | Profile          | User profile & settings         |
+| `/profile/:userId`        | PublicProfile    | Public builder profile          |
+| `/auth`                   | Auth             | Login/signup                    |
 
 ---
 

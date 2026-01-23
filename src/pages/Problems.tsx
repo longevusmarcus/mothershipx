@@ -34,19 +34,16 @@ const Problems = () => {
     setIsRefreshing(true);
     try {
       // Clear the search cache to force fresh data on next scan
-      const { error } = await supabase
-        .from('search_cache')
-        .delete()
-        .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all rows
-      
+      const { error } = await supabase.from("search_cache").delete().neq("id", "00000000-0000-0000-0000-000000000000"); // Delete all rows
+
       if (error) throw error;
-      
+
       // Invalidate problems query to refetch
-      await queryClient.invalidateQueries({ queryKey: ['problems'] });
-      
+      await queryClient.invalidateQueries({ queryKey: ["problems"] });
+
       toast.success("Cache cleared", { description: "Next scan will fetch fresh data" });
     } catch (error) {
-      console.error('Failed to refresh:', error);
+      console.error("Failed to refresh:", error);
       toast.error("Failed to clear cache");
     } finally {
       setIsRefreshing(false);
@@ -80,9 +77,9 @@ const Problems = () => {
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center relative">
           <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">Dashboard</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            {filteredProblems.length} pre-validated problems and trends to build for in 2026
+            {filteredProblems.length} verified problems and trends to build for in 2026
           </p>
-          
+
           {/* Refresh Button - hidden on mobile */}
           {!isMobile && (
             <Button
@@ -92,7 +89,7 @@ const Problems = () => {
               disabled={isRefreshing}
               className="absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground h-8 px-2"
             >
-              <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
             </Button>
           )}
         </motion.div>
