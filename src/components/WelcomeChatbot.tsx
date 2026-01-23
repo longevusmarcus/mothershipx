@@ -52,7 +52,7 @@ export function WelcomeChatbot() {
             <span className="font-medium">MothershipX</span>
             <span className="text-muted-foreground text-xs">(SuperLovable)</span>
             <span className="text-muted-foreground">=</span>
-            <span className="text-foreground">insights + people + prizes</span>
+            <span className="text-foreground">validation + audition + rewards</span>
           </div>
           <div className="flex items-center gap-2 text-sm">
             <span className="font-medium">Lovable</span>
