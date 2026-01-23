@@ -482,7 +482,9 @@ const SubmitSolution = () => {
                   {/* AI Judging Info */}
                   <div className="p-4 rounded-lg bg-secondary/30 text-sm">
                     <p className="font-medium mb-1">How your submission is evaluated (check your email)</p>
-                    <p className="text-xs text-muted-foreground mb-3">Evaluation combines automated checks and live market signals.</p>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      Evaluation combines automated AI checks and live market signals.
+                    </p>
                     <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
                       <span>• Problem–solution fit</span>
                       <span>• Ability to serve real demand</span>
@@ -500,7 +502,8 @@ const SubmitSolution = () => {
                       <p className="font-medium">Graduate into the live market (soon)</p>
                     </div>
                     <p className="text-xs text-muted-foreground leading-relaxed">
-                      After validation, your product graduates into a live market where adoption, retention, and revenue determine its position over time.
+                      After validation, your product graduates into a live market, MotherLeague, where adoption,
+                      retention, and revenue determine its position over time.
                     </p>
                     <div className="flex flex-wrap gap-1.5 pt-1">
                       <span className="px-2 py-0.5 rounded-full bg-success/10 text-success text-[10px] font-medium">
