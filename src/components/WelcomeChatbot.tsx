@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 const WELCOME_SHOWN_KEY = "mothershipx_welcome_shown";
 
 const WELCOME_STEP_1 =
-  "Welcome, builder :) MothershipX helps builders like you identify what the market already wants, so you can compete to ship the best solution—backed by real demand and revenue signals—while earning rewards every week.";
+  "Welcome to MothershipX, a social market intelligence platform that surfaces pre-validated demand from real user behavior across TikTok, Reddit, YouTube, and more. Builders compete in market auditions to ship products backed by real users, revenue signals, and weekly cash prizes.";
 
 const TOTAL_STEPS = 2;
 
@@ -52,7 +52,7 @@ export function WelcomeChatbot() {
             <span className="font-medium">MothershipX</span>
             <span className="text-muted-foreground text-xs">(SuperLovable)</span>
             <span className="text-muted-foreground">=</span>
-            <span className="text-foreground">insights + people + prizes</span>
+            <span className="text-foreground">validation + audition + rewards</span>
           </div>
           <div className="flex items-center gap-2 text-sm">
             <span className="font-medium">Lovable</span>
@@ -63,7 +63,7 @@ export function WelcomeChatbot() {
 
         {/* Description */}
         <p className="text-sm leading-relaxed text-foreground pt-1">
-          We supercharge your Lovable experience so you know what to build, with whom, and get rewarded every day.
+          We supercharge your Lovable experience so you know what to build, with whom, and get rewarded every week.
         </p>
       </div>
     );
