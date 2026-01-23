@@ -79,7 +79,7 @@ export const CommunityChallenges = () => {
             <p className="font-mono text-xs text-muted-foreground tracking-widest uppercase">~/arena</p>
             <h1 className="font-mono text-xl sm:text-2xl font-medium tracking-wider uppercase">Market Audition</h1>
             <p className="font-mono text-xs text-muted-foreground tracking-wide">
-              Serve pre-validated demand • Earn rewards • Graduate into live markets
+              Serve pre-validated demand • Earn & Compete for rewards • Graduate into live markets
             </p>
           </motion.div>
 
