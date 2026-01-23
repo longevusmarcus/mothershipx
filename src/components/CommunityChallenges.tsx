@@ -121,7 +121,7 @@ export const CommunityChallenges = () => {
             </div>
 
             <p className="text-sm text-muted-foreground mb-6">
-              Show us you've built something real. We verify builders to keep the arena exclusive.
+              Show us you've built something real. We want to keep the arena exclusive.
             </p>
 
             <div className="space-y-2">
