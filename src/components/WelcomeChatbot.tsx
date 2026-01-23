@@ -55,7 +55,7 @@ export function WelcomeChatbot() {
             <span className="text-foreground">validation + audition + rewards</span>
           </div>
           <div className="flex items-center gap-2 text-sm">
-            <span className="font-medium">Lovable</span>
+            <span className="font-medium">Lovable/Etc.</span>
             <span className="text-muted-foreground">=</span>
             <span className="text-foreground">execution</span>
           </div>
@@ -63,7 +63,7 @@ export function WelcomeChatbot() {
 
         {/* Description */}
         <p className="text-sm leading-relaxed text-foreground pt-1">
-          We supercharge your Lovable experience so you know what to build, who to work with, who to compete against,
+          We supercharge your builder experience so you know what to build, who to work with, who to compete against,
           and earn rewards every week.
         </p>
       </div>
