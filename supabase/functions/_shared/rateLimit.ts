@@ -134,8 +134,8 @@ export const RateLimitPresets = {
   // Standard API endpoint - 60 requests per minute
   standard: { maxRequests: 60, windowMinutes: 1 },
   
-  // Sensitive operations (auth, payments) - 10 requests per minute
-  sensitive: { maxRequests: 10, windowMinutes: 1 },
+  // Sensitive operations (auth, payments, emails) - 10 requests per 30 seconds
+  sensitive: { maxRequests: 10, windowMinutes: 0.5 },
   
   // Search/AI operations - 20 requests per minute
   search: { maxRequests: 20, windowMinutes: 1 },
