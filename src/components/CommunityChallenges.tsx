@@ -43,14 +43,12 @@ export const CommunityChallenges = () => {
   ];
 
   const memberBenefits = [
-    { icon: DollarSign, label: "Win Money", desc: "90% of prize pool" },
-    { icon: Megaphone, label: "Free Distribution", desc: "We promote your build" },
-    { icon: Trophy, label: "Appear on Leaderboard", desc: "Access to league events" },
-    { icon: Award, label: "Builder Badge", desc: "Resume & vanity metric" },
-    { icon: Link2, label: "Permanent Link", desc: "Showcase forever" },
-    { icon: Percent, label: "Top 10 Perks", desc: "Rewards for ranking" },
-    { icon: Headphones, label: "Freelance Support", desc: "Help when you need it" },
-    { icon: Users, label: "End User Access", desc: "Talk to real users" },
+    { icon: DollarSign, label: "Revenue & cash rewards" },
+    { icon: Trophy, label: "Graduation into live markets" },
+    { icon: Megaphone, label: "Ongoing distribution" },
+    { icon: Link2, label: "Permanent market presence" },
+    { icon: Award, label: "Builder reputation & rank" },
+    { icon: Users, label: "Access to future high-signal markets" },
   ];
 
   return (
