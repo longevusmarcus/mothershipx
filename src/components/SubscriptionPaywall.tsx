@@ -72,8 +72,8 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
         Solution: switch to a wider (2-col) desktop layout to reduce vertical height.
         Mobile keeps full-height (100dvh) behavior.
       */}
-      <DialogContent className="p-0 gap-0 border-border bg-card overflow-hidden h-[100dvh] sm:h-auto rounded-none sm:rounded-xl sm:max-w-2xl">
-        <div className="relative h-full sm:h-auto flex flex-col">
+      <DialogContent className="p-0 gap-0 border-border bg-card overflow-y-auto h-[100dvh] sm:h-auto sm:overflow-hidden rounded-none sm:rounded-xl sm:max-w-2xl">
+        <div className="relative min-h-full sm:h-auto flex flex-col">
           {/* Animated background gradient */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <motion.div
