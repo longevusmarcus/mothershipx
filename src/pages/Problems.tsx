@@ -16,10 +16,10 @@ const Problems = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState(initialQuery);
 
-  const { data: problems = [], isLoading } = useProblems(selectedCategory);
-  const { data: categories = ["All"] } = useCategories();
-  const { hasPremiumAccess, isLoading: subscriptionLoading } = useSubscription();
   const { isAuthenticated } = useAuth();
+  const { hasPremiumAccess, isLoading: subscriptionLoading } = useSubscription();
+  const { data: problems = [], isLoading } = useProblems(selectedCategory, isAuthenticated);
+  const { data: categories = ["All"] } = useCategories();
 
   // Calculate blur at page level so it doesn't reset on category change
   const shouldBlurExcess = !isAuthenticated || (!hasPremiumAccess && !subscriptionLoading);

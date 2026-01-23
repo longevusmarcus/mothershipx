@@ -1,6 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabaseClient";
 import { mockMarketProblems, MarketProblem, TrendSignal, problemIdMap, getDbProblemId } from "@/data/marketIntelligence";
+import { useAuth } from "@/contexts/AuthContext";
+
+// Seed problem IDs that should be hidden for logged-in users
+const SEED_PROBLEM_IDS = [
+  'a1b2c3d4-0001-4000-8000-000000000001',
+  'a1b2c3d4-0002-4000-8000-000000000002',
+  'a1b2c3d4-0003-4000-8000-000000000003',
+  'a1b2c3d4-0004-4000-8000-000000000004',
+  'a1b2c3d4-0005-4000-8000-000000000005',
+  'a1b2c3d4-0006-4000-8000-000000000006',
+  'a1b2c3d4-0007-4000-8000-000000000007',
+  'a1b2c3d4-0008-4000-8000-000000000008',
+];
 
 // DB row type from Supabase (with Json types)
 interface DBProblem {
@@ -161,9 +174,9 @@ function dbToMarketProblem(dbProblem: DBProblem): MarketProblem {
   };
 }
 
-export function useProblems(category?: string) {
+export function useProblems(category?: string, filterSeedData?: boolean) {
   return useQuery({
-    queryKey: ["problems", category],
+    queryKey: ["problems", category, filterSeedData],
     queryFn: async () => {
       let query = supabase
         .from("problems")
@@ -179,7 +192,7 @@ export function useProblems(category?: string) {
 
       if (error) {
         console.error("Error fetching problems:", error);
-        return mockMarketProblems;
+        return filterSeedData ? [] : mockMarketProblems;
       }
 
       if (!data || data.length === 0) {
@@ -187,11 +200,24 @@ export function useProblems(category?: string) {
         // (do NOT fall back to mock data, which makes the filter appear broken).
         if (category && category.toLowerCase() !== "all") return [];
 
-        // Only fall back to mock data when the whole table is empty (initial demo state).
-        return mockMarketProblems;
+        // Only fall back to mock data when the whole table is empty and user is logged out
+        return filterSeedData ? [] : mockMarketProblems;
       }
 
-      return (data as unknown as DBProblem[]).map(dbToMarketProblem);
+      let problems = (data as unknown as DBProblem[]).map(dbToMarketProblem);
+      
+      // Filter out seed problems for logged-in users
+      if (filterSeedData) {
+        problems = problems.filter(p => {
+          // Check if the problem ID matches any seed ID pattern
+          const originalId = Object.entries(uuidToMockId).find(([uuid]) => 
+            uuidToMockId[uuid] === p.id
+          )?.[0] || p.id;
+          return !SEED_PROBLEM_IDS.includes(originalId) && !SEED_PROBLEM_IDS.includes(p.id);
+        });
+      }
+
+      return problems;
     },
     staleTime: 1000 * 60 * 2, // Fresh for 2 minutes
     gcTime: 1000 * 60 * 10, // Cache for 10 minutes
