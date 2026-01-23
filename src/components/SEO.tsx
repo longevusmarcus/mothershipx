@@ -9,9 +9,10 @@ interface SEOProps {
 }
 
 const defaults = {
-  title: "MothershipX — Social Market Intelligence Platform & Hackathon Arena",
-  tagline: "Where real-world problems become validated products",
-  description: "MothershipX is a social market intelligence platform and hackathon arena empowering builders to ship useful products and win prizes every day.",
+  title: "MothershipX — Pre-Validated Market Demand & Market Auditions for Builders",
+  tagline: "Lovable unlocks creativity. MothershipX unlocks usefulness.",
+  description:
+    "MothershipX is a market intelligence platform that surfaces pre-validated demand from real user behavior across TikTok, Reddit, YouTube, and more. Builders compete in market auditions to ship products backed by real users, revenue signals, and weekly cash prizes.",
   image: "/og-image.png",
   type: "website" as const,
 };
