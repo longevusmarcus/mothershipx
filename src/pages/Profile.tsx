@@ -1291,16 +1291,6 @@ export default function Profile() {
               </motion.div>
             )}
 
-            {/* Sign out */}
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="w-full h-9 text-xs text-muted-foreground hover:text-destructive justify-start gap-2"
-              onClick={handleSignOut}
-            >
-              <LogOut className="h-3.5 w-3.5" />
-              Sign Out
-            </Button>
           </div>
         </div>
       </div>
