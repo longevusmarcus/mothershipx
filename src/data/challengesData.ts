@@ -55,7 +55,7 @@ export const mockChallenges: DailyChallenge[] = [
     whyRelevant:
       "Couples arguing about chores & decisions is trending on TikTok. 'Who's right' videos get millions of views. People want a neutral AI judge.",
     sources: [
-      { source: "tiktok", metric: "Views this week", value: "500.4k" },
+      { source: "tiktok", metric: "Views this month", value: "500.4k" },
       { source: "google_trends", metric: "Search growth", value: "+340%" },
     ],
     trendGrowth: "+340%",

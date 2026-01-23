@@ -38,7 +38,7 @@ INSERT INTO public.challenges (
   'active',
   630,
   'Couples arguing about chores & decisions is trending on TikTok. ''Who''s right'' videos get millions of views. People want a neutral AI judge.',
-  '[{"source": "tiktok", "metric": "Views this week", "value": "500.4k"}, {"source": "google_trends", "metric": "Search growth", "value": "+340%"}]'::jsonb,
+  '[{"source": "tiktok", "metric": "Views this month", "value": "500.4k"}, {"source": "google_trends", "metric": "Search growth", "value": "+340%"}]'::jsonb,
   '+340%',
   '18-35 couples',
   2
