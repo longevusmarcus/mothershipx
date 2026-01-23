@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Trophy,
   Flame,
@@ -18,6 +18,7 @@ import {
   Users,
   Terminal,
   ArrowRight,
+  ChevronDown,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChallengeCard } from "./ChallengeCard";
@@ -25,6 +26,8 @@ import { useTodayChallenge, usePastChallenges, useChallenges } from "@/hooks/use
 
 export const CommunityChallenges = () => {
   const [activeTab, setActiveTab] = useState("today");
+  const [proofExpanded, setProofExpanded] = useState(true);
+  const [benefitsExpanded, setBenefitsExpanded] = useState(true);
 
   const { data: todaysChallenge, isLoading: loadingToday } = useTodayChallenge();
   const { data: pastChallenges = [], isLoading: loadingPast } = usePastChallenges();
@@ -115,31 +118,54 @@ export const CommunityChallenges = () => {
               <span className="font-mono text-xs text-primary">Required</span>
             </div>
 
-            <div className="flex items-center gap-2 mb-4 font-mono">
-              <span className="text-muted-foreground">&gt;</span>
-              <h3 className="text-lg font-medium tracking-wide">proof-of-ship</h3>
-            </div>
+            <button
+              onClick={() => setProofExpanded(!proofExpanded)}
+              className="w-full flex items-center justify-between group cursor-pointer"
+            >
+              <div className="flex items-center gap-2 font-mono">
+                <span className="text-muted-foreground">&gt;</span>
+                <h3 className="text-lg font-medium tracking-wide">proof-of-ship</h3>
+              </div>
+              <motion.div
+                animate={{ rotate: proofExpanded ? 180 : 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                <ChevronDown className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+              </motion.div>
+            </button>
 
-            <p className="text-sm text-muted-foreground mb-6">
-              Show us you’ve built something real. Only builders who ship enter the arena.
-            </p>
+            <AnimatePresence initial={false}>
+              {proofExpanded && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="overflow-hidden"
+                >
+                  <p className="text-sm text-muted-foreground mb-6 mt-4">
+                    Show us you've built something real. Only builders who ship enter the arena.
+                  </p>
 
-            <div className="space-y-2">
-              {proofRequirements.map((req, i) => (
-                <div key={i} className="flex items-center gap-3 font-mono text-sm">
-                  <span className="text-muted-foreground">&gt;</span>
-                  <req.icon
-                    className={`h-4 w-4 ${req.optional ? "text-muted-foreground/50" : "text-muted-foreground"}`}
-                  />
-                  <span className={req.optional ? "text-muted-foreground" : ""}>{req.label}</span>
-                  <span
-                    className={`text-xs ${req.optional ? "text-muted-foreground/50 italic" : "text-muted-foreground"}`}
-                  >
-                    — {req.desc}
-                  </span>
-                </div>
-              ))}
-            </div>
+                  <div className="space-y-2">
+                    {proofRequirements.map((req, i) => (
+                      <div key={i} className="flex items-center gap-3 font-mono text-sm">
+                        <span className="text-muted-foreground">&gt;</span>
+                        <req.icon
+                          className={`h-4 w-4 ${req.optional ? "text-muted-foreground/50" : "text-muted-foreground"}`}
+                        />
+                        <span className={req.optional ? "text-muted-foreground" : ""}>{req.label}</span>
+                        <span
+                          className={`text-xs ${req.optional ? "text-muted-foreground/50 italic" : "text-muted-foreground"}`}
+                        >
+                          — {req.desc}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Member Benefits Card */}
@@ -149,23 +175,46 @@ export const CommunityChallenges = () => {
               <span className="font-mono text-xs text-success">Unlocked</span>
             </div>
 
-            <div className="flex items-center gap-2 mb-4 font-mono">
-              <span className="text-muted-foreground">&gt;</span>
-              <h3 className="text-lg font-medium tracking-wide">what-you-get</h3>
-            </div>
+            <button
+              onClick={() => setBenefitsExpanded(!benefitsExpanded)}
+              className="w-full flex items-center justify-between group cursor-pointer"
+            >
+              <div className="flex items-center gap-2 font-mono">
+                <span className="text-muted-foreground">&gt;</span>
+                <h3 className="text-lg font-medium tracking-wide">what-you-get</h3>
+              </div>
+              <motion.div
+                animate={{ rotate: benefitsExpanded ? 180 : 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                <ChevronDown className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+              </motion.div>
+            </button>
 
-            <p className="text-sm text-muted-foreground mb-6">
-              Outcomes you earn by joining the Arena and serving real market demand:
-            </p>
+            <AnimatePresence initial={false}>
+              {benefitsExpanded && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="overflow-hidden"
+                >
+                  <p className="text-sm text-muted-foreground mb-6 mt-4">
+                    Outcomes you earn by joining the Arena and serving real market demand:
+                  </p>
 
-            <div className="grid grid-cols-2 gap-2">
-              {memberBenefits.slice(0, 6).map((benefit, i) => (
-                <div key={i} className="flex items-center gap-2 font-mono text-xs">
-                  <span className="text-primary">&gt;</span>
-                  <span>{benefit.label}</span>
-                </div>
-              ))}
-            </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {memberBenefits.slice(0, 6).map((benefit, i) => (
+                      <div key={i} className="flex items-center gap-2 font-mono text-xs">
+                        <span className="text-primary">&gt;</span>
+                        <span>{benefit.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </motion.div>
 
