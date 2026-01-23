@@ -481,12 +481,13 @@ const SubmitSolution = () => {
 
                   {/* AI Judging Info */}
                   <div className="p-4 rounded-lg bg-secondary/30 text-sm">
-                    <p className="font-medium mb-2">How AI judges your build (check your email)</p>
+                    <p className="font-medium mb-1">How your submission is evaluated (check your email)</p>
+                    <p className="text-xs text-muted-foreground mb-3">Evaluation combines automated checks and live market signals.</p>
                     <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-                      <span>• Code quality & aesthetics</span>
-                      <span>• Problem-solution fit</span>
-                      <span>• Creativity & innovation</span>
-                      <span>• Revenue & traction signals</span>
+                      <span>• Problem–solution fit</span>
+                      <span>• Ability to serve real demand</span>
+                      <span>• Early traction</span>
+                      <span>• Product quality & execution</span>
                     </div>
                   </div>
 
@@ -494,26 +495,25 @@ const SubmitSolution = () => {
                   <div className="p-4 rounded-lg border border-border bg-card text-sm space-y-3">
                     <div className="flex items-center gap-2">
                       <div className="h-6 w-6 rounded-full bg-gradient-to-br from-warning/20 to-success/20 flex items-center justify-center">
-                        <span className="text-xs">🏆</span>
+                        <span className="text-xs">🏁</span>
                       </div>
-                      <p className="font-medium">Compete forever on our leaderboards (soon)</p>
+                      <p className="font-medium">Graduate into the live market (soon)</p>
                     </div>
                     <p className="text-xs text-muted-foreground leading-relaxed">
-                      After AI validation, your build enters the permanent leaderboard where it's continuously judged by
-                      the market—real users and revenue signals determine your rank over time.
+                      After validation, your product graduates into a live market where adoption, retention, and revenue determine its position over time.
                     </p>
                     <div className="flex flex-wrap gap-1.5 pt-1">
                       <span className="px-2 py-0.5 rounded-full bg-success/10 text-success text-[10px] font-medium">
-                        Cash Prizes
+                        Cash & revenue rewards
                       </span>
                       <span className="px-2 py-0.5 rounded-full bg-warning/10 text-warning text-[10px] font-medium">
-                        Cashback
+                        Ongoing distribution
                       </span>
                       <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-medium">
-                        Perks
+                        Market placement
                       </span>
                       <span className="px-2 py-0.5 rounded-full bg-secondary text-foreground text-[10px] font-medium">
-                        Glory
+                        Builder reputation
                       </span>
                     </div>
                   </div>
@@ -525,7 +525,7 @@ const SubmitSolution = () => {
                       Back
                     </Button>
                     <Button type="submit" size="sm" disabled={!form.formState.isValid || form.formState.isSubmitting}>
-                      Submit Entry
+                      Submit for Market Evaluation
                       <ArrowRight className="h-4 w-4 ml-1" />
                     </Button>
                   </div>
