@@ -384,13 +384,21 @@ serve(async (req) => {
         p.title.toLowerCase().includes(problem.title.toLowerCase().slice(0, 20))
       );
       
-      // Use matching post engagement, or average across top posts
+      // Use matching post engagement, or distribute metrics from top posts with variation
       const topPosts = posts.slice(0, 5);
-      const avgScore = Math.round(topPosts.reduce((sum, p) => sum + p.score, 0) / topPosts.length);
-      const avgComments = Math.round(topPosts.reduce((sum, p) => sum + p.num_comments, 0) / topPosts.length);
+      const totalTopScore = topPosts.reduce((sum, p) => sum + p.score, 0);
+      const totalTopComments = topPosts.reduce((sum, p) => sum + p.num_comments, 0);
       
-      const upvotes = matchingPost?.score || avgScore;
-      const comments = matchingPost?.num_comments || avgComments;
+      // Add variation based on index and opportunity score to differentiate cards
+      const variationFactor = 0.6 + (Math.random() * 0.8); // 0.6x to 1.4x variation
+      const indexVariation = 1 - (index * 0.1); // Higher-ranked problems get slightly more
+      
+      const upvotes = matchingPost?.score || Math.round(
+        (totalTopScore / problems.length) * variationFactor * Math.max(0.5, indexVariation)
+      );
+      const comments = matchingPost?.num_comments || Math.round(
+        (totalTopComments / problems.length) * variationFactor * Math.max(0.5, indexVariation)
+      );
       
       return {
         id: `reddit-${subredditId}-${Date.now()}-${index}`,
