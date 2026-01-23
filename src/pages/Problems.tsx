@@ -5,21 +5,51 @@ import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
 import { MasonryGrid } from "@/components/MasonryGrid";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { RefreshCw } from "lucide-react";
 import { useProblems } from "@/hooks/useProblems";
 import { useCategories } from "@/hooks/useCategories";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Problems = () => {
   const [searchParams] = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState(initialQuery);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const { isAuthenticated } = useAuth();
   const { hasPremiumAccess, isLoading: subscriptionLoading } = useSubscription();
   const { data: problems = [], isLoading } = useProblems(selectedCategory, isAuthenticated);
   const { data: categories = ["All"] } = useCategories();
+  const queryClient = useQueryClient();
+
+  const handleRefreshData = async () => {
+    setIsRefreshing(true);
+    try {
+      // Clear the search cache to force fresh data on next scan
+      const { error } = await supabase
+        .from('search_cache')
+        .delete()
+        .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all rows
+      
+      if (error) throw error;
+      
+      // Invalidate problems query to refetch
+      await queryClient.invalidateQueries({ queryKey: ['problems'] });
+      
+      toast.success("Cache cleared", { description: "Next scan will fetch fresh data" });
+    } catch (error) {
+      console.error('Failed to refresh:', error);
+      toast.error("Failed to clear cache");
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   // Calculate blur at page level so it doesn't reset on category change
   const shouldBlurExcess = !isAuthenticated || (!hasPremiumAccess && !subscriptionLoading);
@@ -45,11 +75,22 @@ const Problems = () => {
       />
       <div className="space-y-6">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center relative">
           <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">Dashboard</h1>
           <p className="text-sm text-muted-foreground mt-1">
             {filteredProblems.length} pre-validated problems and trends to build for in 2026
           </p>
+          
+          {/* Refresh Button - positioned subtly */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleRefreshData}
+            disabled={isRefreshing}
+            className="absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground h-8 px-2"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+          </Button>
         </motion.div>
 
         {/* Categories */}
