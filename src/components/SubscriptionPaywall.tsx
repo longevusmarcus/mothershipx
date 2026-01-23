@@ -221,16 +221,16 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                               <div>
                                 <p className="text-muted-foreground mb-1.5 font-medium">What you're NOT doing:</p>
                                 <div className="space-y-1 text-muted-foreground/80">
-                                  <p>🚫 paying to browse ideas</p>
-                                  <p>🚫 paying for insights</p>
-                                  <p>🚫 paying for another platform</p>
+                                  <p>🚫 paying to scroll ideas you’ll never ship</p>
+                                  <p>🚫 paying for surface-level insights</p>
+                                  <p>🚫 paying for another passive platform</p>
                                 </div>
                               </div>
                               <div>
                                 <p className="text-foreground mb-1.5 font-medium">What you ARE doing:</p>
                                 <div className="space-y-1 text-foreground/90">
                                   <p>✓ paying to enter pre-validated markets</p>
-                                  <p>✓ paying to compete for validated demand</p>
+                                  <p>✓ paying to compete for pre-validated demand</p>
                                   <p>✓ paying to get distribution + rewards</p>
                                 </div>
                               </div>
