@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { withRateLimit, RateLimitPresets } from "../_shared/rateLimit.ts";
+import { createSubscriptionCheckoutSchema, validateInput, validationErrorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -32,7 +33,15 @@ serve(async (req) => {
   try {
     logStep("Function started");
 
-    const { priceId } = await req.json().catch(() => ({}));
+    const rawBody = await req.json().catch(() => ({}));
+    
+    // Validate input with Zod
+    const validation = validateInput(createSubscriptionCheckoutSchema, rawBody);
+    if (!validation.success) {
+      return validationErrorResponse(validation, corsHeaders);
+    }
+    
+    const { priceId } = validation.data!;
     const finalPriceId = priceId || SUBSCRIPTION_PRICE_ID;
 
     const authHeader = req.headers.get("Authorization")!;

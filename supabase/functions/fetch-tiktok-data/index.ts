@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { fetchTikTokDataSchema, validateInput, validationErrorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -18,7 +19,15 @@ serve(async (req) => {
       throw new Error('APIFY_API_TOKEN not configured');
     }
 
-    const { endpoint = 'dataset' } = await req.json().catch(() => ({}));
+    const rawBody = await req.json().catch(() => ({}));
+    
+    // Validate input with Zod
+    const validation = validateInput(fetchTikTokDataSchema, rawBody);
+    if (!validation.success) {
+      return validationErrorResponse(validation, corsHeaders);
+    }
+    
+    const { endpoint } = validation.data!;
     
     let url: string;
     

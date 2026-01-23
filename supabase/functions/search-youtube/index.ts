@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { searchYouTubeSchema, validateInput, validationErrorResponse } from "../_shared/validation.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -317,9 +318,17 @@ serve(async (req) => {
   }
 
   try {
-    const { channelId } = await req.json();
+    const rawBody = await req.json().catch(() => ({}));
     
-    if (!channelId || !CHANNELS[channelId as keyof typeof CHANNELS]) {
+    // Validate input with Zod
+    const validation = validateInput(searchYouTubeSchema, rawBody);
+    if (!validation.success) {
+      return validationErrorResponse(validation, corsHeaders);
+    }
+    
+    const { channelId } = validation.data!;
+    
+    if (!CHANNELS[channelId as keyof typeof CHANNELS]) {
       return new Response(
         JSON.stringify({ success: false, error: "Invalid channel ID" }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
