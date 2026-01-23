@@ -232,7 +232,7 @@ export default function Terms() {
               If you have any questions about these Terms of Service, please contact us at:
             </p>
             <p className="mt-2">
-              <strong>Email:</strong> legal@mothershipx.io
+              <strong>Email:</strong> support@mothership.io
             </p>
           </section>
         </div>
