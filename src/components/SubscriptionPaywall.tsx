@@ -1,6 +1,19 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, ArrowRight, Check, Zap, Globe, Swords, Users, Trophy, Sparkles, FlaskConical, MessageSquareText, ChevronDown } from "lucide-react";
+import {
+  Loader2,
+  ArrowRight,
+  Check,
+  Zap,
+  Globe,
+  Swords,
+  Users,
+  Trophy,
+  Sparkles,
+  FlaskConical,
+  MessageSquareText,
+  ChevronDown,
+} from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -190,14 +203,11 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                         className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors group mx-auto sm:mx-0"
                       >
                         <span className="underline underline-offset-2 decoration-dashed">Why $29?</span>
-                        <motion.div
-                          animate={{ rotate: showWhyExplainer ? 180 : 0 }}
-                          transition={{ duration: 0.2 }}
-                        >
+                        <motion.div animate={{ rotate: showWhyExplainer ? 180 : 0 }} transition={{ duration: 0.2 }}>
                           <ChevronDown className="h-3 w-3" />
                         </motion.div>
                       </button>
-                      
+
                       <AnimatePresence>
                         {showWhyExplainer && (
                           <motion.div
@@ -219,7 +229,7 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                               <div>
                                 <p className="text-foreground mb-1.5 font-medium">What you ARE doing:</p>
                                 <div className="space-y-1 text-foreground/90">
-                                  <p>✓ paying to enter markets</p>
+                                  <p>✓ paying to enter pre-validated markets</p>
                                   <p>✓ paying to compete for validated demand</p>
                                   <p>✓ paying to get distribution + rewards</p>
                                 </div>
@@ -268,11 +278,10 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                       transition={{ delay: 1, duration: 0.4 }}
                     >
                       <p className="text-center sm:text-left text-xs text-muted-foreground">
-                        Cancel anytime. <span className="text-foreground/80 font-medium">One win pays for the year.</span>
+                        Cancel anytime.{" "}
+                        <span className="text-foreground/80 font-medium">One win pays for the year.</span>
                       </p>
-                      <p className="text-center sm:text-left text-[10px] text-muted-foreground/60">
-                        Secured by Stripe
-                      </p>
+                      <p className="text-center sm:text-left text-[10px] text-muted-foreground/60">Secured by Stripe</p>
                     </motion.div>
                   </div>
 
@@ -302,21 +311,21 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                         <motion.div
                           initial={{ scale: 0, opacity: 0, rotate: -45 }}
                           animate={{ scale: 1, opacity: 1, rotate: 0 }}
-                          transition={{ 
-                            delay: 0.8 + (i * 0.15), 
-                            type: "spring", 
+                          transition={{
+                            delay: 0.8 + i * 0.15,
+                            type: "spring",
                             stiffness: 400,
-                            damping: 15
+                            damping: 15,
                           }}
                         >
                           <motion.div
-                            animate={{ 
+                            animate={{
                               scale: [1, 1.2, 1],
                             }}
-                            transition={{ 
-                              delay: 1.0 + (i * 0.15),
+                            transition={{
+                              delay: 1.0 + i * 0.15,
                               duration: 0.3,
-                              ease: "easeOut"
+                              ease: "easeOut",
                             }}
                           >
                             <Check className="h-4 w-4 text-success shrink-0" />
