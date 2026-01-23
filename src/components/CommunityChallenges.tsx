@@ -169,10 +169,16 @@ export const CommunityChallenges = () => {
                 </AnimatePresence>
               </div>
               <motion.div
-                animate={{ rotate: proofExpanded ? 180 : 0 }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
+                animate={{ 
+                  rotate: proofExpanded ? 180 : 0,
+                  scale: showHint ? [1, 1.2, 1] : 1,
+                }}
+                transition={{ 
+                  rotate: { duration: 0.3, ease: "easeInOut" },
+                  scale: { duration: 0.8, repeat: showHint ? Infinity : 0, repeatDelay: 0.3 }
+                }}
               >
-                <ChevronDown className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                <ChevronDown className={`h-4 w-4 transition-colors ${showHint ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`} />
               </motion.div>
             </button>
 
@@ -238,10 +244,16 @@ export const CommunityChallenges = () => {
                 </AnimatePresence>
               </div>
               <motion.div
-                animate={{ rotate: benefitsExpanded ? 180 : 0 }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
+                animate={{ 
+                  rotate: benefitsExpanded ? 180 : 0,
+                  scale: showHint ? [1, 1.2, 1] : 1,
+                }}
+                transition={{ 
+                  rotate: { duration: 0.3, ease: "easeInOut" },
+                  scale: { duration: 0.8, repeat: showHint ? Infinity : 0, repeatDelay: 0.3 }
+                }}
               >
-                <ChevronDown className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                <ChevronDown className={`h-4 w-4 transition-colors ${showHint ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`} />
               </motion.div>
             </button>
 
