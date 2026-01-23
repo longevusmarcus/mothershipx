@@ -154,7 +154,9 @@ export const CommunityChallenges = () => {
               <h3 className="text-lg font-medium tracking-wide">what-you-get</h3>
             </div>
 
-            <p className="text-sm text-muted-foreground mb-6">Outcomes you earn by serving real market demand:</p>
+            <p className="text-sm text-muted-foreground mb-6">
+              Outcomes you earn by joining the Arena and serving real market demand:
+            </p>
 
             <div className="grid grid-cols-2 gap-2">
               {memberBenefits.slice(0, 6).map((benefit, i) => (
