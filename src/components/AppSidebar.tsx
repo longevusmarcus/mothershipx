@@ -278,16 +278,25 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
         )}
       </div>
 
-      {/* Legal Links - always visible at bottom */}
-      <div className="px-4 pb-3 flex items-center justify-center gap-3 text-[10px] text-muted-foreground/60">
-        <NavLink to="/privacy" className="hover:text-muted-foreground transition-colors">
-          Privacy
-        </NavLink>
-        <span>·</span>
-        <NavLink to="/terms" className="hover:text-muted-foreground transition-colors">
-          Terms
-        </NavLink>
-      </div>
+      {/* Legal Links - only visible when expanded */}
+      <AnimatePresence mode="wait">
+        {(!collapsed || isMobile) && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="px-4 pb-3 flex items-center justify-center gap-3 text-[10px] text-muted-foreground/60"
+          >
+            <NavLink to="/privacy" className="hover:text-muted-foreground transition-colors">
+              Privacy
+            </NavLink>
+            <span>·</span>
+            <NavLink to="/terms" className="hover:text-muted-foreground transition-colors">
+              Terms
+            </NavLink>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AuthModal open={showAuthModal} onOpenChange={setShowAuthModal} />
     </motion.aside>
