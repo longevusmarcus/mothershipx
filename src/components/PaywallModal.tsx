@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, ArrowRight } from "lucide-react";
+import { Loader2, ArrowRight, Sparkles } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabaseClient";
 import { toast } from "sonner";
 import logoIcon from "@/assets/logo-icon.png";
+import { SubscriptionPaywall } from "@/components/SubscriptionPaywall";
 
 interface PaywallModalProps {
   open: boolean;
@@ -29,10 +30,12 @@ export function PaywallModal({
   winnerPrize,
 }: PaywallModalProps) {
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showSubscriptionPaywall, setShowSubscriptionPaywall] = useState(false);
 
   useEffect(() => {
     if (!open) {
       setIsProcessing(false);
+      setShowSubscriptionPaywall(false);
     }
   }, [open]);
 
@@ -133,9 +136,26 @@ export function PaywallModal({
 
               {/* Trust */}
               <p className="text-center text-xs text-muted-foreground/70 mt-4">Secured by Stripe</p>
+
+              {/* Subscription alternative */}
+              <div className="mt-6 pt-4 border-t border-border/50">
+                <button
+                  onClick={() => setShowSubscriptionPaywall(true)}
+                  className="w-full flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+                >
+                  <Sparkles className="h-3 w-3" />
+                  <span>Or unlock everything for $29/mo</span>
+                </button>
+              </div>
             </motion.div>
           </AnimatePresence>
         </div>
+
+        {/* Subscription Paywall */}
+        <SubscriptionPaywall
+          open={showSubscriptionPaywall}
+          onOpenChange={setShowSubscriptionPaywall}
+        />
       </DialogContent>
     </Dialog>
   );
