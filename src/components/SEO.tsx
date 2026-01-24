@@ -9,11 +9,10 @@ interface SEOProps {
 }
 
 const defaults = {
-  title: "MothershipX — Verified Market Demand Builders Compete to Serve",
-  tagline:
-    "A Verified Database of Problems, Trends, and Unmet Needs for Builders to Compete On. Lovable unlocks creativity. MothershipX unlocks usefulness.",
+  title: "MothershipX — Know what to build. Compete to ship it. Earn rewards from real outcomes",
+  tagline: "Build useful apps, websites, and digital products—powered by real market demand.",
   description:
-    "MothershipX helps builders spot emerging problems and behavior trends, compete to build the best solution, and earn rewards backed by real outcome.",
+    "MothershipX helps builders discover real problems and trends with proven momentum across TikTok, Reddit, YouTube, and more, compete to build the best solutions, and earn rewards based on real outcomes.",
   image: "/og-image.png",
   type: "website" as const,
 };

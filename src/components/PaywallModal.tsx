@@ -40,8 +40,10 @@ export function PaywallModal({
     setIsProcessing(true);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
       if (!session) {
         toast.error("Please sign in to continue");
         setIsProcessing(false);
@@ -62,7 +64,7 @@ export function PaywallModal({
       }
 
       const { url } = response.data;
-      
+
       if (url) {
         // Redirect to Stripe checkout
         window.location.href = url;
@@ -81,12 +83,7 @@ export function PaywallModal({
       <DialogContent className="sm:max-w-md p-0 gap-0 border-border bg-card overflow-hidden">
         <div className="p-8">
           <AnimatePresence mode="wait">
-            <motion.div
-              key="paywall"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
+            <motion.div key="paywall" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
               {/* Logo */}
               <div className="flex justify-center mb-6">
                 <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
@@ -96,9 +93,7 @@ export function PaywallModal({
 
               {/* Title */}
               <div className="text-center mb-8">
-                <h2 className="text-xl font-semibold tracking-tight mb-2">
-                  Enter the Arena
-                </h2>
+                <h2 className="text-xl font-semibold tracking-tight mb-2">Enter the Arena</h2>
                 <p className="text-sm text-muted-foreground">
                   Join "{challengeTitle}" as {joinType === "solo" ? "Solo" : "Team"}
                 </p>
@@ -109,9 +104,7 @@ export function PaywallModal({
                 <div className="inline-flex items-baseline">
                   <span className="text-4xl font-semibold tracking-tight">$5</span>
                 </div>
-                <p className="text-xs text-muted-foreground mt-2">
-                  One-time entry fee
-                </p>
+                <p className="text-xs text-muted-foreground mt-2">One-time entry fee</p>
               </div>
 
               {/* Prize info */}
@@ -127,11 +120,7 @@ export function PaywallModal({
               </div>
 
               {/* CTA */}
-              <Button
-                onClick={handlePaymentClick}
-                disabled={isProcessing}
-                className="w-full h-11"
-              >
+              <Button onClick={handlePaymentClick} disabled={isProcessing} className="w-full h-11">
                 {isProcessing ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
@@ -143,9 +132,7 @@ export function PaywallModal({
               </Button>
 
               {/* Trust */}
-              <p className="text-center text-xs text-muted-foreground/70 mt-4">
-                Secured by Stripe • Webhook verified
-              </p>
+              <p className="text-center text-xs text-muted-foreground/70 mt-4">Secured by Stripe</p>
             </motion.div>
           </AnimatePresence>
         </div>
