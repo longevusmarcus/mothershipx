@@ -80,17 +80,24 @@ export function MyProblems() {
   });
 
   // Group submissions by problem_id
-  const submissionsByProblem = mySubmissions.reduce((acc, sub) => {
-    if (sub.problem_id) {
-      if (!acc[sub.problem_id]) acc[sub.problem_id] = [];
-      acc[sub.problem_id].push(sub);
-    }
-    return acc;
-  }, {} as Record<string, Submission[]>);
+  const submissionsByProblem = mySubmissions.reduce(
+    (acc, sub) => {
+      if (sub.problem_id) {
+        if (!acc[sub.problem_id]) acc[sub.problem_id] = [];
+        acc[sub.problem_id].push(sub);
+      }
+      return acc;
+    },
+    {} as Record<string, Submission[]>,
+  );
 
   const handleLeaveProblem = async (problemId: string) => {
     if (!user) return;
-    const { error } = await supabase.from("problem_builders").delete().eq("user_id", user.id).eq("problem_id", problemId);
+    const { error } = await supabase
+      .from("problem_builders")
+      .delete()
+      .eq("user_id", user.id)
+      .eq("problem_id", problemId);
     if (error) {
       toast.error("Failed to leave");
       return;
@@ -106,7 +113,7 @@ export function MyProblems() {
         <CardHeader className="py-3 px-4">
           <CardTitle className="text-sm flex items-center gap-2">
             <Lightbulb className="h-4 w-4" />
-            My Problems
+            My Signals
           </CardTitle>
         </CardHeader>
         <CardContent className="flex justify-center py-6">
@@ -122,9 +129,11 @@ export function MyProblems() {
         <div className="flex items-center justify-between gap-2">
           <CardTitle className="text-sm flex items-center gap-2">
             <Lightbulb className="h-4 w-4 text-primary" />
-            My Problems
+            My Signals
             {myProblems.length > 0 && (
-              <Badge variant="secondary" className="text-[10px]">{myProblems.length}</Badge>
+              <Badge variant="secondary" className="text-[10px]">
+                {myProblems.length}
+              </Badge>
             )}
           </CardTitle>
           <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 px-2" onClick={() => navigate("/problems")}>
@@ -137,7 +146,7 @@ export function MyProblems() {
         {myProblems.length === 0 ? (
           <div className="text-center py-6">
             <Lightbulb className="h-8 w-8 mx-auto mb-2 text-muted-foreground/30" />
-            <p className="text-xs text-muted-foreground mb-3">No problems joined yet</p>
+            <p className="text-xs text-muted-foreground mb-3">No signals joined yet</p>
             <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => navigate("/problems")}>
               Explore
             </Button>
@@ -147,7 +156,7 @@ export function MyProblems() {
             {myProblems.map((item, index) => {
               const problem = item.problem;
               const problemBuilds = submissionsByProblem[problem.id] || [];
-              
+
               return (
                 <motion.div
                   key={item.id}
@@ -157,17 +166,24 @@ export function MyProblems() {
                   className="rounded-lg bg-muted/30 border border-border/50 overflow-hidden"
                 >
                   {/* Problem Header */}
-                  <div 
+                  <div
                     onClick={() => navigate(`/problems/${problem.id}`)}
                     className="p-3 hover:bg-muted/50 cursor-pointer transition-colors"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5 flex-wrap mb-1">
-                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">{problem.category}</Badge>
-                          <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${
-                            problem.sentiment === "rising" ? "bg-success/10 text-success border-success/30" : "bg-muted"
-                          }`}>
+                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                            {problem.category}
+                          </Badge>
+                          <Badge
+                            variant="outline"
+                            className={`text-[10px] px-1.5 py-0 ${
+                              problem.sentiment === "rising"
+                                ? "bg-success/10 text-success border-success/30"
+                                : "bg-muted"
+                            }`}
+                          >
                             <TrendingUp className="h-2.5 w-2.5 mr-0.5" />
                             {problem.sentiment}
                           </Badge>
@@ -181,7 +197,12 @@ export function MyProblems() {
                         </div>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => e.stopPropagation()}>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6"
+                              onClick={(e) => e.stopPropagation()}
+                            >
                               <LogOut className="h-3 w-3" />
                             </Button>
                           </AlertDialogTrigger>
@@ -192,7 +213,12 @@ export function MyProblems() {
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleLeaveProblem(problem.id)} className="bg-destructive text-destructive-foreground">Leave</AlertDialogAction>
+                              <AlertDialogAction
+                                onClick={() => handleLeaveProblem(problem.id)}
+                                className="bg-destructive text-destructive-foreground"
+                              >
+                                Leave
+                              </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
                         </AlertDialog>
@@ -208,33 +234,33 @@ export function MyProblems() {
                         My Builds
                       </div>
                       {problemBuilds.map((build) => (
-                        <div 
+                        <div
                           key={build.id}
                           className="flex items-center justify-between gap-2 p-2 rounded-md bg-muted/40 hover:bg-muted/60 transition-colors"
                         >
                           <div className="min-w-0 flex-1">
                             <p className="text-xs font-medium truncate">{build.product_name}</p>
                             <div className="flex items-center gap-2 mt-0.5">
-                              <Badge 
-                                variant="outline" 
+                              <Badge
+                                variant="outline"
                                 className={`text-[9px] px-1 py-0 ${
-                                  build.status === 'validated' ? 'bg-success/10 text-success border-success/30' :
-                                  build.status === 'winner' ? 'bg-warning/10 text-warning border-warning/30' :
-                                  'bg-muted'
+                                  build.status === "validated"
+                                    ? "bg-success/10 text-success border-success/30"
+                                    : build.status === "winner"
+                                      ? "bg-warning/10 text-warning border-warning/30"
+                                      : "bg-muted"
                                 }`}
                               >
                                 {build.status}
                               </Badge>
                               {build.total_score !== null && (
-                                <span className="text-[10px] text-muted-foreground">
-                                  Score: {build.total_score}
-                                </span>
+                                <span className="text-[10px] text-muted-foreground">Score: {build.total_score}</span>
                               )}
                             </div>
                           </div>
-                          <a 
-                            href={build.product_url} 
-                            target="_blank" 
+                          <a
+                            href={build.product_url}
+                            target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
                             className="shrink-0 h-6 w-6 flex items-center justify-center rounded hover:bg-muted transition-colors"
