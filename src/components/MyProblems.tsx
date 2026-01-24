@@ -113,7 +113,7 @@ export function MyProblems() {
         <CardHeader className="py-3 px-4">
           <CardTitle className="text-sm flex items-center gap-2">
             <Lightbulb className="h-4 w-4" />
-            My Signals
+            Joined Signals
           </CardTitle>
         </CardHeader>
         <CardContent className="flex justify-center py-6">
@@ -129,7 +129,7 @@ export function MyProblems() {
         <div className="flex items-center justify-between gap-2">
           <CardTitle className="text-sm flex items-center gap-2">
             <Lightbulb className="h-4 w-4 text-primary" />
-            My Signals
+            Joined Signals
             {myProblems.length > 0 && (
               <Badge variant="secondary" className="text-[10px]">
                 {myProblems.length}
