@@ -37,8 +37,8 @@ export default function Terms() {
           <section>
             <h2 className="text-xl font-semibold mt-8 mb-4">2. Description of Services</h2>
             <p>
-              MothershipX is a market intelligence platform that helps indie builders discover verified market demand
-              and participate in competitive market auditions ("Arena"). Our Services include:
+              MothershipX is a market intelligence platform that helps indie builders discover AI-validated market
+              demand and participate in competitive market auditions ("Arena"). Our Services include:
             </p>
             <ul className="list-disc pl-6 mt-2 space-y-1">
               <li>Market problem discovery and analysis tools</li>
