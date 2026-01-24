@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { icon: Plus, label: "New Search", path: "/" },
   { icon: Swords, label: "Arena", path: "/challenges", isCenter: true },
-  { icon: LayoutGrid, label: "Dashboard", path: "/problems" },
+  { icon: LayoutGrid, label: "Signals", path: "/problems" },
 ];
 
 export function MobileBottomNav() {
@@ -27,15 +27,12 @@ export function MobileBottomNav() {
                 <div
                   className={cn(
                     "h-10 w-10 rounded-full flex items-center justify-center -mt-5",
-                    "bg-gradient-to-br from-warning to-destructive"
+                    "bg-gradient-to-br from-warning to-destructive",
                   )}
                 >
                   <Swords className="h-5 w-5 text-white" />
                 </div>
-                <span className={cn(
-                  "text-[10px]",
-                  isActive ? "text-foreground font-medium" : "text-muted-foreground"
-                )}>
+                <span className={cn("text-[10px]", isActive ? "text-foreground font-medium" : "text-muted-foreground")}>
                   {item.label}
                 </span>
               </NavLink>
@@ -48,16 +45,11 @@ export function MobileBottomNav() {
               to={item.path}
               className={cn(
                 "flex flex-col items-center justify-center flex-1 h-full gap-0.5",
-                isActive ? "text-foreground" : "text-muted-foreground"
+                isActive ? "text-foreground" : "text-muted-foreground",
               )}
             >
               <item.icon className="h-5 w-5" strokeWidth={1.5} />
-              <span className={cn(
-                "text-[10px]",
-                isActive && "font-medium"
-              )}>
-                {item.label}
-              </span>
+              <span className={cn("text-[10px]", isActive && "font-medium")}>{item.label}</span>
             </NavLink>
           );
         })}
