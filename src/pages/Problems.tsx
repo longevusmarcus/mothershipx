@@ -78,6 +78,7 @@ const Problems = () => {
           <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">Live Signals</h1>
           <p className="text-sm text-muted-foreground mt-1">
             {filteredProblems.length} validated pain points and trends with real momentum to build for in Q1 2026
+            (continuously updated)
           </p>
 
           {/* Refresh Button - hidden on mobile */}
