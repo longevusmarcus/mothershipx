@@ -2,7 +2,7 @@
 
 ## What It Does
 
-**MothershipX** is a market intelligence platform for indie builders. It helps users discover verified market demand by aggregating real signals from TikTok, Reddit, YouTube, and Google Trends.
+**MothershipX** is a market intelligence platform for indie builders. It helps users discover validated market demand by aggregating real signals from TikTok, Reddit, YouTube, and Google Trends.
 
 ### Key Features
 
