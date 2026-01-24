@@ -297,7 +297,7 @@ export const CommunityChallenges = () => {
               <Calendar className="h-3.5 w-3.5" />3 Weekly Challenges
             </span>
             <ArrowRight className="h-3 w-3 hidden sm:block" />
-            <span>$5 Entry</span>
+            <span>$5 Entry ($0 for premium users)</span>
             <ArrowRight className="h-3 w-3 hidden sm:block" />
             <span className="flex items-center gap-2">
               <Flame className="h-3.5 w-3.5" />
