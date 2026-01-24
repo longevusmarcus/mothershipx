@@ -230,7 +230,7 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                                 <p className="text-foreground mb-1.5 font-medium">What you ARE doing:</p>
                                 <div className="space-y-1 text-foreground/90">
                                   <p>✓ paying to enter real markets</p>
-                                  <p>✓ paying to compete for verified demand</p>
+                                  <p>✓ paying to compete for validated demand</p>
                                   <p>✓ paying to get distribution + rewards</p>
                                 </div>
                               </div>
