@@ -22,11 +22,19 @@ export function ThemeToggle() {
     setIsDark(newIsDark);
     localStorage.setItem("theme", newIsDark ? "dark" : "light");
     
+    // Add transition class for smooth animation
+    document.documentElement.classList.add("theme-transition");
+    
     if (newIsDark) {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
     }
+    
+    // Remove transition class after animation completes
+    setTimeout(() => {
+      document.documentElement.classList.remove("theme-transition");
+    }, 300);
   };
 
   return (
