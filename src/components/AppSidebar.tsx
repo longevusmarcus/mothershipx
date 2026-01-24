@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import logoIcon from "@/assets/logo-icon.png";
 import builderTweet from "@/assets/builder-tweet.png";
+import lovableLogo from "@/assets/lovable-logo.png";
 import {
   HoverCard,
   HoverCardContent,
@@ -244,7 +245,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
                 "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/50 transition-colors",
               )}
             >
-              <Hammer className="h-4 w-4 shrink-0" />
+              <img src={lovableLogo} alt="Builder" className="h-4 w-4 shrink-0 object-contain" />
               <AnimatePresence mode="wait">
                 {(!collapsed || isMobile) && (
                   <motion.div
@@ -264,7 +265,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
             side="right" 
             align="start" 
             sideOffset={12}
-            className="w-auto p-0 border-0 bg-transparent shadow-2xl"
+            className="w-auto p-0 border-0 bg-transparent shadow-2xl z-[100]"
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95, x: -10 }}
