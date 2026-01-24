@@ -69,13 +69,13 @@ const Problems = () => {
   return (
     <AppLayout>
       <SEO
-        title="Dashboard"
+        title="Live Signals"
         description="Discover real problems and trends from 10+ data sources. Find market opportunities and build solutions."
       />
       <div className="space-y-6">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center relative">
-          <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">Dashboard</h1>
+          <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">Live Signals</h1>
           <p className="text-sm text-muted-foreground mt-1">
             {filteredProblems.length} verified problems and trends to build for in 2026
           </p>
