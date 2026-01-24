@@ -1,5 +1,15 @@
 import { motion } from "framer-motion";
-import { TrendingUp, Eye, Bookmark, Share2, Sparkles, CheckCircle2, AlertCircle, ArrowUp, MessageSquare } from "lucide-react";
+import {
+  TrendingUp,
+  Eye,
+  Bookmark,
+  Share2,
+  Sparkles,
+  CheckCircle2,
+  AlertCircle,
+  ArrowUp,
+  MessageSquare,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -54,8 +64,10 @@ const detectSourceType = (result: SearchResult): "reddit" | "youtube" | "tiktok"
   if (result.id?.startsWith("reddit-")) return "reddit";
   if (result.id?.startsWith("yt-")) return "youtube";
   // Check both 'source' and 'name' keys for compatibility
-  if (result.sources?.some(s => (s as any).name === "reddit" || s.source?.toLowerCase() === "reddit")) return "reddit";
-  if (result.sources?.some(s => (s as any).name === "youtube" || s.source?.toLowerCase() === "youtube")) return "youtube";
+  if (result.sources?.some((s) => (s as any).name === "reddit" || s.source?.toLowerCase() === "reddit"))
+    return "reddit";
+  if (result.sources?.some((s) => (s as any).name === "youtube" || s.source?.toLowerCase() === "youtube"))
+    return "youtube";
   return "default";
 };
 
@@ -76,7 +88,7 @@ export function SearchResultCard({ result, delay = 0, isLatest = false, compact 
           className={cn(
             "rounded-lg border bg-card p-3 transition-all h-full",
             isLatest ? "border-primary/50" : "border-border",
-            result.isViral && "ring-1 ring-primary/20"
+            result.isViral && "ring-1 ring-primary/20",
           )}
         >
           {/* Compact Header */}
@@ -92,7 +104,7 @@ export function SearchResultCard({ result, delay = 0, isLatest = false, compact 
 
           {/* Title */}
           <h3 className="font-medium text-xs mb-1 line-clamp-2">{result.title}</h3>
-          
+
           {/* Stats - source-specific */}
           <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
             {sourceType === "reddit" ? (
@@ -113,9 +125,7 @@ export function SearchResultCard({ result, delay = 0, isLatest = false, compact 
               </span>
             )}
             {result.isViral && (
-              <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px] px-1 py-0">
-                Viral
-              </Badge>
+              <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px] px-1 py-0">Viral</Badge>
             )}
           </div>
         </div>
@@ -135,7 +145,7 @@ export function SearchResultCard({ result, delay = 0, isLatest = false, compact 
         className={cn(
           "rounded-xl border bg-card p-5 transition-all",
           isLatest ? "border-primary/50 shadow-glow" : "border-border",
-          result.isViral && "ring-1 ring-primary/20"
+          result.isViral && "ring-1 ring-primary/20",
         )}
       >
         {/* Header */}
@@ -241,14 +251,14 @@ export function SearchResultCard({ result, delay = 0, isLatest = false, compact 
         {result.addedToLibrary && (
           <div className="flex items-center gap-2 text-xs text-success pt-2 border-t border-border">
             <CheckCircle2 className="h-3.5 w-3.5" />
-            <span>Added to Dashboard</span>
+            <span>Added to your Signals dashboard</span>
           </div>
         )}
-        
+
         {result.isViral && !result.addedToLibrary && (
           <div className="flex items-center gap-2 text-xs text-primary pt-2 border-t border-border">
             <Sparkles className="h-3.5 w-3.5" />
-            <span>Meets virality criteria - Adding to Dashboard...</span>
+            <span>Meets virality criteria - Adding to Signals...</span>
           </div>
         )}
       </div>
