@@ -491,6 +491,9 @@ const ProblemDetail = () => {
               problemPainPoints={problem.painPoints}
               problemCategory={problem.category}
               opportunityScore={problem.opportunityScore}
+              demandVelocity={problem.demandVelocity}
+              competitionGap={problem.competitionGap}
+              sources={problem.sources}
             />
             <FitVerificationPanel {...mockTopSolution} />
           </TabsContent>
