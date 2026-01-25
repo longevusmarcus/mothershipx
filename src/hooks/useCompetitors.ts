@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabaseClient";
-
+import { getDbProblemId } from "@/data/marketIntelligence";
 export interface Competitor {
   name: string;
   url: string;
@@ -41,9 +41,12 @@ export function useCompetitors(
   const query = useQuery({
     queryKey: ["competitors", problemId, problemTitle],
     queryFn: async (): Promise<{ competitors: Competitor[]; threatLevel: ThreatLevel }> => {
+      // Convert mock ID to database UUID if needed
+      const dbProblemId = getDbProblemId(problemId);
+      
       const { data, error } = await supabase.functions.invoke<CompetitorResponse>("search-competitors", {
         body: { 
-          problemId,
+          problemId: dbProblemId,
           problemTitle,
           niche,
           opportunityScore,
