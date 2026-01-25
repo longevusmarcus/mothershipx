@@ -49,15 +49,16 @@ Your response must be a JSON object with these exact fields:
 - keyFeatures: Array of exactly 4 features, each with "title" and "description"
 - techStack: Suggested tech stack array (3-5 technologies)
 - monetization: Specific pricing strategy with numbers
-- marketFit: Integer 0-100 representing how well this solution fits the problem. Consider: direct pain point coverage, market timing, competitive differentiation, monetization clarity, and technical feasibility. Be realistic - most ideas should score 60-85.
+- marketFit: Integer 0-100 representing how well this solution fits the problem. Be realistic - most ideas should score 60-85.
 - landingPage: Object for a professional landing page with:
   - hero: { headline (10 words max), subheadline (clear value), ctaText (action verb) }
-  - features: Array of EXACTLY 3 features with "title" and "description"
+  - features: Array of EXACTLY 3 features with "title" and "description" - these must be the 3 most important product capabilities
   - stats: Array of EXACTLY 3 impressive but realistic metrics with "value" and "label"
-  - howItWorks: Array of EXACTLY 3 steps with "step" (1,2,3), "title", and "description" - these MUST be specific to how THIS product actually works
+  - howItWorks: Array of EXACTLY 3 steps with "step" (1,2,3), "title", and "description" - these MUST be specific to how THIS product actually works, NOT generic steps like "Sign Up" or "Configure". Describe the actual user journey with this specific product.
   - testimonial: { quote (realistic, specific to the product), author (realistic name), role (job title at realistic company) }
+  - productDescription: A brief description (under 30 words) of what the product interface/dashboard looks like for generating a mockup image
 
-Be bold and specific.`;
+Be bold and specific. Every step in howItWorks should describe a real action users take with THIS product.`;
 
   const userPrompt = `Generate a startup idea for this problem:
 
@@ -79,6 +80,11 @@ Create something that:
 2. Has clear monetization from day one
 3. Can be built as MVP in 2-4 weeks
 4. Has a defensible moat
+
+CRITICAL REQUIREMENTS:
+- landingPage.features MUST have exactly 3 items
+- landingPage.howItWorks MUST have exactly 3 product-specific steps (NOT generic like "Sign Up", "Configure", "Launch")
+- Example good howItWorks: For a social analysis app: [{"step":"1","title":"Upload Screenshots","description":"Share your group chat screenshots securely"},{"step":"2","title":"Get Analysis","description":"AI identifies social dynamics and exclusion patterns"},{"step":"3","title":"Receive Scripts","description":"Get personalized conversation starters to rebuild connections"}]
 
 Return ONLY valid JSON.`;
 
@@ -115,16 +121,17 @@ Return ONLY valid JSON.`;
 
     const idea = JSON.parse(jsonStr);
 
-    // Validate and ensure required fields
+    // Validate and ensure exactly 3 features
     if (!idea.landingPage.features || idea.landingPage.features.length < 3) {
       idea.landingPage.features = idea.keyFeatures?.slice(0, 3) || [
-        { title: "Core Feature", description: "The main capability" },
-        { title: "Smart Insights", description: "AI-powered recommendations" },
-        { title: "Easy Integration", description: "Works seamlessly" }
+        { title: "Core Feature", description: "The main capability that solves your problem" },
+        { title: "Smart Insights", description: "Data-driven recommendations tailored to you" },
+        { title: "Easy Integration", description: "Works with your existing tools seamlessly" }
       ];
     }
     idea.landingPage.features = idea.landingPage.features.slice(0, 3);
 
+    // Ensure stats exist
     if (!idea.landingPage.stats || idea.landingPage.stats.length < 3) {
       idea.landingPage.stats = [
         { value: "10x", label: "Faster Results" },
@@ -133,24 +140,83 @@ Return ONLY valid JSON.`;
       ];
     }
 
-    if (!idea.landingPage.howItWorks || idea.landingPage.howItWorks.length < 3) {
+    // Validate howItWorks - if it contains generic steps, regenerate based on the product
+    const genericSteps = ["sign up", "configure", "launch", "get started", "create account"];
+    const hasGenericSteps = idea.landingPage.howItWorks?.some((step: any) => 
+      genericSteps.some(g => step.title?.toLowerCase().includes(g))
+    );
+
+    if (!idea.landingPage.howItWorks || idea.landingPage.howItWorks.length < 3 || hasGenericSteps) {
+      const productName = idea.name || "the product";
       idea.landingPage.howItWorks = [
-        { step: "1", title: "Connect", description: "Link your data" },
-        { step: "2", title: "Analyze", description: "Get AI insights" },
-        { step: "3", title: "Act", description: "Execute recommendations" }
+        { 
+          step: "1", 
+          title: `Connect to ${productName}`, 
+          description: `Link your existing data or upload the information ${productName} needs to analyze` 
+        },
+        { 
+          step: "2", 
+          title: "Get Instant Analysis", 
+          description: idea.keyFeatures?.[0]?.description || "Receive AI-powered insights tailored to your situation" 
+        },
+        { 
+          step: "3", 
+          title: "Take Action", 
+          description: idea.keyFeatures?.[1]?.description || "Execute on recommendations with guided next steps" 
+        }
       ];
     }
 
+    // Ensure marketFit exists and is valid
     if (typeof idea.marketFit !== 'number' || idea.marketFit < 0 || idea.marketFit > 100) {
-      idea.marketFit = Math.round(60 + Math.min(30, problem.opportunity_score / 3));
+      const baseScore = 60;
+      const opportunityBonus = Math.min(15, problem.opportunity_score / 10);
+      const demandBonus = problem.demand_velocity ? Math.min(10, problem.demand_velocity / 10) : 5;
+      const gapBonus = problem.competition_gap ? Math.min(10, problem.competition_gap / 10) : 5;
+      idea.marketFit = Math.round(Math.min(95, baseScore + opportunityBonus + demandBonus + gapBonus));
     }
 
+    // Ensure testimonial exists
     if (!idea.landingPage.testimonial?.quote) {
       idea.landingPage.testimonial = {
-        quote: `${idea.name} changed how I approach ${problem.category.toLowerCase()}.`,
+        quote: `${idea.name} completely changed how I approach ${problem.category.toLowerCase()}. The insights are incredible.`,
         author: "Sarah Chen",
-        role: "Product Manager"
+        role: "Product Manager at Stripe"
       };
+    }
+
+    // Generate product mockup image using Nano banana
+    console.log(`Generating mockup for ${idea.name}...`);
+    const mockupPrompt = `A clean, minimal, modern SaaS dashboard interface for "${idea.name}" - ${idea.landingPage.productDescription || idea.description}. Dark theme with subtle gradients, professional UI design, data visualization elements, glassmorphism effects, ultra modern aesthetic. High resolution product screenshot mockup on a dark background.`;
+
+    try {
+      const imageResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash-image",
+          messages: [
+            { role: "user", content: mockupPrompt }
+          ],
+          modalities: ["image", "text"]
+        }),
+      });
+
+      if (imageResponse.ok) {
+        const imageData = await imageResponse.json();
+        const mockupImage = imageData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+        if (mockupImage) {
+          idea.landingPage.mockupImage = mockupImage;
+          console.log(`✓ Mockup generated for ${idea.name}`);
+        }
+      } else {
+        console.log(`Mockup generation failed for ${idea.name}, continuing without image`);
+      }
+    } catch (imgError) {
+      console.log(`Mockup generation error for ${idea.name}:`, imgError);
     }
 
     return idea;
