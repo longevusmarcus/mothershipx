@@ -40,6 +40,7 @@ const App = () => (
                 <Routes>
                   {/* Redirect root to Signals page */}
                   <Route path="/" element={<Navigate to="/problems" replace />} />
+                  <Route path="/search" element={<Index />} />
                   <Route path="/problems" element={<Problems />} />
                   <Route path="/problems/:id" element={<ProblemDetail />} />
                   <Route path="/challenges" element={<Challenges />} />
