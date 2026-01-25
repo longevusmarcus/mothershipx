@@ -1,28 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  X,
-  Loader2,
-  Sparkles,
-  Zap,
-  Shield,
-  Brain,
-  Rocket,
-  Target,
-  Users,
-  DollarSign,
-  Code,
-  ExternalLink,
-  Check,
-  Lightbulb,
-  TrendingUp,
-  Star,
-  ArrowRight,
-  Globe,
-  Heart,
-  Clock,
-  Award,
-} from "lucide-react";
+import { X, Loader2, ArrowRight, ArrowUpRight, Circle } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -51,7 +29,7 @@ interface GeneratedIdea {
   description: string;
   uniqueValue: string;
   targetPersona: string;
-  keyFeatures: Array<{ icon: string; title: string; description: string }>;
+  keyFeatures: Array<{ title: string; description: string }>;
   techStack: string[];
   monetization: string;
   landingPage: {
@@ -60,40 +38,16 @@ interface GeneratedIdea {
       subheadline: string;
       ctaText: string;
     };
-    features: Array<{ icon: string; title: string; description: string }>;
+    features: Array<{ title: string; description: string }>;
+    stats: Array<{ value: string; label: string }>;
+    howItWorks: Array<{ step: string; title: string; description: string }>;
     testimonial: {
       quote: string;
       author: string;
-      avatar: string;
+      role: string;
     };
-    gradient: string;
   };
 }
-
-const iconMap: Record<string, React.FC<{ className?: string }>> = {
-  Zap,
-  Shield,
-  Brain,
-  Rocket,
-  Target,
-  Users,
-  DollarSign,
-  Code,
-  Sparkles,
-  Lightbulb,
-  TrendingUp,
-  Star,
-  Globe,
-  Heart,
-  Clock,
-  Award,
-  Check,
-};
-
-const getIcon = (iconName: string) => {
-  const IconComponent = iconMap[iconName] || Sparkles;
-  return IconComponent;
-};
 
 export function AIIdeaGeneratorModal({
   open,
@@ -140,7 +94,7 @@ export function AIIdeaGeneratorModal({
       }
 
       setIdea(data.idea);
-      toast.success("AI idea generated!");
+      toast.success("Idea generated");
     } catch (err) {
       console.error("Error generating idea:", err);
       toast.error(err instanceof Error ? err.message : "Failed to generate idea");
@@ -176,7 +130,7 @@ ${idea.monetization}`;
       },
       {
         onSuccess: () => {
-          toast.success("Idea saved to Solutions Lab!");
+          toast.success("Idea saved to Solutions Lab");
           onOpenChange(false);
         },
       }
@@ -185,49 +139,48 @@ ${idea.monetization}`;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden p-0">
-        <DialogHeader className="p-6 pb-0">
-          <DialogTitle className="flex items-center gap-2 text-lg">
-            <Sparkles className="h-5 w-5 text-primary" />
-            AI Idea Generator
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden p-0 gap-0">
+        <DialogHeader className="p-6 pb-4 border-b border-border/50">
+          <DialogTitle className="text-sm font-medium tracking-wide uppercase text-muted-foreground">
+            Idea Generator
           </DialogTitle>
         </DialogHeader>
 
-        <div className="p-6 pt-4 overflow-y-auto max-h-[calc(90vh-100px)]">
+        <div className="overflow-y-auto max-h-[calc(90vh-80px)]">
           {!idea && !isGenerating && (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-center py-12"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="p-12 text-center"
             >
-              <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                <Lightbulb className="h-10 w-10 text-primary" />
+              <div className="max-w-md mx-auto">
+                <h3 className="text-2xl font-light tracking-tight mb-3">
+                  Generate Product Idea
+                </h3>
+                <p className="text-sm text-muted-foreground mb-8 leading-relaxed">
+                  AI will analyze the problem context, market signals, and competition 
+                  to create a unique, actionable product concept.
+                </p>
+                <div className="flex items-center justify-center gap-6 text-xs text-muted-foreground mb-10">
+                  <span>{problemCategory}</span>
+                  <span className="w-1 h-1 rounded-full bg-border" />
+                  <span>{opportunityScore}% opportunity</span>
+                  {demandVelocity && (
+                    <>
+                      <span className="w-1 h-1 rounded-full bg-border" />
+                      <span>{demandVelocity}% demand</span>
+                    </>
+                  )}
+                </div>
+                <Button 
+                  onClick={generateIdea} 
+                  size="lg" 
+                  className="px-8 h-12 text-sm font-normal"
+                >
+                  Generate
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
               </div>
-              <h3 className="text-xl font-semibold mb-2">Generate a Brilliant Idea</h3>
-              <p className="text-muted-foreground max-w-md mx-auto mb-6">
-                Our AI will analyze the problem context, pain points, market signals, and competition
-                to create a unique, actionable product idea with a stunning landing page design.
-              </p>
-              <div className="flex flex-wrap justify-center gap-2 mb-8">
-                <Badge variant="secondary" className="gap-1">
-                  <Target className="h-3 w-3" />
-                  {problemCategory}
-                </Badge>
-                <Badge variant="secondary" className="gap-1">
-                  <TrendingUp className="h-3 w-3" />
-                  {opportunityScore}% Opportunity
-                </Badge>
-                {demandVelocity && (
-                  <Badge variant="secondary" className="gap-1">
-                    <Zap className="h-3 w-3" />
-                    {demandVelocity}% Demand
-                  </Badge>
-                )}
-              </div>
-              <Button onClick={generateIdea} size="lg" className="gap-2 px-8">
-                <Sparkles className="h-4 w-4" />
-                Generate AI Idea
-              </Button>
             </motion.div>
           )}
 
@@ -235,80 +188,80 @@ ${idea.monetization}`;
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-center py-16"
+              className="p-16 text-center"
             >
-              <div className="relative w-24 h-24 mx-auto mb-6">
-                <div className="absolute inset-0 rounded-full border-4 border-primary/20" />
-                <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Brain className="h-8 w-8 text-primary animate-pulse" />
-                </div>
+              <div className="w-8 h-8 mx-auto mb-6">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
               </div>
-              <h3 className="text-lg font-medium mb-2">Generating Your Idea...</h3>
               <p className="text-sm text-muted-foreground">
-                Analyzing market signals and crafting something brilliant
+                Analyzing market signals...
               </p>
             </motion.div>
           )}
 
           {idea && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-              <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="w-full mb-6">
-                  <TabsTrigger value="overview" className="flex-1">
-                    Overview
-                  </TabsTrigger>
-                  <TabsTrigger value="landing" className="flex-1">
-                    Landing Page
-                  </TabsTrigger>
-                </TabsList>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <div className="px-6 pt-4">
+                  <TabsList className="w-full h-11 p-1 bg-muted/30">
+                    <TabsTrigger value="overview" className="flex-1 text-sm font-normal">
+                      Overview
+                    </TabsTrigger>
+                    <TabsTrigger value="landing" className="flex-1 text-sm font-normal">
+                      Landing Page
+                    </TabsTrigger>
+                  </TabsList>
+                </div>
 
-                <TabsContent value="overview" className="space-y-6 mt-0">
-                  {/* Hero Section */}
-                  <div className="p-6 rounded-xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20">
+                <TabsContent value="overview" className="p-6 pt-6 mt-0 space-y-8">
+                  {/* Header */}
+                  <div>
                     <div className="flex items-start justify-between gap-4 mb-4">
                       <div>
-                        <h2 className="text-2xl font-bold mb-1">{idea.name}</h2>
+                        <h2 className="text-2xl font-light tracking-tight mb-2">{idea.name}</h2>
                         <p className="text-muted-foreground">{idea.tagline}</p>
                       </div>
-                      <Badge className="bg-primary/20 text-primary border-0">AI Generated</Badge>
+                      <Badge variant="outline" className="text-xs font-normal shrink-0">
+                        AI Generated
+                      </Badge>
                     </div>
-                    <p className="text-foreground/80">{idea.description}</p>
+                    <p className="text-sm text-foreground/80 leading-relaxed">
+                      {idea.description}
+                    </p>
                   </div>
 
-                  {/* Key Info Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="p-4 rounded-lg border border-border/50 bg-background">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Target className="h-4 w-4 text-primary" />
-                        <span className="text-sm font-medium">Unique Value</span>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{idea.uniqueValue}</p>
+                  {/* Key Info */}
+                  <div className="grid grid-cols-2 gap-6">
+                    <div>
+                      <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+                        Unique Value
+                      </p>
+                      <p className="text-sm leading-relaxed">{idea.uniqueValue}</p>
                     </div>
-                    <div className="p-4 rounded-lg border border-border/50 bg-background">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Users className="h-4 w-4 text-primary" />
-                        <span className="text-sm font-medium">Target Persona</span>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{idea.targetPersona}</p>
+                    <div>
+                      <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+                        Target Persona
+                      </p>
+                      <p className="text-sm leading-relaxed">{idea.targetPersona}</p>
                     </div>
-                    <div className="p-4 rounded-lg border border-border/50 bg-background">
-                      <div className="flex items-center gap-2 mb-2">
-                        <DollarSign className="h-4 w-4 text-primary" />
-                        <span className="text-sm font-medium">Monetization</span>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{idea.monetization}</p>
+                    <div>
+                      <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+                        Monetization
+                      </p>
+                      <p className="text-sm leading-relaxed">{idea.monetization}</p>
                     </div>
-                    <div className="p-4 rounded-lg border border-border/50 bg-background">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Code className="h-4 w-4 text-primary" />
-                        <span className="text-sm font-medium">Tech Stack</span>
-                      </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+                        Tech Stack
+                      </p>
                       <div className="flex flex-wrap gap-1.5">
                         {idea.techStack.map((tech) => (
-                          <Badge key={tech} variant="secondary" className="text-xs">
+                          <span 
+                            key={tech} 
+                            className="text-xs px-2 py-1 rounded-md bg-muted/50 text-muted-foreground"
+                          >
                             {tech}
-                          </Badge>
+                          </span>
                         ))}
                       </div>
                     </div>
@@ -316,131 +269,225 @@ ${idea.monetization}`;
 
                   {/* Features */}
                   <div>
-                    <h3 className="font-medium mb-3 flex items-center gap-2">
-                      <Sparkles className="h-4 w-4" />
+                    <p className="text-xs uppercase tracking-wider text-muted-foreground mb-4">
                       Key Features
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {idea.keyFeatures.map((feature, i) => {
-                        const Icon = getIcon(feature.icon);
-                        return (
-                          <div
-                            key={i}
-                            className="p-3 rounded-lg border border-border/50 bg-background flex gap-3"
-                          >
-                            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                              <Icon className="h-4 w-4 text-primary" />
-                            </div>
-                            <div>
-                              <h4 className="text-sm font-medium">{feature.title}</h4>
-                              <p className="text-xs text-muted-foreground">{feature.description}</p>
-                            </div>
-                          </div>
-                        );
-                      })}
+                    </p>
+                    <div className="grid grid-cols-2 gap-4">
+                      {idea.keyFeatures.map((feature, i) => (
+                        <div key={i} className="p-4 rounded-lg border border-border/50">
+                          <p className="text-sm font-medium mb-1">{feature.title}</p>
+                          <p className="text-xs text-muted-foreground leading-relaxed">
+                            {feature.description}
+                          </p>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </TabsContent>
 
                 <TabsContent value="landing" className="mt-0">
                   {/* Landing Page Preview */}
-                  <div className="rounded-xl overflow-hidden border border-border/50 bg-background">
-                    {/* Hero */}
-                    <div
-                      className={`p-8 md:p-12 text-center bg-gradient-to-br ${idea.landingPage.gradient || "from-primary to-primary/70"} text-white`}
-                    >
-                      <motion.h1
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-3xl md:text-4xl font-bold mb-4"
-                      >
-                        {idea.landingPage.hero.headline}
-                      </motion.h1>
-                      <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                        className="text-lg text-white/80 mb-6 max-w-2xl mx-auto"
-                      >
-                        {idea.landingPage.hero.subheadline}
-                      </motion.p>
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                      >
-                        <Button size="lg" variant="secondary" className="gap-2 font-semibold">
-                          {idea.landingPage.hero.ctaText}
-                          <ArrowRight className="h-4 w-4" />
-                        </Button>
-                      </motion.div>
-                    </div>
+                  <div className="bg-background">
+                    {/* Hero Section */}
+                    <section className="relative px-8 py-20 overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-b from-muted/30 to-transparent" />
+                      <div className="relative max-w-3xl mx-auto text-center">
+                        <motion.h1
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="text-4xl md:text-5xl font-light tracking-tight mb-6 leading-[1.1]"
+                        >
+                          {idea.landingPage.hero.headline}
+                        </motion.h1>
+                        <motion.p
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.1 }}
+                          className="text-lg text-muted-foreground mb-10 max-w-xl mx-auto leading-relaxed"
+                        >
+                          {idea.landingPage.hero.subheadline}
+                        </motion.p>
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.2 }}
+                          className="flex items-center justify-center gap-4"
+                        >
+                          <Button size="lg" className="h-12 px-8 text-sm font-normal">
+                            {idea.landingPage.hero.ctaText}
+                            <ArrowRight className="h-4 w-4 ml-2" />
+                          </Button>
+                          <Button variant="ghost" size="lg" className="h-12 px-6 text-sm font-normal">
+                            Learn more
+                          </Button>
+                        </motion.div>
+                      </div>
+                    </section>
+
+                    {/* Stats Section */}
+                    {idea.landingPage.stats && idea.landingPage.stats.length > 0 && (
+                      <section className="px-8 py-16 border-y border-border/50">
+                        <div className="max-w-4xl mx-auto">
+                          <div className="grid grid-cols-3 gap-8">
+                            {idea.landingPage.stats.map((stat, i) => (
+                              <motion.div
+                                key={i}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: i * 0.1 }}
+                                className="text-center"
+                              >
+                                <p className="text-3xl font-light tracking-tight mb-1">
+                                  {stat.value}
+                                </p>
+                                <p className="text-xs text-muted-foreground uppercase tracking-wider">
+                                  {stat.label}
+                                </p>
+                              </motion.div>
+                            ))}
+                          </div>
+                        </div>
+                      </section>
+                    )}
 
                     {/* Features Section */}
-                    <div className="p-8 md:p-12">
-                      <h2 className="text-xl font-semibold text-center mb-8">
-                        Everything you need to succeed
-                      </h2>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {idea.landingPage.features.map((feature, i) => {
-                          const Icon = getIcon(feature.icon);
-                          return (
+                    <section className="px-8 py-20">
+                      <div className="max-w-4xl mx-auto">
+                        <div className="text-center mb-16">
+                          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4">
+                            Features
+                          </p>
+                          <h2 className="text-2xl font-light tracking-tight">
+                            Everything you need
+                          </h2>
+                        </div>
+                        <div className="grid grid-cols-3 gap-8">
+                          {idea.landingPage.features.map((feature, i) => (
                             <motion.div
                               key={i}
                               initial={{ opacity: 0, y: 20 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: i * 0.1 }}
-                              className="text-center p-4"
+                              className="text-center"
                             >
-                              <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-primary/10 flex items-center justify-center">
-                                <Icon className="h-6 w-6 text-primary" />
+                              <div className="w-10 h-10 mx-auto mb-4 rounded-full border border-border/50 flex items-center justify-center">
+                                <span className="text-xs text-muted-foreground">
+                                  {String(i + 1).padStart(2, '0')}
+                                </span>
                               </div>
-                              <h3 className="font-medium mb-2">{feature.title}</h3>
-                              <p className="text-sm text-muted-foreground">{feature.description}</p>
+                              <h3 className="text-sm font-medium mb-2">{feature.title}</h3>
+                              <p className="text-xs text-muted-foreground leading-relaxed">
+                                {feature.description}
+                              </p>
                             </motion.div>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    {/* Testimonial */}
-                    <div className="p-8 md:p-12 bg-muted/30 border-t border-border/50">
-                      <div className="max-w-2xl mx-auto text-center">
-                        <div className="flex justify-center gap-1 mb-4">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className="h-5 w-5 fill-primary text-primary" />
                           ))}
                         </div>
-                        <blockquote className="text-lg italic mb-4">
+                      </div>
+                    </section>
+
+                    {/* How It Works Section */}
+                    {idea.landingPage.howItWorks && idea.landingPage.howItWorks.length > 0 && (
+                      <section className="px-8 py-20 bg-muted/20">
+                        <div className="max-w-3xl mx-auto">
+                          <div className="text-center mb-16">
+                            <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4">
+                              Process
+                            </p>
+                            <h2 className="text-2xl font-light tracking-tight">
+                              How it works
+                            </h2>
+                          </div>
+                          <div className="space-y-8">
+                            {idea.landingPage.howItWorks.map((step, i) => (
+                              <motion.div
+                                key={i}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: i * 0.1 }}
+                                className="flex gap-6 items-start"
+                              >
+                                <div className="w-8 h-8 rounded-full bg-foreground text-background flex items-center justify-center text-xs shrink-0">
+                                  {step.step}
+                                </div>
+                                <div className="pt-1">
+                                  <h3 className="text-sm font-medium mb-1">{step.title}</h3>
+                                  <p className="text-xs text-muted-foreground leading-relaxed">
+                                    {step.description}
+                                  </p>
+                                </div>
+                              </motion.div>
+                            ))}
+                          </div>
+                        </div>
+                      </section>
+                    )}
+
+                    {/* Testimonial Section */}
+                    <section className="px-8 py-20 border-t border-border/50">
+                      <div className="max-w-2xl mx-auto text-center">
+                        <blockquote className="text-xl font-light leading-relaxed mb-6 italic">
                           "{idea.landingPage.testimonial.quote}"
                         </blockquote>
-                        <div className="flex items-center justify-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-sm font-medium">
-                            {idea.landingPage.testimonial.avatar}
-                          </div>
-                          <span className="text-sm text-muted-foreground">
+                        <div>
+                          <p className="text-sm font-medium">
                             {idea.landingPage.testimonial.author}
-                          </span>
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {idea.landingPage.testimonial.role}
+                          </p>
                         </div>
                       </div>
-                    </div>
+                    </section>
+
+                    {/* CTA Section */}
+                    <section className="px-8 py-20 bg-foreground text-background">
+                      <div className="max-w-2xl mx-auto text-center">
+                        <h2 className="text-2xl font-light tracking-tight mb-4">
+                          Ready to get started?
+                        </h2>
+                        <p className="text-sm text-background/60 mb-8">
+                          Join thousands of users who are already transforming their workflow.
+                        </p>
+                        <Button 
+                          variant="secondary" 
+                          size="lg" 
+                          className="h-12 px-8 text-sm font-normal"
+                        >
+                          {idea.landingPage.hero.ctaText}
+                          <ArrowUpRight className="h-4 w-4 ml-2" />
+                        </Button>
+                      </div>
+                    </section>
                   </div>
                 </TabsContent>
               </Tabs>
 
               {/* Actions */}
-              <div className="flex items-center justify-between pt-6 border-t border-border/50 mt-6">
-                <Button variant="outline" onClick={generateIdea} disabled={isGenerating}>
-                  <Sparkles className="h-4 w-4 mr-2" />
+              <div className="flex items-center justify-between p-6 border-t border-border/50 bg-muted/20">
+                <Button 
+                  variant="ghost" 
+                  onClick={generateIdea} 
+                  disabled={isGenerating}
+                  className="text-sm font-normal"
+                >
                   Regenerate
                 </Button>
-                <div className="flex gap-2">
-                  <Button variant="ghost" onClick={() => onOpenChange(false)}>
+                <div className="flex gap-3">
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => onOpenChange(false)}
+                    className="text-sm font-normal"
+                  >
                     Cancel
                   </Button>
-                  <Button onClick={saveIdea} disabled={createSolution.isPending}>
-                    {createSolution.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                    <Check className="h-4 w-4 mr-2" />
+                  <Button 
+                    onClick={saveIdea} 
+                    disabled={createSolution.isPending}
+                    className="text-sm font-normal"
+                  >
+                    {createSolution.isPending && (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    )}
                     Save to Solutions Lab
                   </Button>
                 </div>

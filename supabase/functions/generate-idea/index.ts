@@ -36,76 +36,49 @@ serve(async (req) => {
 
     console.log("Generating AI idea for:", problemTitle);
 
-    // Build comprehensive prompt with all dashboard context
-    const systemPrompt = `You are an elite startup product strategist and designer. Your task is to generate a highly innovative, market-ready product idea that directly solves the given problem. You must think like a Y Combinator partner evaluating ideas.
+    const systemPrompt = `You are a senior product strategist at a top VC firm. Generate a startup idea that is genuinely innovative and addresses the problem directly. Think like a Y Combinator partner evaluating ideas.
 
 Your response must be a JSON object with these exact fields:
-- name: Catchy, memorable product name (2-3 words max)
-- tagline: One-line value proposition (under 10 words)
-- description: 2-3 sentence product description
-- uniqueValue: What makes this different from competitors
-- targetPersona: Specific user persona (be precise)
-- keyFeatures: Array of 4-5 key features with icons
-- techStack: Suggested tech stack array
-- monetization: Revenue model suggestion
-- landingPage: Object with hero, features, testimonial sections for elegant landing page
+- name: Short, memorable product name (2-3 words max, no generic AI prefixes)
+- tagline: One-line value proposition (under 8 words, punchy)
+- description: 2-3 sentence product description, clear and direct
+- uniqueValue: What makes this different from competitors (be specific)
+- targetPersona: Specific user persona with demographics
+- keyFeatures: Array of exactly 4 features, each with "title" and "description" (no icons)
+- techStack: Suggested tech stack array (3-5 technologies)
+- monetization: Specific pricing strategy with numbers
+- landingPage: Object for a professional landing page with:
+  - hero: { headline (10 words max, no fluff), subheadline (clear value), ctaText (action verb) }
+  - features: Array of 3 features with "title" and "description" only
+  - stats: Array of 3 impressive stats with "value" and "label" (use realistic projections)
+  - howItWorks: Array of 3 steps with "step" (1,2,3), "title", and "description"
+  - testimonial: { quote (realistic, specific), author (name), role (title and company) }
 
-Be bold, creative, and think of solutions that could genuinely disrupt the market.`;
+Be bold and specific. No generic phrases like "leverage AI" or "streamline workflow". Every word should earn its place.`;
 
-    const userPrompt = `Generate a brilliant product idea for this problem:
+    const userPrompt = `Generate a startup idea for this problem:
 
 **Problem:** ${problemTitle}
 **Category:** ${problemCategory}
 **Niche:** ${niche}
-**Market Opportunity Score:** ${opportunityScore}/100
+**Opportunity Score:** ${opportunityScore}/100
 **Demand Velocity:** ${demandVelocity || 'N/A'}%
 **Competition Gap:** ${competitionGap || 'N/A'}%
 
-**Pain Points Users Are Experiencing:**
-${painPoints?.map((p, i) => `${i + 1}. ${p}`).join('\n') || 'General frustration with current solutions'}
+**Pain Points:**
+${painPoints?.map((p, i) => `${i + 1}. ${p}`).join('\n') || 'Users are frustrated with current solutions'}
 
-**Trend Sources:**
-${sources?.map(s => `- ${s.source}: ${s.metric || s.trend || 'Active discussion'}`).join('\n') || 'Multiple social platforms showing interest'}
+**Market Signals:**
+${sources?.map(s => `- ${s.source}: ${s.metric || s.trend || 'Active discussion'}`).join('\n') || 'Growing interest across platforms'}
 
-Create a product that:
-1. Directly addresses the core pain points
-2. Has a clear path to monetization
-3. Could be built as an MVP in 2-4 weeks
-4. Has viral/network effects potential
-5. Is differentiated from obvious solutions
+Create something that:
+1. Directly solves the core pain points
+2. Has clear monetization from day one
+3. Can be built as MVP in 2-4 weeks
+4. Has a defensible moat
+5. Is different from obvious solutions
 
-Return ONLY valid JSON matching this schema:
-{
-  "name": "ProductName",
-  "tagline": "Short punchy tagline",
-  "description": "2-3 sentence description of the product",
-  "uniqueValue": "What makes this genuinely different",
-  "targetPersona": "Specific persona description",
-  "keyFeatures": [
-    { "icon": "Zap", "title": "Feature 1", "description": "Brief description" },
-    { "icon": "Shield", "title": "Feature 2", "description": "Brief description" },
-    { "icon": "Brain", "title": "Feature 3", "description": "Brief description" },
-    { "icon": "Rocket", "title": "Feature 4", "description": "Brief description" }
-  ],
-  "techStack": ["React", "Supabase", "OpenAI"],
-  "monetization": "Freemium with $X/mo pro tier",
-  "landingPage": {
-    "hero": {
-      "headline": "Bold headline that hooks",
-      "subheadline": "Supporting text that explains the value",
-      "ctaText": "Get Started Free"
-    },
-    "features": [
-      { "icon": "Sparkles", "title": "Feature title", "description": "Feature description" }
-    ],
-    "testimonial": {
-      "quote": "Sample testimonial quote",
-      "author": "Name, Role",
-      "avatar": "initials"
-    },
-    "gradient": "from-violet-600 to-indigo-600"
-  }
-}`;
+Return ONLY valid JSON.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -145,20 +118,40 @@ Return ONLY valid JSON matching this schema:
 
     console.log("AI response received, parsing...");
 
-    // Extract JSON from response (handle markdown code blocks)
+    // Extract JSON from response
     let jsonStr = content;
     const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
     if (jsonMatch) {
       jsonStr = jsonMatch[1];
     }
 
-    // Clean and parse JSON
     jsonStr = jsonStr.trim();
     if (jsonStr.startsWith("```")) {
       jsonStr = jsonStr.replace(/```json?\n?/g, "").replace(/```/g, "");
     }
 
     const idea = JSON.parse(jsonStr);
+
+    // Ensure all required fields exist with fallbacks
+    if (!idea.landingPage.stats) {
+      idea.landingPage.stats = [
+        { value: "10x", label: "Faster Results" },
+        { value: "90%", label: "User Satisfaction" },
+        { value: "24/7", label: "Available" }
+      ];
+    }
+    
+    if (!idea.landingPage.howItWorks) {
+      idea.landingPage.howItWorks = [
+        { step: "1", title: "Sign Up", description: "Create your account in seconds" },
+        { step: "2", title: "Configure", description: "Set up your preferences" },
+        { step: "3", title: "Launch", description: "Start seeing results immediately" }
+      ];
+    }
+
+    if (!idea.landingPage.testimonial.role) {
+      idea.landingPage.testimonial.role = "Early Adopter";
+    }
 
     console.log("Successfully generated idea:", idea.name);
 
