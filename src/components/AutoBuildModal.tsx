@@ -195,7 +195,7 @@ export function AutoBuildModal({ open, onOpenChange }: AutoBuildModalProps) {
                 
                 <WaitlistForm 
                   feature="builds" 
-                  buttonText="Get Early Access"
+                  buttonText="Join Waitlist"
                   variant="default"
                   className="justify-center"
                 />
