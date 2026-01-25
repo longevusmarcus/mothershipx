@@ -52,7 +52,7 @@ export function WelcomeChatbot() {
             <span className="font-medium">MothershipX</span>
             <span className="text-muted-foreground text-xs">(SuperLovable)</span>
             <span className="text-muted-foreground">=</span>
-            <span className="text-foreground">validation + competition + rewards</span>
+            <span className="text-foreground">signals + arena + rewards</span>
           </div>
           <div className="flex items-center gap-2 text-sm">
             <span className="font-medium">Lovable</span>
@@ -63,8 +63,8 @@ export function WelcomeChatbot() {
 
         {/* Description */}
         <p className="text-sm leading-relaxed text-foreground pt-1">
-          We’re empowering builders like you to continuously create useful digital apps, websites and digital products
-          at the speed of thought—backed by real demand and rewarded for impact.
+          We’re empowering builders like you to continuously ship useful digital apps, websites and digital products at
+          the speed of thought—backed by real demand and rewarded for impact.
         </p>
       </div>
     );
