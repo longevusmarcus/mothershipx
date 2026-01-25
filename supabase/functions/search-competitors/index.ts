@@ -179,6 +179,8 @@ async function searchHackerNews(problemTitle: string, niche: string | undefined,
     serpUrl.searchParams.set("num", "15");
     serpUrl.searchParams.set("gl", "us");
     serpUrl.searchParams.set("hl", "en");
+    // Filter to last 12 months only
+    serpUrl.searchParams.set("tbs", "qdr:y");
     
     const response = await fetch(serpUrl.toString());
     
@@ -192,91 +194,67 @@ async function searchHackerNews(problemTitle: string, niche: string | undefined,
     
     console.log("SERP HN results:", organicResults.length);
     
-    const seenDomains = new Set<string>();
+    const seenUrls = new Set<string>();
     
     for (const result of organicResults) {
       if (!result.link || !result.title) continue;
       
-      // Skip HN discussion pages, we want the linked products
+      // We want actual HN discussion pages - use them directly as the URL
       if (result.link.includes("news.ycombinator.com/item")) {
-        // Extract product info from the HN result
+        const hnUrl = result.link;
+        
+        // Skip duplicates
+        if (seenUrls.has(hnUrl)) continue;
+        seenUrls.add(hnUrl);
+        
         const title = result.title || "";
         const snippet = result.snippet || "";
         
         // Look for "Show HN:" prefix which indicates a product launch
         const isShowHN = title.toLowerCase().includes("show hn");
         
-        // Try to extract any mentioned URL from snippet
-        const urlMatch = snippet.match(/https?:\/\/[^\s]+/);
-        let productUrl = urlMatch ? urlMatch[0] : null;
+        // Calculate rating based on HN presence (being on HN indicates traction)
+        let rating = 45; // Base rating for HN presence
         
-        // If no URL in snippet, try to infer from title
-        if (!productUrl && isShowHN) {
-          // Show HN posts often have the product name after the colon
-          const afterShowHN = title.replace(/show hn:?\s*/i, "").trim();
-          const productName = afterShowHN.split(/[-–—]|\s{2,}/)[0].trim().toLowerCase();
-          
-          // Common startup domains
-          const possibleDomains = [".io", ".com", ".app", ".ai", ".co"];
-          for (const ext of possibleDomains) {
-            const cleanName = productName.replace(/[^a-z0-9]/g, "");
-            if (cleanName.length > 2) {
-              productUrl = `https://${cleanName}${ext}`;
-              break;
-            }
-          }
+        // Boost for "Show HN" (product launch)
+        if (isShowHN) rating += 15;
+        
+        // Boost for certain keywords indicating success
+        const textLower = (title + " " + snippet).toLowerCase();
+        if (textLower.includes("launched") || textLower.includes("launch")) rating += 10;
+        if (textLower.includes("users") || textLower.includes("customers")) rating += 10;
+        if (textLower.includes("revenue") || textLower.includes("mrr")) rating += 10;
+        if (textLower.includes("funding") || textLower.includes("raised")) rating += 15;
+        
+        rating = Math.min(90, rating);
+        
+        let ratingLabel: string;
+        if (rating >= 80) ratingLabel = "Major Player";
+        else if (rating >= 60) ratingLabel = "Established";
+        else if (rating >= 40) ratingLabel = "Growing";
+        else ratingLabel = "Emerging";
+        
+        // Extract name from title - clean up "Show HN:" prefix if present
+        let name = title.replace(/show hn:?\s*/i, "").trim();
+        // Take just the first part before any separator
+        name = name.split(/[-–—|:]/)[0].trim();
+        // Limit length
+        if (name.length > 40) {
+          name = name.substring(0, 37) + "...";
         }
         
-        if (!productUrl) continue;
+        competitors.push({
+          name,
+          url: hnUrl, // Use the actual HN thread URL
+          description: snippet || title,
+          rating,
+          ratingLabel,
+          position: competitors.length + 1,
+          isNew: true,
+          source: "hackernews",
+        });
         
-        try {
-          const urlObj = new URL(productUrl);
-          const domain = urlObj.hostname.toLowerCase().replace("www.", "");
-          const baseDomain = domain.split(".").slice(-2).join(".");
-          
-          if (seenDomains.has(baseDomain)) continue;
-          seenDomains.add(baseDomain);
-          
-          // Calculate rating based on HN presence (being on HN indicates traction)
-          let rating = 45; // Base rating for HN presence
-          
-          // Boost for "Show HN" (product launch)
-          if (isShowHN) rating += 15;
-          
-          // Boost for certain keywords indicating success
-          const textLower = (title + " " + snippet).toLowerCase();
-          if (textLower.includes("launched") || textLower.includes("launch")) rating += 10;
-          if (textLower.includes("users") || textLower.includes("customers")) rating += 10;
-          if (textLower.includes("revenue") || textLower.includes("mrr")) rating += 10;
-          if (textLower.includes("funding") || textLower.includes("raised")) rating += 15;
-          
-          rating = Math.min(90, rating);
-          
-          let ratingLabel: string;
-          if (rating >= 80) ratingLabel = "Major Player";
-          else if (rating >= 60) ratingLabel = "Established";
-          else if (rating >= 40) ratingLabel = "Growing";
-          else ratingLabel = "Emerging";
-          
-          // Extract company name from domain
-          let name = baseDomain.split(".")[0];
-          name = name.charAt(0).toUpperCase() + name.slice(1);
-          
-          competitors.push({
-            name,
-            url: productUrl,
-            description: `${title} - Found on Hacker News`,
-            rating,
-            ratingLabel,
-            position: competitors.length + 1,
-            isNew: true,
-            source: "hackernews",
-          });
-          
-          if (competitors.length >= 5) break;
-        } catch {
-          continue;
-        }
+        if (competitors.length >= 5) break;
       }
     }
     
