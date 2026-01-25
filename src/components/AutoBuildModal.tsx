@@ -233,10 +233,10 @@ export function AutoBuildModal({ open, onOpenChange, signal }: AutoBuildModalPro
                   </span>
                 </div>
                 
-                <h3 className="text-lg font-light text-foreground mb-2">
+                <h3 className="text-lg font-light text-white mb-2">
                   {waitlistTitle}
                 </h3>
-                <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
+                <p className="text-sm text-white/60 mb-6 max-w-md mx-auto">
                   {waitlistDescription}
                 </p>
                 
