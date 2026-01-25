@@ -289,13 +289,13 @@ ${idea.monetization}`;
                   {/* Landing Page Preview */}
                   <div className="bg-background">
                     {/* Hero Section */}
-                    <section className="relative px-8 py-20 overflow-hidden">
+                    <section className="relative px-6 py-16 overflow-hidden">
                       <div className="absolute inset-0 bg-gradient-to-b from-muted/30 to-transparent" />
-                      <div className="relative max-w-3xl mx-auto text-center">
+                      <div className="relative max-w-2xl mx-auto text-center">
                         <motion.h1
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="text-4xl md:text-5xl font-light tracking-tight mb-6 leading-[1.1]"
+                          className="text-3xl font-light tracking-tight mb-4 leading-[1.1]"
                         >
                           {idea.landingPage.hero.headline}
                         </motion.h1>
@@ -303,7 +303,7 @@ ${idea.monetization}`;
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.1 }}
-                          className="text-lg text-muted-foreground mb-10 max-w-xl mx-auto leading-relaxed"
+                          className="text-sm text-muted-foreground mb-8 max-w-md mx-auto leading-relaxed"
                         >
                           {idea.landingPage.hero.subheadline}
                         </motion.p>
@@ -311,13 +311,13 @@ ${idea.monetization}`;
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.2 }}
-                          className="flex items-center justify-center gap-4"
+                          className="flex items-center justify-center gap-3"
                         >
-                          <Button size="lg" className="h-12 px-8 text-sm font-normal">
+                          <Button size="default" className="h-10 px-6 text-sm font-normal">
                             {idea.landingPage.hero.ctaText}
                             <ArrowRight className="h-4 w-4 ml-2" />
                           </Button>
-                          <Button variant="ghost" size="lg" className="h-12 px-6 text-sm font-normal">
+                          <Button variant="ghost" size="default" className="h-10 px-4 text-sm font-normal">
                             Learn more
                           </Button>
                         </motion.div>
@@ -325,58 +325,60 @@ ${idea.monetization}`;
                     </section>
 
                     {/* Stats Section */}
-                    {idea.landingPage.stats && idea.landingPage.stats.length > 0 && (
-                      <section className="px-8 py-16 border-y border-border/50">
-                        <div className="max-w-4xl mx-auto">
-                          <div className="grid grid-cols-3 gap-8">
-                            {idea.landingPage.stats.map((stat, i) => (
-                              <motion.div
-                                key={i}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: i * 0.1 }}
-                                className="text-center"
-                              >
-                                <p className="text-3xl font-light tracking-tight mb-1">
-                                  {stat.value}
-                                </p>
-                                <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                                  {stat.label}
-                                </p>
-                              </motion.div>
-                            ))}
-                          </div>
-                        </div>
-                      </section>
-                    )}
-
-                    {/* Features Section */}
-                    <section className="px-8 py-20">
-                      <div className="max-w-4xl mx-auto">
-                        <div className="text-center mb-16">
-                          <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4">
-                            Features
-                          </p>
-                          <h2 className="text-2xl font-light tracking-tight">
-                            Everything you need
-                          </h2>
-                        </div>
-                        <div className="grid grid-cols-3 gap-8">
-                          {idea.landingPage.features.map((feature, i) => (
+                    <section className="px-6 py-12 border-y border-border/50">
+                      <div className="max-w-2xl mx-auto">
+                        <div className="grid grid-cols-3 gap-6">
+                          {(idea.landingPage.stats || [
+                            { value: "10x", label: "Faster" },
+                            { value: "90%", label: "Satisfaction" },
+                            { value: "24/7", label: "Available" }
+                          ]).map((stat, i) => (
                             <motion.div
                               key={i}
-                              initial={{ opacity: 0, y: 20 }}
+                              initial={{ opacity: 0, y: 10 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: i * 0.1 }}
                               className="text-center"
                             >
-                              <div className="w-10 h-10 mx-auto mb-4 rounded-full border border-border/50 flex items-center justify-center">
-                                <span className="text-xs text-muted-foreground">
+                              <p className="text-2xl font-light tracking-tight mb-0.5">
+                                {stat.value}
+                              </p>
+                              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                                {stat.label}
+                              </p>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </div>
+                    </section>
+
+                    {/* Features Section */}
+                    <section className="px-6 py-14">
+                      <div className="max-w-2xl mx-auto">
+                        <div className="text-center mb-10">
+                          <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
+                            Features
+                          </p>
+                          <h2 className="text-xl font-light tracking-tight">
+                            Everything you need
+                          </h2>
+                        </div>
+                        <div className="grid grid-cols-3 gap-6">
+                          {(idea.landingPage.features || idea.keyFeatures.slice(0, 3)).map((feature, i) => (
+                            <motion.div
+                              key={i}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: i * 0.1 }}
+                              className="text-center"
+                            >
+                              <div className="w-9 h-9 mx-auto mb-3 rounded-full border border-border/50 flex items-center justify-center">
+                                <span className="text-[10px] text-muted-foreground">
                                   {String(i + 1).padStart(2, '0')}
                                 </span>
                               </div>
-                              <h3 className="text-sm font-medium mb-2">{feature.title}</h3>
-                              <p className="text-xs text-muted-foreground leading-relaxed">
+                              <h3 className="text-xs font-medium mb-1.5">{feature.title}</h3>
+                              <p className="text-[11px] text-muted-foreground leading-relaxed">
                                 {feature.description}
                               </p>
                             </motion.div>
@@ -386,72 +388,74 @@ ${idea.monetization}`;
                     </section>
 
                     {/* How It Works Section */}
-                    {idea.landingPage.howItWorks && idea.landingPage.howItWorks.length > 0 && (
-                      <section className="px-8 py-20 bg-muted/20">
-                        <div className="max-w-3xl mx-auto">
-                          <div className="text-center mb-16">
-                            <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4">
-                              Process
-                            </p>
-                            <h2 className="text-2xl font-light tracking-tight">
-                              How it works
-                            </h2>
-                          </div>
-                          <div className="space-y-8">
-                            {idea.landingPage.howItWorks.map((step, i) => (
-                              <motion.div
-                                key={i}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: i * 0.1 }}
-                                className="flex gap-6 items-start"
-                              >
-                                <div className="w-8 h-8 rounded-full bg-foreground text-background flex items-center justify-center text-xs shrink-0">
-                                  {step.step}
-                                </div>
-                                <div className="pt-1">
-                                  <h3 className="text-sm font-medium mb-1">{step.title}</h3>
-                                  <p className="text-xs text-muted-foreground leading-relaxed">
-                                    {step.description}
-                                  </p>
-                                </div>
-                              </motion.div>
-                            ))}
-                          </div>
+                    <section className="px-6 py-14 bg-muted/20">
+                      <div className="max-w-2xl mx-auto">
+                        <div className="text-center mb-10">
+                          <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
+                            Process
+                          </p>
+                          <h2 className="text-xl font-light tracking-tight">
+                            How it works
+                          </h2>
                         </div>
-                      </section>
-                    )}
+                        <div className="space-y-5">
+                          {(idea.landingPage.howItWorks || [
+                            { step: "1", title: "Sign Up", description: "Create your free account in seconds" },
+                            { step: "2", title: "Configure", description: "Set up your preferences and connect your tools" },
+                            { step: "3", title: "Launch", description: "Start seeing results immediately" }
+                          ]).map((step, i) => (
+                            <motion.div
+                              key={i}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: i * 0.1 }}
+                              className="flex gap-4 items-start"
+                            >
+                              <div className="w-7 h-7 rounded-full bg-foreground text-background flex items-center justify-center text-[10px] shrink-0">
+                                {step.step}
+                              </div>
+                              <div className="pt-0.5">
+                                <h3 className="text-xs font-medium mb-0.5">{step.title}</h3>
+                                <p className="text-[11px] text-muted-foreground leading-relaxed">
+                                  {step.description}
+                                </p>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </div>
+                    </section>
 
                     {/* Testimonial Section */}
-                    <section className="px-8 py-20 border-t border-border/50">
-                      <div className="max-w-2xl mx-auto text-center">
-                        <blockquote className="text-xl font-light leading-relaxed mb-6 italic">
-                          "{idea.landingPage.testimonial.quote}"
+                    <section className="px-6 py-14 border-t border-border/50">
+                      <div className="max-w-xl mx-auto text-center">
+                        <blockquote className="text-base font-light leading-relaxed mb-4 italic">
+                          "{idea.landingPage.testimonial?.quote || 'This product completely transformed how I work.'}"
                         </blockquote>
                         <div>
-                          <p className="text-sm font-medium">
-                            {idea.landingPage.testimonial.author}
+                          <p className="text-xs font-medium">
+                            {idea.landingPage.testimonial?.author || 'Alex Chen'}
                           </p>
-                          <p className="text-xs text-muted-foreground">
-                            {idea.landingPage.testimonial.role}
+                          <p className="text-[10px] text-muted-foreground">
+                            {idea.landingPage.testimonial?.role || 'Early Adopter'}
                           </p>
                         </div>
                       </div>
                     </section>
 
                     {/* CTA Section */}
-                    <section className="px-8 py-20 bg-foreground text-background">
-                      <div className="max-w-2xl mx-auto text-center">
-                        <h2 className="text-2xl font-light tracking-tight mb-4">
+                    <section className="px-6 py-14 bg-foreground text-background">
+                      <div className="max-w-xl mx-auto text-center">
+                        <h2 className="text-xl font-light tracking-tight mb-3">
                           Ready to get started?
                         </h2>
-                        <p className="text-sm text-background/60 mb-8">
-                          Join thousands of users who are already transforming their workflow.
+                        <p className="text-xs text-background/60 mb-6">
+                          Join thousands of users transforming their workflow.
                         </p>
                         <Button 
                           variant="secondary" 
-                          size="lg" 
-                          className="h-12 px-8 text-sm font-normal"
+                          size="default" 
+                          className="h-10 px-6 text-sm font-normal"
                         >
                           {idea.landingPage.hero.ctaText}
                           <ArrowUpRight className="h-4 w-4 ml-2" />
