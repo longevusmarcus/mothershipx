@@ -405,7 +405,7 @@ const ProblemDetail = () => {
               Squads
             </TabsTrigger>
             <TabsTrigger value="solutions" className="text-xs data-[state=active]:bg-background">
-              Solutions
+              Ideas
             </TabsTrigger>
             <TabsTrigger value="competitors" className="text-xs data-[state=active]:bg-background">
               Competitors
