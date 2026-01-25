@@ -1210,6 +1210,21 @@ function LandingPagePreview({ landingPage, solutionTitle }: { landingPage: Landi
         </div>
       </section>
 
+      {/* Product Mockup */}
+      {landingPage.mockupImage && (
+        <section className="px-6 pb-6">
+          <div className="max-w-2xl mx-auto">
+            <div className="rounded-lg overflow-hidden border border-border/50 shadow-2xl">
+              <img 
+                src={landingPage.mockupImage} 
+                alt={`${solutionTitle} product mockup`}
+                className="w-full h-auto"
+              />
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Stats Section */}
       {landingPage.stats && landingPage.stats.length > 0 && (
         <section className="px-6 py-8 border-y border-border/50">
