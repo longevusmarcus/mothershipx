@@ -44,17 +44,18 @@ Your response must be a JSON object with these exact fields:
 - description: 2-3 sentence product description, clear and direct
 - uniqueValue: What makes this different from competitors (be specific)
 - targetPersona: Specific user persona with demographics
-- keyFeatures: Array of exactly 4 features, each with "title" and "description" (no icons)
+- keyFeatures: Array of exactly 4 features, each with "title" and "description"
 - techStack: Suggested tech stack array (3-5 technologies)
 - monetization: Specific pricing strategy with numbers
 - landingPage: Object for a professional landing page with:
-  - hero: { headline (10 words max, no fluff), subheadline (clear value), ctaText (action verb) }
-  - features: Array of 3 features with "title" and "description" only
-  - stats: Array of 3 impressive stats with "value" and "label" (use realistic projections)
-  - howItWorks: Array of 3 steps with "step" (1,2,3), "title", and "description"
-  - testimonial: { quote (realistic, specific), author (name), role (title and company) }
+  - hero: { headline (10 words max), subheadline (clear value), ctaText (action verb) }
+  - features: Array of EXACTLY 3 features with "title" and "description" - these must be the 3 most important product capabilities
+  - stats: Array of EXACTLY 3 impressive but realistic metrics with "value" and "label"
+  - howItWorks: Array of EXACTLY 3 steps with "step" (1,2,3), "title", and "description" - these MUST be specific to how THIS product actually works, NOT generic steps like "Sign Up" or "Configure". Describe the actual user journey with this specific product.
+  - testimonial: { quote (realistic, specific to the product), author (realistic name), role (job title at realistic company) }
+  - productDescription: A brief description (under 30 words) of what the product interface/dashboard looks like for generating a mockup image
 
-Be bold and specific. No generic phrases like "leverage AI" or "streamline workflow". Every word should earn its place.`;
+Be bold and specific. Every step in howItWorks should describe a real action users take with THIS product.`;
 
     const userPrompt = `Generate a startup idea for this problem:
 
@@ -76,7 +77,11 @@ Create something that:
 2. Has clear monetization from day one
 3. Can be built as MVP in 2-4 weeks
 4. Has a defensible moat
-5. Is different from obvious solutions
+
+CRITICAL REQUIREMENTS:
+- landingPage.features MUST have exactly 3 items
+- landingPage.howItWorks MUST have exactly 3 product-specific steps (NOT generic like "Sign Up", "Configure", "Launch")
+- Example good howItWorks: For a social analysis app: [{"step":"1","title":"Upload Screenshots","description":"Share your group chat screenshots securely"},{"step":"2","title":"Get Analysis","description":"AI identifies social dynamics and exclusion patterns"},{"step":"3","title":"Receive Scripts","description":"Get personalized conversation starters to rebuild connections"}]
 
 Return ONLY valid JSON.`;
 
@@ -132,25 +137,95 @@ Return ONLY valid JSON.`;
 
     const idea = JSON.parse(jsonStr);
 
-    // Ensure all required fields exist with fallbacks
-    if (!idea.landingPage.stats) {
+    // Validate and ensure exactly 3 features
+    if (!idea.landingPage.features || idea.landingPage.features.length < 3) {
+      idea.landingPage.features = idea.keyFeatures?.slice(0, 3) || [
+        { title: "Core Feature", description: "The main capability that solves your problem" },
+        { title: "Smart Insights", description: "Data-driven recommendations tailored to you" },
+        { title: "Easy Integration", description: "Works with your existing tools seamlessly" }
+      ];
+    }
+    // Ensure exactly 3 features
+    idea.landingPage.features = idea.landingPage.features.slice(0, 3);
+
+    // Ensure stats exist
+    if (!idea.landingPage.stats || idea.landingPage.stats.length < 3) {
       idea.landingPage.stats = [
         { value: "10x", label: "Faster Results" },
-        { value: "90%", label: "User Satisfaction" },
+        { value: "85%", label: "User Retention" },
         { value: "24/7", label: "Available" }
       ];
     }
-    
-    if (!idea.landingPage.howItWorks) {
+
+    // Validate howItWorks - if it contains generic steps, regenerate based on the product
+    const genericSteps = ["sign up", "configure", "launch", "get started", "create account"];
+    const hasGenericSteps = idea.landingPage.howItWorks?.some((step: any) => 
+      genericSteps.some(g => step.title?.toLowerCase().includes(g))
+    );
+
+    if (!idea.landingPage.howItWorks || idea.landingPage.howItWorks.length < 3 || hasGenericSteps) {
+      // Generate product-specific steps based on the idea
+      const productName = idea.name || "the product";
       idea.landingPage.howItWorks = [
-        { step: "1", title: "Sign Up", description: "Create your account in seconds" },
-        { step: "2", title: "Configure", description: "Set up your preferences" },
-        { step: "3", title: "Launch", description: "Start seeing results immediately" }
+        { 
+          step: "1", 
+          title: `Connect to ${productName}`, 
+          description: `Link your existing data or upload the information ${productName} needs to analyze` 
+        },
+        { 
+          step: "2", 
+          title: "Get Instant Analysis", 
+          description: idea.keyFeatures?.[0]?.description || "Receive AI-powered insights tailored to your situation" 
+        },
+        { 
+          step: "3", 
+          title: "Take Action", 
+          description: idea.keyFeatures?.[1]?.description || "Execute on recommendations with guided next steps" 
+        }
       ];
     }
 
-    if (!idea.landingPage.testimonial.role) {
-      idea.landingPage.testimonial.role = "Early Adopter";
+    // Ensure testimonial exists
+    if (!idea.landingPage.testimonial?.quote) {
+      idea.landingPage.testimonial = {
+        quote: `${idea.name} completely changed how I approach ${problemCategory.toLowerCase()}. The insights are incredible.`,
+        author: "Sarah Chen",
+        role: "Product Manager at Stripe"
+      };
+    }
+
+    // Generate product mockup image
+    console.log("Generating product mockup...");
+    const mockupPrompt = `A clean, minimal, modern SaaS dashboard interface for "${idea.name}" - ${idea.landingPage.productDescription || idea.description}. Dark theme, professional UI design, data visualization, minimal aesthetic. Ultra high resolution product screenshot mockup.`;
+
+    try {
+      const imageResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash-image",
+          messages: [
+            { role: "user", content: mockupPrompt }
+          ],
+          modalities: ["image", "text"]
+        }),
+      });
+
+      if (imageResponse.ok) {
+        const imageData = await imageResponse.json();
+        const mockupImage = imageData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+        if (mockupImage) {
+          idea.landingPage.mockupImage = mockupImage;
+          console.log("Product mockup generated successfully");
+        }
+      } else {
+        console.log("Mockup generation failed, continuing without image");
+      }
+    } catch (imgError) {
+      console.log("Mockup generation error, continuing without image:", imgError);
     }
 
     console.log("Successfully generated idea:", idea.name);
