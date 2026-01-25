@@ -46,6 +46,7 @@ interface GeneratedIdea {
       author: string;
       role: string;
     };
+    mockupImage?: string;
   };
 }
 
@@ -323,6 +324,26 @@ ${idea.monetization}`;
                         </motion.div>
                       </div>
                     </section>
+
+                    {/* Product Mockup */}
+                    {idea.landingPage.mockupImage && (
+                      <section className="px-6 pb-8">
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.3 }}
+                          className="max-w-2xl mx-auto"
+                        >
+                          <div className="rounded-lg overflow-hidden border border-border/50 shadow-2xl">
+                            <img 
+                              src={idea.landingPage.mockupImage} 
+                              alt={`${idea.name} product mockup`}
+                              className="w-full h-auto"
+                            />
+                          </div>
+                        </motion.div>
+                      </section>
+                    )}
 
                     {/* Stats Section */}
                     <section className="px-6 py-12 border-y border-border/50">
