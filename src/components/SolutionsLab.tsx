@@ -27,6 +27,7 @@ import { useSolutions, type Solution } from "@/hooks/useSolutions";
 import { useVerifiedBuilders } from "@/hooks/useVerifiedBuilders";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatDistanceToNow } from "date-fns";
+import { AIIdeaGeneratorModal } from "@/components/AIIdeaGeneratorModal";
 
 interface SolutionsLabProps {
   problemId: string;
@@ -35,6 +36,9 @@ interface SolutionsLabProps {
   problemPainPoints?: string[];
   problemCategory?: string;
   opportunityScore?: number;
+  demandVelocity?: number;
+  competitionGap?: number;
+  sources?: any[];
 }
 
 const statusConfig: Record<string, { label: string; color: string }> = {
@@ -1041,14 +1045,13 @@ function ApproachDisplay({ approach }: { approach: string | null }) {
   );
 }
 
-export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPainPoints, problemCategory, opportunityScore }: SolutionsLabProps) => {
+export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPainPoints, problemCategory, opportunityScore, demandVelocity, competitionGap, sources }: SolutionsLabProps) => {
   const { user } = useAuth();
   const { solutions: dbSolutions, isLoading, createSolution, updateSolution, toggleUpvote, forkSolution } = useSolutions(problemId);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState("");
-  const [showNewIdea, setShowNewIdea] = useState(false);
-  const [newIdea, setNewIdea] = useState({ title: "", description: "", approach: "" });
+  const [showAIGenerator, setShowAIGenerator] = useState(false);
 
   // Collect all contributor user IDs for verification check
   const allContributorIds = dbSolutions
@@ -1081,24 +1084,6 @@ export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPai
     );
   };
 
-  const handleCreateIdea = () => {
-    if (!newIdea.title || !newIdea.description) return;
-    
-    createSolution.mutate(
-      {
-        title: newIdea.title,
-        description: newIdea.description,
-        approach: newIdea.approach || undefined,
-      },
-      {
-        onSuccess: () => {
-          setShowNewIdea(false);
-          setNewIdea({ title: "", description: "", approach: "" });
-        },
-      }
-    );
-  };
-
   // Combine real solutions with AI suggestions when empty
   const aiSuggestions = generateAISuggestions(problemTitle, problemTrend, problemPainPoints, problemCategory, opportunityScore);
   const solutions = dbSolutions.length > 0 ? dbSolutions : aiSuggestions;
@@ -1114,6 +1099,21 @@ export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPai
 
   return (
     <div className="space-y-6">
+      {/* AI Idea Generator Modal */}
+      <AIIdeaGeneratorModal
+        open={showAIGenerator}
+        onOpenChange={setShowAIGenerator}
+        problemId={problemId}
+        problemTitle={problemTitle}
+        problemCategory={problemCategory || "SaaS"}
+        painPoints={problemPainPoints || []}
+        niche={problemTrend || problemTitle}
+        opportunityScore={opportunityScore || 50}
+        demandVelocity={demandVelocity}
+        competitionGap={competitionGap}
+        sources={sources}
+      />
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
@@ -1125,61 +1125,15 @@ export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPai
         <Button
           variant="outline"
           size="sm"
-          onClick={() => setShowNewIdea(true)}
-          className="gap-2"
+          onClick={() => setShowAIGenerator(true)}
+          className="gap-2 group"
           disabled={!user}
         >
-          <Plus className="h-3.5 w-3.5" />
+          <Sparkles className="h-3.5 w-3.5 group-hover:text-primary transition-colors" />
           New Idea
         </Button>
       </div>
 
-
-      {/* New Idea Form */}
-      <AnimatePresence>
-        {showNewIdea && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-          >
-            <div className="p-4 rounded-lg border border-border/50 bg-background space-y-4">
-              <div className="flex items-center justify-between">
-                <h4 className="font-medium text-sm">Create New Idea</h4>
-                <Button variant="ghost" size="sm" onClick={() => setShowNewIdea(false)}>
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-              <Input
-                placeholder="Idea title..."
-                value={newIdea.title}
-                onChange={(e) => setNewIdea(prev => ({ ...prev, title: e.target.value }))}
-              />
-              <Textarea
-                placeholder="Describe your solution concept..."
-                value={newIdea.description}
-                onChange={(e) => setNewIdea(prev => ({ ...prev, description: e.target.value }))}
-                className="min-h-[80px]"
-              />
-              <Textarea
-                placeholder="Implementation approach (optional)..."
-                value={newIdea.approach}
-                onChange={(e) => setNewIdea(prev => ({ ...prev, approach: e.target.value }))}
-                className="min-h-[60px]"
-              />
-              <div className="flex justify-end gap-2">
-                <Button variant="ghost" size="sm" onClick={() => setShowNewIdea(false)}>
-                  Cancel
-                </Button>
-                <Button size="sm" onClick={handleCreateIdea} disabled={createSolution.isPending}>
-                  {createSolution.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-                  Create
-                </Button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Solutions List */}
       <div className="space-y-3">
