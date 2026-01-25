@@ -54,11 +54,6 @@ export function WelcomeChatbot() {
             <span className="text-muted-foreground">=</span>
             <span className="text-foreground">signals + arena + rewards</span>
           </div>
-          <div className="flex items-center gap-2 text-sm">
-            <span className="font-medium">Lovable</span>
-            <span className="text-muted-foreground">=</span>
-            <span className="text-foreground">execution</span>
-          </div>
         </div>
 
         {/* Description */}
