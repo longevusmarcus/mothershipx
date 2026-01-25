@@ -5,25 +5,56 @@ import { WaitlistForm } from "@/components/WaitlistForm";
 import { useKeyboardSound } from "@/hooks/useKeyboardSound";
 import lovableLogo from "@/assets/lovable-logo.png";
 
+interface SignalContext {
+  title: string;
+  niche?: string;
+  category?: string;
+}
+
 interface AutoBuildModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** If provided, shows signal-specific messaging */
+  signal?: SignalContext;
 }
 
-const TYPING_LINES = [
-  "$ initiating signal analysis...",
-  "$ scanning 847 market opportunities...",
-  "$ auto-generating startup ideas from live data...",
-  "$ building landing pages with AI...",
-  "$ registering domain names...",
-  "$ implementing Stripe payment buttons...",
-  "$ deploying to edge network...",
-  "$ testing in headless Chrome...",
-  "$ validating product-market fit...",
-  "$ process complete. awaiting human confirmation.",
-];
+// Default lines for all signals
+const getTypingLines = (signal?: SignalContext): string[] => {
+  if (signal) {
+    // Signal-specific lines
+    const truncatedTitle = signal.title.length > 40 
+      ? signal.title.slice(0, 37) + "..." 
+      : signal.title;
+    return [
+      `$ targeting signal: "${truncatedTitle}"`,
+      "$ analyzing market demand patterns...",
+      "$ generating 5 unique startup concepts...",
+      "$ designing landing pages for each idea...",
+      "$ registering domain names...",
+      "$ implementing Stripe payment buttons...",
+      "$ configuring analytics & tracking...",
+      "$ deploying to edge network...",
+      "$ testing in headless Chrome...",
+      "$ process complete. 5 market opportunities ready.",
+    ];
+  }
+  
+  // Default lines for all signals
+  return [
+    "$ initiating signal analysis...",
+    "$ scanning 847 market opportunities...",
+    "$ auto-generating startup ideas from live data...",
+    "$ building landing pages with AI...",
+    "$ registering domain names...",
+    "$ implementing Stripe payment buttons...",
+    "$ deploying to edge network...",
+    "$ testing in headless Chrome...",
+    "$ validating product-market fit...",
+    "$ process complete. awaiting human confirmation.",
+  ];
+};
 
-export function AutoBuildModal({ open, onOpenChange }: AutoBuildModalProps) {
+export function AutoBuildModal({ open, onOpenChange, signal }: AutoBuildModalProps) {
   const [currentLineIndex, setCurrentLineIndex] = useState(0);
   const [currentText, setCurrentText] = useState("");
   const [completedLines, setCompletedLines] = useState<string[]>([]);
@@ -31,12 +62,14 @@ export function AutoBuildModal({ open, onOpenChange }: AutoBuildModalProps) {
   const [showWaitlist, setShowWaitlist] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(false);
   const hasInteractedRef = useRef(false);
+  const typingLinesRef = useRef<string[]>([]);
   
   const { playKeyClick, playKeyRelease, playSuccess } = useKeyboardSound();
 
   // Reset state when modal opens
   useEffect(() => {
     if (open) {
+      typingLinesRef.current = getTypingLines(signal);
       setCurrentLineIndex(0);
       setCurrentText("");
       setCompletedLines([]);
@@ -46,13 +79,16 @@ export function AutoBuildModal({ open, onOpenChange }: AutoBuildModalProps) {
       hasInteractedRef.current = true;
       setSoundEnabled(true);
     }
-  }, [open]);
+  }, [open, signal]);
 
   // Typing effect with sound
   useEffect(() => {
     if (!open || isTypingComplete) return;
 
-    const currentLine = TYPING_LINES[currentLineIndex];
+    const typingLines = typingLinesRef.current;
+    const currentLine = typingLines[currentLineIndex];
+    
+    if (!currentLine) return;
     
     if (currentText.length < currentLine.length) {
       const timeout = setTimeout(() => {
@@ -73,7 +109,7 @@ export function AutoBuildModal({ open, onOpenChange }: AutoBuildModalProps) {
         setCompletedLines(prev => [...prev, currentLine]);
         setCurrentText("");
         
-        if (currentLineIndex < TYPING_LINES.length - 1) {
+        if (currentLineIndex < typingLines.length - 1) {
           setCurrentLineIndex(prev => prev + 1);
         } else {
           setIsTypingComplete(true);
@@ -87,6 +123,18 @@ export function AutoBuildModal({ open, onOpenChange }: AutoBuildModalProps) {
       return () => clearTimeout(timeout);
     }
   }, [open, currentText, currentLineIndex, isTypingComplete, soundEnabled, playKeyClick, playKeyRelease, playSuccess]);
+
+  const terminalPath = signal 
+    ? `~/mothership/signal/${signal.niche?.toLowerCase().replace(/\s+/g, "-") || "auto-build"}`
+    : "~/mothership/auto-build";
+
+  const waitlistTitle = signal
+    ? "Signal-Specific Builder"
+    : "Autonomous Building Protocol";
+
+  const waitlistDescription = signal
+    ? `AI agents that auto-generate 5 complete startup ideas from "${signal.title.slice(0, 50)}${signal.title.length > 50 ? "..." : ""}"—each with landing page, domain, and payments.`
+    : "AI agents that transform signals into deployed startups—landing pages, domains, payments, and testing—all automated.";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -128,7 +176,7 @@ export function AutoBuildModal({ open, onOpenChange }: AutoBuildModalProps) {
                 <div className="h-2.5 w-2.5 rounded-full bg-warning/80" />
                 <div className="h-2.5 w-2.5 rounded-full bg-success/80" />
               </div>
-              <span className="text-primary/40 text-xs ml-2">~/mothership/auto-build</span>
+              <span className="text-primary/40 text-xs ml-2">{terminalPath}</span>
             </div>
 
             {/* Terminal output */}
@@ -186,11 +234,10 @@ export function AutoBuildModal({ open, onOpenChange }: AutoBuildModalProps) {
                 </div>
                 
                 <h3 className="text-lg font-light text-foreground mb-2">
-                  Autonomous Building Protocol
+                  {waitlistTitle}
                 </h3>
                 <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
-                  AI agents that transform signals into deployed startups—landing pages, 
-                  domains, payments, and testing—all automated.
+                  {waitlistDescription}
                 </p>
                 
                 <WaitlistForm 
