@@ -181,7 +181,7 @@ export function useProblems(category?: string, filterSeedData?: boolean) {
       let query = supabase
         .from("problems")
         .select("*")
-        .order("opportunity_score", { ascending: false });
+        .order("views", { ascending: false, nullsFirst: false });
 
       if (category && category.toLowerCase() !== "all") {
         // Case-insensitive category filter
