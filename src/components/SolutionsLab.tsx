@@ -58,11 +58,11 @@ const statusConfig: Record<string, { label: string; color: string }> = {
 
 // Generate smart AI-suggested solutions based on problem data
 function generateAISuggestions(
-  problemTitle: string, 
-  trend?: string, 
+  problemTitle: string,
+  trend?: string,
   painPoints?: string[],
   category?: string,
-  opportunityScore?: number
+  opportunityScore?: number,
 ): Solution[] {
   // Extract key themes from problem data
   const mainPainPoint = painPoints?.[0] || "user frustration";
@@ -71,20 +71,39 @@ function generateAISuggestions(
   const fourthPainPoint = painPoints?.[3] || "time constraints";
   const trendContext = trend || problemTitle;
   const categoryContext = category || "SaaS";
-  
+
   // Determine solution archetypes based on category and problem context
   const problemLower = problemTitle.toLowerCase();
   const categoryLower = categoryContext.toLowerCase();
-  
+
   // Category-specific solution templates
-  const isMentalHealth = categoryLower.includes("mental") || problemLower.includes("anxiety") || problemLower.includes("adhd");
-  const isWeight = categoryLower.includes("weight") || categoryLower.includes("fitness") || problemLower.includes("glp") || problemLower.includes("ozempic");
-  const isSkin = categoryLower.includes("skin") || categoryLower.includes("beauty") || problemLower.includes("ingredient");
+  const isMentalHealth =
+    categoryLower.includes("mental") || problemLower.includes("anxiety") || problemLower.includes("adhd");
+  const isWeight =
+    categoryLower.includes("weight") ||
+    categoryLower.includes("fitness") ||
+    problemLower.includes("glp") ||
+    problemLower.includes("ozempic");
+  const isSkin =
+    categoryLower.includes("skin") || categoryLower.includes("beauty") || problemLower.includes("ingredient");
   const isGut = categoryLower.includes("gut") || problemLower.includes("gut") || problemLower.includes("probiotic");
-  const isProductivity = categoryLower.includes("productivity") || problemLower.includes("focus") || problemLower.includes("context");
-  const isCareer = categoryLower.includes("career") || problemLower.includes("pivot") || problemLower.includes("career");
-  const isConnections = categoryLower.includes("connection") || problemLower.includes("dating") || problemLower.includes("connection");
-  const isBusiness = categoryLower.includes("business") || categoryLower.includes("entrepreneur") || problemLower.includes("startup") || problemLower.includes("saas") || problemLower.includes("revenue") || problemLower.includes("customer") || problemLower.includes("churn") || problemLower.includes("pricing") || problemLower.includes("market") || problemLower.includes("launch");
+  const isProductivity =
+    categoryLower.includes("productivity") || problemLower.includes("focus") || problemLower.includes("context");
+  const isCareer =
+    categoryLower.includes("career") || problemLower.includes("pivot") || problemLower.includes("career");
+  const isConnections =
+    categoryLower.includes("connection") || problemLower.includes("dating") || problemLower.includes("connection");
+  const isBusiness =
+    categoryLower.includes("business") ||
+    categoryLower.includes("entrepreneur") ||
+    problemLower.includes("startup") ||
+    problemLower.includes("saas") ||
+    problemLower.includes("revenue") ||
+    problemLower.includes("customer") ||
+    problemLower.includes("churn") ||
+    problemLower.includes("pricing") ||
+    problemLower.includes("market") ||
+    problemLower.includes("launch");
 
   // Generate unique solutions based on problem type
   let suggestions: Partial<Solution>[] = [];
@@ -95,7 +114,7 @@ function generateAISuggestions(
       {
         id: "ai-suggestion-1",
         title: isADHD ? "Emotional Co-Regulation Companion" : "Vibe-Based Mood Resets",
-        description: isADHD 
+        description: isADHD
           ? `AI-powered emotional support system that provides real-time co-regulation for ADHD brains. Addresses "${mainPainPoint}" with body doubling features and rejection sensitivity support.`
           : `Aesthetic-first wellness moments that match your energy. Forget clinical CBT—this is "${mainPainPoint}" solved with 2-minute vibe shifts and sensory resets.`,
         approach: isADHD
@@ -985,29 +1004,29 @@ function generateAISuggestions(
 // Parse markdown approach into structured sections
 function parseApproachSections(approach: string): Record<string, string> {
   const sections: Record<string, string> = {};
-  const lines = approach.split('\n');
-  let currentSection = '';
+  const lines = approach.split("\n");
+  let currentSection = "";
   let currentContent: string[] = [];
 
   for (const line of lines) {
     const trimmedLine = line.trim();
-    
+
     // Check for ## Header format
-    if (trimmedLine.startsWith('## ')) {
+    if (trimmedLine.startsWith("## ")) {
       // Save previous section
       if (currentSection) {
-        sections[currentSection] = currentContent.join('\n').trim();
+        sections[currentSection] = currentContent.join("\n").trim();
       }
-      currentSection = trimmedLine.replace('## ', '').trim();
+      currentSection = trimmedLine.replace("## ", "").trim();
       currentContent = [];
     } else if (currentSection) {
       currentContent.push(line);
     }
   }
-  
+
   // Save last section
   if (currentSection) {
-    sections[currentSection] = currentContent.join('\n').trim();
+    sections[currentSection] = currentContent.join("\n").trim();
   }
 
   return sections;
@@ -1016,8 +1035,8 @@ function parseApproachSections(approach: string): Record<string, string> {
 // Parse feature list from markdown
 function parseFeatures(content: string): Array<{ title: string; description: string }> {
   const features: Array<{ title: string; description: string }> = [];
-  const lines = content.split('\n').filter(l => l.trim().startsWith('-'));
-  
+  const lines = content.split("\n").filter((l) => l.trim().startsWith("-"));
+
   for (const line of lines) {
     const match = line.match(/^-\s*\*\*([^*]+)\*\*:\s*(.+)$/);
     if (match) {
@@ -1025,20 +1044,18 @@ function parseFeatures(content: string): Array<{ title: string; description: str
     } else {
       const simpleMatch = line.match(/^-\s*(.+)$/);
       if (simpleMatch) {
-        features.push({ title: simpleMatch[1].trim(), description: '' });
+        features.push({ title: simpleMatch[1].trim(), description: "" });
       }
     }
   }
-  
+
   return features;
 }
 
 // Render approach text with proper formatting
 function ApproachDisplay({ approach }: { approach: string | null }) {
   if (!approach) {
-    return (
-      <p className="text-muted-foreground italic">No approach defined yet. Click Edit to add one.</p>
-    );
+    return <p className="text-muted-foreground italic">No approach defined yet. Click Edit to add one.</p>;
   }
 
   // Try to parse as structured sections first
@@ -1046,12 +1063,12 @@ function ApproachDisplay({ approach }: { approach: string | null }) {
   const hasStructuredSections = Object.keys(sections).length > 0;
 
   if (hasStructuredSections) {
-    const features = sections['Key Features'] ? parseFeatures(sections['Key Features']) : [];
-    
+    const features = sections["Key Features"] ? parseFeatures(sections["Key Features"]) : [];
+
     return (
       <div className="space-y-6">
         {/* Unique Value */}
-        {sections['Unique Value'] && (
+        {sections["Unique Value"] && (
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <div className="h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center">
@@ -1059,12 +1076,12 @@ function ApproachDisplay({ approach }: { approach: string | null }) {
               </div>
               <h6 className="font-medium text-xs uppercase tracking-wide text-muted-foreground">Unique Value</h6>
             </div>
-            <p className="text-sm text-foreground/90 leading-relaxed pl-8">{sections['Unique Value']}</p>
+            <p className="text-sm text-foreground/90 leading-relaxed pl-8">{sections["Unique Value"]}</p>
           </div>
         )}
-        
+
         {/* Target Persona */}
-        {sections['Target Persona'] && (
+        {sections["Target Persona"] && (
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <div className="h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center">
@@ -1072,10 +1089,10 @@ function ApproachDisplay({ approach }: { approach: string | null }) {
               </div>
               <h6 className="font-medium text-xs uppercase tracking-wide text-muted-foreground">Target Persona</h6>
             </div>
-            <p className="text-sm text-foreground/90 leading-relaxed pl-8">{sections['Target Persona']}</p>
+            <p className="text-sm text-foreground/90 leading-relaxed pl-8">{sections["Target Persona"]}</p>
           </div>
         )}
-        
+
         {/* Key Features */}
         {features.length > 0 && (
           <div className="space-y-3">
@@ -1089,17 +1106,15 @@ function ApproachDisplay({ approach }: { approach: string | null }) {
               {features.map((feature, idx) => (
                 <div key={idx} className="p-3 rounded-lg border border-border/50 bg-secondary/20">
                   <p className="text-sm font-medium text-foreground">{feature.title}</p>
-                  {feature.description && (
-                    <p className="text-xs text-muted-foreground mt-1">{feature.description}</p>
-                  )}
+                  {feature.description && <p className="text-xs text-muted-foreground mt-1">{feature.description}</p>}
                 </div>
               ))}
             </div>
           </div>
         )}
-        
+
         {/* Monetization */}
-        {sections['Monetization'] && (
+        {sections["Monetization"] && (
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <div className="h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center">
@@ -1107,12 +1122,12 @@ function ApproachDisplay({ approach }: { approach: string | null }) {
               </div>
               <h6 className="font-medium text-xs uppercase tracking-wide text-muted-foreground">Monetization</h6>
             </div>
-            <p className="text-sm text-foreground/90 leading-relaxed pl-8">{sections['Monetization']}</p>
+            <p className="text-sm text-foreground/90 leading-relaxed pl-8">{sections["Monetization"]}</p>
           </div>
         )}
-        
+
         {/* Tech Stack (if in approach) */}
-        {sections['Tech Stack'] && (
+        {sections["Tech Stack"] && (
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <div className="h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center">
@@ -1120,7 +1135,7 @@ function ApproachDisplay({ approach }: { approach: string | null }) {
               </div>
               <h6 className="font-medium text-xs uppercase tracking-wide text-muted-foreground">Tech Stack</h6>
             </div>
-            <p className="text-sm text-foreground/90 leading-relaxed pl-8">{sections['Tech Stack']}</p>
+            <p className="text-sm text-foreground/90 leading-relaxed pl-8">{sections["Tech Stack"]}</p>
           </div>
         )}
       </div>
@@ -1128,17 +1143,17 @@ function ApproachDisplay({ approach }: { approach: string | null }) {
   }
 
   // Fallback: Parse the approach into sections with old format
-  const lines = approach.split('\n').filter(line => line.trim());
-  
+  const lines = approach.split("\n").filter((line) => line.trim());
+
   return (
     <div className="space-y-4">
       {lines.map((line, index) => {
         const trimmedLine = line.trim();
-        
+
         // Phase headers (bold text like **Phase 1 - Core Problem**)
-        if (trimmedLine.startsWith('**') && trimmedLine.endsWith('**')) {
-          const headerText = trimmedLine.replace(/\*\*/g, '');
-          
+        if (trimmedLine.startsWith("**") && trimmedLine.endsWith("**")) {
+          const headerText = trimmedLine.replace(/\*\*/g, "");
+
           return (
             <div key={index} className="flex items-center gap-2 pt-2 first:pt-0">
               <div className="h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center">
@@ -1148,23 +1163,27 @@ function ApproachDisplay({ approach }: { approach: string | null }) {
             </div>
           );
         }
-        
+
         // Inline bold (like **text**: description)
-        if (trimmedLine.includes('**')) {
-          const parsed = trimmedLine.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        if (trimmedLine.includes("**")) {
+          const parsed = trimmedLine.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
           return (
-            <p 
-              key={index} 
+            <p
+              key={index}
               className="text-sm text-muted-foreground pl-2 leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: parsed.replace(/<strong>/g, '<span class="text-foreground font-medium">').replace(/<\/strong>/g, '</span>') }}
+              dangerouslySetInnerHTML={{
+                __html: parsed
+                  .replace(/<strong>/g, '<span class="text-foreground font-medium">')
+                  .replace(/<\/strong>/g, "</span>"),
+              }}
             />
           );
         }
-        
+
         // Bullet points (lines starting with • or -)
-        if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-')) {
-          const bulletText = trimmedLine.replace(/^[•-]\s*/, '');
-          
+        if (trimmedLine.startsWith("•") || trimmedLine.startsWith("-")) {
+          const bulletText = trimmedLine.replace(/^[•-]\s*/, "");
+
           return (
             <div key={index} className="flex items-start gap-2 pl-2">
               <Zap className="h-3 w-3 text-primary mt-1 shrink-0" />
@@ -1172,7 +1191,7 @@ function ApproachDisplay({ approach }: { approach: string | null }) {
             </div>
           );
         }
-        
+
         // Regular text
         return (
           <p key={index} className="text-sm text-muted-foreground pl-2">
@@ -1192,9 +1211,7 @@ function LandingPagePreview({ landingPage, solutionTitle }: { landingPage: Landi
       <section className="relative px-6 py-12 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-muted/30 to-transparent" />
         <div className="relative max-w-2xl mx-auto text-center">
-          <h1 className="text-2xl font-light tracking-tight mb-3 leading-[1.1]">
-            {landingPage.hero.headline}
-          </h1>
+          <h1 className="text-2xl font-light tracking-tight mb-3 leading-[1.1]">{landingPage.hero.headline}</h1>
           <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto leading-relaxed">
             {landingPage.hero.subheadline}
           </p>
@@ -1215,11 +1232,7 @@ function LandingPagePreview({ landingPage, solutionTitle }: { landingPage: Landi
         <section className="px-6 pb-6">
           <div className="max-w-2xl mx-auto">
             <div className="rounded-lg overflow-hidden border border-border/50 shadow-2xl">
-              <img 
-                src={landingPage.mockupImage} 
-                alt={`${solutionTitle} product mockup`}
-                className="w-full h-auto"
-              />
+              <img src={landingPage.mockupImage} alt={`${solutionTitle} product mockup`} className="w-full h-auto" />
             </div>
           </div>
         </section>
@@ -1253,7 +1266,7 @@ function LandingPagePreview({ landingPage, solutionTitle }: { landingPage: Landi
               {landingPage.features.slice(0, 3).map((feature, i) => (
                 <div key={i} className="text-center">
                   <div className="w-8 h-8 mx-auto mb-2 rounded-full border border-border/50 flex items-center justify-center">
-                    <span className="text-[10px] text-muted-foreground">{String(i + 1).padStart(2, '0')}</span>
+                    <span className="text-[10px] text-muted-foreground">{String(i + 1).padStart(2, "0")}</span>
                   </div>
                   <h3 className="text-xs font-medium mb-1">{feature.title}</h3>
                   <p className="text-[10px] text-muted-foreground leading-relaxed">{feature.description}</p>
@@ -1319,10 +1332,28 @@ function LandingPagePreview({ landingPage, solutionTitle }: { landingPage: Landi
   );
 }
 
-export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPainPoints, problemCategory, opportunityScore, demandVelocity, competitionGap, sources }: SolutionsLabProps) => {
+export const SolutionsLab = ({
+  problemId,
+  problemTitle,
+  problemTrend,
+  problemPainPoints,
+  problemCategory,
+  opportunityScore,
+  demandVelocity,
+  competitionGap,
+  sources,
+}: SolutionsLabProps) => {
   const { user } = useAuth();
   const { isAdmin } = useSubscription();
-  const { solutions: dbSolutions, isLoading, createSolution, updateSolution, toggleUpvote, forkSolution, deleteSolution } = useSolutions(problemId);
+  const {
+    solutions: dbSolutions,
+    isLoading,
+    createSolution,
+    updateSolution,
+    toggleUpvote,
+    forkSolution,
+    deleteSolution,
+  } = useSolutions(problemId);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState("");
@@ -1355,12 +1386,18 @@ export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPai
         onSuccess: () => {
           setEditingId(null);
         },
-      }
+      },
     );
   };
 
   // Combine real solutions with AI suggestions when empty
-  const aiSuggestions = generateAISuggestions(problemTitle, problemTrend, problemPainPoints, problemCategory, opportunityScore);
+  const aiSuggestions = generateAISuggestions(
+    problemTitle,
+    problemTrend,
+    problemPainPoints,
+    problemCategory,
+    opportunityScore,
+  );
   const solutions = dbSolutions.length > 0 ? dbSolutions : aiSuggestions;
   const showingAISuggestions = dbSolutions.length === 0;
 
@@ -1393,9 +1430,7 @@ export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPai
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h3 className="font-serif text-lg">Solutions Lab</h3>
-          <p className="text-sm text-muted-foreground">
-            Wiki-style collaborative ideas • {solutions.length} solutions
-          </p>
+          <p className="text-sm text-muted-foreground">Wiki-style collaborative ideas • {solutions.length} solutions</p>
         </div>
         <Button
           variant="outline"
@@ -1409,13 +1444,12 @@ export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPai
         </Button>
       </div>
 
-
       {/* Solutions List */}
       <div className="space-y-3">
         {showingAISuggestions && (
           <div className="flex items-center gap-2 p-2 rounded-lg bg-secondary/20 text-xs text-muted-foreground">
             <Sparkles className="h-3.5 w-3.5" />
-            <span>AI-suggested ideas based on trend analysis. Add your own to get started!</span>
+            <span>AI-suggested ideas based on trend analysis. Generate new ideas to get inspired.</span>
           </div>
         )}
         {solutions.map((solution, index) => (
@@ -1425,7 +1459,9 @@ export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPai
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
           >
-            <div className={`rounded-lg border ${expandedId === solution.id ? "border-foreground/20" : "border-border/50"} bg-background overflow-hidden`}>
+            <div
+              className={`rounded-lg border ${expandedId === solution.id ? "border-foreground/20" : "border-border/50"} bg-background overflow-hidden`}
+            >
               {/* Header Row */}
               <div
                 className="p-4 cursor-pointer"
@@ -1433,12 +1469,19 @@ export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPai
               >
                 <div className="flex items-start gap-3">
                   {/* Rank */}
-                  <div className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 text-sm font-medium
-                    ${index === 0 ? "bg-foreground/10 text-foreground" : 
-                      index === 1 ? "bg-foreground/5 text-foreground/70" :
-                      index === 2 ? "bg-foreground/5 text-foreground/60" :
-                      "bg-secondary text-muted-foreground"}
-                  `}>
+                  <div
+                    className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 text-sm font-medium
+                    ${
+                      index === 0
+                        ? "bg-foreground/10 text-foreground"
+                        : index === 1
+                          ? "bg-foreground/5 text-foreground/70"
+                          : index === 2
+                            ? "bg-foreground/5 text-foreground/60"
+                            : "bg-secondary text-muted-foreground"
+                    }
+                  `}
+                  >
                     {index === 0 ? <Trophy className="h-4 w-4" /> : `#${index + 1}`}
                   </div>
 
@@ -1453,9 +1496,7 @@ export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPai
                         {statusConfig[solution.status].label}
                       </span>
                     </div>
-                    <p className="text-xs text-muted-foreground line-clamp-1 mt-1">
-                      {solution.description}
-                    </p>
+                    <p className="text-xs text-muted-foreground line-clamp-1 mt-1">{solution.description}</p>
 
                     {/* Stats */}
                     <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
@@ -1573,7 +1614,10 @@ export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPai
                                 </h5>
                                 <div className="flex flex-wrap gap-1.5">
                                   {solution.tech_stack.map((tech) => (
-                                    <span key={tech} className="text-xs px-2 py-1 rounded-full bg-secondary text-foreground/80">
+                                    <span
+                                      key={tech}
+                                      className="text-xs px-2 py-1 rounded-full bg-secondary text-foreground/80"
+                                    >
                                       {tech}
                                     </span>
                                   ))}
@@ -1643,7 +1687,10 @@ export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPai
                               </h5>
                               <div className="flex flex-wrap gap-1.5">
                                 {solution.tech_stack.map((tech) => (
-                                  <span key={tech} className="text-xs px-2 py-1 rounded-full bg-secondary text-foreground/80">
+                                  <span
+                                    key={tech}
+                                    className="text-xs px-2 py-1 rounded-full bg-secondary text-foreground/80"
+                                  >
                                     {tech}
                                   </span>
                                 ))}
@@ -1681,7 +1728,10 @@ export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPai
                                         </div>
                                       </TooltipTrigger>
                                       <TooltipContent side="top" className="text-xs">
-                                        <p>{contributor.profile?.name || "Anonymous"}{isVerified ? " ✓ Verified" : ""}</p>
+                                        <p>
+                                          {contributor.profile?.name || "Anonymous"}
+                                          {isVerified ? " ✓ Verified" : ""}
+                                        </p>
                                       </TooltipContent>
                                     </Tooltip>
                                   </TooltipProvider>
@@ -1715,7 +1765,7 @@ export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPai
                           <ThumbsUp className={`h-3 w-3 ${solution.has_upvoted ? "fill-current" : ""}`} />
                           {solution.has_upvoted ? "Upvoted" : "Upvote"}
                         </Button>
-                        
+
                         {/* Admin delete button */}
                         {isAdmin && (
                           <Button
