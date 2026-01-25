@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-
+import { getDbProblemId } from "@/data/marketIntelligence";
 export interface SolutionContributor {
   id: string;
   user_id: string;
@@ -65,10 +65,13 @@ export function useSolutions(problemId: string) {
   const { data: solutions = [], isLoading, error } = useQuery({
     queryKey: ["solutions", problemId],
     queryFn: async () => {
+      // Convert mock ID to database UUID if needed
+      const dbProblemId = getDbProblemId(problemId);
+      
       const { data, error } = await supabase
         .from("solutions")
         .select("*")
-        .eq("problem_id", problemId)
+        .eq("problem_id", dbProblemId)
         .order("upvotes", { ascending: false });
 
       if (error) throw error;
@@ -141,10 +144,13 @@ export function useSolutions(problemId: string) {
       landingPage?: LandingPageData;
     }) => {
       if (!user) throw new Error("Must be logged in");
+      
+      // Convert mock ID to database UUID if needed
+      const dbProblemId = getDbProblemId(problemId);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const insertData: any = {
-        problem_id: problemId,
+        problem_id: dbProblemId,
         title,
         description,
         approach: approach || null,
