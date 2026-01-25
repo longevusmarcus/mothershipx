@@ -16,6 +16,9 @@ import {
   Zap,
   X,
   Loader2,
+  Users,
+  DollarSign,
+  Code,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -974,6 +977,57 @@ function generateAISuggestions(
   return suggestions as Solution[];
 }
 
+// Parse markdown approach into structured sections
+function parseApproachSections(approach: string): Record<string, string> {
+  const sections: Record<string, string> = {};
+  const lines = approach.split('\n');
+  let currentSection = '';
+  let currentContent: string[] = [];
+
+  for (const line of lines) {
+    const trimmedLine = line.trim();
+    
+    // Check for ## Header format
+    if (trimmedLine.startsWith('## ')) {
+      // Save previous section
+      if (currentSection) {
+        sections[currentSection] = currentContent.join('\n').trim();
+      }
+      currentSection = trimmedLine.replace('## ', '').trim();
+      currentContent = [];
+    } else if (currentSection) {
+      currentContent.push(line);
+    }
+  }
+  
+  // Save last section
+  if (currentSection) {
+    sections[currentSection] = currentContent.join('\n').trim();
+  }
+
+  return sections;
+}
+
+// Parse feature list from markdown
+function parseFeatures(content: string): Array<{ title: string; description: string }> {
+  const features: Array<{ title: string; description: string }> = [];
+  const lines = content.split('\n').filter(l => l.trim().startsWith('-'));
+  
+  for (const line of lines) {
+    const match = line.match(/^-\s*\*\*([^*]+)\*\*:\s*(.+)$/);
+    if (match) {
+      features.push({ title: match[1].trim(), description: match[2].trim() });
+    } else {
+      const simpleMatch = line.match(/^-\s*(.+)$/);
+      if (simpleMatch) {
+        features.push({ title: simpleMatch[1].trim(), description: '' });
+      }
+    }
+  }
+  
+  return features;
+}
+
 // Render approach text with proper formatting
 function ApproachDisplay({ approach }: { approach: string | null }) {
   if (!approach) {
@@ -982,7 +1036,93 @@ function ApproachDisplay({ approach }: { approach: string | null }) {
     );
   }
 
-  // Parse the approach into sections
+  // Try to parse as structured sections first
+  const sections = parseApproachSections(approach);
+  const hasStructuredSections = Object.keys(sections).length > 0;
+
+  if (hasStructuredSections) {
+    const features = sections['Key Features'] ? parseFeatures(sections['Key Features']) : [];
+    
+    return (
+      <div className="space-y-6">
+        {/* Unique Value */}
+        {sections['Unique Value'] && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <div className="h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center">
+                <Sparkles className="h-3 w-3 text-primary" />
+              </div>
+              <h6 className="font-medium text-xs uppercase tracking-wide text-muted-foreground">Unique Value</h6>
+            </div>
+            <p className="text-sm text-foreground/90 leading-relaxed pl-8">{sections['Unique Value']}</p>
+          </div>
+        )}
+        
+        {/* Target Persona */}
+        {sections['Target Persona'] && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <div className="h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center">
+                <Users className="h-3 w-3 text-primary" />
+              </div>
+              <h6 className="font-medium text-xs uppercase tracking-wide text-muted-foreground">Target Persona</h6>
+            </div>
+            <p className="text-sm text-foreground/90 leading-relaxed pl-8">{sections['Target Persona']}</p>
+          </div>
+        )}
+        
+        {/* Key Features */}
+        {features.length > 0 && (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center">
+                <Zap className="h-3 w-3 text-primary" />
+              </div>
+              <h6 className="font-medium text-xs uppercase tracking-wide text-muted-foreground">Key Features</h6>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-8">
+              {features.map((feature, idx) => (
+                <div key={idx} className="p-3 rounded-lg border border-border/50 bg-secondary/20">
+                  <p className="text-sm font-medium text-foreground">{feature.title}</p>
+                  {feature.description && (
+                    <p className="text-xs text-muted-foreground mt-1">{feature.description}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {/* Monetization */}
+        {sections['Monetization'] && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <div className="h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center">
+                <DollarSign className="h-3 w-3 text-primary" />
+              </div>
+              <h6 className="font-medium text-xs uppercase tracking-wide text-muted-foreground">Monetization</h6>
+            </div>
+            <p className="text-sm text-foreground/90 leading-relaxed pl-8">{sections['Monetization']}</p>
+          </div>
+        )}
+        
+        {/* Tech Stack (if in approach) */}
+        {sections['Tech Stack'] && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <div className="h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center">
+                <Code className="h-3 w-3 text-primary" />
+              </div>
+              <h6 className="font-medium text-xs uppercase tracking-wide text-muted-foreground">Tech Stack</h6>
+            </div>
+            <p className="text-sm text-foreground/90 leading-relaxed pl-8">{sections['Tech Stack']}</p>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Fallback: Parse the approach into sections with old format
   const lines = approach.split('\n').filter(line => line.trim());
   
   return (
@@ -991,23 +1131,28 @@ function ApproachDisplay({ approach }: { approach: string | null }) {
         const trimmedLine = line.trim();
         
         // Phase headers (bold text like **Phase 1 - Core Problem**)
-        if (trimmedLine.startsWith('**') && trimmedLine.includes('**')) {
-          const headerText = trimmedLine.replace(/\*\*/g, '').replace(/\(Week.*?\)/, (match) => match);
-          const weekMatch = headerText.match(/\((Week.*?)\)/);
-          const title = headerText.replace(/\(Week.*?\)/, '').trim();
+        if (trimmedLine.startsWith('**') && trimmedLine.endsWith('**')) {
+          const headerText = trimmedLine.replace(/\*\*/g, '');
           
           return (
             <div key={index} className="flex items-center gap-2 pt-2 first:pt-0">
               <div className="h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center">
                 <Target className="h-3 w-3 text-primary" />
               </div>
-              <h6 className="font-semibold text-sm text-foreground">{title}</h6>
-              {weekMatch && (
-                <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-                  {weekMatch[1]}
-                </span>
-              )}
+              <h6 className="font-semibold text-sm text-foreground">{headerText}</h6>
             </div>
+          );
+        }
+        
+        // Inline bold (like **text**: description)
+        if (trimmedLine.includes('**')) {
+          const parsed = trimmedLine.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+          return (
+            <p 
+              key={index} 
+              className="text-sm text-muted-foreground pl-2 leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: parsed.replace(/<strong>/g, '<span class="text-foreground font-medium">').replace(/<\/strong>/g, '</span>') }}
+            />
           );
         }
         
@@ -1015,21 +1160,10 @@ function ApproachDisplay({ approach }: { approach: string | null }) {
         if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-')) {
           const bulletText = trimmedLine.replace(/^[•-]\s*/, '');
           
-          // Check for quoted pain points
-          const hasQuote = bulletText.includes('"');
-          
           return (
             <div key={index} className="flex items-start gap-2 pl-2">
               <Zap className="h-3 w-3 text-primary mt-1 shrink-0" />
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {hasQuote ? (
-                  bulletText.split('"').map((part, i) => 
-                    i % 2 === 1 ? (
-                      <span key={i} className="text-foreground font-medium">"{part}"</span>
-                    ) : part
-                  )
-                ) : bulletText}
-              </p>
+              <p className="text-sm text-muted-foreground leading-relaxed">{bulletText}</p>
             </div>
           );
         }
