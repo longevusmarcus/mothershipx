@@ -20,7 +20,7 @@ import {
   Terminal,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
-import { FitVerificationPanel } from "@/components/FitVerificationPanel";
+
 import { SolutionsLab } from "@/components/SolutionsLab";
 import { OpportunityMeter } from "@/components/OpportunityMeter";
 import { SourceSignals } from "@/components/SourceSignals";
@@ -495,7 +495,7 @@ const ProblemDetail = () => {
               competitionGap={problem.competitionGap}
               sources={problem.sources}
             />
-            <FitVerificationPanel {...mockTopSolution} />
+            
           </TabsContent>
 
           <TabsContent value="competitors" forceMount className={`mt-4 ${activeTab !== "competitors" ? "hidden" : ""}`}>
