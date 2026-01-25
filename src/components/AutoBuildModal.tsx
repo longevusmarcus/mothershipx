@@ -162,8 +162,8 @@ export function AutoBuildModal({ open, onOpenChange, signal }: AutoBuildModalPro
               />
             </div>
             <div>
-              <h2 className="font-mono text-lg text-primary tracking-wide">MOTHERSHIP_X</h2>
-              <p className="font-mono text-xs text-primary/60">autonomous builder protocol v2.0</p>
+              <h2 className="font-mono text-lg text-white tracking-wide">MOTHERSHIP_X</h2>
+              <p className="font-mono text-xs text-white/60">autonomous builder protocol v2.0</p>
             </div>
           </div>
 
