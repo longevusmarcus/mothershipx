@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
 import { MasonryGrid } from "@/components/MasonryGrid";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Plus } from "lucide-react";
 import { useProblems } from "@/hooks/useProblems";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useCategories } from "@/hooks/useCategories";
@@ -26,9 +26,10 @@ const Problems = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [autoBuildOpen, setAutoBuildOpen] = useState(false);
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   const { isAuthenticated } = useAuth();
-  const { hasPremiumAccess, isLoading: subscriptionLoading } = useSubscription();
+  const { hasPremiumAccess, isLoading: subscriptionLoading, isAdmin } = useSubscription();
   const { data: problems = [], isLoading } = useProblems(selectedCategory);
   const { data: categories = ["All"] } = useCategories();
   const queryClient = useQueryClient();
@@ -111,6 +112,18 @@ const Problems = () => {
                   />
                 </motion.div>
               </Button>
+
+              {/* New Search Button - Admin only */}
+              {isAdmin && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate("/search")}
+                  className="text-muted-foreground hover:text-foreground h-8 px-2"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                </Button>
+              )}
               
               {/* Refresh Button */}
               <Button

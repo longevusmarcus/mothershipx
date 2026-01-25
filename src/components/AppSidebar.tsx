@@ -157,37 +157,6 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-2 space-y-0.5">
-        {/* New Search - Admin only on desktop, hidden on mobile */}
-        {isAdmin && !isMobile && (
-          <NavLink
-            to="/search"
-            className={cn(
-              "group flex items-center gap-3 px-2 py-2 rounded-md text-sm transition-colors",
-              location.pathname === "/search" ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            <motion.div
-              whileHover={{ scale: 1.15, rotate: 5 }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 400, damping: 17 }}
-            >
-              <Plus className="h-4 w-4 shrink-0 transition-colors group-hover:text-primary" />
-            </motion.div>
-            <AnimatePresence mode="wait">
-              {!collapsed && (
-                <motion.span
-                  initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: "auto" }}
-                  exit={{ opacity: 0, width: 0 }}
-                  className="overflow-hidden whitespace-nowrap"
-                >
-                  New Search
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </NavLink>
-        )}
-
         {/* Signals */}
         <NavLink
           to="/problems"
