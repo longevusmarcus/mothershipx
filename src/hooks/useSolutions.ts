@@ -31,6 +31,7 @@ export interface Solution {
   created_by: string;
   created_at: string;
   updated_at: string;
+  landing_page: LandingPageData | null;
   contributors?: SolutionContributor[];
   has_upvoted?: boolean;
   creator?: {
@@ -38,6 +39,23 @@ export interface Solution {
     name: string | null;
     avatar_url: string | null;
   };
+}
+
+export interface LandingPageData {
+  hero: {
+    headline: string;
+    subheadline: string;
+    ctaText: string;
+  };
+  features: Array<{ title: string; description: string }>;
+  stats: Array<{ value: string; label: string }>;
+  howItWorks: Array<{ step: string; title: string; description: string }>;
+  testimonial: {
+    quote: string;
+    author: string;
+    role: string;
+  };
+  mockupImage?: string;
 }
 
 export function useSolutions(problemId: string) {
@@ -90,6 +108,7 @@ export function useSolutions(problemId: string) {
 
       return data.map((solution) => ({
         ...solution,
+        landing_page: (solution.landing_page as unknown) as LandingPageData | null,
         has_upvoted: userUpvotes.includes(solution.id),
         creator: profilesMap.get(solution.created_by),
         contributors: contributors
@@ -112,27 +131,33 @@ export function useSolutions(problemId: string) {
       approach,
       techStack = [],
       marketFit,
+      landingPage,
     }: {
       title: string;
       description: string;
       approach?: string;
       techStack?: string[];
       marketFit?: number;
+      landingPage?: LandingPageData;
     }) => {
       if (!user) throw new Error("Must be logged in");
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const insertData: any = {
+        problem_id: problemId,
+        title,
+        description,
+        approach: approach || null,
+        tech_stack: techStack,
+        market_fit: marketFit ?? 0,
+        landing_page: landingPage || null,
+        created_by: user.id,
+        last_editor_id: user.id,
+      };
+      
       const { data, error } = await supabase
         .from("solutions")
-        .insert({
-          problem_id: problemId,
-          title,
-          description,
-          approach: approach || null,
-          tech_stack: techStack,
-          market_fit: marketFit ?? 0,
-          created_by: user.id,
-          last_editor_id: user.id,
-        })
+        .insert(insertData)
         .select()
         .single();
 

@@ -19,14 +19,17 @@ import {
   Users,
   DollarSign,
   Code,
+  ArrowRight,
+  ArrowUpRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
-import { useSolutions, type Solution } from "@/hooks/useSolutions";
+import { useSolutions, type Solution, type LandingPageData } from "@/hooks/useSolutions";
 import { useVerifiedBuilders } from "@/hooks/useVerifiedBuilders";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatDistanceToNow } from "date-fns";
@@ -1179,6 +1182,126 @@ function ApproachDisplay({ approach }: { approach: string | null }) {
   );
 }
 
+// Landing Page Preview component
+function LandingPagePreview({ landingPage, solutionTitle }: { landingPage: LandingPageData; solutionTitle: string }) {
+  return (
+    <div className="bg-background rounded-lg border border-border/50 overflow-hidden">
+      {/* Hero Section */}
+      <section className="relative px-6 py-12 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-muted/30 to-transparent" />
+        <div className="relative max-w-2xl mx-auto text-center">
+          <h1 className="text-2xl font-light tracking-tight mb-3 leading-[1.1]">
+            {landingPage.hero.headline}
+          </h1>
+          <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto leading-relaxed">
+            {landingPage.hero.subheadline}
+          </p>
+          <div className="flex items-center justify-center gap-3">
+            <Button size="sm" className="h-9 px-5 text-sm font-normal">
+              {landingPage.hero.ctaText}
+              <ArrowRight className="h-3.5 w-3.5 ml-2" />
+            </Button>
+            <Button variant="ghost" size="sm" className="h-9 px-4 text-sm font-normal">
+              Learn more
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      {landingPage.stats && landingPage.stats.length > 0 && (
+        <section className="px-6 py-8 border-y border-border/50">
+          <div className="max-w-2xl mx-auto">
+            <div className="grid grid-cols-3 gap-4">
+              {landingPage.stats.map((stat, i) => (
+                <div key={i} className="text-center">
+                  <p className="text-xl font-light tracking-tight mb-0.5">{stat.value}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{stat.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Features Section */}
+      {landingPage.features && landingPage.features.length > 0 && (
+        <section className="px-6 py-10">
+          <div className="max-w-2xl mx-auto">
+            <div className="text-center mb-6">
+              <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">Features</p>
+              <h2 className="text-lg font-light tracking-tight">Everything you need</h2>
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              {landingPage.features.slice(0, 3).map((feature, i) => (
+                <div key={i} className="text-center">
+                  <div className="w-8 h-8 mx-auto mb-2 rounded-full border border-border/50 flex items-center justify-center">
+                    <span className="text-[10px] text-muted-foreground">{String(i + 1).padStart(2, '0')}</span>
+                  </div>
+                  <h3 className="text-xs font-medium mb-1">{feature.title}</h3>
+                  <p className="text-[10px] text-muted-foreground leading-relaxed">{feature.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* How It Works Section */}
+      {landingPage.howItWorks && landingPage.howItWorks.length > 0 && (
+        <section className="px-6 py-10 bg-muted/20">
+          <div className="max-w-2xl mx-auto">
+            <div className="text-center mb-6">
+              <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">Process</p>
+              <h2 className="text-lg font-light tracking-tight">How it works</h2>
+            </div>
+            <div className="space-y-3">
+              {landingPage.howItWorks.map((step, i) => (
+                <div key={i} className="flex gap-3 items-start">
+                  <div className="w-6 h-6 rounded-full bg-foreground text-background flex items-center justify-center text-[10px] shrink-0">
+                    {step.step}
+                  </div>
+                  <div className="pt-0.5">
+                    <h3 className="text-xs font-medium mb-0.5">{step.title}</h3>
+                    <p className="text-[10px] text-muted-foreground leading-relaxed">{step.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Testimonial Section */}
+      {landingPage.testimonial && (
+        <section className="px-6 py-10 border-t border-border/50">
+          <div className="max-w-lg mx-auto text-center">
+            <blockquote className="text-sm font-light leading-relaxed mb-3 italic">
+              "{landingPage.testimonial.quote}"
+            </blockquote>
+            <div>
+              <p className="text-xs font-medium">{landingPage.testimonial.author}</p>
+              <p className="text-[10px] text-muted-foreground">{landingPage.testimonial.role}</p>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* CTA Section */}
+      <section className="px-6 py-10 bg-foreground text-background">
+        <div className="max-w-lg mx-auto text-center">
+          <h2 className="text-lg font-light tracking-tight mb-2">Ready to get started?</h2>
+          <p className="text-xs text-background/60 mb-4">Join thousands of users transforming their workflow.</p>
+          <Button variant="secondary" size="sm" className="h-9 px-5 text-sm font-normal">
+            {landingPage.hero.ctaText}
+            <ArrowUpRight className="h-3.5 w-3.5 ml-2" />
+          </Button>
+        </div>
+      </section>
+    </div>
+  );
+}
+
 export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPainPoints, problemCategory, opportunityScore, demandVelocity, competitionGap, sources }: SolutionsLabProps) => {
   const { user } = useAuth();
   const { solutions: dbSolutions, isLoading, createSolution, updateSolution, toggleUpvote, forkSolution } = useSolutions(problemId);
@@ -1363,73 +1486,158 @@ export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPai
                     exit={{ height: 0, opacity: 0 }}
                     className="overflow-hidden"
                   >
-                    <div className="px-4 pb-4 space-y-4 border-t border-border/50 pt-4">
-                      {/* Approach Section */}
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <h5 className="text-xs text-muted-foreground uppercase tracking-wide">
-                            Implementation Approach
-                          </h5>
-                          {editingId !== solution.id && user && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleStartEdit(solution)}
-                              className="h-7 text-xs gap-1"
-                            >
-                              <Edit3 className="h-3 w-3" />
-                              Edit
-                            </Button>
-                          )}
-                        </div>
+                    <div className="px-4 pb-4 border-t border-border/50 pt-4">
+                      {/* Use tabs if landing page exists */}
+                      {solution.landing_page ? (
+                        <Tabs defaultValue="overview" className="w-full">
+                          <TabsList className="w-full h-9 p-0.5 bg-muted/30 mb-4">
+                            <TabsTrigger value="overview" className="flex-1 text-xs font-normal">
+                              Overview
+                            </TabsTrigger>
+                            <TabsTrigger value="landing" className="flex-1 text-xs font-normal">
+                              Landing Page
+                            </TabsTrigger>
+                          </TabsList>
 
-                        {editingId === solution.id ? (
-                          <div className="space-y-2">
-                            <Textarea
-                              value={editContent}
-                              onChange={(e) => setEditContent(e.target.value)}
-                              className="min-h-[100px] text-sm"
-                            />
-                            <div className="flex justify-end gap-2">
-                              <Button variant="ghost" size="sm" onClick={() => setEditingId(null)}>
-                                Cancel
-                              </Button>
-                              <Button
-                                size="sm"
-                                onClick={() => handleSaveEdit(solution.id)}
-                                disabled={updateSolution.isPending}
-                              >
-                                {updateSolution.isPending && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
-                                Save
-                              </Button>
+                          <TabsContent value="overview" className="mt-0 space-y-4">
+                            {/* Approach Section */}
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <h5 className="text-xs text-muted-foreground uppercase tracking-wide">
+                                  Implementation Approach
+                                </h5>
+                                {editingId !== solution.id && user && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleStartEdit(solution)}
+                                    className="h-7 text-xs gap-1"
+                                  >
+                                    <Edit3 className="h-3 w-3" />
+                                    Edit
+                                  </Button>
+                                )}
+                              </div>
+
+                              {editingId === solution.id ? (
+                                <div className="space-y-2">
+                                  <Textarea
+                                    value={editContent}
+                                    onChange={(e) => setEditContent(e.target.value)}
+                                    className="min-h-[100px] text-sm"
+                                  />
+                                  <div className="flex justify-end gap-2">
+                                    <Button variant="ghost" size="sm" onClick={() => setEditingId(null)}>
+                                      Cancel
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      onClick={() => handleSaveEdit(solution.id)}
+                                      disabled={updateSolution.isPending}
+                                    >
+                                      {updateSolution.isPending && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+                                      Save
+                                    </Button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="p-4 rounded-lg bg-secondary/30">
+                                  <ApproachDisplay approach={solution.approach} />
+                                </div>
+                              )}
                             </div>
-                          </div>
-                        ) : (
-                          <div className="p-4 rounded-lg bg-secondary/30">
-                            <ApproachDisplay approach={solution.approach} />
-                          </div>
-                        )}
-                      </div>
 
-                      {/* Tech Stack */}
-                      {solution.tech_stack && solution.tech_stack.length > 0 && (
-                        <div className="space-y-2">
-                          <h5 className="text-xs text-muted-foreground uppercase tracking-wide">
-                            Suggested Tech Stack
-                          </h5>
-                          <div className="flex flex-wrap gap-1.5">
-                            {solution.tech_stack.map((tech) => (
-                              <span key={tech} className="text-xs px-2 py-1 rounded-full bg-secondary text-foreground/80">
-                                {tech}
-                              </span>
-                            ))}
+                            {/* Tech Stack */}
+                            {solution.tech_stack && solution.tech_stack.length > 0 && (
+                              <div className="space-y-2">
+                                <h5 className="text-xs text-muted-foreground uppercase tracking-wide">
+                                  Suggested Tech Stack
+                                </h5>
+                                <div className="flex flex-wrap gap-1.5">
+                                  {solution.tech_stack.map((tech) => (
+                                    <span key={tech} className="text-xs px-2 py-1 rounded-full bg-secondary text-foreground/80">
+                                      {tech}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </TabsContent>
+
+                          <TabsContent value="landing" className="mt-0">
+                            <LandingPagePreview landingPage={solution.landing_page} solutionTitle={solution.title} />
+                          </TabsContent>
+                        </Tabs>
+                      ) : (
+                        <div className="space-y-4">
+                          {/* Approach Section - no tabs */}
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <h5 className="text-xs text-muted-foreground uppercase tracking-wide">
+                                Implementation Approach
+                              </h5>
+                              {editingId !== solution.id && user && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleStartEdit(solution)}
+                                  className="h-7 text-xs gap-1"
+                                >
+                                  <Edit3 className="h-3 w-3" />
+                                  Edit
+                                </Button>
+                              )}
+                            </div>
+
+                            {editingId === solution.id ? (
+                              <div className="space-y-2">
+                                <Textarea
+                                  value={editContent}
+                                  onChange={(e) => setEditContent(e.target.value)}
+                                  className="min-h-[100px] text-sm"
+                                />
+                                <div className="flex justify-end gap-2">
+                                  <Button variant="ghost" size="sm" onClick={() => setEditingId(null)}>
+                                    Cancel
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    onClick={() => handleSaveEdit(solution.id)}
+                                    disabled={updateSolution.isPending}
+                                  >
+                                    {updateSolution.isPending && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+                                    Save
+                                  </Button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="p-4 rounded-lg bg-secondary/30">
+                                <ApproachDisplay approach={solution.approach} />
+                              </div>
+                            )}
                           </div>
+
+                          {/* Tech Stack */}
+                          {solution.tech_stack && solution.tech_stack.length > 0 && (
+                            <div className="space-y-2">
+                              <h5 className="text-xs text-muted-foreground uppercase tracking-wide">
+                                Suggested Tech Stack
+                              </h5>
+                              <div className="flex flex-wrap gap-1.5">
+                                {solution.tech_stack.map((tech) => (
+                                  <span key={tech} className="text-xs px-2 py-1 rounded-full bg-secondary text-foreground/80">
+                                    {tech}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       )}
 
                       {/* Contributors */}
                       {solution.contributors && solution.contributors.length > 0 && (
-                        <div className="space-y-2">
+                        <div className="space-y-2 mt-4">
                           <h5 className="text-xs text-muted-foreground uppercase tracking-wide">
                             Contributors ({solution.contributors.length})
                           </h5>
@@ -1472,13 +1680,13 @@ export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPai
                       )}
 
                       {/* Last Edited */}
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground mt-4">
                         <Clock className="h-3 w-3" />
                         Last edited {formatDistanceToNow(new Date(solution.updated_at), { addSuffix: true })}
                       </div>
 
                       {/* Actions */}
-                      <div className="flex items-center gap-2 pt-2 border-t border-border/50">
+                      <div className="flex items-center gap-2 pt-2 mt-2 border-t border-border/50">
                         <Button
                           variant={solution.has_upvoted ? "default" : "outline"}
                           size="sm"

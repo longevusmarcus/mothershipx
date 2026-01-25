@@ -826,6 +826,7 @@ export type Database = {
           edit_count: number
           forks: number
           id: string
+          landing_page: Json | null
           last_editor_id: string | null
           market_fit: number
           problem_id: string | null
@@ -845,6 +846,7 @@ export type Database = {
           edit_count?: number
           forks?: number
           id?: string
+          landing_page?: Json | null
           last_editor_id?: string | null
           market_fit?: number
           problem_id?: string | null
@@ -864,6 +866,7 @@ export type Database = {
           edit_count?: number
           forks?: number
           id?: string
+          landing_page?: Json | null
           last_editor_id?: string | null
           market_fit?: number
           problem_id?: string | null

@@ -130,6 +130,7 @@ ${idea.monetization}`;
         approach,
         techStack: idea.techStack,
         marketFit: idea.marketFit || 0,
+        landingPage: idea.landingPage,
       },
       {
         onSuccess: () => {
