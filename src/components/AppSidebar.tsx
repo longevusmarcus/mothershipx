@@ -19,6 +19,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 import { AuthModal } from "@/components/AuthModal";
 import {
   DropdownMenu,
@@ -36,10 +37,6 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 
-const navItems = [
-  { icon: Plus, label: "New Search", path: "/" },
-  { icon: Radio, label: "Signals", path: "/problems" },
-];
 
 interface AppSidebarProps {
   onClose?: () => void;
@@ -56,6 +53,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
   const navigate = useNavigate();
   const isMobile = onClose !== undefined;
   const { user, profile, signOut, isAuthenticated } = useAuth();
+  const { isAdmin } = useSubscription();
 
   useEffect(() => {
     localStorage.setItem("sidebar-collapsed", String(collapsed));
@@ -159,40 +157,65 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-2 space-y-0.5">
-        {navItems.map((item) => {
-          const isActive = location.pathname === item.path;
-
-          return (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={cn(
-                "group flex items-center gap-3 px-2 py-2 rounded-md text-sm transition-colors",
-                isActive ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground",
-              )}
+        {/* New Search - Admin only on desktop, hidden on mobile */}
+        {isAdmin && !isMobile && (
+          <NavLink
+            to="/"
+            className={cn(
+              "group flex items-center gap-3 px-2 py-2 rounded-md text-sm transition-colors",
+              location.pathname === "/" ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            <motion.div
+              whileHover={{ scale: 1.15, rotate: 5 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
             >
-              <motion.div
-                whileHover={{ scale: 1.15, rotate: 5 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              <Plus className="h-4 w-4 shrink-0 transition-colors group-hover:text-primary" />
+            </motion.div>
+            <AnimatePresence mode="wait">
+              {!collapsed && (
+                <motion.span
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: "auto" }}
+                  exit={{ opacity: 0, width: 0 }}
+                  className="overflow-hidden whitespace-nowrap"
+                >
+                  New Search
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </NavLink>
+        )}
+
+        {/* Signals */}
+        <NavLink
+          to="/problems"
+          className={cn(
+            "group flex items-center gap-3 px-2 py-2 rounded-md text-sm transition-colors",
+            location.pathname === "/problems" ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          <motion.div
+            whileHover={{ scale: 1.15, rotate: 5 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+          >
+            <Radio className="h-4 w-4 shrink-0 transition-colors group-hover:text-primary" />
+          </motion.div>
+          <AnimatePresence mode="wait">
+            {(!collapsed || isMobile) && (
+              <motion.span
+                initial={{ opacity: 0, width: 0 }}
+                animate={{ opacity: 1, width: "auto" }}
+                exit={{ opacity: 0, width: 0 }}
+                className="overflow-hidden whitespace-nowrap"
               >
-                <item.icon className="h-4 w-4 shrink-0 transition-colors group-hover:text-primary" />
-              </motion.div>
-              <AnimatePresence mode="wait">
-                {(!collapsed || isMobile) && (
-                  <motion.span
-                    initial={{ opacity: 0, width: 0 }}
-                    animate={{ opacity: 1, width: "auto" }}
-                    exit={{ opacity: 0, width: 0 }}
-                    className="overflow-hidden whitespace-nowrap"
-                  >
-                    {item.label}
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </NavLink>
-          );
-        })}
+                Signals
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </NavLink>
 
         {/* Arena - Special styling */}
         <NavLink
