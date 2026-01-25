@@ -194,12 +194,10 @@ export const FloatingJoinButton = ({ challenge }: FloatingJoinButtonProps) => {
         >
           {isProcessing ? (
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-          ) : isVerified ? (
-            <Shield className="h-4 w-4 mr-2 text-success" />
           ) : (
             <Trophy className="h-4 w-4 mr-2" />
           )}
-          ./join — $5 entry
+          ./join
         </Button>
       </motion.div>
 
