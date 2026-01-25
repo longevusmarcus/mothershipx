@@ -1700,16 +1700,6 @@ export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPai
                           <ThumbsUp className={`h-3 w-3 ${solution.has_upvoted ? "fill-current" : ""}`} />
                           {solution.has_upvoted ? "Upvoted" : "Upvote"}
                         </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="gap-1.5 text-xs h-8"
-                          onClick={() => handleFork(solution.id)}
-                          disabled={!user || forkSolution.isPending}
-                        >
-                          <GitBranch className="h-3 w-3" />
-                          Fork
-                        </Button>
                         
                         {/* Admin delete button */}
                         {isAdmin && (
