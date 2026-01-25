@@ -5,11 +5,14 @@ import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
 import { CommunityChallenges } from "@/components/CommunityChallenges";
+import { FloatingJoinButton } from "@/components/FloatingJoinButton";
+import { useTodayChallenge } from "@/hooks/useChallenges";
 import { useQueryClient } from "@tanstack/react-query";
 
 const Challenges = () => {
   const [paymentStatus, setPaymentStatus] = useState<"verifying" | "success" | "cancelled" | null>(null);
   const queryClient = useQueryClient();
+  const { data: todaysChallenge } = useTodayChallenge();
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -90,6 +93,9 @@ const Challenges = () => {
       </AnimatePresence>
 
       <CommunityChallenges />
+      
+      {/* Floating Join Button */}
+      <FloatingJoinButton challenge={todaysChallenge ?? null} />
     </AppLayout>
   );
 };
