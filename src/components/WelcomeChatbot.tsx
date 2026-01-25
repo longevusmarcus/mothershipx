@@ -63,8 +63,8 @@ export function WelcomeChatbot() {
 
         {/* Description */}
         <p className="text-sm leading-relaxed text-foreground pt-1">
-          We supercharge your builder experience so you know what to build, who to work with, who to compete against,
-          and earn rewards every week.
+          We’re supercharging the future of entrepreneurship by creating an AI-powered arena where anyone can compete to
+          ship demand-validated apps, websites, and digital products—and get rewarded for real outcomes.
         </p>
       </div>
     );
