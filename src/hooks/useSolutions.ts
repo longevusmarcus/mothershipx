@@ -288,6 +288,24 @@ export function useSolutions(problemId: string) {
     },
   });
 
+  const deleteSolution = useMutation({
+    mutationFn: async (solutionId: string) => {
+      const { error } = await supabase
+        .from("solutions")
+        .delete()
+        .eq("id", solutionId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["solutions", problemId] });
+      toast.success("Solution removed");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
   return {
     solutions,
     isLoading,
@@ -296,5 +314,6 @@ export function useSolutions(problemId: string) {
     updateSolution,
     toggleUpvote,
     forkSolution,
+    deleteSolution,
   };
 }

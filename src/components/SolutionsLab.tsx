@@ -21,7 +21,9 @@ import {
   Code,
   ArrowRight,
   ArrowUpRight,
+  Trash2,
 } from "lucide-react";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -1304,7 +1306,8 @@ function LandingPagePreview({ landingPage, solutionTitle }: { landingPage: Landi
 
 export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPainPoints, problemCategory, opportunityScore, demandVelocity, competitionGap, sources }: SolutionsLabProps) => {
   const { user } = useAuth();
-  const { solutions: dbSolutions, isLoading, createSolution, updateSolution, toggleUpvote, forkSolution } = useSolutions(problemId);
+  const { isAdmin } = useSubscription();
+  const { solutions: dbSolutions, isLoading, createSolution, updateSolution, toggleUpvote, forkSolution, deleteSolution } = useSolutions(problemId);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState("");
@@ -1707,6 +1710,20 @@ export const SolutionsLab = ({ problemId, problemTitle, problemTrend, problemPai
                           <GitBranch className="h-3 w-3" />
                           Fork
                         </Button>
+                        
+                        {/* Admin delete button */}
+                        {isAdmin && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="gap-1.5 text-xs h-8 ml-auto text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                            onClick={() => deleteSolution.mutate(solution.id)}
+                            disabled={deleteSolution.isPending}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                            Remove
+                          </Button>
+                        )}
                       </div>
                     </div>
                   </motion.div>
