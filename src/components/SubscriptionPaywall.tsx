@@ -28,12 +28,12 @@ interface SubscriptionPaywallProps {
 }
 
 const features = [
-  { icon: Zap, label: "Unlimited searches", delay: 0 },
+  { icon: Zap, label: "Unlimited AI searches", delay: 0 },
   { icon: Globe, label: "Full problem dashboard access", delay: 0.1 },
   { icon: Swords, label: "Free Arena challenge entry (instead of $5/entry)", delay: 0.2 },
   { icon: Users, label: "Builder matching/Networking", delay: 0.3 },
   { icon: FlaskConical, label: "Solution lab & market analysis", delay: 0.4 },
-  { icon: MessageSquareText, label: "Problem-to-solution prompts", delay: 0.5 },
+  { icon: MessageSquareText, label: "Problem-to-solution prompts (automated builder soon available)", delay: 0.5 },
   { icon: Trophy, label: "Weekly prizes", delay: 0.6 },
 ];
 
