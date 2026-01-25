@@ -1,9 +1,18 @@
+import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { Radio, Swords, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export function MobileBottomNav() {
   const location = useLocation();
+
+  const handleLeagueClick = () => {
+    toast("Coming Soon", {
+      description: "League rankings are launching soon. Stay tuned!",
+      duration: 2000,
+    });
+  };
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden safe-area-pb">
@@ -38,16 +47,14 @@ export function MobileBottomNav() {
           </span>
         </NavLink>
 
-        {/* League - Right (SOON) */}
-        <div
-          className="flex flex-col items-center justify-center flex-1 h-full gap-0.5 text-muted-foreground opacity-50 cursor-not-allowed"
+        {/* League - Right */}
+        <button
+          onClick={handleLeagueClick}
+          className="flex flex-col items-center justify-center flex-1 h-full gap-0.5 text-muted-foreground active:scale-95 transition-transform"
         >
           <Trophy className="h-5 w-5" strokeWidth={1.5} />
-          <div className="flex items-center gap-1">
-            <span className="text-[10px]">League</span>
-            <span className="text-[7px] bg-muted text-muted-foreground px-1 py-0.5 rounded font-medium">SOON</span>
-          </div>
-        </div>
+          <span className="text-[10px]">League</span>
+        </button>
       </div>
     </nav>
   );
