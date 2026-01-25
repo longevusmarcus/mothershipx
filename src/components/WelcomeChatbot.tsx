@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 const WELCOME_SHOWN_KEY = "mothershipx_welcome_shown";
 
 const WELCOME_STEP_1 =
-  "Welcome, builder :) MothershipX helps you discover real pain points and trends across TikTok, Reddit, YouTube, and more, compete to build solutions that work, and earn rewards based on real outcomes.";
+  "Welcome, builder :) MothershipX helps you discover real pain points and trends across TikTok, Reddit, YouTube, and more, compete to build the best solutions, and earn rewards based on real outcomes.";
 
 const TOTAL_STEPS = 2;
 
@@ -52,10 +52,10 @@ export function WelcomeChatbot() {
             <span className="font-medium">MothershipX</span>
             <span className="text-muted-foreground text-xs">(SuperLovable)</span>
             <span className="text-muted-foreground">=</span>
-            <span className="text-foreground">validation + audition + rewards</span>
+            <span className="text-foreground">validation + competition + rewards</span>
           </div>
           <div className="flex items-center gap-2 text-sm">
-            <span className="font-medium">Lovable/Etc.</span>
+            <span className="font-medium">Lovable</span>
             <span className="text-muted-foreground">=</span>
             <span className="text-foreground">execution</span>
           </div>
@@ -63,8 +63,8 @@ export function WelcomeChatbot() {
 
         {/* Description */}
         <p className="text-sm leading-relaxed text-foreground pt-1">
-          We’re supercharging the future of entrepreneurship by creating an AI-powered arena where anyone can compete to
-          ship demand-validated apps, websites, and digital products—and get rewarded for real outcomes.
+          We’re helping builders like you to continuously create useful digital apps, websites and digital products at
+          the speed of thought—backed by real demand and rewarded for impact.
         </p>
       </div>
     );
