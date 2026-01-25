@@ -26,7 +26,7 @@ const Problems = () => {
 
   const { isAuthenticated } = useAuth();
   const { hasPremiumAccess, isLoading: subscriptionLoading } = useSubscription();
-  const { data: problems = [], isLoading } = useProblems(selectedCategory, isAuthenticated);
+  const { data: problems = [], isLoading } = useProblems(selectedCategory);
   const { data: categories = ["All"] } = useCategories();
   const queryClient = useQueryClient();
 
