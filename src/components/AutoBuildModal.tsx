@@ -22,9 +22,7 @@ interface AutoBuildModalProps {
 const getTypingLines = (signal?: SignalContext): string[] => {
   if (signal) {
     // Signal-specific lines
-    const truncatedTitle = signal.title.length > 40 
-      ? signal.title.slice(0, 37) + "..." 
-      : signal.title;
+    const truncatedTitle = signal.title.length > 40 ? signal.title.slice(0, 37) + "..." : signal.title;
     return [
       `$ targeting signal: "${truncatedTitle}"`,
       "$ analyzing market demand patterns...",
@@ -38,7 +36,7 @@ const getTypingLines = (signal?: SignalContext): string[] => {
       "$ process complete. 5 market opportunities ready.",
     ];
   }
-  
+
   // Default lines for all signals
   return [
     "$ initiating signal analysis...",
@@ -63,7 +61,7 @@ export function AutoBuildModal({ open, onOpenChange, signal }: AutoBuildModalPro
   const [soundEnabled, setSoundEnabled] = useState(false);
   const hasInteractedRef = useRef(false);
   const typingLinesRef = useRef<string[]>([]);
-  
+
   const { playKeyClick, playKeyRelease, playSuccess } = useKeyboardSound();
 
   // Reset state when modal opens
@@ -87,30 +85,33 @@ export function AutoBuildModal({ open, onOpenChange, signal }: AutoBuildModalPro
 
     const typingLines = typingLinesRef.current;
     const currentLine = typingLines[currentLineIndex];
-    
+
     if (!currentLine) return;
-    
+
     if (currentText.length < currentLine.length) {
-      const timeout = setTimeout(() => {
-        // Play keyboard click sound (alternate between click and release for variety)
-        if (soundEnabled && hasInteractedRef.current) {
-          if (Math.random() > 0.3) {
-            playKeyClick();
-          } else {
-            playKeyRelease();
+      const timeout = setTimeout(
+        () => {
+          // Play keyboard click sound (alternate between click and release for variety)
+          if (soundEnabled && hasInteractedRef.current) {
+            if (Math.random() > 0.3) {
+              playKeyClick();
+            } else {
+              playKeyRelease();
+            }
           }
-        }
-        setCurrentText(currentLine.slice(0, currentText.length + 1));
-      }, 25 + Math.random() * 35); // Variable typing speed for realism
+          setCurrentText(currentLine.slice(0, currentText.length + 1));
+        },
+        25 + Math.random() * 35,
+      ); // Variable typing speed for realism
       return () => clearTimeout(timeout);
     } else {
       // Line complete, move to next
       const timeout = setTimeout(() => {
-        setCompletedLines(prev => [...prev, currentLine]);
+        setCompletedLines((prev) => [...prev, currentLine]);
         setCurrentText("");
-        
+
         if (currentLineIndex < typingLines.length - 1) {
-          setCurrentLineIndex(prev => prev + 1);
+          setCurrentLineIndex((prev) => prev + 1);
         } else {
           setIsTypingComplete(true);
           // Play success sound when complete
@@ -124,13 +125,11 @@ export function AutoBuildModal({ open, onOpenChange, signal }: AutoBuildModalPro
     }
   }, [open, currentText, currentLineIndex, isTypingComplete, soundEnabled, playKeyClick, playKeyRelease, playSuccess]);
 
-  const terminalPath = signal 
+  const terminalPath = signal
     ? `~/mothership/signal/${signal.niche?.toLowerCase().replace(/\s+/g, "-") || "auto-build"}`
     : "~/mothership/auto-build";
 
-  const waitlistTitle = signal
-    ? "Signal-Specific Builder"
-    : "Autonomous Building Protocol";
+  const waitlistTitle = signal ? "Signal-Specific Builder" : "Autonomous Building Protocol";
 
   const waitlistDescription = signal
     ? `AI agents that auto-generate 5 complete startup ideas from "${signal.title.slice(0, 50)}${signal.title.length > 50 ? "..." : ""}"—each with landing page, domain, and payments.`
@@ -143,10 +142,10 @@ export function AutoBuildModal({ open, onOpenChange, signal }: AutoBuildModalPro
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="matrix-rain" />
         </div>
-        
+
         {/* Scanline effect */}
         <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px] opacity-20" />
-        
+
         {/* Content */}
         <div className="relative z-10 p-8">
           {/* Header */}
@@ -155,7 +154,7 @@ export function AutoBuildModal({ open, onOpenChange, signal }: AutoBuildModalPro
               <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border border-primary/30">
                 <img src={lovableLogo} alt="Lovable" className="h-5 w-5 object-contain" />
               </div>
-              <motion.div 
+              <motion.div
                 className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-primary"
                 animate={{ opacity: [1, 0.3, 1] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
@@ -163,7 +162,7 @@ export function AutoBuildModal({ open, onOpenChange, signal }: AutoBuildModalPro
             </div>
             <div>
               <h2 className="font-mono text-lg text-white tracking-wide">MOTHERSHIP_X</h2>
-              <p className="font-mono text-xs text-white/60">autonomous builder protocol v2.0</p>
+              <p className="font-mono text-xs text-white/60">autonomous builder protocol v1.0 (on top of Lovable)</p>
             </div>
           </div>
 
@@ -192,10 +191,10 @@ export function AutoBuildModal({ open, onOpenChange, signal }: AutoBuildModalPro
                   <span className="text-primary/70">{line}</span>
                 </motion.div>
               ))}
-              
+
               {!isTypingComplete && (
                 <div className="flex items-center gap-2">
-                  <motion.span 
+                  <motion.span
                     className="text-primary"
                     animate={{ opacity: [1, 0.5, 1] }}
                     transition={{ duration: 0.8, repeat: Infinity }}
@@ -223,25 +222,19 @@ export function AutoBuildModal({ open, onOpenChange, signal }: AutoBuildModalPro
                 className="mt-6 text-center"
               >
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
-                  <motion.div 
+                  <motion.div
                     className="h-2 w-2 rounded-full bg-primary"
                     animate={{ scale: [1, 1.2, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   />
-                  <span className="font-mono text-xs text-primary/80 uppercase tracking-wider">
-                    Coming Soon
-                  </span>
+                  <span className="font-mono text-xs text-primary/80 uppercase tracking-wider">Coming Soon</span>
                 </div>
-                
-                <h3 className="text-lg font-light text-white mb-2">
-                  {waitlistTitle}
-                </h3>
-                <p className="text-sm text-white/60 mb-6 max-w-md mx-auto">
-                  {waitlistDescription}
-                </p>
-                
-                <WaitlistForm 
-                  feature="builds" 
+
+                <h3 className="text-lg font-light text-white mb-2">{waitlistTitle}</h3>
+                <p className="text-sm text-white/60 mb-6 max-w-md mx-auto">{waitlistDescription}</p>
+
+                <WaitlistForm
+                  feature="builds"
                   buttonText="Join Waitlist"
                   variant="default"
                   className="justify-center"
