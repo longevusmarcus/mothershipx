@@ -15,6 +15,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
+import { AutoBuildModal } from "@/components/AutoBuildModal";
+import lovableLogo from "@/assets/lovable-logo.png";
 
 const Problems = () => {
   const [searchParams] = useSearchParams();
@@ -22,6 +24,7 @@ const Problems = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [autoBuildOpen, setAutoBuildOpen] = useState(false);
   const isMobile = useIsMobile();
 
   const { isAuthenticated } = useAuth();
@@ -81,19 +84,50 @@ const Problems = () => {
             AI-validated)
           </p>
 
-          {/* Refresh Button - hidden on mobile */}
+          {/* Action Buttons - hidden on mobile */}
           {!isMobile && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleRefreshData}
-              disabled={isRefreshing}
-              className="absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground h-8 px-2"
-            >
-              <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
-            </Button>
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-1">
+              {/* Auto-Build Button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setAutoBuildOpen(true)}
+                className="text-muted-foreground hover:text-foreground h-8 px-2 group"
+              >
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="relative"
+                >
+                  <img 
+                    src={lovableLogo} 
+                    alt="Auto-build" 
+                    className="h-4 w-4 object-contain opacity-60 group-hover:opacity-100 transition-opacity" 
+                  />
+                  <motion.div
+                    className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-primary"
+                    animate={{ opacity: [1, 0.3, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                </motion.div>
+              </Button>
+              
+              {/* Refresh Button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleRefreshData}
+                disabled={isRefreshing}
+                className="text-muted-foreground hover:text-foreground h-8 px-2"
+              >
+                <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
+              </Button>
+            </div>
           )}
         </motion.div>
+
+        {/* Auto-Build Modal */}
+        <AutoBuildModal open={autoBuildOpen} onOpenChange={setAutoBuildOpen} />
 
         {/* Categories */}
         <motion.div
