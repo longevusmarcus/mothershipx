@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 const WELCOME_SHOWN_KEY = "mothershipx_welcome_shown";
 
 const WELCOME_STEP_1 =
-  "Welcome, builder :) MothershipX helps you discover real pain points and trends across TikTok, Reddit, YouTube, and more, compete to build the best solutions, and earn rewards based on real outcomes.";
+  "Welcome, builder :) MothershipX helps you discover real pain points and trends across TikTok, Reddit, YouTube, and beyond, compete to build the best solutions, and earn rewards based on real outcomes.";
 
 const TOTAL_STEPS = 2;
 
