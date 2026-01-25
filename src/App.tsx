@@ -38,7 +38,8 @@ const App = () => (
               <BrowserRouter>
                 <ScrollToTop />
                 <Routes>
-                  <Route path="/" element={<Index />} />
+                  {/* Redirect root to Signals page */}
+                  <Route path="/" element={<Navigate to="/problems" replace />} />
                   <Route path="/problems" element={<Problems />} />
                   <Route path="/problems/:id" element={<ProblemDetail />} />
                   <Route path="/challenges" element={<Challenges />} />
