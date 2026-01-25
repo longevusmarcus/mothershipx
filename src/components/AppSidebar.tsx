@@ -160,10 +160,10 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
         {/* New Search - Admin only on desktop, hidden on mobile */}
         {isAdmin && !isMobile && (
           <NavLink
-            to="/"
+            to="/search"
             className={cn(
               "group flex items-center gap-3 px-2 py-2 rounded-md text-sm transition-colors",
-              location.pathname === "/" ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground",
+              location.pathname === "/search" ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground",
             )}
           >
             <motion.div
