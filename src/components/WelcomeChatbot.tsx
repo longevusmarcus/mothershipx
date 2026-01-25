@@ -63,8 +63,8 @@ export function WelcomeChatbot() {
 
         {/* Description */}
         <p className="text-sm leading-relaxed text-foreground pt-1">
-          We’re empowering builders like you to continuously ship useful digital apps, websites and digital products at
-          the speed of thought—backed by real demand and rewarded for impact.
+          We’re empowering builders like you to continuously ship useful apps, websites and digital products at the
+          speed of thought—backed by real demand and rewarded for impact.
         </p>
       </div>
     );
