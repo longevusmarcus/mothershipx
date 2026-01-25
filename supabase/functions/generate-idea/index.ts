@@ -47,6 +47,7 @@ Your response must be a JSON object with these exact fields:
 - keyFeatures: Array of exactly 4 features, each with "title" and "description"
 - techStack: Suggested tech stack array (3-5 technologies)
 - monetization: Specific pricing strategy with numbers
+- marketFit: Integer 0-100 representing how well this solution fits the problem. Consider: direct pain point coverage, market timing, competitive differentiation, monetization clarity, and technical feasibility. Be realistic - most ideas should score 60-85.
 - landingPage: Object for a professional landing page with:
   - hero: { headline (10 words max), subheadline (clear value), ctaText (action verb) }
   - features: Array of EXACTLY 3 features with "title" and "description" - these must be the 3 most important product capabilities
@@ -183,6 +184,16 @@ Return ONLY valid JSON.`;
           description: idea.keyFeatures?.[1]?.description || "Execute on recommendations with guided next steps" 
         }
       ];
+    }
+
+    // Ensure marketFit exists and is valid
+    if (typeof idea.marketFit !== 'number' || idea.marketFit < 0 || idea.marketFit > 100) {
+      // Calculate based on available signals
+      const baseScore = 60;
+      const opportunityBonus = Math.min(15, opportunityScore / 10);
+      const demandBonus = demandVelocity ? Math.min(10, demandVelocity / 10) : 5;
+      const gapBonus = competitionGap ? Math.min(10, competitionGap / 10) : 5;
+      idea.marketFit = Math.round(Math.min(95, baseScore + opportunityBonus + demandBonus + gapBonus));
     }
 
     // Ensure testimonial exists

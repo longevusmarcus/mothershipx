@@ -111,11 +111,13 @@ export function useSolutions(problemId: string) {
       description,
       approach,
       techStack = [],
+      marketFit,
     }: {
       title: string;
       description: string;
       approach?: string;
       techStack?: string[];
+      marketFit?: number;
     }) => {
       if (!user) throw new Error("Must be logged in");
 
@@ -127,6 +129,7 @@ export function useSolutions(problemId: string) {
           description,
           approach: approach || null,
           tech_stack: techStack,
+          market_fit: marketFit ?? 0,
           created_by: user.id,
           last_editor_id: user.id,
         })

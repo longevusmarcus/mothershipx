@@ -32,6 +32,7 @@ interface GeneratedIdea {
   keyFeatures: Array<{ title: string; description: string }>;
   techStack: string[];
   monetization: string;
+  marketFit: number;
   landingPage: {
     hero: {
       headline: string;
@@ -128,6 +129,7 @@ ${idea.monetization}`;
         description: idea.description,
         approach,
         techStack: idea.techStack,
+        marketFit: idea.marketFit || 0,
       },
       {
         onSuccess: () => {
