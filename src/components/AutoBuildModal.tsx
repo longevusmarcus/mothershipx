@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { WaitlistForm } from "@/components/WaitlistForm";
+import { useKeyboardSound } from "@/hooks/useKeyboardSound";
 import lovableLogo from "@/assets/lovable-logo.png";
 
 interface AutoBuildModalProps {
@@ -28,6 +29,10 @@ export function AutoBuildModal({ open, onOpenChange }: AutoBuildModalProps) {
   const [completedLines, setCompletedLines] = useState<string[]>([]);
   const [isTypingComplete, setIsTypingComplete] = useState(false);
   const [showWaitlist, setShowWaitlist] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(false);
+  const hasInteractedRef = useRef(false);
+  
+  const { playKeyClick, playKeyRelease, playSuccess } = useKeyboardSound();
 
   // Reset state when modal opens
   useEffect(() => {
@@ -37,10 +42,13 @@ export function AutoBuildModal({ open, onOpenChange }: AutoBuildModalProps) {
       setCompletedLines([]);
       setIsTypingComplete(false);
       setShowWaitlist(false);
+      // Enable sound after user interaction (opening modal counts)
+      hasInteractedRef.current = true;
+      setSoundEnabled(true);
     }
   }, [open]);
 
-  // Typing effect
+  // Typing effect with sound
   useEffect(() => {
     if (!open || isTypingComplete) return;
 
@@ -48,6 +56,14 @@ export function AutoBuildModal({ open, onOpenChange }: AutoBuildModalProps) {
     
     if (currentText.length < currentLine.length) {
       const timeout = setTimeout(() => {
+        // Play keyboard click sound (alternate between click and release for variety)
+        if (soundEnabled && hasInteractedRef.current) {
+          if (Math.random() > 0.3) {
+            playKeyClick();
+          } else {
+            playKeyRelease();
+          }
+        }
         setCurrentText(currentLine.slice(0, currentText.length + 1));
       }, 25 + Math.random() * 35); // Variable typing speed for realism
       return () => clearTimeout(timeout);
@@ -61,12 +77,16 @@ export function AutoBuildModal({ open, onOpenChange }: AutoBuildModalProps) {
           setCurrentLineIndex(prev => prev + 1);
         } else {
           setIsTypingComplete(true);
+          // Play success sound when complete
+          if (soundEnabled) {
+            playSuccess();
+          }
           setTimeout(() => setShowWaitlist(true), 500);
         }
       }, 150);
       return () => clearTimeout(timeout);
     }
-  }, [open, currentText, currentLineIndex, isTypingComplete]);
+  }, [open, currentText, currentLineIndex, isTypingComplete, soundEnabled, playKeyClick, playKeyRelease, playSuccess]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
