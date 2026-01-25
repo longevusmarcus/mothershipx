@@ -41,3 +41,6 @@ verify_jwt = false
 
 [functions.ping-sitemap]
 verify_jwt = false
+
+[functions.generate-all-ideas]
+verify_jwt = false
