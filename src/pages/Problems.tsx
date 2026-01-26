@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
-import { MasonryGrid } from "@/components/MasonryGrid";
+import { MasonryGrid, ColumnCount } from "@/components/MasonryGrid";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Plus } from "lucide-react";
+import { RefreshCw, Plus, LayoutGrid } from "lucide-react";
 import { useProblems } from "@/hooks/useProblems";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useCategories } from "@/hooks/useCategories";
@@ -18,6 +18,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { AutoBuildModal } from "@/components/AutoBuildModal";
 import lovableLogo from "@/assets/lovable-logo.png";
 
+const COLUMNS_KEY = "mothership_columns_count";
+
 const Problems = () => {
   const [searchParams] = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
@@ -25,8 +27,21 @@ const Problems = () => {
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [autoBuildOpen, setAutoBuildOpen] = useState(false);
+  const [columnCount, setColumnCount] = useState<ColumnCount>(() => {
+    const saved = localStorage.getItem(COLUMNS_KEY);
+    return (saved ? parseInt(saved) : 3) as ColumnCount;
+  });
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+
+  // Cycle through column counts
+  const cycleColumns = useCallback(() => {
+    setColumnCount(prev => {
+      const next = prev === 2 ? 3 : prev === 3 ? 4 : 2;
+      localStorage.setItem(COLUMNS_KEY, String(next));
+      return next;
+    });
+  }, []);
 
   const { isAuthenticated } = useAuth();
   const { hasPremiumAccess, isLoading: subscriptionLoading, isAdmin } = useSubscription();
@@ -124,6 +139,17 @@ const Problems = () => {
                 <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
               </Button>
 
+              {/* Column Switcher */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={cycleColumns}
+                className="text-muted-foreground hover:text-foreground h-8 px-2 gap-1"
+              >
+                <LayoutGrid className="h-3.5 w-3.5" />
+                <span className="text-xs font-medium tabular-nums">{columnCount}</span>
+              </Button>
+
               {/* New Search Button - Admin only */}
               {isAdmin && (
                 <Button
@@ -182,6 +208,7 @@ const Problems = () => {
               problems={filteredProblems}
               shouldBlurExcess={shouldBlurExcess}
               isAllCategory={selectedCategory === "all"}
+              columnCount={columnCount}
             />
           </motion.div>
         </AnimatePresence>

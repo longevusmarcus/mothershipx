@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { motion } from "framer-motion";
 import {
   DndContext,
   closestCenter,
@@ -18,24 +17,23 @@ import {
   rectSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Lock, LayoutGrid } from "lucide-react";
+import { Lock } from "lucide-react";
 import { MarketProblemCard } from "@/components/MarketProblemCard";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useUserPins } from "@/hooks/useUserPins";
 import type { MarketProblem } from "@/data/marketIntelligence";
-import { Button } from "@/components/ui/button";
 
 const FREE_CARD_LIMIT_ALL = 12;
 const FREE_CARD_LIMIT_CATEGORY = 2;
 const STORAGE_KEY = "mothership_problems_order";
-const COLUMNS_KEY = "mothership_columns_count";
 
-type ColumnCount = 2 | 3 | 4;
+export type ColumnCount = 2 | 3 | 4;
 
 interface MasonryGridProps {
   problems: MarketProblem[];
   shouldBlurExcess: boolean;
   isAllCategory?: boolean;
+  columnCount?: ColumnCount;
 }
 
 interface SortableCardProps {
@@ -78,27 +76,14 @@ function DragOverlayCard({ problem }: { problem: MarketProblem }) {
   );
 }
 
-export function MasonryGrid({ problems, shouldBlurExcess, isAllCategory = true }: MasonryGridProps) {
+export function MasonryGrid({ problems, shouldBlurExcess, isAllCategory = true, columnCount = 3 }: MasonryGridProps) {
   const freeCardLimit = isAllCategory ? FREE_CARD_LIMIT_ALL : FREE_CARD_LIMIT_CATEGORY;
   const [orderedProblems, setOrderedProblems] = useState<MarketProblem[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [columnCount, setColumnCount] = useState<ColumnCount>(() => {
-    const saved = localStorage.getItem(COLUMNS_KEY);
-    return (saved ? parseInt(saved) : 3) as ColumnCount;
-  });
   const isMobile = useIsMobile();
   
   // Use database-backed pins for authenticated users
   const { pinnedIds, togglePin } = useUserPins();
-
-  // Persist column count
-  const cycleColumns = useCallback(() => {
-    setColumnCount(prev => {
-      const next = prev === 2 ? 3 : prev === 3 ? 4 : 2;
-      localStorage.setItem(COLUMNS_KEY, String(next));
-      return next;
-    });
-  }, []);
 
   // Get column classes based on count
   const columnClasses = useMemo(() => {
@@ -106,7 +91,7 @@ export function MasonryGrid({ problems, shouldBlurExcess, isAllCategory = true }
       case 2: return "columns-1 sm:columns-2 gap-4";
       case 3: return "columns-1 sm:columns-2 lg:columns-3 gap-4";
       case 4: return "columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4";
-      default: return "columns-1 sm:columns-2 gap-4";
+      default: return "columns-1 sm:columns-2 lg:columns-3 gap-4";
     }
   }, [columnCount]);
 
@@ -197,30 +182,12 @@ export function MasonryGrid({ problems, shouldBlurExcess, isAllCategory = true }
   }
 
   return (
-    <div className="relative">
-      {/* Column Switcher - Desktop only */}
-      {!isMobile && (
-        <div className="flex justify-end mb-3">
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={cycleColumns}
-              className="h-7 px-2 text-muted-foreground hover:text-foreground gap-1.5"
-            >
-              <LayoutGrid className="h-3.5 w-3.5" />
-              <span className="text-xs font-medium tabular-nums">{columnCount}</span>
-            </Button>
-          </motion.div>
-        </div>
-      )}
-
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-      >
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
         <SortableContext items={sortedProblems.map((p) => p.id)} strategy={rectSortingStrategy}>
           <div className={columnClasses}>
             {sortedProblems.map((problem, index) => {
@@ -264,6 +231,5 @@ export function MasonryGrid({ problems, shouldBlurExcess, isAllCategory = true }
           {activeItem ? <DragOverlayCard problem={activeItem} /> : null}
         </DragOverlay>
       </DndContext>
-    </div>
   );
 }
