@@ -9,7 +9,8 @@ import { AuthModal } from "@/components/AuthModal";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
-import { User, Settings, Info, LogOut, LogIn, Crown } from "lucide-react";
+import { User, Settings, Info, LogOut, LogIn, Crown, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,7 +34,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const { profile, user, signOut, isAuthenticated } = useAuth();
-  const { hasPremiumAccess } = useSubscription();
+  const { hasPremiumAccess, isAdmin } = useSubscription();
   const navigate = useNavigate();
 
   const initials = profile?.name
@@ -87,6 +88,24 @@ export function AppLayout({ children }: AppLayoutProps) {
               </div>
             </div>
             <div className="flex items-center gap-2 md:gap-3">
+              {/* Admin-only New Search Button */}
+              {isAdmin && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => navigate("/search")}
+                      className="hidden md:flex text-muted-foreground hover:text-foreground h-8 w-8 p-0"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>New Search</p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
               <NotificationsDropdown />
               <ThemeToggle />
               
