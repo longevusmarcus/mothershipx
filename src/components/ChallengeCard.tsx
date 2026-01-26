@@ -305,20 +305,43 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
           <p className="text-sm italic text-muted-foreground">"{challenge.example}"</p>
         </div>
 
-        {/* Stats Row */}
-        <div className="flex items-center gap-6 font-mono text-xs text-muted-foreground mb-4">
-          <span className="flex items-center gap-1.5">
-            <Users className="h-3.5 w-3.5" />
-            {challenge.participants}/{challenge.maxParticipants}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <User className="h-3.5 w-3.5" />
-            {challenge.soloParticipants} solo
-          </span>
-          <span className="flex items-center gap-1.5">
-            <Users className="h-3.5 w-3.5" />
-            {challenge.teamCount} teams
-          </span>
+        {/* Participants Row */}
+        <div className="flex items-center justify-between font-mono text-xs text-muted-foreground mb-4">
+          <div className="flex items-center">
+            {/* Fake avatars */}
+            <div className="flex -space-x-2 mr-3">
+              {[
+                "https://i.pravatar.cc/32?img=1",
+                "https://i.pravatar.cc/32?img=2", 
+                "https://i.pravatar.cc/32?img=3",
+                "https://i.pravatar.cc/32?img=4",
+                "https://i.pravatar.cc/32?img=5",
+              ].slice(0, Math.min(5, challenge.participants)).map((avatar, idx) => (
+                <img
+                  key={idx}
+                  src={avatar}
+                  alt=""
+                  className="w-6 h-6 rounded-full border-2 border-background object-cover"
+                />
+              ))}
+              {challenge.participants > 5 && (
+                <div className="w-6 h-6 rounded-full border-2 border-background bg-muted flex items-center justify-center text-[10px] font-medium">
+                  +{challenge.participants - 5}
+                </div>
+              )}
+            </div>
+            <span>{challenge.participants}/{challenge.maxParticipants} builders</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1.5">
+              <User className="h-3.5 w-3.5" />
+              {challenge.soloParticipants} solo
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Users className="h-3.5 w-3.5" />
+              {challenge.teamCount} teams
+            </span>
+          </div>
         </div>
 
         {/* Time */}
