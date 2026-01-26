@@ -5,6 +5,7 @@ import { mockMarketProblems, MarketProblem, TrendSignal, problemIdMap, getDbProb
 // DB row type from Supabase (with Json types)
 interface DBProblem {
   id: string;
+  slug: string | null;
   title: string;
   subtitle: string | null;
   category: string;
@@ -131,6 +132,7 @@ function dbToMarketProblem(dbProblem: DBProblem): MarketProblem {
 
   return {
     id: displayId,
+    slug: dbProblem.slug || undefined,
     title: dbProblem.title,
     subtitle: dbProblem.subtitle || "",
     category: dbProblem.category,
@@ -200,33 +202,52 @@ export function useProblems(category?: string) {
   });
 }
 
-export function useProblem(id: string) {
+export function useProblem(idOrSlug: string) {
   return useQuery({
-    queryKey: ["problem", id],
+    queryKey: ["problem", idOrSlug],
     queryFn: async () => {
-      // Convert mock ID to database UUID if needed
-      const dbId = getDbProblemId(id);
+      // Check if it's a UUID pattern
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
+      const isMockId = idOrSlug in problemIdMap || Object.values(problemIdMap).includes(idOrSlug);
       
-      const { data, error } = await supabase
-        .from("problems")
-        .select("*")
-        .eq("id", dbId)
-        .maybeSingle();
+      let data: DBProblem | null = null;
+      let error: Error | null = null;
+      
+      if (isUUID || isMockId) {
+        // Query by ID
+        const dbId = getDbProblemId(idOrSlug);
+        const result = await supabase
+          .from("problems")
+          .select("*")
+          .eq("id", dbId)
+          .maybeSingle();
+        data = result.data as unknown as DBProblem;
+        error = result.error;
+      } else {
+        // Query by slug
+        const result = await supabase
+          .from("problems")
+          .select("*")
+          .eq("slug", idOrSlug)
+          .maybeSingle();
+        data = result.data as unknown as DBProblem;
+        error = result.error;
+      }
 
       if (error) {
         console.error("Error fetching problem:", error);
         // Fallback to mock data
-        return mockMarketProblems.find(p => p.id === id) || null;
+        return mockMarketProblems.find(p => p.id === idOrSlug) || null;
       }
 
       if (!data) {
         // Fallback to mock data if not found in DB
-        return mockMarketProblems.find(p => p.id === id) || null;
+        return mockMarketProblems.find(p => p.id === idOrSlug) || null;
       }
 
-      return dbToMarketProblem(data as unknown as DBProblem);
+      return dbToMarketProblem(data);
     },
-    enabled: !!id,
+    enabled: !!idOrSlug,
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 10,
   });

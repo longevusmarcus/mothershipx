@@ -72,8 +72,9 @@ export function MarketProblemCard({ problem, delay = 0, isPinned = false, onTogg
   const [authOpen, setAuthOpen] = useState(false);
 
   const handleCardClick = () => {
+    const urlPath = problem.slug || problem.id;
     if (isAuthenticated) {
-      navigate(`/problems/${problem.id}`);
+      navigate(`/problems/${urlPath}`);
     } else {
       setAuthOpen(true);
     }
@@ -240,7 +241,7 @@ export function MarketProblemCard({ problem, delay = 0, isPinned = false, onTogg
       <AuthModal
         open={authOpen}
         onOpenChange={setAuthOpen}
-        onSuccess={() => navigate(`/problems/${problem.id}`)}
+        onSuccess={() => navigate(`/problems/${problem.slug || problem.id}`)}
       />
     </motion.div>
   );

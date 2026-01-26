@@ -89,6 +89,7 @@ interface PublicBuild {
 
 interface JoinedProblem {
   id: string;
+  slug: string | null;
   title: string;
   category: string;
   sentiment: string;
@@ -217,7 +218,7 @@ export default function PublicProfile() {
         .from("problem_builders")
         .select(`
           joined_at,
-          problems (id, title, category, sentiment, opportunity_score)
+          problems (id, slug, title, category, sentiment, opportunity_score)
         `)
         .eq("user_id", profileId)
         .order("joined_at", { ascending: false })
@@ -228,6 +229,7 @@ export default function PublicProfile() {
           .filter((pb) => pb.problems)
           .map((pb) => ({
             id: (pb.problems as any).id,
+            slug: (pb.problems as any).slug,
             title: (pb.problems as any).title,
             category: (pb.problems as any).category,
             sentiment: (pb.problems as any).sentiment,
@@ -403,7 +405,7 @@ export default function PublicProfile() {
                         {problems.map((problem) => (
                           <Link
                             key={problem.id}
-                            to={`/problem/${problem.id}`}
+                            to={`/problems/${problem.slug || problem.id}`}
                             className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/50 hover:bg-muted/50 transition-colors"
                           >
                             <div className="min-w-0">

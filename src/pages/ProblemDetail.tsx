@@ -20,7 +20,7 @@ import {
   Terminal,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
-
+import { SEO } from "@/components/SEO";
 import { SolutionsLab } from "@/components/SolutionsLab";
 import { OpportunityMeter } from "@/components/OpportunityMeter";
 import { SourceSignals } from "@/components/SourceSignals";
@@ -211,11 +211,16 @@ const ProblemDetail = () => {
   };
 
   const handleShare = async () => {
-    const url = window.location.href;
+    // Use SEO-friendly slug URL for sharing
+    const baseUrl = window.location.origin;
+    const shareUrl = problem?.slug 
+      ? `${baseUrl}/problems/${problem.slug}`
+      : window.location.href;
+    
     const shareData = { 
       title: problem?.title || "Problem Opportunity", 
       text: problem?.subtitle || "Check out this market opportunity!",
-      url 
+      url: shareUrl 
     };
     
     // Try Web Share API first (mobile/supported browsers)
@@ -231,7 +236,7 @@ const ProblemDetail = () => {
     
     // Fallback to clipboard
     try {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(shareUrl);
       toast({
         title: "Link copied!",
         description: "Share this opportunity with your network",
@@ -239,7 +244,7 @@ const ProblemDetail = () => {
     } catch {
       // Final fallback for older browsers
       const textArea = document.createElement("textarea");
-      textArea.value = url;
+      textArea.value = shareUrl;
       textArea.style.position = "fixed";
       textArea.style.opacity = "0";
       document.body.appendChild(textArea);
@@ -253,8 +258,19 @@ const ProblemDetail = () => {
     }
   };
 
+  // Generate SEO-friendly canonical URL
+  const canonicalUrl = problem?.slug 
+    ? `https://mothershipx.lovable.app/problems/${problem.slug}`
+    : `https://mothershipx.lovable.app/problems/${id}`;
+
   return (
     <AppLayout>
+      <SEO
+        title={problem.title}
+        description={problem.subtitle || `Discover this ${problem.category} opportunity with ${formatNumber(problem.views)} views.`}
+        url={canonicalUrl}
+        type="article"
+      />
       <div className="max-w-3xl mx-auto space-y-6">
         {/* Back Navigation */}
         <Link 

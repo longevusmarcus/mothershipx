@@ -526,6 +526,7 @@ export type Database = {
           shares: number | null
           slots_filled: number
           slots_total: number
+          slug: string | null
           sources: Json | null
           subtitle: string | null
           title: string
@@ -553,6 +554,7 @@ export type Database = {
           shares?: number | null
           slots_filled?: number
           slots_total?: number
+          slug?: string | null
           sources?: Json | null
           subtitle?: string | null
           title: string
@@ -580,6 +582,7 @@ export type Database = {
           shares?: number | null
           slots_filled?: number
           slots_total?: number
+          slug?: string | null
           sources?: Json | null
           subtitle?: string | null
           title?: string
@@ -1393,6 +1396,7 @@ export type Database = {
         Returns: Json
       }
       cleanup_rate_limits: { Args: never; Returns: number }
+      generate_slug: { Args: { title: string }; Returns: string }
       has_premium_access: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
