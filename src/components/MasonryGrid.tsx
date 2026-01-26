@@ -10,12 +10,7 @@ import {
   DragStartEvent,
   DragOverlay,
 } from "@dnd-kit/core";
-import {
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-  rectSortingStrategy,
-} from "@dnd-kit/sortable";
+import { SortableContext, sortableKeyboardCoordinates, useSortable, rectSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Lock } from "lucide-react";
 import { MarketProblemCard } from "@/components/MarketProblemCard";
@@ -81,17 +76,21 @@ export function MasonryGrid({ problems, shouldBlurExcess, isAllCategory = true, 
   const [orderedProblems, setOrderedProblems] = useState<MarketProblem[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const isMobile = useIsMobile();
-  
+
   // Use database-backed pins for authenticated users
   const { pinnedIds, togglePin } = useUserPins();
 
   // Get column classes based on count
   const columnClasses = useMemo(() => {
     switch (columnCount) {
-      case 2: return "columns-1 sm:columns-2 gap-4";
-      case 3: return "columns-1 sm:columns-2 lg:columns-3 gap-4";
-      case 4: return "columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4";
-      default: return "columns-1 sm:columns-2 lg:columns-3 gap-4";
+      case 2:
+        return "columns-1 sm:columns-2 gap-4";
+      case 3:
+        return "columns-1 sm:columns-2 lg:columns-3 gap-4";
+      case 4:
+        return "columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4";
+      default:
+        return "columns-1 sm:columns-2 lg:columns-3 gap-4";
     }
   }, [columnCount]);
 
@@ -104,7 +103,7 @@ export function MasonryGrid({ problems, shouldBlurExcess, isAllCategory = true, 
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   // Load saved order from localStorage
@@ -114,7 +113,7 @@ export function MasonryGrid({ problems, shouldBlurExcess, isAllCategory = true, 
       try {
         const orderIds: string[] = JSON.parse(savedOrder);
         const problemMap = new Map(problems.map((p) => [p.id, p]));
-        
+
         const ordered: MarketProblem[] = [];
         for (const id of orderIds) {
           const problem = problemMap.get(id);
@@ -123,11 +122,11 @@ export function MasonryGrid({ problems, shouldBlurExcess, isAllCategory = true, 
             problemMap.delete(id);
           }
         }
-        
+
         for (const problem of problemMap.values()) {
           ordered.push(problem);
         }
-        
+
         setOrderedProblems(ordered);
       } catch {
         setOrderedProblems(problems);
@@ -139,14 +138,17 @@ export function MasonryGrid({ problems, shouldBlurExcess, isAllCategory = true, 
 
   // Sort problems with pinned items first
   const sortedProblems = useMemo(() => {
-    const pinned = orderedProblems.filter(p => pinnedIds.has(p.id));
-    const unpinned = orderedProblems.filter(p => !pinnedIds.has(p.id));
+    const pinned = orderedProblems.filter((p) => pinnedIds.has(p.id));
+    const unpinned = orderedProblems.filter((p) => !pinnedIds.has(p.id));
     return [...pinned, ...unpinned];
   }, [orderedProblems, pinnedIds]);
 
-  const handleTogglePin = useCallback((problemId: string) => {
-    togglePin(problemId);
-  }, [togglePin]);
+  const handleTogglePin = useCallback(
+    (problemId: string) => {
+      togglePin(problemId);
+    },
+    [togglePin],
+  );
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
     setActiveId(event.active.id as string);
@@ -172,10 +174,7 @@ export function MasonryGrid({ problems, shouldBlurExcess, isAllCategory = true, 
     }
   }, []);
 
-  const activeItem = useMemo(
-    () => orderedProblems.find((p) => p.id === activeId),
-    [activeId, orderedProblems]
-  );
+  const activeItem = useMemo(() => orderedProblems.find((p) => p.id === activeId), [activeId, orderedProblems]);
 
   if (sortedProblems.length === 0) {
     return null;
@@ -188,48 +187,41 @@ export function MasonryGrid({ problems, shouldBlurExcess, isAllCategory = true, 
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-        <SortableContext items={sortedProblems.map((p) => p.id)} strategy={rectSortingStrategy}>
-          <div className={columnClasses}>
-            {sortedProblems.map((problem, index) => {
-              const isBlurred = shouldBlurExcess && index >= freeCardLimit;
-              const isPinned = pinnedIds.has(problem.id);
-              
-              return (
-                <div key={problem.id} className="break-inside-avoid mb-4 relative">
-                  {isBlurred ? (
-                    <div className="relative">
-                      <div className="blur-sm pointer-events-none select-none">
-                        <MarketProblemCard problem={problem} delay={0} />
-                      </div>
-                      {index === freeCardLimit && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-background/60 rounded-xl">
-                          <div className="text-center p-4">
-                            <Lock className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                            <p className="text-sm font-medium">Subscribe to unlock all problems</p>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              {sortedProblems.length - freeCardLimit}+ more discoveries waiting
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <SortableCard 
-                      problem={problem} 
-                      index={index} 
-                      isPinned={isPinned}
-                      onTogglePin={handleTogglePin}
-                    />
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </SortableContext>
+      <SortableContext items={sortedProblems.map((p) => p.id)} strategy={rectSortingStrategy}>
+        <div className={columnClasses}>
+          {sortedProblems.map((problem, index) => {
+            const isBlurred = shouldBlurExcess && index >= freeCardLimit;
+            const isPinned = pinnedIds.has(problem.id);
 
-        <DragOverlay>
-          {activeItem ? <DragOverlayCard problem={activeItem} /> : null}
-        </DragOverlay>
-      </DndContext>
+            return (
+              <div key={problem.id} className="break-inside-avoid mb-4 relative">
+                {isBlurred ? (
+                  <div className="relative">
+                    <div className="blur-sm pointer-events-none select-none">
+                      <MarketProblemCard problem={problem} delay={0} />
+                    </div>
+                    {index === freeCardLimit && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-background/60 rounded-xl">
+                        <div className="text-center p-4">
+                          <Lock className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                          <p className="text-sm font-medium">Subscribe to unlock all signals</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {sortedProblems.length - freeCardLimit}+ more discoveries waiting
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <SortableCard problem={problem} index={index} isPinned={isPinned} onTogglePin={handleTogglePin} />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </SortableContext>
+
+      <DragOverlay>{activeItem ? <DragOverlayCard problem={activeItem} /> : null}</DragOverlay>
+    </DndContext>
   );
 }
