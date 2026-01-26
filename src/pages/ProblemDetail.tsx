@@ -378,6 +378,27 @@ const ProblemDetail = () => {
                 "Start Building"
               )}
             </Button>
+            {isJoined && (
+              <Button 
+                size="sm"
+                onClick={() => navigate("/submit", {
+                  state: {
+                    problem: {
+                      id: problem.id,
+                      title: problem.title,
+                      subtitle: problem.subtitle,
+                      niche: problem.niche,
+                      opportunityScore: problem.opportunityScore,
+                      sentiment: problem.sentiment,
+                    },
+                    joinType: "solo",
+                  },
+                })}
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                Submit Build
+              </Button>
+            )}
             <Button 
               variant="outline" 
               size="sm"
