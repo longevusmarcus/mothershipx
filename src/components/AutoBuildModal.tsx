@@ -40,7 +40,7 @@ const getTypingLines = (signal?: SignalContext): string[] => {
   // Default lines for all signals
   return [
     "$ initiating signal analysis...",
-    "$ scanning 58 market opportunities...",
+    "$ scanning 50 market opportunities...",
     "$ auto-generating 200 startup ideas from live signals...",
     "$ building landing pages with AI...",
     "$ registering domain names...",
