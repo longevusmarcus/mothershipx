@@ -379,25 +379,36 @@ const ProblemDetail = () => {
               )}
             </Button>
             {isJoined && (
-              <Button 
-                size="sm"
-                onClick={() => navigate("/submit", {
-                  state: {
-                    problem: {
-                      id: problem.id,
-                      title: problem.title,
-                      subtitle: problem.subtitle,
-                      niche: problem.niche,
-                      opportunityScore: problem.opportunityScore,
-                      sentiment: problem.sentiment,
-                    },
-                    joinType: "solo",
-                  },
-                })}
+              <motion.div
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 400, damping: 15 }}
               >
-                <Plus className="h-4 w-4 mr-1" />
-                Submit Build
-              </Button>
+                <motion.div
+                  animate={{ scale: [1, 1.05, 1] }}
+                  transition={{ duration: 1.5, repeat: 2, ease: "easeInOut" }}
+                >
+                  <Button 
+                    size="sm"
+                    onClick={() => navigate("/submit", {
+                      state: {
+                        problem: {
+                          id: problem.id,
+                          title: problem.title,
+                          subtitle: problem.subtitle,
+                          niche: problem.niche,
+                          opportunityScore: problem.opportunityScore,
+                          sentiment: problem.sentiment,
+                        },
+                        joinType: "solo",
+                      },
+                    })}
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    Submit Build
+                  </Button>
+                </motion.div>
+              </motion.div>
             )}
             <Button 
               variant="outline" 
