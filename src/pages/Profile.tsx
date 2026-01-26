@@ -996,6 +996,17 @@ export default function Profile() {
                   Share
                 </Button>
 
+                {/* Logout button */}
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full h-8 text-xs text-muted-foreground hover:text-destructive gap-2"
+                  onClick={handleSignOut}
+                >
+                  <LogOut className="h-3 w-3" />
+                  Log out
+                </Button>
+
                 {/* Stats grid - Reddit style */}
                 <div className="grid grid-cols-2 gap-4 pt-2">
                   <div>
