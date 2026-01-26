@@ -60,64 +60,80 @@ Deno.serve(async (req) => {
       console.log("[SCRAPE] Starting TikTok scrape with simplified query:", simplifiedQuery, "(original:", searchQuery, ")");
       
       // Use Apify TikTok scraper with searchQueries and correct searchSection value
-      const apifyResponse = await fetch(
-        `https://api.apify.com/v2/acts/clockworks~free-tiktok-scraper/run-sync-get-dataset-items?token=${apifyToken}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            excludePinnedPosts: false,
-            searchQueries: [simplifiedQuery],
-            resultsPerPage: 5,
-            searchSection: "/video", // Must be "/video" with leading slash
-          }),
-        }
-      );
-
-      console.log("[SCRAPE] Apify response status:", apifyResponse.status);
+      // Add timeout to prevent hanging - Apify sync calls can be slow
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 45000); // 45 second timeout
       
-      if (apifyResponse.ok) {
-        const videos = await apifyResponse.json();
-        console.log("[SCRAPE] TikTok videos returned:", videos.length);
-        if (videos.length > 0) {
-          console.log("[SCRAPE] First video sample:", JSON.stringify(videos[0]).substring(0, 1500));
-        }
+      try {
+        const apifyResponse = await fetch(
+          `https://api.apify.com/v2/acts/clockworks~free-tiktok-scraper/run-sync-get-dataset-items?token=${apifyToken}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            signal: controller.signal,
+            body: JSON.stringify({
+              excludePinnedPosts: false,
+              searchQueries: [simplifiedQuery],
+              resultsPerPage: 5,
+              searchSection: "/video", // Must be "/video" with leading slash
+            }),
+          }
+        );
         
-        evidenceData = videos.slice(0, 5).map((video: any) => {
-          // Try multiple possible thumbnail fields from different Apify actor versions
-          const thumbnail = 
-            video.videoMeta?.coverUrl ||
-            video.videoMeta?.cover ||
-            video.coverImageUrl ||
-            video.covers?.default ||
-            video.covers?.origin ||
-            video.cover ||
-            video.imageUrl ||
-            video.thumbnailUrl ||
-            video.originCover ||
-            video.dynamicCover ||
-            null;
+        clearTimeout(timeoutId);
+
+        console.log("[SCRAPE] Apify response status:", apifyResponse.status);
+        
+        if (apifyResponse.ok) {
+          const videos = await apifyResponse.json();
+          console.log("[SCRAPE] TikTok videos returned:", videos.length);
+          if (videos.length > 0) {
+            console.log("[SCRAPE] First video sample:", JSON.stringify(videos[0]).substring(0, 1500));
+          }
           
-          console.log("[SCRAPE] Video thumbnail found:", thumbnail ? "yes" : "no", thumbnail?.substring(0, 80));
-          
-          return {
-            problem_id: problemId,
-            evidence_type: "video",
-            source: "tiktok",
-            video_url: video.webVideoUrl || video.videoUrl || `https://www.tiktok.com/@${video.authorMeta?.name}/video/${video.id}`,
-            video_thumbnail: thumbnail,
-            video_title: (video.desc || video.text || "TikTok Video").substring(0, 200),
-            video_author: video.authorMeta?.nickName || video.authorMeta?.name || video.author?.nickname || "Unknown",
-            video_author_avatar: video.authorMeta?.avatar || video.author?.avatarThumb,
-            video_views: video.playCount || video.stats?.playCount || 0,
-            video_likes: video.diggCount || video.stats?.diggCount || 0,
-            video_comments_count: video.commentCount || video.stats?.commentCount || 0,
-            scraped_at: new Date().toISOString(),
-          };
-        });
-      } else {
-        const errorText = await apifyResponse.text();
-        console.error("[SCRAPE] Apify error:", errorText);
+          evidenceData = videos.slice(0, 5).map((video: any) => {
+            // Try multiple possible thumbnail fields from different Apify actor versions
+            const thumbnail = 
+              video.videoMeta?.coverUrl ||
+              video.videoMeta?.cover ||
+              video.coverImageUrl ||
+              video.covers?.default ||
+              video.covers?.origin ||
+              video.cover ||
+              video.imageUrl ||
+              video.thumbnailUrl ||
+              video.originCover ||
+              video.dynamicCover ||
+              null;
+            
+            console.log("[SCRAPE] Video thumbnail found:", thumbnail ? "yes" : "no", thumbnail?.substring(0, 80));
+            
+            return {
+              problem_id: problemId,
+              evidence_type: "video",
+              source: "tiktok",
+              video_url: video.webVideoUrl || video.videoUrl || `https://www.tiktok.com/@${video.authorMeta?.name}/video/${video.id}`,
+              video_thumbnail: thumbnail,
+              video_title: (video.desc || video.text || "TikTok Video").substring(0, 200),
+              video_author: video.authorMeta?.nickName || video.authorMeta?.name || video.author?.nickname || "Unknown",
+              video_author_avatar: video.authorMeta?.avatar || video.author?.avatarThumb,
+              video_views: video.playCount || video.stats?.playCount || 0,
+              video_likes: video.diggCount || video.stats?.diggCount || 0,
+              video_comments_count: video.commentCount || video.stats?.commentCount || 0,
+              scraped_at: new Date().toISOString(),
+            };
+          });
+        } else {
+          const errorText = await apifyResponse.text();
+          console.error("[SCRAPE] Apify error:", errorText);
+        }
+      } catch (fetchError) {
+        if (fetchError instanceof Error && fetchError.name === 'AbortError') {
+          console.error("[SCRAPE] TikTok API timeout after 45 seconds");
+        } else {
+          console.error("[SCRAPE] TikTok fetch error:", fetchError);
+        }
+        clearTimeout(timeoutId);
       }
     } else if (source === "reddit") {
       // Use Reddit RapidAPI - correct endpoint for reddit3 API
