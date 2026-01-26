@@ -272,7 +272,7 @@ export const CommunityChallenges = () => {
                   <p className="font-mono text-xs text-muted-foreground">loading...</p>
                 </div>
               ) : todaysChallenge ? (
-                <ChallengeCard challenge={todaysChallenge} />
+                <ChallengeCard challenge={todaysChallenge} showHighlight={showOnboarding} />
               ) : (
                 <div className="py-16 text-center border border-dashed border-border rounded-lg">
                   <Trophy className="h-8 w-8 mx-auto text-muted-foreground/30 mb-3" />
