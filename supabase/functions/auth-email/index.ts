@@ -30,7 +30,12 @@ interface AuthEmailPayload {
 
 function renderVerificationEmail(email: string, token: string, redirectTo: string): string {
   // Use Supabase's built-in verify endpoint - it handles token verification and redirects to the app
-  const verifyUrl = `${SUPABASE_URL}/auth/v1/verify?token=${token}&type=signup&redirect_to=${encodeURIComponent(redirectTo || SITE_URL)}`;
+  // Add ?verified=true so the frontend can show a welcome toast
+  const finalRedirect = redirectTo || SITE_URL;
+  const redirectWithParam = finalRedirect.includes('?')
+    ? `${finalRedirect}&verified=true`
+    : `${finalRedirect}?verified=true`;
+  const verifyUrl = `${SUPABASE_URL}/auth/v1/verify?token=${token}&type=signup&redirect_to=${encodeURIComponent(redirectWithParam)}`;
 
   return `
 <!DOCTYPE html>
