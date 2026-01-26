@@ -62,3 +62,6 @@ verify_jwt = false
 
 [functions.batch-scrape-evidence]
 verify_jwt = false
+
+[functions.batch-search-competitors]
+verify_jwt = false
