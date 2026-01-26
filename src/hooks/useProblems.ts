@@ -132,6 +132,7 @@ function dbToMarketProblem(dbProblem: DBProblem): MarketProblem {
 
   return {
     id: displayId,
+    dbId: dbProblem.id, // Keep the actual database UUID for API calls
     slug: dbProblem.slug || undefined,
     title: dbProblem.title,
     subtitle: dbProblem.subtitle || "",

@@ -115,7 +115,7 @@ const ProblemDetail = () => {
   }, [subscriptionLoading, user, hasPremiumAccess]);
 
   const { data: problem, isLoading } = useProblem(id || "");
-  const dbProblemId = problem?.id || id || "";
+  const dbProblemId = problem?.dbId || id || "";
   const { isJoined, joinProblem, leaveProblem } = useProblemBuilders(dbProblemId);
   const { refresh, isRefreshing } = useRefreshProblem(dbProblemId);
 
