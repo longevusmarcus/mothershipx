@@ -117,6 +117,19 @@ function extractFirstJsonObject(text: string): string | null {
   return null;
 }
 
+type GeneratedPromptsPayload = {
+  prompts: Array<{
+    id: string;
+    title: string;
+    subtitle: string;
+    complexity: number;
+    estimatedTime: string;
+    differentiators: string[];
+    tags: string[];
+    prompt: string;
+  }>;
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -296,11 +309,71 @@ Format response as JSON:
       },
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
+        // Enforce structured output via tool-calling to avoid invalid JSON in text responses.
+        tools: [
+          {
+            type: "function",
+            function: {
+              name: "return_prompts",
+              description: "Return exactly 3 production-ready prompts with metadata.",
+              parameters: {
+                type: "object",
+                properties: {
+                  prompts: {
+                    type: "array",
+                    minItems: 3,
+                    maxItems: 3,
+                    items: {
+                      type: "object",
+                      additionalProperties: false,
+                      properties: {
+                        id: { type: "string" },
+                        title: { type: "string" },
+                        subtitle: { type: "string" },
+                        complexity: { type: "number", minimum: 1, maximum: 5 },
+                        estimatedTime: { type: "string" },
+                        differentiators: {
+                          type: "array",
+                          minItems: 3,
+                          maxItems: 6,
+                          items: { type: "string" },
+                        },
+                        tags: {
+                          type: "array",
+                          minItems: 3,
+                          maxItems: 20,
+                          items: { type: "string" },
+                        },
+                        prompt: { type: "string" },
+                      },
+                      required: [
+                        "id",
+                        "title",
+                        "subtitle",
+                        "complexity",
+                        "estimatedTime",
+                        "differentiators",
+                        "tags",
+                        "prompt",
+                      ],
+                    },
+                  },
+                },
+                required: ["prompts"],
+                additionalProperties: false,
+              },
+            },
+          },
+        ],
+        tool_choice: {
+          type: "function",
+          function: { name: "return_prompts" },
+        },
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
         ],
-        temperature: 0.8,
+        temperature: 0.4,
       }),
     });
 
@@ -323,13 +396,28 @@ Format response as JSON:
     }
 
     const aiResponse = await response.json();
-    const content = aiResponse.choices?.[0]?.message?.content;
 
+    // 1) Preferred path: tool-calling (guaranteed structured)
+    const toolArgsStr = aiResponse?.choices?.[0]?.message?.tool_calls?.[0]?.function?.arguments;
+    if (typeof toolArgsStr === "string" && toolArgsStr.trim()) {
+      try {
+        const parsed = JSON.parse(toolArgsStr) as GeneratedPromptsPayload;
+        return new Response(JSON.stringify(parsed), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      } catch (e) {
+        console.error("Failed to parse tool arguments JSON:", toolArgsStr);
+        console.error("Tool args parse error:", e);
+        // fall through to legacy parsing
+      }
+    }
+
+    // 2) Fallback path: content parsing (legacy)
+    const content = aiResponse.choices?.[0]?.message?.content;
     if (!content) {
       throw new Error("No content in AI response");
     }
 
-    // Parse the JSON from the response
     let parsedContent;
     try {
       const jsonStr = extractFirstJsonObject(content);
@@ -344,10 +432,9 @@ Format response as JSON:
       throw new Error("Failed to parse AI response as JSON");
     }
 
-    return new Response(
-      JSON.stringify(parsedContent),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify(parsedContent), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (error) {
     console.error("generate-prompts error:", error);
     return new Response(
