@@ -55,6 +55,68 @@ const designStyleDescriptions: Record<string, string> = {
   "glassmorphism": "Frosted glass effects, blur backdrops, transparency layers, soft shadows, gradient borders",
 };
 
+/**
+ * Extract the first JSON object found in a model response.
+ * Handles common cases:
+ * - Raw JSON
+ * - ```json fenced blocks
+ * - Extra prose before/after JSON
+ *
+ * We avoid greedy regex like /\{[\s\S]*\}/ which breaks when the response contains
+ * additional braces (e.g. code examples, prompts that include JSON snippets).
+ */
+function extractFirstJsonObject(text: string): string | null {
+  const trimmed = text.trim();
+
+  // 1) Prefer a fenced ```json ... ``` block if present
+  const fenced = trimmed.match(/```json\s*([\s\S]*?)\s*```/i);
+  if (fenced?.[1]) return fenced[1].trim();
+
+  // 2) If it's already pure JSON
+  if (trimmed.startsWith("{") && trimmed.endsWith("}")) return trimmed;
+
+  // 3) Scan for a balanced top-level JSON object, respecting strings/escapes
+  const start = trimmed.indexOf("{");
+  if (start === -1) return null;
+
+  let depth = 0;
+  let inString = false;
+  let escape = false;
+
+  for (let i = start; i < trimmed.length; i++) {
+    const ch = trimmed[i];
+
+    if (inString) {
+      if (escape) {
+        escape = false;
+        continue;
+      }
+      if (ch === "\\") {
+        escape = true;
+        continue;
+      }
+      if (ch === '"') {
+        inString = false;
+      }
+      continue;
+    }
+
+    if (ch === '"') {
+      inString = true;
+      continue;
+    }
+
+    if (ch === "{") depth++;
+    if (ch === "}") depth--;
+
+    if (depth === 0) {
+      return trimmed.slice(start, i + 1);
+    }
+  }
+
+  return null;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -270,15 +332,15 @@ Format response as JSON:
     // Parse the JSON from the response
     let parsedContent;
     try {
-      // Try to extract JSON from the response (it might be wrapped in markdown code blocks)
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        parsedContent = JSON.parse(jsonMatch[0]);
-      } else {
-        throw new Error("No JSON found in response");
+      const jsonStr = extractFirstJsonObject(content);
+      if (!jsonStr) {
+        console.error("No JSON object found in AI response. Raw content:\n", content);
+        throw new Error("No JSON found in AI response");
       }
-    } catch (parseError) {
-      console.error("Failed to parse AI response:", content);
+
+      parsedContent = JSON.parse(jsonStr);
+    } catch (_parseError) {
+      console.error("Failed to parse AI response. Raw content:\n", content);
       throw new Error("Failed to parse AI response as JSON");
     }
 
