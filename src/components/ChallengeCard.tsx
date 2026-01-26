@@ -39,9 +39,10 @@ import { supabase } from "@/lib/supabaseClient";
 interface ChallengeCardProps {
   challenge: DailyChallenge;
   delay?: number;
+  showHighlight?: boolean;
 }
 
-export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
+export const ChallengeCard = ({ challenge, delay = 0, showHighlight = false }: ChallengeCardProps) => {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
   const { hasPremiumAccess } = useSubscription();
@@ -203,7 +204,11 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.3 }}
     >
-      <div className="rounded-lg border border-border bg-card/50 backdrop-blur-sm p-6">
+      <div className={`rounded-lg border bg-card/50 backdrop-blur-sm p-6 transition-all duration-500 ${
+        showHighlight 
+          ? "border-primary/50 ring-2 ring-primary/20 ring-offset-2 ring-offset-background" 
+          : "border-border"
+      }`}>
         {/* Terminal Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
