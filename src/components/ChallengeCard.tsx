@@ -232,7 +232,10 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
             </div>
           </div>
           <div className="text-right font-mono">
-            <span className="text-success text-lg font-medium">${challenge.prizePool}</span>
+            <div className="flex items-center justify-end gap-1.5">
+              <Crown className="h-4 w-4 text-warning" />
+              <span className="text-success text-lg font-medium">${challenge.prizePool}</span>
+            </div>
             <p className="text-[10px] text-muted-foreground">prize pool</p>
           </div>
         </div>
