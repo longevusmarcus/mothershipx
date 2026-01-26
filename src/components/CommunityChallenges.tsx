@@ -151,7 +151,7 @@ export const CommunityChallenges = () => {
             >
               <div className="flex items-center gap-2 font-mono">
                 <span className="text-muted-foreground">&gt;</span>
-                <h3 className="text-lg font-medium tracking-wide">proof-of-ship</h3>
+                <h3 className="text-lg font-medium tracking-wide">requirements</h3>
                 <AnimatePresence>
                   {showHint && (
                     <motion.span
