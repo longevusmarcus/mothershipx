@@ -31,6 +31,7 @@ import { SubscriptionLoadingGate } from "@/components/SubscriptionLoadingGate";
 import { PromptsGenerator } from "@/components/PromptsGenerator";
 import { AutoBuildModal } from "@/components/AutoBuildModal";
 import { ProblemDashboardOnboarding } from "@/components/ProblemDashboardOnboarding";
+import { ProblemEvidenceSection } from "@/components/ProblemEvidenceSection";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -528,6 +529,12 @@ const ProblemDetail = () => {
                 ))}
               </div>
             </div>
+
+            {/* Source Evidence - Videos & Comments */}
+            <ProblemEvidenceSection 
+              problemId={dbProblemId} 
+              problemTitle={problem.title} 
+            />
 
             {/* Peak Prediction */}
             {problem.peakPrediction && (

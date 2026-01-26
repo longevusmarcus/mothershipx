@@ -505,6 +505,83 @@ export type Database = {
           },
         ]
       }
+      problem_evidence: {
+        Row: {
+          comment_author: string | null
+          comment_author_avatar: string | null
+          comment_source_url: string | null
+          comment_text: string | null
+          comment_upvotes: number | null
+          created_at: string
+          evidence_type: string
+          id: string
+          problem_id: string
+          scraped_at: string
+          source: string
+          updated_at: string
+          video_author: string | null
+          video_author_avatar: string | null
+          video_comments_count: number | null
+          video_likes: number | null
+          video_thumbnail: string | null
+          video_title: string | null
+          video_url: string | null
+          video_views: number | null
+        }
+        Insert: {
+          comment_author?: string | null
+          comment_author_avatar?: string | null
+          comment_source_url?: string | null
+          comment_text?: string | null
+          comment_upvotes?: number | null
+          created_at?: string
+          evidence_type: string
+          id?: string
+          problem_id: string
+          scraped_at?: string
+          source: string
+          updated_at?: string
+          video_author?: string | null
+          video_author_avatar?: string | null
+          video_comments_count?: number | null
+          video_likes?: number | null
+          video_thumbnail?: string | null
+          video_title?: string | null
+          video_url?: string | null
+          video_views?: number | null
+        }
+        Update: {
+          comment_author?: string | null
+          comment_author_avatar?: string | null
+          comment_source_url?: string | null
+          comment_text?: string | null
+          comment_upvotes?: number | null
+          created_at?: string
+          evidence_type?: string
+          id?: string
+          problem_id?: string
+          scraped_at?: string
+          source?: string
+          updated_at?: string
+          video_author?: string | null
+          video_author_avatar?: string | null
+          video_comments_count?: number | null
+          video_likes?: number | null
+          video_thumbnail?: string | null
+          video_title?: string | null
+          video_url?: string | null
+          video_views?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "problem_evidence_problem_id_fkey"
+            columns: ["problem_id"]
+            isOneToOne: false
+            referencedRelation: "problems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       problems: {
         Row: {
           active_builders_last_24h: number | null
