@@ -20,6 +20,7 @@ export interface HiddenInsight {
 
 export interface MarketProblem {
   id: string;
+  dbId: string; // The actual database UUID for API calls
   slug?: string;
   title: string;
   subtitle: string;
@@ -87,6 +88,7 @@ export function getDbProblemId(mockId: string): string {
 export const mockMarketProblems: MarketProblem[] = [
   {
     id: "mh-001",
+    dbId: problemIdMap["mh-001"] || "mh-001",
     title: "Anxiety apps feel clinical, not human",
     subtitle: "Gen Z wants vibe-based mental wellness, not therapy-lite",
     category: "Mental Health",
@@ -133,6 +135,7 @@ export const mockMarketProblems: MarketProblem[] = [
   },
   {
     id: "ob-001",
+    dbId: problemIdMap["ob-001"] || "ob-001",
     title: "GLP-1 users need habit stacking support",
     subtitle: "Ozempic/Wegovy users struggle to build sustainable habits during treatment",
     category: "Weight & Fitness",
@@ -179,6 +182,7 @@ export const mockMarketProblems: MarketProblem[] = [
   },
   {
     id: "sk-001",
+    dbId: problemIdMap["sk-001"] || "sk-001",
     title: "Ingredient-checking is exhausting",
     subtitle: "Skincare-obsessed users want AI to decode products instantly",
     category: "Skin & Beauty",
@@ -223,6 +227,7 @@ export const mockMarketProblems: MarketProblem[] = [
   },
   {
     id: "gt-001",
+    dbId: problemIdMap["gt-001"] || "gt-001",
     title: "Gut health feels like pseudoscience",
     subtitle: "People want gut-brain connection tools that actually work",
     category: "Gut Health",
@@ -267,6 +272,7 @@ export const mockMarketProblems: MarketProblem[] = [
   },
   {
     id: "pr-001",
+    dbId: problemIdMap["pr-001"] || "pr-001",
     title: "Focus apps don't understand context switching",
     subtitle: "Knowledge workers need flow protection, not just timers",
     category: "Productivity",
@@ -311,6 +317,7 @@ export const mockMarketProblems: MarketProblem[] = [
   },
   {
     id: "cr-001",
+    dbId: problemIdMap["cr-001"] || "cr-001",
     title: "Career pivots feel impossible after 30",
     subtitle: "Mid-career professionals need skill translation, not job boards",
     category: "Career",
@@ -354,6 +361,7 @@ export const mockMarketProblems: MarketProblem[] = [
   },
   {
     id: "cn-001",
+    dbId: problemIdMap["cn-001"] || "cn-001",
     title: "Dating apps killed spontaneous connection",
     subtitle: "People crave IRL meetups but don't know how to start",
     category: "Social Connections",
@@ -400,6 +408,7 @@ export const mockMarketProblems: MarketProblem[] = [
   },
   {
     id: "mh-002",
+    dbId: problemIdMap["mh-002"] || "mh-002",
     title: "ADHD tools ignore emotional dysregulation",
     subtitle: "Beyond task management—ADHD brains need emotional co-regulation",
     category: "Mental Health",
