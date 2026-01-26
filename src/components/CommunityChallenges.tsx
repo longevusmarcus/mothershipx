@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Trophy,
@@ -23,38 +23,16 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChallengeCard } from "./ChallengeCard";
 import { useTodayChallenge, usePastChallenges, useChallenges } from "@/hooks/useChallenges";
+import { ArenaOnboardingOverlay } from "./ArenaOnboardingOverlay";
 
 const GUIDE_SEEN_KEY = "arena-accordion-guide-seen";
 
 export const CommunityChallenges = () => {
   const [activeTab, setActiveTab] = useState("today");
   const [cardsExpanded, setCardsExpanded] = useState(false);
-  const [showHint, setShowHint] = useState(false);
-
-  // First-time interactive guide
-  useEffect(() => {
-    const hasSeenGuide = localStorage.getItem(GUIDE_SEEN_KEY);
-
-    if (!hasSeenGuide) {
-      // Auto-expand after a short delay
-      const expandTimer = setTimeout(() => {
-        setCardsExpanded(true);
-        setShowHint(true);
-      }, 800);
-
-      // Auto-collapse after showing
-      const collapseTimer = setTimeout(() => {
-        setCardsExpanded(false);
-        setShowHint(false);
-        localStorage.setItem(GUIDE_SEEN_KEY, "true");
-      }, 3500);
-
-      return () => {
-        clearTimeout(expandTimer);
-        clearTimeout(collapseTimer);
-      };
-    }
-  }, []);
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    return !localStorage.getItem(GUIDE_SEEN_KEY);
+  });
 
   const { data: todaysChallenge, isLoading: loadingToday } = useTodayChallenge();
   const { data: pastChallenges = [], isLoading: loadingPast } = usePastChallenges();
@@ -152,32 +130,12 @@ export const CommunityChallenges = () => {
               <div className="flex items-center gap-2 font-mono">
                 <span className="text-muted-foreground">&gt;</span>
                 <h3 className="text-lg font-medium tracking-wide">requirements</h3>
-                <AnimatePresence>
-                  {showHint && (
-                    <motion.span
-                      initial={{ opacity: 0, x: -5 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0 }}
-                      className="text-xs text-muted-foreground/60 font-normal ml-2"
-                    >
-                      click to toggle
-                    </motion.span>
-                  )}
-                </AnimatePresence>
               </div>
               <motion.div
-                animate={{
-                  rotate: cardsExpanded ? 180 : 0,
-                  scale: showHint ? [1, 1.2, 1] : 1,
-                }}
-                transition={{
-                  rotate: { duration: 0.3, ease: "easeInOut" },
-                  scale: { duration: 0.8, repeat: showHint ? Infinity : 0, repeatDelay: 0.3 },
-                }}
+                animate={{ rotate: cardsExpanded ? 180 : 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
               >
-                <ChevronDown
-                  className={`h-4 w-4 transition-colors ${showHint ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`}
-                />
+                <ChevronDown className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
               </motion.div>
             </button>
 
@@ -229,32 +187,12 @@ export const CommunityChallenges = () => {
               <div className="flex items-center gap-2 font-mono">
                 <span className="text-muted-foreground">&gt;</span>
                 <h3 className="text-lg font-medium tracking-wide">what-you-get</h3>
-                <AnimatePresence>
-                  {showHint && (
-                    <motion.span
-                      initial={{ opacity: 0, x: -5 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0 }}
-                      className="text-xs text-muted-foreground/60 font-normal ml-2"
-                    >
-                      click to toggle
-                    </motion.span>
-                  )}
-                </AnimatePresence>
               </div>
               <motion.div
-                animate={{
-                  rotate: cardsExpanded ? 180 : 0,
-                  scale: showHint ? [1, 1.2, 1] : 1,
-                }}
-                transition={{
-                  rotate: { duration: 0.3, ease: "easeInOut" },
-                  scale: { duration: 0.8, repeat: showHint ? Infinity : 0, repeatDelay: 0.3 },
-                }}
+                animate={{ rotate: cardsExpanded ? 180 : 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
               >
-                <ChevronDown
-                  className={`h-4 w-4 transition-colors ${showHint ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`}
-                />
+                <ChevronDown className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
               </motion.div>
             </button>
 
@@ -365,6 +303,11 @@ export const CommunityChallenges = () => {
           </Tabs>
         </motion.div>
       </motion.div>
+
+      {/* Onboarding overlay for first-time visitors */}
+      {showOnboarding && (
+        <ArenaOnboardingOverlay onComplete={() => setShowOnboarding(false)} />
+      )}
     </div>
   );
 };
