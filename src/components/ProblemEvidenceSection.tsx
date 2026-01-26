@@ -33,7 +33,7 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
     setIsRefreshing(true);
     try {
       // Scrape from both sources
-      await Promise.all([
+      const results = await Promise.all([
         scrapeEvidence.mutateAsync({
           problemId,
           searchQuery: problemTitle,
@@ -45,10 +45,17 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
           source: "reddit",
         }),
       ]);
-      toast.success("Evidence refreshed!");
+      
+      const totalEvidence = results.reduce((acc, r) => acc + (r?.evidenceCount || 0), 0);
+      
+      if (totalEvidence > 0) {
+        toast.success(`Found ${totalEvidence} evidence items!`);
+      } else {
+        toast.info("No new evidence found for this topic. Try a different search term or check back later.");
+      }
     } catch (error) {
       console.error("Error refreshing evidence:", error);
-      toast.error("Failed to refresh evidence");
+      toast.error("Failed to refresh evidence. The API may be rate-limited.");
     } finally {
       setIsRefreshing(false);
     }
