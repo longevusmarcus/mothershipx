@@ -306,7 +306,7 @@ export const CommunityChallenges = () => {
             <ArrowRight className="h-3 w-3 hidden sm:block" />
             <span className="flex items-center gap-2">
               <Trophy className="h-3.5 w-3.5" />
-              Win 90%
+              Win the prize pool
             </span>
           </div>
         </motion.div>

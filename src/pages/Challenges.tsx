@@ -47,7 +47,7 @@ const Challenges = () => {
     <AppLayout>
       <SEO
         title="Hackathon Arena"
-        description="Join weekly build challenges, compete solo or in teams, and win 90% of the prize pool."
+        description="Join weekly build challenges, compete solo or in teams, and win the prize pool."
       />
 
       {/* Payment Verification Overlay */}
@@ -93,7 +93,7 @@ const Challenges = () => {
       </AnimatePresence>
 
       <CommunityChallenges />
-      
+
       {/* Floating Join Button */}
       <FloatingJoinButton challenge={todaysChallenge ?? null} />
     </AppLayout>
