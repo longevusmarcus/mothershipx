@@ -100,6 +100,20 @@ return new Response(JSON.stringify({}), {
 
 No CLI command for remote function logs - must use Dashboard.
 
+### 8. Use Supabase's built-in verify endpoint for email links
+**Problem:** Custom `/auth/confirm` route in frontend leads to 404.
+
+**Solution:** Use Supabase's verify endpoint instead of a custom route:
+```typescript
+// Instead of:
+const url = `${SITE_URL}/auth/confirm?token_hash=${tokenHash}&type=signup`;
+
+// Use:
+const url = `${SUPABASE_URL}/auth/v1/verify?token=${token}&type=signup&redirect_to=${encodeURIComponent(SITE_URL)}`;
+```
+
+Supabase handles token verification server-side, then redirects to your app.
+
 ---
 
 ## Testing
