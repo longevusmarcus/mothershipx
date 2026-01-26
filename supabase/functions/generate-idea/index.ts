@@ -1,4 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { decode } from "https://deno.land/std@0.168.0/encoding/base64.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -23,6 +25,9 @@ serve(async (req) => {
 
   try {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    
     if (!LOVABLE_API_KEY) {
       console.error("LOVABLE_API_KEY not configured");
       return new Response(
@@ -30,6 +35,9 @@ serve(async (req) => {
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    // Create supabase client for storage uploads
+    const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
 
     const body: GenerateIdeaRequest = await req.json();
     const { problemTitle, problemCategory, painPoints, niche, opportunityScore, demandVelocity, competitionGap, sources } = body;
@@ -227,19 +235,47 @@ Return ONLY valid JSON.`;
 
       if (imageResponse.ok) {
         const imageData = await imageResponse.json();
-        const mockupImage = imageData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-        if (mockupImage) {
-          idea.landingPage.mockupImage = mockupImage;
-          console.log("Product mockup generated successfully");
+        const mockupBase64 = imageData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+        
+        if (mockupBase64) {
+          console.log("Mockup generated, uploading to storage...");
+          
+          // Extract base64 data (remove data:image/png;base64, prefix)
+          const base64Data = mockupBase64.replace(/^data:image\/\w+;base64,/, '');
+          const imageBytes = decode(base64Data);
+          
+          // Generate unique filename
+          const fileName = `${crypto.randomUUID()}.png`;
+          
+          // Upload to Supabase Storage
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('idea-mockups')
+            .upload(fileName, imageBytes, {
+              contentType: 'image/png',
+              upsert: false
+            });
+          
+          if (!uploadError && uploadData) {
+            // Get public URL
+            const { data: { publicUrl } } = supabase.storage
+              .from('idea-mockups')
+              .getPublicUrl(fileName);
+            
+            idea.landingPage.mockupImage = publicUrl;
+            console.log("Product mockup uploaded successfully:", publicUrl);
+          } else {
+            console.log("Storage upload error:", uploadError);
+          }
         }
       } else {
-        console.log("Mockup generation failed, continuing without image");
+        const errText = await imageResponse.text();
+        console.log("Mockup generation failed:", imageResponse.status, errText);
       }
     } catch (imgError) {
       console.log("Mockup generation error, continuing without image:", imgError);
     }
 
-    console.log("Successfully generated idea:", idea.name);
+    console.log("Successfully generated idea:", idea.name, "with mockup:", !!idea.landingPage.mockupImage);
 
     return new Response(
       JSON.stringify({ success: true, idea }),
