@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
@@ -30,6 +30,7 @@ import { SubscriptionPaywall } from "@/components/SubscriptionPaywall";
 import { SubscriptionLoadingGate } from "@/components/SubscriptionLoadingGate";
 import { PromptsGenerator } from "@/components/PromptsGenerator";
 import { AutoBuildModal } from "@/components/AutoBuildModal";
+import { ProblemDashboardOnboarding } from "@/components/ProblemDashboardOnboarding";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -101,6 +102,8 @@ const ProblemDetail = () => {
   const [searchCompetitors, setSearchCompetitors] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const [autoBuildOpen, setAutoBuildOpen] = useState(false);
+  const [justJoined, setJustJoined] = useState(false);
+  const wasJoined = useRef(false);
 
   // Check access on mount
   useEffect(() => {
@@ -113,6 +116,14 @@ const ProblemDetail = () => {
   const dbProblemId = problem?.id || id || "";
   const { isJoined, joinProblem, leaveProblem } = useProblemBuilders(dbProblemId);
   const { refresh, isRefreshing } = useRefreshProblem(dbProblemId);
+
+  // Track when user just joined (transition from not joined to joined)
+  useEffect(() => {
+    if (isJoined && !wasJoined.current) {
+      setJustJoined(true);
+    }
+    wasJoined.current = isJoined;
+  }, [isJoined]);
   const { 
     competitors, 
     threatLevel,
@@ -798,6 +809,13 @@ const ProblemDetail = () => {
           }
         }} 
         feature="problem"
+      />
+
+      {/* Onboarding overlay for first-time visitors */}
+      <ProblemDashboardOnboarding 
+        isJoined={isJoined}
+        justJoined={justJoined}
+        onDismiss={() => setJustJoined(false)}
       />
     </AppLayout>
   );
