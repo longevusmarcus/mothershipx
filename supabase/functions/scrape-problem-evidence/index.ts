@@ -70,23 +70,41 @@ Deno.serve(async (req) => {
         const videos = await apifyResponse.json();
         console.log("[SCRAPE] TikTok videos returned:", videos.length);
         if (videos.length > 0) {
-          console.log("[SCRAPE] First video keys:", Object.keys(videos[0]));
+          console.log("[SCRAPE] First video sample:", JSON.stringify(videos[0]).substring(0, 1500));
         }
         
-        evidenceData = videos.slice(0, 5).map((video: any) => ({
-          problem_id: problemId,
-          evidence_type: "video",
-          source: "tiktok",
-          video_url: video.webVideoUrl || video.videoUrl || `https://www.tiktok.com/@${video.authorMeta?.name}/video/${video.id}`,
-          video_thumbnail: video.coverImageUrl || video.covers?.default || video.videoMeta?.coverUrl || video.cover,
-          video_title: (video.desc || video.text || "TikTok Video").substring(0, 200),
-          video_author: video.authorMeta?.nickName || video.authorMeta?.name || video.author?.nickname || "Unknown",
-          video_author_avatar: video.authorMeta?.avatar || video.author?.avatarThumb,
-          video_views: video.playCount || video.stats?.playCount || 0,
-          video_likes: video.diggCount || video.stats?.diggCount || 0,
-          video_comments_count: video.commentCount || video.stats?.commentCount || 0,
-          scraped_at: new Date().toISOString(),
-        }));
+        evidenceData = videos.slice(0, 5).map((video: any) => {
+          // Try multiple possible thumbnail fields from different Apify actor versions
+          const thumbnail = 
+            video.videoMeta?.coverUrl ||
+            video.videoMeta?.cover ||
+            video.coverImageUrl ||
+            video.covers?.default ||
+            video.covers?.origin ||
+            video.cover ||
+            video.imageUrl ||
+            video.thumbnailUrl ||
+            video.originCover ||
+            video.dynamicCover ||
+            null;
+          
+          console.log("[SCRAPE] Video thumbnail found:", thumbnail ? "yes" : "no", thumbnail?.substring(0, 80));
+          
+          return {
+            problem_id: problemId,
+            evidence_type: "video",
+            source: "tiktok",
+            video_url: video.webVideoUrl || video.videoUrl || `https://www.tiktok.com/@${video.authorMeta?.name}/video/${video.id}`,
+            video_thumbnail: thumbnail,
+            video_title: (video.desc || video.text || "TikTok Video").substring(0, 200),
+            video_author: video.authorMeta?.nickName || video.authorMeta?.name || video.author?.nickname || "Unknown",
+            video_author_avatar: video.authorMeta?.avatar || video.author?.avatarThumb,
+            video_views: video.playCount || video.stats?.playCount || 0,
+            video_likes: video.diggCount || video.stats?.diggCount || 0,
+            video_comments_count: video.commentCount || video.stats?.commentCount || 0,
+            scraped_at: new Date().toISOString(),
+          };
+        });
       } else {
         const errorText = await apifyResponse.text();
         console.error("[SCRAPE] Apify error:", errorText);
