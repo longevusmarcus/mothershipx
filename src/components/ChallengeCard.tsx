@@ -318,15 +318,11 @@ export const ChallengeCard = ({ challenge, delay = 0 }: ChallengeCardProps) => {
           </span>
         </div>
 
-        {/* Time & Prize */}
-        <div className="flex items-center justify-between font-mono text-xs mb-4 py-3 border-t border-b border-border/30">
+        {/* Time */}
+        <div className="flex items-center font-mono text-xs mb-4 py-3 border-t border-b border-border/30">
           <span className={`flex items-center gap-1.5 ${isActive ? "text-success" : "text-muted-foreground"}`}>
             <Clock className="h-3.5 w-3.5" />
             {timeRemaining}
-          </span>
-          <span className="flex items-center gap-1.5 text-muted-foreground">
-            <Crown className="h-3.5 w-3.5 text-warning" />
-            Winner: <span className="text-success font-medium ml-1">${challenge.winnerPrize.toFixed(0)}</span>
           </span>
         </div>
 
