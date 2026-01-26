@@ -470,8 +470,29 @@ serve(async (req) => {
         discovered_at: new Date().toISOString()
       }, { onConflict: "title" });
       
-      if (error) console.error("Error storing problem:", error);
-      else console.log(`Saved problem: ${result.title} (demand: ${demandVelocity}%, gap: ${competitionGap}%)`);
+      if (error) {
+        console.error("Error storing problem:", error);
+      } else {
+        console.log(`Saved problem: ${result.title} (demand: ${demandVelocity}%, gap: ${competitionGap}%)`);
+
+        // Fire email notification for subscribers (fire and forget)
+        fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-email`, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            emailType: "new_problem",
+            data: {
+              title: result.title,
+              description: result.description,
+              opportunityScore: result.opportunityScore,
+              category: result.category,
+            },
+          }),
+        }).catch(err => console.error("Email notification failed:", err));
+      }
     }
 
     // Record scan

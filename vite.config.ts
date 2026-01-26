@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     watch: {
-      ignored: ["**/docs/**"],
+      ignored: ["**/docs/**", "**/node_modules/**", "**/.git/**", "**/supabase/**"],
     },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
