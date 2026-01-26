@@ -40,9 +40,10 @@ interface ChallengeCardProps {
   challenge: DailyChallenge;
   delay?: number;
   showHighlight?: boolean;
+  highlightJoinButton?: boolean;
 }
 
-export const ChallengeCard = ({ challenge, delay = 0, showHighlight = false }: ChallengeCardProps) => {
+export const ChallengeCard = ({ challenge, delay = 0, showHighlight = false, highlightJoinButton = false }: ChallengeCardProps) => {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
   const { hasPremiumAccess } = useSubscription();
@@ -403,7 +404,11 @@ export const ChallengeCard = ({ challenge, delay = 0, showHighlight = false }: C
             ) : (
               <Dialog open={isJoinDialogOpen} onOpenChange={setIsJoinDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="w-full font-mono">
+                  <Button className={`w-full font-mono transition-all duration-500 ${
+                    highlightJoinButton 
+                      ? "ring-2 ring-primary ring-offset-2 ring-offset-background animate-pulse" 
+                      : ""
+                  }`}>
                     {isVerified ? (
                       <Shield className="h-4 w-4 mr-2 text-success" />
                     ) : (
