@@ -21,7 +21,7 @@ import lovableLogo from "@/assets/lovable-logo.png";
 const Problems = () => {
   const [searchParams] = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedCategory, setSelectedCategory] = useState("mental health");
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [autoBuildOpen, setAutoBuildOpen] = useState(false);
