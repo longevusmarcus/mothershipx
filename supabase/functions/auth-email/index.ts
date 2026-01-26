@@ -138,9 +138,15 @@ serve(async (req) => {
   }
 
   try {
-    // Verify webhook signature
+    // Get payload and headers
     const payload = await req.text();
     const headers = Object.fromEntries(req.headers);
+
+    // Debug: Log received headers
+    console.log("[AUTH-EMAIL] Received headers:", JSON.stringify(headers, null, 2));
+    console.log("[AUTH-EMAIL] Hook secret configured:", hookSecret ? "yes" : "no");
+
+    // Verify webhook signature
     const wh = new Webhook(hookSecret);
 
     let user: AuthEmailPayload["user"];
@@ -152,6 +158,7 @@ serve(async (req) => {
       email_data = verified.email_data;
     } catch (verifyError) {
       console.error("[AUTH-EMAIL] Webhook verification failed:", verifyError);
+      console.error("[AUTH-EMAIL] Headers received:", Object.keys(headers));
       return new Response(
         JSON.stringify({ error: "Invalid webhook signature" }),
         { status: 401, headers: { "Content-Type": "application/json" } }
