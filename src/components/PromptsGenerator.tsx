@@ -155,7 +155,7 @@ const promptColors = {
 const promptAccents = {
   mvp: "text-success",
   fullstack: "text-primary",
-  differentiator: "text-accent-foreground",
+  differentiator: "text-foreground",
 };
 
 const defaultConfig: PromptConfig = {
