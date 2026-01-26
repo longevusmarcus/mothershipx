@@ -5,9 +5,10 @@ const GUIDE_SEEN_KEY = "arena-accordion-guide-seen";
 
 interface ArenaOnboardingOverlayProps {
   onComplete: () => void;
+  onStepChange?: (step: number) => void;
 }
 
-export function ArenaOnboardingOverlay({ onComplete }: ArenaOnboardingOverlayProps) {
+export function ArenaOnboardingOverlay({ onComplete, onStepChange }: ArenaOnboardingOverlayProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [step, setStep] = useState(0);
 
@@ -24,6 +25,11 @@ export function ArenaOnboardingOverlay({ onComplete }: ArenaOnboardingOverlayPro
     }
   }, []);
 
+  // Notify parent of step changes
+  useEffect(() => {
+    onStepChange?.(step);
+  }, [step, onStepChange]);
+
   const handleDismiss = () => {
     setIsVisible(false);
     localStorage.setItem(GUIDE_SEEN_KEY, "true");
@@ -35,7 +41,7 @@ export function ArenaOnboardingOverlay({ onComplete }: ArenaOnboardingOverlayPro
     if (!isVisible) return;
 
     const stepTimer = setTimeout(() => {
-      if (step < 2) {
+      if (step < 3) {
         setStep(step + 1);
       } else {
         handleDismiss();
@@ -70,7 +76,7 @@ export function ArenaOnboardingOverlay({ onComplete }: ArenaOnboardingOverlayPro
           <div className="space-y-6">
             {/* Step indicators */}
             <div className="flex justify-center gap-2">
-              {[0, 1, 2].map((i) => (
+              {[0, 1, 2, 3].map((i) => (
                 <motion.div
                   key={i}
                   className={`h-1 rounded-full transition-all duration-300 ${
@@ -112,10 +118,20 @@ export function ArenaOnboardingOverlay({ onComplete }: ArenaOnboardingOverlayPro
                 {step === 2 && (
                   <>
                     <p className="font-mono text-sm text-muted-foreground tracking-wide">
-                      Join a challenge below
+                      This is a challenge
                     </p>
                     <p className="font-mono text-xs text-muted-foreground/60">
-                      Scroll to explore
+                      Review the brief, then join
+                    </p>
+                  </>
+                )}
+                {step === 3 && (
+                  <>
+                    <p className="font-mono text-sm text-muted-foreground tracking-wide">
+                      Click Join to enter
+                    </p>
+                    <p className="font-mono text-xs text-muted-foreground/60">
+                      $5 to compete for $900
                     </p>
                   </>
                 )}

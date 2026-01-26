@@ -33,6 +33,7 @@ export const CommunityChallenges = () => {
   const [showOnboarding, setShowOnboarding] = useState(() => {
     return !localStorage.getItem(GUIDE_SEEN_KEY);
   });
+  const [onboardingStep, setOnboardingStep] = useState(0);
 
   const { data: todaysChallenge, isLoading: loadingToday } = useTodayChallenge();
   const { data: pastChallenges = [], isLoading: loadingPast } = usePastChallenges();
@@ -272,7 +273,11 @@ export const CommunityChallenges = () => {
                   <p className="font-mono text-xs text-muted-foreground">loading...</p>
                 </div>
               ) : todaysChallenge ? (
-                <ChallengeCard challenge={todaysChallenge} showHighlight={showOnboarding} />
+                <ChallengeCard 
+                  challenge={todaysChallenge} 
+                  showHighlight={showOnboarding && onboardingStep === 2} 
+                  highlightJoinButton={showOnboarding && onboardingStep === 3}
+                />
               ) : (
                 <div className="py-16 text-center border border-dashed border-border rounded-lg">
                   <Trophy className="h-8 w-8 mx-auto text-muted-foreground/30 mb-3" />
@@ -306,7 +311,10 @@ export const CommunityChallenges = () => {
 
       {/* Onboarding overlay for first-time visitors */}
       {showOnboarding && (
-        <ArenaOnboardingOverlay onComplete={() => setShowOnboarding(false)} />
+        <ArenaOnboardingOverlay 
+          onComplete={() => setShowOnboarding(false)} 
+          onStepChange={setOnboardingStep}
+        />
       )}
     </div>
   );
