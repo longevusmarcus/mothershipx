@@ -104,6 +104,7 @@ const ProblemDetail = () => {
   const [autoBuildOpen, setAutoBuildOpen] = useState(false);
   const [justJoined, setJustJoined] = useState(false);
   const wasJoined = useRef(false);
+  const startBuildingRef = useRef<HTMLButtonElement>(null);
 
   // Check access on mount
   useEffect(() => {
@@ -362,10 +363,11 @@ const ProblemDetail = () => {
           
           {/* Action Buttons */}
           <div className="flex items-center gap-2 mb-4">
-            <Button 
+            <Button
+              ref={startBuildingRef}
               size="sm"
               variant={isJoined ? "outline" : "default"}
-              onClick={handleJoinToggle} 
+              onClick={handleJoinToggle}
               disabled={joinProblem.isPending || leaveProblem.isPending}
               className={isJoined ? "text-success border-success/30" : ""}
             >
@@ -844,10 +846,11 @@ const ProblemDetail = () => {
       />
 
       {/* Onboarding overlay for first-time visitors */}
-      <ProblemDashboardOnboarding 
+      <ProblemDashboardOnboarding
         isJoined={isJoined}
         justJoined={justJoined}
         onDismiss={() => setJustJoined(false)}
+        startBuildingRef={startBuildingRef}
       />
     </AppLayout>
   );

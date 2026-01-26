@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, RefObject } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 
@@ -9,15 +9,38 @@ interface ProblemDashboardOnboardingProps {
   isJoined: boolean;
   justJoined: boolean;
   onDismiss?: () => void;
+  startBuildingRef?: RefObject<HTMLButtonElement>;
 }
 
-export function ProblemDashboardOnboarding({ 
-  isJoined, 
+export function ProblemDashboardOnboarding({
+  isJoined,
   justJoined,
-  onDismiss 
+  onDismiss,
+  startBuildingRef
 }: ProblemDashboardOnboardingProps) {
   const [showInitialHighlight, setShowInitialHighlight] = useState(false);
   const [showJoinedGuide, setShowJoinedGuide] = useState(false);
+  const [buttonRect, setButtonRect] = useState<DOMRect | null>(null);
+
+  // Track the Start Building button position
+  useEffect(() => {
+    if (!showInitialHighlight || !startBuildingRef?.current) return;
+
+    const updatePosition = () => {
+      if (startBuildingRef.current) {
+        setButtonRect(startBuildingRef.current.getBoundingClientRect());
+      }
+    };
+
+    updatePosition();
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition);
+
+    return () => {
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition);
+    };
+  }, [showInitialHighlight, startBuildingRef]);
 
   // Check if first-time visitor
   useEffect(() => {
@@ -89,24 +112,25 @@ export function ProblemDashboardOnboarding({
             </motion.div>
 
             {/* Highlight ring for Start Building button area */}
-            <motion.div
-              className="absolute z-[102] pointer-events-none"
-              style={{ 
-                top: "calc(35vh)", 
-                left: "50%", 
-                transform: "translateX(-50%)" 
-              }}
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: [1, 1.05, 1], opacity: 1 }}
-              transition={{ 
-                scale: { duration: 1.5, repeat: Infinity, ease: "easeInOut" },
-                opacity: { duration: 0.3 }
-              }}
-            >
-              <div className="px-4 py-2 rounded-lg border-2 border-primary bg-primary/10">
-                <span className="text-sm font-medium text-primary">Start Building</span>
-              </div>
-            </motion.div>
+            {buttonRect && (
+              <motion.div
+                className="fixed z-[102] pointer-events-none"
+                style={{
+                  top: buttonRect.top - 4,
+                  left: buttonRect.left - 4,
+                  width: buttonRect.width + 8,
+                  height: buttonRect.height + 8,
+                }}
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: [1, 1.05, 1], opacity: 1 }}
+                transition={{
+                  scale: { duration: 1.5, repeat: Infinity, ease: "easeInOut" },
+                  opacity: { duration: 0.3 }
+                }}
+              >
+                <div className="w-full h-full rounded-lg border-2 border-primary bg-primary/10" />
+              </motion.div>
+            )}
 
             {/* Highlight ring for + button (bottom right) */}
             <motion.div
