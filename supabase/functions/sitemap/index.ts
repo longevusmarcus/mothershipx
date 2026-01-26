@@ -19,7 +19,7 @@ Deno.serve(async (req) => {
 
     // Fetch problems and challenges in parallel
     const [problemsResult, challengesResult] = await Promise.all([
-      supabase.from("problems").select("id, updated_at").order("updated_at", { ascending: false }),
+      supabase.from("problems").select("id, slug, updated_at").order("updated_at", { ascending: false }),
       supabase.from("challenges").select("id, updated_at").order("updated_at", { ascending: false }),
     ]);
 
@@ -53,13 +53,15 @@ Deno.serve(async (req) => {
 `;
     }
 
-    // Add problem pages
+    // Add problem pages with SEO-friendly slugs
     for (const problem of problems) {
       const lastmod = problem.updated_at
         ? new Date(problem.updated_at).toISOString().split("T")[0]
         : today;
+      // Use slug if available, otherwise fall back to ID
+      const urlPath = problem.slug || problem.id;
       xml += `  <url>
-    <loc>${SITE_URL}/problem/${problem.id}</loc>
+    <loc>${SITE_URL}/problems/${urlPath}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

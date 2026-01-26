@@ -20,6 +20,7 @@ export interface HiddenInsight {
 
 export interface MarketProblem {
   id: string;
+  slug?: string;
   title: string;
   subtitle: string;
   category: string;

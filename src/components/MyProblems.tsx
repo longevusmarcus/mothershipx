@@ -26,6 +26,7 @@ interface JoinedProblem {
   joined_at: string;
   problem: {
     id: string;
+    slug: string | null;
     title: string;
     category: string;
     opportunity_score: number;
@@ -53,7 +54,7 @@ export function MyProblems() {
       if (!user) return [];
       const { data, error } = await supabase
         .from("problem_builders")
-        .select(`id, problem_id, joined_at, problem:problems!inner(id, title, category, opportunity_score, sentiment)`)
+        .select(`id, problem_id, joined_at, problem:problems!inner(id, slug, title, category, opportunity_score, sentiment)`)
         .eq("user_id", user.id)
         .order("joined_at", { ascending: false });
       if (error) return [];
@@ -167,7 +168,7 @@ export function MyProblems() {
                 >
                   {/* Problem Header */}
                   <div
-                    onClick={() => navigate(`/problems/${problem.id}`)}
+                    onClick={() => navigate(`/problems/${problem.slug || problem.id}`)}
                     className="p-3 hover:bg-muted/50 cursor-pointer transition-colors"
                   >
                     <div className="flex items-start justify-between gap-2">
