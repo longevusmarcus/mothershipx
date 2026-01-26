@@ -84,7 +84,7 @@ export function MasonryGrid({ problems, shouldBlurExcess, isAllCategory = true }
   const [activeId, setActiveId] = useState<string | null>(null);
   const [columnCount, setColumnCount] = useState<ColumnCount>(() => {
     const saved = localStorage.getItem(COLUMNS_KEY);
-    return (saved ? parseInt(saved) : 2) as ColumnCount;
+    return (saved ? parseInt(saved) : 3) as ColumnCount;
   });
   const isMobile = useIsMobile();
   
