@@ -71,30 +71,90 @@ function generateFreshSources(views: number, shares: number, demandVelocity: num
   ];
 }
 
-function generateHiddenInsight(title: string, category: string, painPoints: string[]): object {
-  // Generate contextual hidden insights based on problem data
-  const surfaceTemplates = [
-    `How do I solve ${category.toLowerCase()} issues?`,
-    `What's the best ${category.toLowerCase()} solution?`,
-    `I need help with ${painPoints[0]?.toLowerCase() || category.toLowerCase()}`,
-  ];
+async function generateHiddenInsightWithAI(title: string, category: string, painPoints: string[]): Promise<object> {
+  const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
   
-  const realProblemTemplates = [
-    `Users feel overwhelmed by existing solutions and want simplicity`,
-    `The emotional burden of ${category.toLowerCase()} is underestimated`,
-    `People seek validation, not just solutions`,
-  ];
+  if (!LOVABLE_API_KEY) {
+    console.log("No LOVABLE_API_KEY, using fallback hidden insight generation");
+    return generateFallbackHiddenInsight(title, category, painPoints);
+  }
   
-  const hiddenSignalTemplates = [
-    `Market gap exists for human-centered ${category.toLowerCase()} approaches`,
-    `Community-driven solutions outperform solo tools`,
-    `Simplification is the new premium feature`,
-  ];
+  try {
+    const prompt = `Analyze this market problem and provide hidden insights:
+
+Problem: "${title}"
+Category: ${category}
+Pain Points: ${painPoints.join(', ') || 'Not specified'}
+
+Generate a hidden signal analysis with exactly 3 parts:
+1. surfaceAsk: What users literally say they want (a realistic quote, 10-20 words)
+2. realProblem: The deeper unspoken need behind their ask (15-25 words)  
+3. hiddenSignal: A strategic insight for builders - an opportunity others miss (15-30 words)
+
+Be specific to this exact problem. Avoid generic statements. Focus on unique market dynamics.`;
+
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages: [
+          { role: "system", content: "You are a market research analyst specializing in identifying hidden customer needs and market opportunities. Always return valid JSON." },
+          { role: "user", content: prompt }
+        ],
+        tools: [{
+          type: "function",
+          function: {
+            name: "create_hidden_insight",
+            description: "Create a hidden insight analysis for a market problem",
+            parameters: {
+              type: "object",
+              properties: {
+                surfaceAsk: { type: "string", description: "What users literally say they want - a realistic user quote" },
+                realProblem: { type: "string", description: "The deeper unspoken need behind their ask" },
+                hiddenSignal: { type: "string", description: "A strategic insight for builders - an opportunity others miss" }
+              },
+              required: ["surfaceAsk", "realProblem", "hiddenSignal"],
+              additionalProperties: false
+            }
+          }
+        }],
+        tool_choice: { type: "function", function: { name: "create_hidden_insight" } }
+      }),
+    });
+
+    if (!response.ok) {
+      console.error("AI API error:", response.status);
+      return generateFallbackHiddenInsight(title, category, painPoints);
+    }
+
+    const data = await response.json();
+    const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
+    
+    if (toolCall?.function?.arguments) {
+      const insight = JSON.parse(toolCall.function.arguments);
+      console.log(`Generated AI hidden insight for: ${title}`);
+      return insight;
+    }
+    
+    return generateFallbackHiddenInsight(title, category, painPoints);
+  } catch (error) {
+    console.error("Error generating AI hidden insight:", error);
+    return generateFallbackHiddenInsight(title, category, painPoints);
+  }
+}
+
+function generateFallbackHiddenInsight(title: string, category: string, painPoints: string[]): object {
+  // Fallback with more unique, problem-specific text
+  const mainPain = painPoints[0] || "this challenge";
   
   return {
-    surfaceAsk: surfaceTemplates[Math.floor(Math.random() * surfaceTemplates.length)],
-    realProblem: realProblemTemplates[Math.floor(Math.random() * realProblemTemplates.length)],
-    hiddenSignal: hiddenSignalTemplates[Math.floor(Math.random() * hiddenSignalTemplates.length)],
+    surfaceAsk: `I just need a simple way to handle ${mainPain.toLowerCase()}`,
+    realProblem: `${category} users are exhausted by complex tools and want solutions that respect their time and mental energy`,
+    hiddenSignal: `Winners in this space will focus on reducing cognitive load, not adding features. The ${category.toLowerCase()} market rewards simplicity.`,
   };
 }
 
@@ -315,7 +375,7 @@ serve(async (req) => {
       // Generate or update hidden insight if missing
       let hiddenInsight = problem.hidden_insight;
       if (!hiddenInsight || !hiddenInsight.surfaceAsk) {
-        hiddenInsight = generateHiddenInsight(
+        hiddenInsight = await generateHiddenInsightWithAI(
           problem.title, 
           problem.category, 
           problem.pain_points || []
