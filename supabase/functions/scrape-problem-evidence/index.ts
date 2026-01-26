@@ -47,7 +47,17 @@ Deno.serve(async (req) => {
     let evidenceData: any[] = [];
 
     if (source === "tiktok" && apifyToken) {
-      console.log("[SCRAPE] Starting TikTok scrape with query:", searchQuery);
+      // Simplify query for TikTok - remove special chars, take first 2-3 key words
+      const simplifiedQuery = searchQuery
+        .replace(/[&]/g, ' ')
+        .replace(/[^a-zA-Z0-9\s]/g, '')
+        .split(/\s+/)
+        .filter((word: string) => word.length > 3)
+        .slice(0, 3)
+        .join(' ')
+        .trim();
+      
+      console.log("[SCRAPE] Starting TikTok scrape with simplified query:", simplifiedQuery, "(original:", searchQuery, ")");
       
       // Use Apify TikTok scraper with searchQueries and correct searchSection value
       const apifyResponse = await fetch(
@@ -57,7 +67,7 @@ Deno.serve(async (req) => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             excludePinnedPosts: false,
-            searchQueries: [searchQuery],
+            searchQueries: [simplifiedQuery],
             resultsPerPage: 5,
             searchSection: "/video", // Must be "/video" with leading slash
           }),
