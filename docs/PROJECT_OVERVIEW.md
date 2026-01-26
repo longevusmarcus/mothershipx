@@ -8,7 +8,7 @@
 
 - **Market Intelligence Dashboard** - Browse trending problems across niches (Mental Health, Fitness, Productivity, etc.)
 - **Quick Market Scans** - Search multiple niches for opportunities
-- **Market Auditions** - Competitive challenges where builders ship solutions for prizes
+- **Builder Arena** - Competitive challenges where builders ship solutions for prizes
 - **Leaderboard & Rankings** - Track builder performance
 - **Builder Verification** - Validate credentials via GitHub, Stripe, Supabase
 - **Team Formation** - Collaborate with other builders on challenges
@@ -68,7 +68,7 @@ src/
 │   ├── Index.tsx          # Home page with search & market scanning
 │   ├── Problems.tsx       # Dashboard with problem grid
 │   ├── ProblemDetail.tsx  # Detailed problem view
-│   ├── Challenges.tsx     # Market auditions listing
+│   ├── Challenges.tsx     # Builder arena listing
 │   ├── ChallengeResults.tsx # Challenge voting & results
 │   ├── Builds.tsx         # User builds/solutions gallery
 │   ├── SubmitSolution.tsx # Solution submission form
@@ -139,7 +139,7 @@ supabase/
 | `/`                       | Index            | Home page - search & quick scan |
 | `/problems`               | Problems         | Dashboard with problem grid     |
 | `/problems/:id`           | ProblemDetail    | Detailed problem view           |
-| `/challenges`             | Challenges       | Market auditions listing        |
+| `/challenges`             | Challenges       | Builder arena listing           |
 | `/challenges/:id/results` | ChallengeResults | Voting & results                |
 | `/builds`                 | Builds           | User solutions gallery          |
 | `/submit`                 | SubmitSolution   | Submit a solution               |
@@ -156,7 +156,7 @@ Key tables in Supabase PostgreSQL:
 
 - **profiles** - User profiles with bio, social links, streaks
 - **problems** - Market opportunities with sentiment, scores, sources
-- **challenges** - Daily market auditions with prizes & participation
+- **challenges** - Weekly hacker competitions with prizes & participation
 - **submissions** - User solutions submissions
 - **solutions** - Detailed solution information
 - **challenge_joins** - User participation in challenges
