@@ -25,7 +25,7 @@ interface ProblemEvidenceSectionProps {
 }
 
 export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvidenceSectionProps) {
-  const { data, isLoading } = useProblemEvidence(problemId);
+  const { data, isLoading, refetch } = useProblemEvidence(problemId);
   const scrapeEvidence = useScrapeEvidence();
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -47,6 +47,9 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
       ]);
       
       const totalEvidence = results.reduce((acc, r) => acc + (r?.evidenceCount || 0), 0);
+      
+      // Force refetch to get the new data immediately
+      await refetch();
       
       if (totalEvidence > 0) {
         toast.success(`Found ${totalEvidence} evidence items!`);
