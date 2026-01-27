@@ -1,4 +1,4 @@
-(import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Loader2,
@@ -166,7 +166,7 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                       transition={{ delay: 0.2, duration: 0.4 }}
                     >
                       <h2 className="text-xl sm:text-2xl font-display font-medium tracking-tight mb-2">
-                        Unlock MothershipX (Lifetime edition)
+                        Unlock MothershipX
                       </h2>
                       <p className="text-sm text-muted-foreground">
                         Enter live markets where demand is already proven, compete to serve it, and earn rewards.
@@ -186,7 +186,7 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                           <span className="text-4xl sm:text-5xl font-semibold tracking-tight">
                             ${SUBSCRIPTION_PRICE}
                           </span>
-                          <span className="text-muted-foreground ml-1.5 text-base">/Lifetime</span>
+                          <span className="text-muted-foreground ml-1.5 text-base">/month</span>
                         </div>
                       </div>
                     </motion.div>

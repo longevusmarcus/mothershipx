@@ -20,7 +20,6 @@ import Profile from "./pages/Profile";
 import PublicProfile from "./pages/PublicProfile";
 import SubscriptionSuccess from "./pages/SubscriptionSuccess";
 import Auth from "./pages/Auth";
-import AuthConfirm from "./pages/AuthConfirm";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import NotFound from "./pages/NotFound";
@@ -55,7 +54,6 @@ const App = () => (
                   <Route path="/settings" element={<Navigate to="/profile" replace />} />
                   <Route path="/subscription/success" element={<SubscriptionSuccess />} />
                   <Route path="/auth" element={<Auth />} />
-                  <Route path="/auth/confirm" element={<AuthConfirm />} />
                   <Route path="/terms" element={<Terms />} />
                   <Route path="/privacy" element={<Privacy />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
