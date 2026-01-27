@@ -28,7 +28,7 @@ interface SubscriptionPaywallProps {
 }
 
 const features = [
-  { icon: Zap, label: "Unlimited searches", delay: 0 },
+  { icon: Zap, label: "Pre-validated signals (updated every week)", delay: 0 },
   { icon: Globe, label: "Full signal dashboard access", delay: 0.1 },
   { icon: Swords, label: "Free Arena challenge entry (instead of $5/entry)", delay: 0.2 },
   { icon: Users, label: "Builder matching/Networking", delay: 0.3 },
