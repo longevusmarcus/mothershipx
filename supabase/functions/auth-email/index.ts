@@ -6,7 +6,6 @@ const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 const hookSecret = Deno.env.get("SEND_EMAIL_HOOK_SECRET")?.replace("v1,whsec_", "") || "";
 
 const SITE_URL = Deno.env.get("SITE_URL") || "https://superlovable.dev";
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || "https://bbkhiwrgqilaokowhtxg.supabase.co";
 const FROM_EMAIL = Deno.env.get("FROM_EMAIL") || "MothershipX <noreply@superlovable.dev>";
 
 interface AuthEmailPayload {
@@ -28,14 +27,10 @@ interface AuthEmailPayload {
   };
 }
 
-function renderVerificationEmail(email: string, token: string, redirectTo: string): string {
-  // Use Supabase's built-in verify endpoint - it handles token verification and redirects to the app
-  // Add ?verified=true so the frontend can show a welcome toast
-  const finalRedirect = redirectTo || SITE_URL;
-  const redirectWithParam = finalRedirect.includes('?')
-    ? `${finalRedirect}&verified=true`
-    : `${finalRedirect}?verified=true`;
-  const verifyUrl = `${SUPABASE_URL}/auth/v1/verify?token=${token}&type=signup&redirect_to=${encodeURIComponent(redirectWithParam)}`;
+function renderVerificationEmail(email: string, tokenHash: string, redirectTo: string): string {
+  // Use a frontend route that calls verifyOtp() to both verify AND establish a session
+  // verifyOtp() expects type=email for email-based signup verification (not "signup")
+  const verifyUrl = `${SITE_URL}/auth/confirm?token_hash=${tokenHash}&type=email`;
 
   return `
 <!DOCTYPE html>
@@ -67,9 +62,8 @@ function renderVerificationEmail(email: string, token: string, redirectTo: strin
   `.trim();
 }
 
-function renderPasswordResetEmail(email: string, token: string, redirectTo: string): string {
-  // Use Supabase's built-in verify endpoint - it verifies the token and redirects to the reset password page
-  const resetUrl = `${SUPABASE_URL}/auth/v1/verify?token=${token}&type=recovery&redirect_to=${encodeURIComponent(redirectTo || `${SITE_URL}/auth?mode=reset`)}`;
+function renderPasswordResetEmail(email: string, tokenHash: string, redirectTo: string): string {
+  const resetUrl = `${SITE_URL}/auth/confirm?token_hash=${tokenHash}&type=recovery`;
 
   return `
 <!DOCTYPE html>
@@ -101,9 +95,8 @@ function renderPasswordResetEmail(email: string, token: string, redirectTo: stri
   `.trim();
 }
 
-function renderMagicLinkEmail(email: string, token: string, redirectTo: string): string {
-  // Use Supabase's built-in verify endpoint - it verifies the token and redirects to the app
-  const loginUrl = `${SUPABASE_URL}/auth/v1/verify?token=${token}&type=magiclink&redirect_to=${encodeURIComponent(redirectTo || SITE_URL)}`;
+function renderMagicLinkEmail(email: string, tokenHash: string, redirectTo: string): string {
+  const loginUrl = `${SITE_URL}/auth/confirm?token_hash=${tokenHash}&type=magiclink`;
 
   return `
 <!DOCTYPE html>
@@ -185,27 +178,27 @@ serve(async (req) => {
     switch (email_data.email_action_type) {
       case "signup":
         subject = "Verify your email - MothershipX";
-        html = renderVerificationEmail(user.email, email_data.token, email_data.redirect_to);
+        html = renderVerificationEmail(user.email, email_data.token_hash, email_data.redirect_to);
         break;
 
       case "recovery":
         subject = "Reset your password - MothershipX";
-        html = renderPasswordResetEmail(user.email, email_data.token, email_data.redirect_to);
+        html = renderPasswordResetEmail(user.email, email_data.token_hash, email_data.redirect_to);
         break;
 
       case "magic_link":
         subject = "Sign in to MothershipX";
-        html = renderMagicLinkEmail(user.email, email_data.token, email_data.redirect_to);
+        html = renderMagicLinkEmail(user.email, email_data.token_hash, email_data.redirect_to);
         break;
 
       case "invite":
         subject = "You've been invited to MothershipX";
-        html = renderVerificationEmail(user.email, email_data.token, email_data.redirect_to);
+        html = renderVerificationEmail(user.email, email_data.token_hash, email_data.redirect_to);
         break;
 
       case "email_change":
         subject = "Confirm your new email - MothershipX";
-        html = renderVerificationEmail(user.email, email_data.token_new || email_data.token, email_data.redirect_to);
+        html = renderVerificationEmail(user.email, email_data.token_hash_new || email_data.token_hash, email_data.redirect_to);
         break;
 
       default:
