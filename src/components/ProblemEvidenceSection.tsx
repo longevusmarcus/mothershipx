@@ -216,7 +216,7 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
                     <div className="absolute inset-0 bg-background/60 backdrop-blur-md flex items-center justify-center">
                       <div className="text-center p-2">
                         <Lock className="h-4 w-4 mx-auto text-muted-foreground/50 mb-1" />
-                        <span className="text-[10px] text-muted-foreground/50">Loading...</span>
+                        <span className="text-[10px] text-muted-foreground/50">Reserved</span>
                       </div>
                     </div>
                   </motion.div>
@@ -281,7 +281,7 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
                       </div>
                     </div>
                     <div className="absolute inset-0 bg-background/40 backdrop-blur-sm flex items-center justify-center">
-                      <span className="text-[10px] text-muted-foreground/50">Loading...</span>
+                      <span className="text-[10px] text-muted-foreground/50">Reserved</span>
                     </div>
                   </motion.div>
                 ))}
