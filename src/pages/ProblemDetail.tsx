@@ -107,10 +107,21 @@ const ProblemDetail = () => {
   const wasJoined = useRef(false);
   const startBuildingRef = useRef<HTMLButtonElement>(null);
 
-  // Check access on mount
+  // Check access on mount - only show paywall after subscription check completes
+  // Use a ref to track if we've already shown the paywall to prevent re-triggering
+  const paywallCheckedRef = useRef(false);
+  
   useEffect(() => {
-    if (!subscriptionLoading && user && !hasPremiumAccess) {
-      setShowPaywall(true);
+    // Only check once when subscription loading finishes
+    if (!subscriptionLoading && user && !paywallCheckedRef.current) {
+      paywallCheckedRef.current = true;
+      if (!hasPremiumAccess) {
+        setShowPaywall(true);
+      }
+    }
+    // Reset ref if user logs out
+    if (!user) {
+      paywallCheckedRef.current = false;
     }
   }, [subscriptionLoading, user, hasPremiumAccess]);
 
