@@ -1,7 +1,6 @@
-import { createContext, useContext, useState, useEffect, useRef, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabaseClient";
-import { toast } from "sonner";
 
 export interface Profile {
   id: string;
@@ -53,28 +52,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setProfile(data);
     }
   };
-
-  // Track if we've shown the verification toast to avoid duplicates
-  const verificationToastShown = useRef(false);
-
-  useEffect(() => {
-    // Check for email verification redirect (URL parameter)
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('verified') && !verificationToastShown.current) {
-      verificationToastShown.current = true;
-      // Clean up URL
-      urlParams.delete('verified');
-      const newUrl = urlParams.toString()
-        ? `${window.location.pathname}?${urlParams.toString()}`
-        : window.location.pathname;
-      window.history.replaceState({}, '', newUrl);
-
-      // Show toast after a short delay to ensure the page is ready
-      setTimeout(() => {
-        toast.success("Your account is verified. Good luck, builder!");
-      }, 500);
-    }
-  }, []);
 
   useEffect(() => {
     // Set up auth state listener FIRST
