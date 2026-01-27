@@ -78,7 +78,11 @@ export function useScrapeEvidence() {
       return data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["problem-evidence", variables.problemId] });
+      // Force immediate refetch by using refetchType 'all' to bypass staleTime
+      queryClient.invalidateQueries({ 
+        queryKey: ["problem-evidence", variables.problemId],
+        refetchType: 'all'
+      });
     },
   });
 }
