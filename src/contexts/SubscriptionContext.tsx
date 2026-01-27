@@ -70,7 +70,13 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
 
       if (error) {
         console.error("Error checking subscription:", error);
-        setStatus(prev => ({ ...prev, isLoading: false }));
+        // On error, preserve existing subscription status (don't reset to non-subscribed)
+        // This prevents showing paywall when the API temporarily fails
+        if (cachedStatus) {
+          setStatus({ ...cachedStatus, isLoading: false });
+        } else {
+          setStatus(prev => ({ ...prev, isLoading: false }));
+        }
         checkInProgressRef.current = false;
         return;
       }
