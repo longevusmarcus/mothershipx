@@ -33,7 +33,7 @@ const features = [
   { icon: Swords, label: "Free Arena challenge entry (instead of $5/entry)", delay: 0.2 },
   { icon: Users, label: "Builder matching/Networking", delay: 0.3 },
   { icon: FlaskConical, label: "Free ideas, landing pages & competition analysis", delay: 0.4 },
-  { icon: MessageSquareText, label: "Problem-to-solution prompts (automated builder soon available)", delay: 0.5 },
+  { icon: MessageSquareText, label: "Signal-to-solution prompts (automated builder soon available)", delay: 0.5 },
   { icon: Trophy, label: "Weekly prizes", delay: 0.6 },
 ];
 
