@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
-import { Video, MessageSquare, ExternalLink, ThumbsUp, Eye, Play, RefreshCw } from "lucide-react";
+import { Video, MessageSquare, ExternalLink, ThumbsUp, Eye, Play, RefreshCw, Lock } from "lucide-react";
 import { useProblemEvidence, useScrapeEvidence } from "@/hooks/useProblemEvidence";
 import { Button } from "@/components/ui/button";
 import { formatNumber } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { toast } from "sonner";
 
 // Source brand icons
@@ -64,6 +64,15 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
   const videos = data?.videos || [];
   const comments = data?.comments || [];
   const hasEvidence = videos.length > 0 || comments.length > 0;
+  
+  // Generate a fake higher count for display (real items + fake extras)
+  const realCount = videos.length + comments.length;
+  const fakeExtraCount = Math.floor(Math.random() * 8) + 12; // 12-20 extra fake items
+  const displayCount = realCount > 0 ? realCount + fakeExtraCount : 0;
+  
+  // Number of blurred placeholder cards to show
+  const blurredVideoCount = Math.min(5, Math.max(3, 5 - videos.length));
+  const blurredCommentCount = Math.min(3, Math.max(2, 3 - comments.length));
 
   if (isLoading) {
     return (
@@ -91,7 +100,9 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
         <div className="flex items-center gap-2">
           <Video className="h-5 w-5 text-primary" />
           <h3 className="font-semibold">Source Evidence</h3>
-          <span className="text-xs text-muted-foreground font-mono">({videos.length + comments.length} items)</span>
+          {displayCount > 0 && (
+            <span className="text-xs text-muted-foreground font-mono">{displayCount}+ sources</span>
+          )}
         </div>
         <Button
           variant="ghost"
@@ -190,6 +201,26 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
                     </div>
                   </motion.a>
                 ))}
+                
+                {/* Blurred placeholder video cards */}
+                {Array.from({ length: blurredVideoCount }).map((_, index) => (
+                  <motion.div
+                    key={`blur-video-${index}`}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: (videos.length + index) * 0.05 }}
+                    className="relative aspect-[9/16] rounded-lg overflow-hidden bg-muted border border-border"
+                  >
+                    {/* Blurred fake content */}
+                    <div className="w-full h-full bg-gradient-to-b from-muted via-muted-foreground/10 to-muted blur-sm" />
+                    <div className="absolute inset-0 bg-background/60 backdrop-blur-md flex items-center justify-center">
+                      <div className="text-center p-2">
+                        <Lock className="h-4 w-4 mx-auto text-muted-foreground/50 mb-1" />
+                        <span className="text-[10px] text-muted-foreground/50">Loading...</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
             </div>
           )}
@@ -230,6 +261,29 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
                       </div>
                     </div>
                   </motion.a>
+                ))}
+                
+                {/* Blurred placeholder comment cards */}
+                {Array.from({ length: blurredCommentCount }).map((_, index) => (
+                  <motion.div
+                    key={`blur-comment-${index}`}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: (comments.length + index) * 0.05 }}
+                    className="relative p-3 rounded-lg border border-border bg-secondary/20 overflow-hidden"
+                  >
+                    <div className="flex items-start gap-3 blur-sm">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted" />
+                      <div className="flex-1 min-w-0 space-y-2">
+                        <div className="h-3 bg-muted rounded w-full" />
+                        <div className="h-3 bg-muted rounded w-3/4" />
+                        <div className="h-2 bg-muted rounded w-1/3 mt-2" />
+                      </div>
+                    </div>
+                    <div className="absolute inset-0 bg-background/40 backdrop-blur-sm flex items-center justify-center">
+                      <span className="text-[10px] text-muted-foreground/50">Loading...</span>
+                    </div>
+                  </motion.div>
                 ))}
               </div>
             </div>
