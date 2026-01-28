@@ -102,43 +102,35 @@ const Problems = () => {
 
           {/* Action Buttons - hidden on mobile */}
           {!isMobile && (
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-1">
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
               {/* Auto-Build Button */}
               <Button
                 variant="ghost"
-                size="sm"
+                size="icon"
                 onClick={() => setAutoBuildOpen(true)}
-                className="text-muted-foreground hover:text-foreground h-8 px-2 group"
+                className="text-muted-foreground hover:text-foreground h-8 w-8 group relative"
               >
+                <img
+                  src={superloveLogo} 
+                  alt="Auto-build" 
+                  className="h-4 w-4 object-contain opacity-60 group-hover:opacity-100 transition-opacity"
+                />
                 <motion.div
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="relative"
-                >
-                  <div className="h-4 w-4 flex items-center justify-center">
-                    <img
-                      src={superloveLogo} 
-                      alt="Auto-build" 
-                      className="h-4 w-4 object-contain scale-[1.35] opacity-60 group-hover:opacity-100 transition-opacity"
-                    />
-                  </div>
-                  <motion.div
-                    className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-primary"
-                    animate={{ opacity: [1, 0.3, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  />
-                </motion.div>
+                  className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-primary"
+                  animate={{ opacity: [1, 0.3, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
               </Button>
 
               {/* Refresh Button */}
               <Button
                 variant="ghost"
-                size="sm"
+                size="icon"
                 onClick={handleRefreshData}
                 disabled={isRefreshing}
-                className="text-muted-foreground hover:text-foreground h-8 px-2"
+                className="text-muted-foreground hover:text-foreground h-8 w-8"
               >
-                <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
+                <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
               </Button>
 
               {/* Column Switcher */}
@@ -148,7 +140,7 @@ const Problems = () => {
                 onClick={cycleColumns}
                 className="text-muted-foreground hover:text-foreground h-8 px-2 gap-1"
               >
-                <LayoutGrid className="h-3.5 w-3.5" />
+                <LayoutGrid className="h-4 w-4" />
                 <span className="text-xs font-medium tabular-nums">{columnCount}</span>
               </Button>
             </div>
