@@ -181,7 +181,7 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                       transition={{ delay: 0.3, duration: 0.4, type: "spring" }}
                     >
                       <div className="flex flex-col sm:items-start items-center gap-1">
-                        <span className="text-sm text-muted-foreground line-through">299 lifetime</span>
+                        <span className="text-sm text-muted-foreground line-through">$1999 lifetime</span>
                         <div className="inline-flex items-baseline">
                           <span className="text-4xl sm:text-5xl font-semibold tracking-tight">
                             ${SUBSCRIPTION_PRICE}
