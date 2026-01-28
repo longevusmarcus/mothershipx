@@ -436,6 +436,7 @@ const ProblemDetail = () => {
               onClick={handleJoinToggle}
               disabled={joinProblem.isPending || leaveProblem.isPending}
               className={isJoined ? "text-success border-success/30" : ""}
+              data-tutorial="start-building"
             >
               {isJoined ? (
                 <>
@@ -462,6 +463,7 @@ const ProblemDetail = () => {
                     size="sm"
                     variant="outline"
                     onClick={() => setBuildModalOpen(true)}
+                    data-tutorial="launch-button"
                   >
                     <Rocket className="h-4 w-4 mr-1" />
                     Launch in Lovable
@@ -483,6 +485,7 @@ const ProblemDetail = () => {
                 <Button 
                   size="sm"
                   variant="glow"
+                  data-tutorial="submit-button"
                   onClick={() => navigate("/submit", {
                     state: {
                       problem: {
@@ -539,10 +542,10 @@ const ProblemDetail = () => {
             <TabsTrigger value="overview" className="text-xs data-[state=active]:bg-background">
               Overview
             </TabsTrigger>
-            <TabsTrigger value="squads" className="text-xs data-[state=active]:bg-background">
+            <TabsTrigger value="squads" className="text-xs data-[state=active]:bg-background" data-tutorial="squads-tab">
               Squads
             </TabsTrigger>
-            <TabsTrigger value="solutions" className="text-xs data-[state=active]:bg-background">
+            <TabsTrigger value="solutions" className="text-xs data-[state=active]:bg-background" data-tutorial="ideas-tab">
               Ideas
             </TabsTrigger>
             <TabsTrigger value="competitors" className="text-xs data-[state=active]:bg-background">
