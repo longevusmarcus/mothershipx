@@ -1,6 +1,6 @@
 import { useState, useEffect, RefObject } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, X } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const ONBOARDING_COUNT_KEY = "problem_dashboard_onboarding_count";
@@ -12,40 +12,44 @@ interface ProblemDashboardOnboardingProps {
   justJoined: boolean;
   onDismiss?: () => void;
   startBuildingRef?: RefObject<HTMLButtonElement>;
-  /** Wait for matrix effect to complete before showing onboarding */
   waitForMatrix?: boolean;
 }
 
 const TUTORIAL_STEPS = [
   {
-    id: "overview",
-    title: "Problem Dashboard",
-    description: "Explore real pain points with AI-validated demand signals, market size, and competition analysis.",
-    highlight: "header", // which area to highlight
+    id: "start-building",
+    title: "Start Building",
+    description: "Join this problem to unlock all features and start building your solution.",
+    selector: "[data-tutorial='start-building']",
+    position: "bottom" as const,
   },
   {
     id: "ideas",
-    title: "Ideas Tab",
-    description: "AI-generated startup concepts tailored to this specific problem. Each idea includes a landing page preview.",
-    highlight: "ideas-tab",
+    title: "Ideas",
+    description: "AI-generated startup concepts tailored to this problem.",
+    selector: "[data-tutorial='ideas-tab']",
+    position: "bottom" as const,
   },
   {
     id: "squads",
     title: "Squads",
-    description: "Find collaborators and build together. Join existing teams or create your own squad.",
-    highlight: "squads-tab",
+    description: "Find collaborators and build together as a team.",
+    selector: "[data-tutorial='squads-tab']",
+    position: "bottom" as const,
   },
   {
     id: "launch",
-    title: "Launch in Lovable",
-    description: "One-click deployment. Ship your product instantly with AI-powered development.",
-    highlight: "launch-button",
+    title: "Launch with 1 click",
+    description: "Ship your product instantly with AI-powered development.",
+    selector: "[data-tutorial='launch-button']",
+    position: "bottom" as const,
   },
   {
     id: "submit",
     title: "Submit Build",
-    description: "Enter the arena and compete for prizes. Your submission gets scored on problem-solution fit.",
-    highlight: "submit-button",
+    description: "Enter the arena and compete for prizes when you're ready.",
+    selector: "[data-tutorial='submit-button']",
+    position: "left" as const,
   },
 ];
 
@@ -58,18 +62,53 @@ export function ProblemDashboardOnboarding({
 }: ProblemDashboardOnboardingProps) {
   const [showTutorial, setShowTutorial] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
+  const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const [showJoinedGuide, setShowJoinedGuide] = useState(false);
 
-  // Check if should show tutorial - first 3 visits
+  const step = TUTORIAL_STEPS[currentStep];
+
+  // Update target element position
+  useEffect(() => {
+    if (!showTutorial) return;
+
+    const updatePosition = () => {
+      const element = document.querySelector(step.selector);
+      if (element) {
+        setTargetRect(element.getBoundingClientRect());
+      } else {
+        setTargetRect(null);
+      }
+    };
+
+    updatePosition();
+    
+    // Small delay to ensure elements are rendered
+    const timer = setTimeout(updatePosition, 100);
+    
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition);
+    };
+  }, [showTutorial, currentStep, step.selector]);
+
+  // Check if should show tutorial
   useEffect(() => {
     if (waitForMatrix) return;
     
     const viewCount = parseInt(localStorage.getItem(ONBOARDING_COUNT_KEY) || "0", 10);
     
     if (viewCount < MAX_ONBOARDING_VIEWS && !isJoined) {
-      setShowTutorial(true);
-      setCurrentStep(0);
-      localStorage.setItem(ONBOARDING_COUNT_KEY, String(viewCount + 1));
+      // Small delay to let page render
+      const timer = setTimeout(() => {
+        setShowTutorial(true);
+        setCurrentStep(0);
+        localStorage.setItem(ONBOARDING_COUNT_KEY, String(viewCount + 1));
+      }, 500);
+      return () => clearTimeout(timer);
     }
   }, [isJoined, waitForMatrix]);
 
@@ -102,11 +141,38 @@ export function ProblemDashboardOnboarding({
     onDismiss?.();
   };
 
-  const step = TUTORIAL_STEPS[currentStep];
+  // Calculate tooltip position
+  const getTooltipStyle = () => {
+    if (!targetRect) return { top: "50%", left: "50%", transform: "translate(-50%, -50%)" };
+    
+    const padding = 16;
+    
+    if (step.position === "bottom") {
+      return {
+        top: targetRect.bottom + padding,
+        left: targetRect.left + targetRect.width / 2,
+        transform: "translateX(-50%)",
+      };
+    }
+    
+    if (step.position === "left") {
+      return {
+        top: targetRect.top + targetRect.height / 2,
+        right: window.innerWidth - targetRect.left + padding,
+        transform: "translateY(-50%)",
+      };
+    }
+    
+    return {
+      top: targetRect.bottom + padding,
+      left: targetRect.left + targetRect.width / 2,
+      transform: "translateX(-50%)",
+    };
+  };
 
   return (
     <>
-      {/* Multi-step tutorial overlay */}
+      {/* Multi-step tutorial with element highlighting */}
       <AnimatePresence>
         {showTutorial && (
           <motion.div
@@ -114,100 +180,101 @@ export function ProblemDashboardOnboarding({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[60] pointer-events-auto"
+            className="fixed inset-0 z-[60]"
           >
-            {/* Backdrop */}
+            {/* Backdrop with cutout for highlighted element */}
             <div 
-              className="absolute inset-0 bg-background/85 backdrop-blur-sm"
+              className="absolute inset-0 bg-background/80 backdrop-blur-sm pointer-events-auto"
               onClick={handleSkipAll}
             />
             
-            {/* Tutorial card - bottom center */}
+            {/* Highlight ring around target element */}
+            {targetRect && (
+              <motion.div
+                key={`highlight-${currentStep}`}
+                className="fixed z-[62] pointer-events-none"
+                style={{
+                  top: targetRect.top - 6,
+                  left: targetRect.left - 6,
+                  width: targetRect.width + 12,
+                  height: targetRect.height + 12,
+                }}
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.2 }}
+              >
+                <motion.div 
+                  className="w-full h-full rounded-lg border-2 border-primary bg-primary/10"
+                  animate={{ 
+                    boxShadow: [
+                      "0 0 0 0 hsl(var(--primary) / 0.3)",
+                      "0 0 0 8px hsl(var(--primary) / 0)",
+                    ]
+                  }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                />
+              </motion.div>
+            )}
+
+            {/* Tooltip */}
             <motion.div
-              key={currentStep}
-              initial={{ opacity: 0, y: 20 }}
+              key={`tooltip-${currentStep}`}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.25 }}
-              className="absolute bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-[61]"
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2, delay: 0.1 }}
+              className="fixed z-[63] pointer-events-auto"
+              style={getTooltipStyle()}
             >
-              <div className="bg-card border border-border rounded-xl shadow-2xl overflow-hidden">
-                {/* Progress bar */}
-                <div className="h-1 bg-muted">
-                  <motion.div
-                    className="h-full bg-primary"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${((currentStep + 1) / TUTORIAL_STEPS.length) * 100}%` }}
-                    transition={{ duration: 0.3 }}
-                  />
+              <div className="bg-card border border-border rounded-lg shadow-xl p-4 w-64">
+                {/* Step indicator */}
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[10px] font-mono text-primary">
+                    {currentStep + 1}/{TUTORIAL_STEPS.length}
+                  </span>
+                  <div className="flex-1 flex gap-1">
+                    {TUTORIAL_STEPS.map((_, index) => (
+                      <div
+                        key={index}
+                        className={`h-0.5 flex-1 rounded-full transition-colors ${
+                          index <= currentStep ? "bg-primary" : "bg-muted"
+                        }`}
+                      />
+                    ))}
+                  </div>
                 </div>
 
-                <div className="p-5">
-                  {/* Header */}
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <span className="text-[10px] font-mono text-muted-foreground">
-                        {String(currentStep + 1).padStart(2, '0')}/{String(TUTORIAL_STEPS.length).padStart(2, '0')}
-                      </span>
-                      <h3 className="text-sm font-semibold tracking-tight">{step.title}</h3>
-                    </div>
-                    <button
-                      onClick={handleSkipAll}
-                      className="p-1 rounded-md hover:bg-muted transition-colors"
-                    >
-                      <X className="h-4 w-4 text-muted-foreground" />
-                    </button>
-                  </div>
+                {/* Content */}
+                <h4 className="text-sm font-medium mb-1">{step.title}</h4>
+                <p className="text-xs text-muted-foreground leading-relaxed mb-4">
+                  {step.description}
+                </p>
 
-                  {/* Description */}
-                  <p className="text-xs text-muted-foreground leading-relaxed mb-5">
-                    {step.description}
-                  </p>
-
-                  {/* Actions */}
-                  <div className="flex items-center justify-between">
-                    <button
-                      onClick={handleSkipAll}
-                      className="text-[11px] text-muted-foreground/60 hover:text-muted-foreground transition-colors"
-                    >
-                      Skip all
-                    </button>
-
-                    <Button
-                      size="sm"
-                      onClick={handleNext}
-                      className="gap-1.5 h-8 px-4 text-xs"
-                    >
-                      {currentStep < TUTORIAL_STEPS.length - 1 ? (
-                        <>
-                          Next
-                          <ChevronRight className="h-3.5 w-3.5" />
-                        </>
-                      ) : (
-                        "Got it"
-                      )}
-                    </Button>
-                  </div>
+                {/* Actions */}
+                <div className="flex items-center justify-between">
+                  <button
+                    onClick={handleSkipAll}
+                    className="text-[10px] text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+                  >
+                    Skip all
+                  </button>
+                  <Button
+                    size="sm"
+                    onClick={handleNext}
+                    className="h-7 px-3 text-xs gap-1"
+                  >
+                    {currentStep < TUTORIAL_STEPS.length - 1 ? (
+                      <>
+                        Next
+                        <ChevronRight className="h-3 w-3" />
+                      </>
+                    ) : (
+                      "Done"
+                    )}
+                  </Button>
                 </div>
               </div>
             </motion.div>
-
-            {/* Step indicator dots */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
-              {TUTORIAL_STEPS.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentStep(index)}
-                  className={`h-1.5 rounded-full transition-all duration-200 ${
-                    index === currentStep 
-                      ? "w-4 bg-primary" 
-                      : index < currentStep 
-                        ? "w-1.5 bg-primary/50" 
-                        : "w-1.5 bg-muted-foreground/30"
-                  }`}
-                />
-              ))}
-            </div>
           </motion.div>
         )}
       </AnimatePresence>
