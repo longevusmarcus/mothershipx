@@ -452,7 +452,7 @@ const ProblemDetail = () => {
                     onClick={() => setBuildModalOpen(true)}
                   >
                     <Rocket className="h-4 w-4 mr-1" />
-                    Build with Lovable
+                    Launch in Lovable
                   </Button>
                 </motion.div>
                 
