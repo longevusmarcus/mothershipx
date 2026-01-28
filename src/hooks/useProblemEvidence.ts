@@ -68,7 +68,7 @@ export function useScrapeEvidence() {
     }: {
       problemId: string;
       searchQuery: string;
-      source?: "tiktok" | "reddit";
+      source?: "tiktok" | "reddit" | "youtube";
     }) => {
       const { data, error } = await supabase.functions.invoke("scrape-problem-evidence", {
         body: { problemId, searchQuery, source },
