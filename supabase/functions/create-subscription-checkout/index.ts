@@ -14,7 +14,8 @@ const logStep = (step: string, details?: unknown) => {
   console.log(`[CREATE-SUBSCRIPTION-CHECKOUT] ${step}${detailsStr}`);
 };
 
-const SUBSCRIPTION_PRICE_ID = "price_1SrxbZ2LCwPxHz0nC7VtOgeS";
+// Lifetime access pricing
+const SUBSCRIPTION_PRICE_ID = "price_1Su9HS2LCwPxHz0nJtdFrBXd";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -90,7 +91,8 @@ serve(async (req) => {
           quantity: 1,
         },
       ],
-      mode: "subscription",
+      // Use 'payment' mode for lifetime one-time purchase
+      mode: "payment",
       success_url: `${origin}/subscription/success`,
       cancel_url: `${origin}/profile`,
       metadata: {
