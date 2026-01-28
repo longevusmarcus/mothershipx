@@ -32,6 +32,7 @@ import { SubscriptionLoadingGate } from "@/components/SubscriptionLoadingGate";
 import { PromptsGenerator } from "@/components/PromptsGenerator";
 import { AutoBuildModal } from "@/components/AutoBuildModal";
 import { BuildWithLovableModal } from "@/components/BuildWithLovableModal";
+import { BulkLaunchModal } from "@/components/BulkLaunchModal";
 import { ProblemDashboardOnboarding } from "@/components/ProblemDashboardOnboarding";
 import { ProblemEvidenceSection } from "@/components/ProblemEvidenceSection";
 import { MatrixOnboardingEffect, useMatrixOnboarding } from "@/components/MatrixOnboardingEffect";
@@ -108,6 +109,7 @@ const ProblemDetail = () => {
   const [showPaywall, setShowPaywall] = useState(false);
   const [autoBuildOpen, setAutoBuildOpen] = useState(false);
   const [buildModalOpen, setBuildModalOpen] = useState(false);
+  const [bulkLaunchOpen, setBulkLaunchOpen] = useState(false);
   const [justJoined, setJustJoined] = useState(false);
   const wasJoined = useRef(false);
   const startBuildingRef = useRef<HTMLButtonElement>(null);
@@ -497,6 +499,15 @@ const ProblemDetail = () => {
             </Button>
             <Button variant="outline" size="sm" onClick={handleShare}>
               <Share2 className="h-4 w-4" />
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setBulkLaunchOpen(true)}
+              className="hidden sm:flex gap-1"
+            >
+              <Rocket className="h-4 w-4" />
+              Launch 10
             </Button>
           </div>
           
@@ -957,6 +968,12 @@ const ProblemDetail = () => {
         }}
         solutions={solutions}
         competitors={competitors}
+      />
+
+      {/* Bulk Launch Modal */}
+      <BulkLaunchModal
+        open={bulkLaunchOpen}
+        onOpenChange={setBulkLaunchOpen}
       />
       </AppLayout>
     </>
