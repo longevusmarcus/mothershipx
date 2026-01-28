@@ -1,6 +1,7 @@
 import { useState, useEffect, RefObject } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check } from "lucide-react";
+import { ChevronRight, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const ONBOARDING_COUNT_KEY = "problem_dashboard_onboarding_count";
 const JOINED_GUIDE_KEY = "problem_joined_guide_dismissed";
@@ -15,22 +16,36 @@ interface ProblemDashboardOnboardingProps {
   waitForMatrix?: boolean;
 }
 
-const NEXT_STEPS = [
+const TUTORIAL_STEPS = [
   {
-    label: "Ideas",
-    description: "AI-generated solutions tailored to this problem",
+    id: "overview",
+    title: "Problem Dashboard",
+    description: "Explore real pain points with AI-validated demand signals, market size, and competition analysis.",
+    highlight: "header", // which area to highlight
   },
   {
-    label: "Squads",
-    description: "Find collaborators and build together",
+    id: "ideas",
+    title: "Ideas Tab",
+    description: "AI-generated startup concepts tailored to this specific problem. Each idea includes a landing page preview.",
+    highlight: "ideas-tab",
   },
   {
-    label: "Launch",
-    description: "Ship your product with one click",
+    id: "squads",
+    title: "Squads",
+    description: "Find collaborators and build together. Join existing teams or create your own squad.",
+    highlight: "squads-tab",
   },
   {
-    label: "Submit",
-    description: "Enter the arena when you're ready",
+    id: "launch",
+    title: "Launch in Lovable",
+    description: "One-click deployment. Ship your product instantly with AI-powered development.",
+    highlight: "launch-button",
+  },
+  {
+    id: "submit",
+    title: "Submit Build",
+    description: "Enter the arena and compete for prizes. Your submission gets scored on problem-solution fit.",
+    highlight: "submit-button",
   },
 ];
 
@@ -41,48 +56,20 @@ export function ProblemDashboardOnboarding({
   startBuildingRef,
   waitForMatrix = false
 }: ProblemDashboardOnboardingProps) {
-  const [showInitialHighlight, setShowInitialHighlight] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
   const [showJoinedGuide, setShowJoinedGuide] = useState(false);
-  const [buttonRect, setButtonRect] = useState<DOMRect | null>(null);
 
-  // Track the Start Building button position
+  // Check if should show tutorial - first 3 visits
   useEffect(() => {
-    if (!showInitialHighlight || !startBuildingRef?.current) return;
-
-    const updatePosition = () => {
-      if (startBuildingRef.current) {
-        setButtonRect(startBuildingRef.current.getBoundingClientRect());
-      }
-    };
-
-    updatePosition();
-    window.addEventListener("resize", updatePosition);
-    window.addEventListener("scroll", updatePosition);
-
-    return () => {
-      window.removeEventListener("resize", updatePosition);
-      window.removeEventListener("scroll", updatePosition);
-    };
-  }, [showInitialHighlight, startBuildingRef]);
-
-  // Check if first-time visitor - show for first 3 visits
-  useEffect(() => {
-    // If waiting for matrix, don't show yet
     if (waitForMatrix) return;
     
     const viewCount = parseInt(localStorage.getItem(ONBOARDING_COUNT_KEY) || "0", 10);
     
     if (viewCount < MAX_ONBOARDING_VIEWS && !isJoined) {
-      setShowInitialHighlight(true);
-      
-      // Increment the view count
+      setShowTutorial(true);
+      setCurrentStep(0);
       localStorage.setItem(ONBOARDING_COUNT_KEY, String(viewCount + 1));
-      
-      // Auto-dismiss after 4 seconds
-      const timer = setTimeout(() => {
-        setShowInitialHighlight(false);
-      }, 4000);
-      return () => clearTimeout(timer);
     }
   }, [isJoined, waitForMatrix]);
 
@@ -96,91 +83,136 @@ export function ProblemDashboardOnboarding({
     }
   }, [justJoined]);
 
+  const handleNext = () => {
+    if (currentStep < TUTORIAL_STEPS.length - 1) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      handleSkipAll();
+    }
+  };
+
+  const handleSkipAll = () => {
+    setShowTutorial(false);
+    setCurrentStep(0);
+  };
+
   const dismissJoinedGuide = () => {
     setShowJoinedGuide(false);
     localStorage.setItem(JOINED_GUIDE_KEY, "true");
     onDismiss?.();
   };
 
-  const dismissInitialHighlight = () => {
-    setShowInitialHighlight(false);
-  };
+  const step = TUTORIAL_STEPS[currentStep];
 
   return (
     <>
-      {/* First-time visitor overlay - highlights Start Building and + button */}
-      {/* NOTE: z-[60] so it appears below paywall (z-[100]) */}
+      {/* Multi-step tutorial overlay */}
       <AnimatePresence>
-        {showInitialHighlight && (
+        {showTutorial && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2 }}
             className="fixed inset-0 z-[60] pointer-events-auto"
-            onClick={dismissInitialHighlight}
           >
-            {/* Backdrop blur */}
-            <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" />
+            {/* Backdrop */}
+            <div 
+              className="absolute inset-0 bg-background/85 backdrop-blur-sm"
+              onClick={handleSkipAll}
+            />
             
-            {/* Floating instruction */}
+            {/* Tutorial card - bottom center */}
             <motion.div
+              key={currentStep}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="absolute top-1/3 left-1/2 -translate-x-1/2 text-center z-[101]"
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.25 }}
+              className="absolute bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-[61]"
             >
-              <div className="bg-card border border-border rounded-xl px-6 py-5 shadow-lg max-w-xs">
-                <p className="text-base font-medium tracking-tight mb-1">Ready to build?</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Click <span className="font-medium text-foreground">Start Building</span> to join, 
-                  or <span className="font-medium text-foreground">+</span> to submit your product
-                </p>
-                <p className="text-[10px] text-muted-foreground/50 mt-4">tap anywhere to dismiss</p>
+              <div className="bg-card border border-border rounded-xl shadow-2xl overflow-hidden">
+                {/* Progress bar */}
+                <div className="h-1 bg-muted">
+                  <motion.div
+                    className="h-full bg-primary"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${((currentStep + 1) / TUTORIAL_STEPS.length) * 100}%` }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </div>
+
+                <div className="p-5">
+                  {/* Header */}
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-mono text-muted-foreground">
+                        {String(currentStep + 1).padStart(2, '0')}/{String(TUTORIAL_STEPS.length).padStart(2, '0')}
+                      </span>
+                      <h3 className="text-sm font-semibold tracking-tight">{step.title}</h3>
+                    </div>
+                    <button
+                      onClick={handleSkipAll}
+                      className="p-1 rounded-md hover:bg-muted transition-colors"
+                    >
+                      <X className="h-4 w-4 text-muted-foreground" />
+                    </button>
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-xs text-muted-foreground leading-relaxed mb-5">
+                    {step.description}
+                  </p>
+
+                  {/* Actions */}
+                  <div className="flex items-center justify-between">
+                    <button
+                      onClick={handleSkipAll}
+                      className="text-[11px] text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+                    >
+                      Skip all
+                    </button>
+
+                    <Button
+                      size="sm"
+                      onClick={handleNext}
+                      className="gap-1.5 h-8 px-4 text-xs"
+                    >
+                      {currentStep < TUTORIAL_STEPS.length - 1 ? (
+                        <>
+                          Next
+                          <ChevronRight className="h-3.5 w-3.5" />
+                        </>
+                      ) : (
+                        "Got it"
+                      )}
+                    </Button>
+                  </div>
+                </div>
               </div>
             </motion.div>
 
-            {/* Highlight ring for Start Building button area */}
-            {buttonRect && (
-              <motion.div
-                className="fixed z-[62] pointer-events-none"
-                style={{
-                  top: buttonRect.top - 4,
-                  left: buttonRect.left - 4,
-                  width: buttonRect.width + 8,
-                  height: buttonRect.height + 8,
-                }}
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: [1, 1.05, 1], opacity: 1 }}
-                transition={{
-                  scale: { duration: 1.5, repeat: Infinity, ease: "easeInOut" },
-                  opacity: { duration: 0.3 }
-                }}
-              >
-                <div className="w-full h-full rounded-lg border-2 border-primary bg-primary/10" />
-              </motion.div>
-            )}
-
-            {/* Highlight ring for + button (bottom right) */}
-            <motion.div
-              className="fixed bottom-6 right-6 z-[62] pointer-events-none"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: [1, 1.1, 1], opacity: 1 }}
-              transition={{ 
-                scale: { duration: 1.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 },
-                opacity: { duration: 0.3, delay: 0.2 }
-              }}
-            >
-              <div className="h-16 w-16 rounded-full border-2 border-primary bg-primary/10 flex items-center justify-center">
-                <span className="text-2xl font-bold text-primary">+</span>
-              </div>
-            </motion.div>
+            {/* Step indicator dots */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
+              {TUTORIAL_STEPS.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentStep(index)}
+                  className={`h-1.5 rounded-full transition-all duration-200 ${
+                    index === currentStep 
+                      ? "w-4 bg-primary" 
+                      : index < currentStep 
+                        ? "w-1.5 bg-primary/50" 
+                        : "w-1.5 bg-muted-foreground/30"
+                  }`}
+                />
+              ))}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Post-join guidance - ultra minimal design */}
-      {/* NOTE: z-[60] so it appears below paywall */}
+      {/* Post-join quick reference */}
       <AnimatePresence>
         {showJoinedGuide && (
           <motion.div
@@ -188,50 +220,32 @@ export function ProblemDashboardOnboarding({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[60] w-[92%] max-w-md"
+            className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[60] w-[92%] max-w-sm"
           >
             <div 
-              className="bg-card/95 backdrop-blur-md border border-border/50 rounded-2xl p-5 shadow-2xl cursor-pointer"
+              className="bg-card/95 backdrop-blur-md border border-border/50 rounded-xl p-4 shadow-2xl cursor-pointer"
               onClick={dismissJoinedGuide}
             >
-              {/* Header - clean typography */}
-              <div className="flex items-center gap-2.5 mb-4">
-                <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Check className="h-3.5 w-3.5 text-primary" />
+              <div className="flex items-center gap-2 mb-3">
+                <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center">
+                  <span className="text-[10px] font-medium text-primary">✓</span>
                 </div>
-                <span className="text-sm font-medium tracking-tight">You're in</span>
+                <span className="text-xs font-medium">You're in — start building!</span>
               </div>
-
-              {/* Steps - horizontal pills on mobile, clean grid with hover effects */}
-              <div className="grid grid-cols-2 gap-2">
-                {NEXT_STEPS.map((step, index) => (
-                  <motion.div
-                    key={step.label}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 + index * 0.08 }}
-                    whileHover={{ scale: 1.03, backgroundColor: "hsl(var(--muted))" }}
-                    whileTap={{ scale: 0.98 }}
-                    className="group relative bg-muted/50 rounded-lg p-3 transition-colors cursor-pointer"
+              
+              <div className="flex flex-wrap gap-1.5">
+                {["Ideas", "Squads", "Launch", "Submit"].map((item) => (
+                  <span 
+                    key={item}
+                    className="px-2 py-1 bg-muted/60 rounded text-[10px] text-muted-foreground"
                   >
-                    <div className="flex items-baseline gap-2 mb-0.5">
-                      <span className="text-[10px] font-mono text-muted-foreground/60 group-hover:text-muted-foreground transition-colors">
-                        {String(index + 1).padStart(2, '0')}
-                      </span>
-                      <span className="text-xs font-medium text-foreground">
-                        {step.label}
-                      </span>
-                    </div>
-                    <p className="text-[10px] text-muted-foreground leading-snug pl-5 group-hover:text-foreground/70 transition-colors">
-                      {step.description}
-                    </p>
-                  </motion.div>
+                    {item}
+                  </span>
                 ))}
               </div>
 
-              {/* Dismiss hint */}
-              <p className="text-[10px] text-muted-foreground/40 text-center mt-4 tracking-wide">
-                tap to continue
+              <p className="text-[9px] text-muted-foreground/40 text-center mt-3">
+                tap to dismiss
               </p>
             </div>
           </motion.div>
