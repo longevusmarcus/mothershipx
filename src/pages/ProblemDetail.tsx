@@ -108,6 +108,9 @@ const ProblemDetail = () => {
   const wasJoined = useRef(false);
   const startBuildingRef = useRef<HTMLButtonElement>(null);
 
+  // Matrix onboarding effect
+  const { showMatrix, hasCompletedMatrix, handleMatrixComplete } = useMatrixOnboarding();
+
   // Check access on mount - only show paywall after subscription check completes
   // Use a ref to track if we've already shown the paywall to prevent re-triggering
   const paywallCheckedRef = useRef(false);
@@ -277,14 +280,18 @@ const ProblemDetail = () => {
     : `https://mothershipx.lovable.app/problems/${id}`;
 
   return (
-    <AppLayout>
-      <SEO
-        title={problem.title}
-        description={problem.subtitle || `Discover this ${problem.category} opportunity with ${formatNumber(problem.views)} views.`}
-        url={canonicalUrl}
-        type="article"
-      />
-      <div className="max-w-3xl mx-auto space-y-6">
+    <>
+      {/* Matrix-style onboarding effect for first-time visitors */}
+      <MatrixOnboardingEffect show={showMatrix} onComplete={handleMatrixComplete} />
+      
+      <AppLayout>
+        <SEO
+          title={problem.title}
+          description={problem.subtitle || `Discover this ${problem.category} opportunity with ${formatNumber(problem.views)} views.`}
+          url={canonicalUrl}
+          type="article"
+        />
+        <div className="max-w-3xl mx-auto space-y-6">
         {/* Back Navigation */}
         <Link 
           to="/problems" 
@@ -887,7 +894,8 @@ const ProblemDetail = () => {
         onDismiss={() => setJustJoined(false)}
         startBuildingRef={startBuildingRef}
       />
-    </AppLayout>
+      </AppLayout>
+    </>
   );
 };
 
