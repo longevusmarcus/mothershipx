@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import logoIcon from "@/assets/logo-icon.png";
 import builderTweet from "@/assets/builder-tweet.png";
-import lovableLogo from "@/assets/lovable-logo.png";
+import superloveLogo from "@/assets/superlove-logo.png";
 import {
   HoverCard,
   HoverCardContent,
@@ -237,7 +237,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
                 "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/50 transition-colors",
               )}
             >
-              <img src={lovableLogo} alt="Builder" className="h-4 w-4 shrink-0 object-contain" />
+              <img src={superloveLogo} alt="Builder" className="h-4 w-4 shrink-0 object-contain" />
               <AnimatePresence mode="wait">
                 {(!collapsed || isMobile) && (
                   <motion.div

@@ -16,7 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { AutoBuildModal } from "@/components/AutoBuildModal";
-import lovableLogo from "@/assets/lovable-logo.png";
+import superloveLogo from "@/assets/superlove-logo.png";
 
 const COLUMNS_KEY = "mothership_columns_count";
 
@@ -115,8 +115,8 @@ const Problems = () => {
                   whileTap={{ scale: 0.95 }}
                   className="relative"
                 >
-                  <img 
-                    src={lovableLogo} 
+                  <img
+                    src={superloveLogo} 
                     alt="Auto-build" 
                     className="h-4 w-4 object-contain opacity-60 group-hover:opacity-100 transition-opacity" 
                   />
