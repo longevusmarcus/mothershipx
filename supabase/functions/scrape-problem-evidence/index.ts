@@ -20,6 +20,102 @@ interface TikTokVideo {
   commentCount: number;
 }
 
+const RAPIDAPI_HOST = "youtube138.p.rapidapi.com";
+
+function parseViewCount(viewCountText: string): number {
+  if (!viewCountText) return 0;
+  const cleaned = viewCountText.replace(/[^0-9.KMB]/gi, '');
+  const num = parseFloat(cleaned);
+  if (cleaned.includes('B') || cleaned.includes('b')) return num * 1000000000;
+  if (cleaned.includes('M') || cleaned.includes('m')) return num * 1000000;
+  if (cleaned.includes('K') || cleaned.includes('k')) return num * 1000;
+  return parseInt(viewCountText.replace(/[^0-9]/g, '')) || 0;
+}
+
+async function searchYouTubeVideos(query: string, apiKey: string): Promise<any[]> {
+  try {
+    console.log("[SCRAPE] Searching YouTube for:", query);
+    
+    const response = await fetch(`https://${RAPIDAPI_HOST}/search/?q=${encodeURIComponent(query)}&hl=en&gl=US`, {
+      method: "GET",
+      headers: {
+        "x-rapidapi-key": apiKey,
+        "x-rapidapi-host": RAPIDAPI_HOST
+      }
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("[SCRAPE] YouTube search error:", response.status, errorText);
+      return [];
+    }
+    
+    const data = await response.json();
+    console.log("[SCRAPE] YouTube response:", JSON.stringify(data).slice(0, 500));
+    
+    // Extract videos from search results
+    const contents = data?.contents || [];
+    const videos: any[] = [];
+    
+    for (const item of contents) {
+      const video = item?.video;
+      if (!video) continue;
+      
+      videos.push({
+        videoId: video.videoId || "",
+        title: video.title || "",
+        description: video.descriptionSnippet || "",
+        viewCount: parseViewCount(video.stats?.views?.toString() || video.viewCountText || "0"),
+        channelName: video.author?.title || video.channelName || "Unknown",
+        channelThumbnail: video.author?.avatar?.[0]?.url || null,
+        thumbnail: video.thumbnails?.[0]?.url || null,
+        publishedAt: video.publishedTimeText || ""
+      });
+    }
+    
+    console.log(`[SCRAPE] Found ${videos.length} YouTube videos`);
+    return videos.slice(0, 8); // Return up to 8 videos
+  } catch (error) {
+    console.error("[SCRAPE] Error searching YouTube:", error);
+    return [];
+  }
+}
+
+async function searchSerpVideos(query: string, apiKey: string): Promise<any[]> {
+  try {
+    console.log("[SCRAPE] Searching via SERP API for:", query);
+    
+    const response = await fetch(
+      `https://serpapi.com/search.json?engine=youtube&search_query=${encodeURIComponent(query)}&api_key=${apiKey}`,
+      { method: "GET" }
+    );
+    
+    if (!response.ok) {
+      console.error("[SCRAPE] SERP API error:", response.status);
+      return [];
+    }
+    
+    const data = await response.json();
+    const videoResults = data?.video_results || [];
+    
+    console.log(`[SCRAPE] SERP found ${videoResults.length} videos`);
+    
+    return videoResults.slice(0, 8).map((video: any) => ({
+      videoId: video.link?.includes("watch?v=") ? video.link.split("watch?v=")[1]?.split("&")[0] : "",
+      title: video.title || "",
+      description: video.description || "",
+      viewCount: parseViewCount(video.views?.toString() || "0"),
+      channelName: video.channel?.name || "Unknown",
+      channelThumbnail: video.channel?.thumbnail || null,
+      thumbnail: video.thumbnail?.static || video.thumbnail || null,
+      publishedAt: video.published_date || ""
+    }));
+  } catch (error) {
+    console.error("[SCRAPE] Error with SERP API:", error);
+    return [];
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -39,12 +135,15 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const apifyToken = Deno.env.get("APIFY_API_TOKEN");
+    const youtubeApiKey = Deno.env.get("YOUTUBE_RAPIDAPI_KEY");
+    const serpApiKey = Deno.env.get("SERP_API_KEY");
 
-    console.log("[SCRAPE] Apify token present:", !!apifyToken);
+    console.log("[SCRAPE] API keys present - Apify:", !!apifyToken, "YouTube:", !!youtubeApiKey, "SERP:", !!serpApiKey);
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     let evidenceData: any[] = [];
+    let actualSource = source;
 
     if (source === "tiktok" && apifyToken) {
       // Simplify query for TikTok - remove special chars, take first 2-3 key words
@@ -189,9 +288,104 @@ Deno.serve(async (req) => {
           console.error("[SCRAPE] Reddit error:", errorText);
         }
       }
+    } else if (source === "youtube") {
+      // Direct YouTube search
+      if (youtubeApiKey) {
+        const videos = await searchYouTubeVideos(searchQuery, youtubeApiKey);
+        
+        if (videos.length > 0) {
+          evidenceData = videos.map((video: any) => ({
+            problem_id: problemId,
+            evidence_type: "video",
+            source: "youtube",
+            video_url: `https://www.youtube.com/watch?v=${video.videoId}`,
+            video_thumbnail: video.thumbnail,
+            video_title: video.title?.substring(0, 200) || "YouTube Video",
+            video_author: video.channelName || "Unknown",
+            video_author_avatar: video.channelThumbnail,
+            video_views: video.viewCount || 0,
+            video_likes: 0,
+            video_comments_count: 0,
+            scraped_at: new Date().toISOString(),
+          }));
+        }
+      } else if (serpApiKey) {
+        // Fallback to SERP API
+        const videos = await searchSerpVideos(searchQuery, serpApiKey);
+        
+        if (videos.length > 0) {
+          evidenceData = videos.map((video: any) => ({
+            problem_id: problemId,
+            evidence_type: "video",
+            source: "youtube",
+            video_url: `https://www.youtube.com/watch?v=${video.videoId}`,
+            video_thumbnail: video.thumbnail,
+            video_title: video.title?.substring(0, 200) || "YouTube Video",
+            video_author: video.channelName || "Unknown",
+            video_author_avatar: video.channelThumbnail,
+            video_views: video.viewCount || 0,
+            video_likes: 0,
+            video_comments_count: 0,
+            scraped_at: new Date().toISOString(),
+          }));
+        }
+      }
     }
 
-    console.log("[SCRAPE] Evidence data to insert:", evidenceData.length);
+    // FALLBACK: If TikTok/Reddit returned no results, try YouTube
+    if (evidenceData.length === 0 && source !== "youtube") {
+      console.log("[SCRAPE] No evidence found from", source, "- trying YouTube fallback");
+      
+      if (youtubeApiKey) {
+        const videos = await searchYouTubeVideos(searchQuery, youtubeApiKey);
+        
+        if (videos.length > 0) {
+          actualSource = "youtube";
+          evidenceData = videos.map((video: any) => ({
+            problem_id: problemId,
+            evidence_type: "video",
+            source: "youtube",
+            video_url: `https://www.youtube.com/watch?v=${video.videoId}`,
+            video_thumbnail: video.thumbnail,
+            video_title: video.title?.substring(0, 200) || "YouTube Video",
+            video_author: video.channelName || "Unknown",
+            video_author_avatar: video.channelThumbnail,
+            video_views: video.viewCount || 0,
+            video_likes: 0,
+            video_comments_count: 0,
+            scraped_at: new Date().toISOString(),
+          }));
+          console.log("[SCRAPE] YouTube fallback found", evidenceData.length, "videos");
+        }
+      }
+      
+      // If YouTube RapidAPI failed, try SERP API
+      if (evidenceData.length === 0 && serpApiKey) {
+        console.log("[SCRAPE] YouTube RapidAPI failed - trying SERP API fallback");
+        const videos = await searchSerpVideos(searchQuery, serpApiKey);
+        
+        if (videos.length > 0) {
+          actualSource = "youtube";
+          evidenceData = videos.map((video: any) => ({
+            problem_id: problemId,
+            evidence_type: "video",
+            source: "youtube",
+            video_url: `https://www.youtube.com/watch?v=${video.videoId}`,
+            video_thumbnail: video.thumbnail,
+            video_title: video.title?.substring(0, 200) || "YouTube Video",
+            video_author: video.channelName || "Unknown",
+            video_author_avatar: video.channelThumbnail,
+            video_views: video.viewCount || 0,
+            video_likes: 0,
+            video_comments_count: 0,
+            scraped_at: new Date().toISOString(),
+          }));
+          console.log("[SCRAPE] SERP API fallback found", evidenceData.length, "videos");
+        }
+      }
+    }
+
+    console.log("[SCRAPE] Evidence data to insert:", evidenceData.length, "from source:", actualSource);
 
     // Insert evidence into database
     if (evidenceData.length > 0) {
@@ -200,7 +394,7 @@ Deno.serve(async (req) => {
         .from("problem_evidence")
         .delete()
         .eq("problem_id", problemId)
-        .eq("source", source);
+        .eq("source", actualSource);
       
       if (deleteError) {
         console.error("[SCRAPE] Delete error:", deleteError);
@@ -226,7 +420,8 @@ Deno.serve(async (req) => {
       JSON.stringify({
         success: true,
         evidenceCount: evidenceData.length,
-        source,
+        source: actualSource,
+        fallbackUsed: actualSource !== source,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
