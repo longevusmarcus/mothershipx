@@ -19,11 +19,15 @@ import { AutoBuildModal } from "@/components/AutoBuildModal";
 import superloveLogo from "@/assets/superlove-logo.png";
 
 const COLUMNS_KEY = "mothership_columns_count";
+const CATEGORY_KEY = "mothership_selected_category";
 
 const Problems = () => {
   const [searchParams] = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
-  const [selectedCategory, setSelectedCategory] = useState("mental health");
+  const [selectedCategory, setSelectedCategory] = useState(() => {
+    const saved = localStorage.getItem(CATEGORY_KEY);
+    return saved || "mental health";
+  });
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [autoBuildOpen, setAutoBuildOpen] = useState(false);
@@ -169,7 +173,10 @@ const Problems = () => {
                 className={`cursor-pointer transition-all duration-300 whitespace-nowrap flex-shrink-0 ${
                   selectedCategory === cat ? "shadow-sm" : "hover:bg-primary/5 hover:border-primary/30"
                 }`}
-                onClick={() => setSelectedCategory(cat)}
+                onClick={() => {
+                  setSelectedCategory(cat);
+                  localStorage.setItem(CATEGORY_KEY, cat);
+                }}
               >
                 {cat}
               </Badge>
