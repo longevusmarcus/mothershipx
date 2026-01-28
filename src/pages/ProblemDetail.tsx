@@ -476,7 +476,7 @@ const ProblemDetail = () => {
                   className="gap-1"
                 >
                   <Layers className="h-4 w-4" />
-                  Launch 10
+                  Launch 10 Ideas
                 </Button>
                 
                 {/* Submit Build Button */}
