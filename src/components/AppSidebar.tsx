@@ -237,7 +237,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
                 "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/50 transition-colors",
               )}
             >
-              <img src={superloveLogo} alt="Builder" className="h-4 w-4 shrink-0 object-contain" />
+              <img src={superloveLogo} alt="Builder" className="h-5 w-5 shrink-0 object-contain" />
               <AnimatePresence mode="wait">
                 {(!collapsed || isMobile) && (
                   <motion.div

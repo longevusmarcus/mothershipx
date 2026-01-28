@@ -833,7 +833,7 @@ const ProblemDetail = () => {
             <img 
               src={superloveLogo} 
               alt="Auto-build" 
-              className="h-5 w-5 object-contain opacity-70 group-hover:opacity-100 transition-opacity" 
+              className="h-6 w-6 object-contain opacity-70 group-hover:opacity-100 transition-opacity"
             />
             <motion.div
               className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-primary"
