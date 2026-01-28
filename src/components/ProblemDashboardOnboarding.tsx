@@ -1,6 +1,6 @@
 import { useState, useEffect, RefObject } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { Check } from "lucide-react";
 
 const ONBOARDING_KEY = "problem_dashboard_onboarding_seen";
 const JOINED_GUIDE_KEY = "problem_joined_guide_dismissed";
@@ -13,6 +13,25 @@ interface ProblemDashboardOnboardingProps {
   /** Wait for matrix effect to complete before showing onboarding */
   waitForMatrix?: boolean;
 }
+
+const NEXT_STEPS = [
+  {
+    label: "Ideas",
+    description: "AI-generated solutions tailored to this problem",
+  },
+  {
+    label: "Squads",
+    description: "Find collaborators and build together",
+  },
+  {
+    label: "Launch",
+    description: "Ship your product with one click",
+  },
+  {
+    label: "Submit",
+    description: "Enter the arena when you're ready",
+  },
+];
 
 export function ProblemDashboardOnboarding({
   isJoined,
@@ -107,14 +126,13 @@ export function ProblemDashboardOnboarding({
               transition={{ delay: 0.3 }}
               className="absolute top-1/3 left-1/2 -translate-x-1/2 text-center z-[101]"
             >
-              <div className="bg-card border border-border rounded-lg px-6 py-4 shadow-lg max-w-xs">
-                <Sparkles className="h-5 w-5 mx-auto mb-2 text-primary" />
-                <p className="text-sm font-medium mb-1">Ready to build?</p>
-                <p className="text-xs text-muted-foreground">
-                  Click <span className="font-semibold text-foreground">Start Building</span> to join, 
-                  or <span className="font-semibold text-foreground">+</span> to submit your product
+              <div className="bg-card border border-border rounded-xl px-6 py-5 shadow-lg max-w-xs">
+                <p className="text-base font-medium tracking-tight mb-1">Ready to build?</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Click <span className="font-medium text-foreground">Start Building</span> to join, 
+                  or <span className="font-medium text-foreground">+</span> to submit your product
                 </p>
-                <p className="text-[10px] text-muted-foreground/60 mt-3">Click anywhere to dismiss</p>
+                <p className="text-[10px] text-muted-foreground/50 mt-4">tap anywhere to dismiss</p>
               </div>
             </motion.div>
 
@@ -157,44 +175,58 @@ export function ProblemDashboardOnboarding({
         )}
       </AnimatePresence>
 
-      {/* Post-join guidance toast */}
+      {/* Post-join guidance - ultra minimal design */}
       {/* NOTE: z-[60] so it appears below paywall */}
       <AnimatePresence>
         {showJoinedGuide && (
           <motion.div
-            initial={{ opacity: 0, y: 50, x: "-50%" }}
-            animate={{ opacity: 1, y: 0, x: "-50%" }}
-            exit={{ opacity: 0, y: 50, x: "-50%" }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed bottom-24 left-1/2 z-[60] w-[90%] max-w-sm"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[60] w-[92%] max-w-md"
           >
             <div 
-              className="bg-card border border-border rounded-lg p-4 shadow-xl cursor-pointer"
+              className="bg-card/95 backdrop-blur-md border border-border/50 rounded-2xl p-5 shadow-2xl cursor-pointer"
               onClick={dismissJoinedGuide}
             >
-              <div className="flex items-start gap-3">
-                <div className="h-8 w-8 rounded-full bg-success/10 flex items-center justify-center shrink-0">
-                  <Sparkles className="h-4 w-4 text-success" />
+              {/* Header - clean typography */}
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Check className="h-3.5 w-3.5 text-primary" />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium mb-1">You're in! What's next?</p>
-                  <div className="space-y-2 text-xs text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <ArrowRight className="h-3 w-3 text-primary shrink-0" />
-                      <span>Explore <span className="font-medium text-foreground">Ideas</span> tab for AI solutions</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <ArrowRight className="h-3 w-3 text-primary shrink-0" />
-                      <span>Join a <span className="font-medium text-foreground">Squad</span> to collaborate</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <ArrowRight className="h-3 w-3 text-primary shrink-0" />
-                      <span>Click <span className="font-medium text-foreground">+</span> when ready to submit</span>
-                    </div>
-                  </div>
-                </div>
+                <span className="text-sm font-medium tracking-tight">You're in</span>
               </div>
-              <p className="text-[10px] text-muted-foreground/60 text-center mt-3">Tap to dismiss</p>
+
+              {/* Steps - horizontal pills on mobile, clean grid */}
+              <div className="grid grid-cols-2 gap-2">
+                {NEXT_STEPS.map((step, index) => (
+                  <motion.div
+                    key={step.label}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 + index * 0.08 }}
+                    className="group relative bg-muted/50 hover:bg-muted rounded-lg p-3 transition-colors"
+                  >
+                    <div className="flex items-baseline gap-2 mb-0.5">
+                      <span className="text-[10px] font-mono text-muted-foreground/60">
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+                      <span className="text-xs font-medium text-foreground">
+                        {step.label}
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground leading-snug pl-5">
+                      {step.description}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Dismiss hint */}
+              <p className="text-[10px] text-muted-foreground/40 text-center mt-4 tracking-wide">
+                tap to continue
+              </p>
             </div>
           </motion.div>
         )}
