@@ -209,9 +209,7 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                         onClick={() => setShowWhyExplainer(!showWhyExplainer)}
                         className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors group mx-auto sm:mx-0"
                       >
-                        <span className="underline underline-offset-2 decoration-dashed">
-                          Why ${SUBSCRIPTION_PRICE}?
-                        </span>
+                        <span className="underline underline-offset-2 decoration-dashed">Learn more</span>
                         <motion.div animate={{ rotate: showWhyExplainer ? 180 : 0 }} transition={{ duration: 0.2 }}>
                           <ChevronDown className="h-3 w-3" />
                         </motion.div>
