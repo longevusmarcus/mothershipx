@@ -17,7 +17,7 @@ import {
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { useSubscription, SUBSCRIPTION_PRICE } from "@/contexts/SubscriptionContext";
+import { useSubscription, SUBSCRIPTION_PRICE, SUBSCRIPTION_IS_LIFETIME } from "@/contexts/SubscriptionContext";
 import { usePaywallAnalytics } from "@/hooks/usePaywallAnalytics";
 import logoIcon from "@/assets/logo-icon.png";
 
@@ -181,13 +181,20 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                       transition={{ delay: 0.3, duration: 0.4, type: "spring" }}
                     >
                       <div className="flex flex-col sm:items-start items-center gap-1">
-                        <span className="text-sm text-muted-foreground line-through">$99.99/month</span>
+                        <span className="text-sm text-muted-foreground line-through">$999 lifetime</span>
                         <div className="inline-flex items-baseline">
                           <span className="text-4xl sm:text-5xl font-semibold tracking-tight">
                             ${SUBSCRIPTION_PRICE}
                           </span>
-                          <span className="text-muted-foreground ml-1.5 text-base">/month</span>
+                          <span className="text-muted-foreground ml-1.5 text-base">
+                            {SUBSCRIPTION_IS_LIFETIME ? "lifetime" : "/month"}
+                          </span>
                         </div>
+                        {SUBSCRIPTION_IS_LIFETIME && (
+                          <span className="text-xs text-success font-medium mt-1">
+                            One-time payment • Forever access
+                          </span>
+                        )}
                       </div>
                     </motion.div>
 
@@ -202,7 +209,7 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                         onClick={() => setShowWhyExplainer(!showWhyExplainer)}
                         className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors group mx-auto sm:mx-0"
                       >
-                        <span className="underline underline-offset-2 decoration-dashed">Learn More</span>
+                        <span className="underline underline-offset-2 decoration-dashed">Why ${SUBSCRIPTION_PRICE}?</span>
                         <motion.div animate={{ rotate: showWhyExplainer ? 180 : 0 }} transition={{ duration: 0.2 }}>
                           <ChevronDown className="h-3 w-3" />
                         </motion.div>
@@ -278,8 +285,10 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                       transition={{ delay: 1, duration: 0.4 }}
                     >
                       <p className="text-center sm:text-left text-xs text-muted-foreground">
-                        Cancel anytime.{" "}
-                        <span className="text-foreground/80 font-medium">One win pays for 5 years.</span>
+                        {SUBSCRIPTION_IS_LIFETIME 
+                          ? <>Pay once.{" "}<span className="text-foreground/80 font-medium">Access forever.</span></>
+                          : <>Cancel anytime.{" "}<span className="text-foreground/80 font-medium">One win pays for 5 years.</span></>
+                        }
                       </p>
                       <p className="text-center sm:text-left text-[10px] text-muted-foreground/60">Secured by Stripe</p>
                     </motion.div>

@@ -80,6 +80,7 @@ export function ProblemDashboardOnboarding({
   return (
     <>
       {/* First-time visitor overlay - highlights Start Building and + button */}
+      {/* NOTE: z-[60] so it appears below paywall (z-[100]) */}
       <AnimatePresence>
         {showInitialHighlight && (
           <motion.div
@@ -87,7 +88,7 @@ export function ProblemDashboardOnboarding({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-[100] pointer-events-auto"
+            className="fixed inset-0 z-[60] pointer-events-auto"
             onClick={dismissInitialHighlight}
           >
             {/* Backdrop blur */}
@@ -114,7 +115,7 @@ export function ProblemDashboardOnboarding({
             {/* Highlight ring for Start Building button area */}
             {buttonRect && (
               <motion.div
-                className="fixed z-[102] pointer-events-none"
+                className="fixed z-[62] pointer-events-none"
                 style={{
                   top: buttonRect.top - 4,
                   left: buttonRect.left - 4,
@@ -134,7 +135,7 @@ export function ProblemDashboardOnboarding({
 
             {/* Highlight ring for + button (bottom right) */}
             <motion.div
-              className="fixed bottom-6 right-6 z-[102] pointer-events-none"
+              className="fixed bottom-6 right-6 z-[62] pointer-events-none"
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: [1, 1.1, 1], opacity: 1 }}
               transition={{ 
@@ -151,6 +152,7 @@ export function ProblemDashboardOnboarding({
       </AnimatePresence>
 
       {/* Post-join guidance toast */}
+      {/* NOTE: z-[60] so it appears below paywall */}
       <AnimatePresence>
         {showJoinedGuide && (
           <motion.div
@@ -158,7 +160,7 @@ export function ProblemDashboardOnboarding({
             animate={{ opacity: 1, y: 0, x: "-50%" }}
             exit={{ opacity: 0, y: 50, x: "-50%" }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed bottom-24 left-1/2 z-[100] w-[90%] max-w-sm"
+            className="fixed bottom-24 left-1/2 z-[60] w-[90%] max-w-sm"
           >
             <div 
               className="bg-card border border-border rounded-lg p-4 shadow-xl cursor-pointer"

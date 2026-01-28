@@ -567,7 +567,7 @@ serve(async (req) => {
             pain_points: result.painPoints,
             trending_rank: result.rank,
             sources: result.sources,
-            slots_total: 20,
+            slots_total: 10,
             slots_filled: 0,
             demand_velocity: result.demandVelocity,
             competition_gap: result.competitionGap,

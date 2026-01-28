@@ -11,9 +11,11 @@ export interface SubscriptionStatus {
   isLoading: boolean;
 }
 
-export const SUBSCRIPTION_PRICE_ID = "price_1SrxbZ2LCwPxHz0nC7VtOgeS";
+// Lifetime access pricing
+export const SUBSCRIPTION_PRICE_ID = "price_1Su9HS2LCwPxHz0nJtdFrBXd";
 export const SUBSCRIPTION_PRODUCT_ID = "prod_TpcrDIRieLAbv5";
-export const SUBSCRIPTION_PRICE = 29.99;
+export const SUBSCRIPTION_PRICE = 299;
+export const SUBSCRIPTION_IS_LIFETIME = true;
 
 interface SubscriptionContextType extends SubscriptionStatus {
   hasPremiumAccess: boolean;
