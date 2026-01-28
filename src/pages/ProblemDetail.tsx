@@ -233,12 +233,13 @@ const ProblemDetail = () => {
     if (isJoined) {
       leaveProblem.mutate();
     } else {
-      // If capacity is full, show informational toast but still allow joining
+      // If capacity is full, show informational toast and don't allow joining
       if (isCapacityFull) {
         toast({
           title: "Builder capacity reached",
-          description: "You can still build this idea, but you won't be eligible for leaderboard rewards. Submissions are closed for this cohort.",
+          description: "You can still build this idea independently, but you won't be eligible for leaderboard rewards. Submissions are closed for this cohort.",
         });
+        return;
       }
       joinProblem.mutate();
     }
