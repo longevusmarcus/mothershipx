@@ -18,6 +18,7 @@ import {
   MessageSquare,
   Plus,
   Terminal,
+  Rocket,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
@@ -44,9 +45,11 @@ import { useProblem } from "@/hooks/useProblems";
 import { useProblemBuilders } from "@/hooks/useProblemBuilders";
 import { useRefreshProblem } from "@/hooks/useRefreshProblem";
 import { useCompetitors } from "@/hooks/useCompetitors";
+import { useSolutions } from "@/hooks/useSolutions";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { cn } from "@/lib/utils";
+import { generateLovablePrompt, openLovableBuilder } from "@/lib/buildLovablePrompt";
 import superloveLogo from "@/assets/superlove-logo.png";
 
 const formatNumber = (num: number): string => {
@@ -146,6 +149,7 @@ const ProblemDetail = () => {
   const dbProblemId = problem?.dbId || id || "";
   const { isJoined, joinProblem, leaveProblem } = useProblemBuilders(dbProblemId);
   const { refresh, isRefreshing } = useRefreshProblem(dbProblemId);
+  const { solutions } = useSolutions(dbProblemId);
 
   // Track when user just joined (transition from not joined to joined)
   useEffect(() => {
@@ -445,30 +449,35 @@ const ProblemDetail = () => {
                     size="sm"
                     variant="glow"
                     onClick={() => {
-                      // Build prompt from problem context
-                      const prompt = `Build a SaaS solution for this problem:
-
-**Problem:** ${problem.title}
-**Description:** ${problem.subtitle || ""}
-**Category:** ${problem.category}
-**Niche:** ${problem.niche}
-
-Key pain points to address:
-${problem.painPoints?.map((p: string) => `- ${p}`).join('\n') || '- Core problem solving\n- User-friendly interface\n- Fast and reliable'}
-
-Requirements:
-- Modern, clean UI using Tailwind CSS
-- Mobile-responsive design
-- User authentication
-- Database for storing user data
-- Dashboard for users to track their progress`;
-                      
-                      const encodedPrompt = encodeURIComponent(prompt);
-                      const lovableUrl = `https://lovable.dev/?autosubmit=true#prompt=${encodedPrompt}`;
-                      window.open(lovableUrl, '_blank');
+                      // Generate expert-level prompt with solutions and competitors context
+                      const prompt = generateLovablePrompt({
+                        problem: {
+                          title: problem.title,
+                          subtitle: problem.subtitle,
+                          category: problem.category,
+                          niche: problem.niche,
+                          painPoints: problem.painPoints,
+                          marketSize: problem.marketSize,
+                          opportunityScore: problem.opportunityScore,
+                          sentiment: problem.sentiment,
+                          hiddenInsight: problem.hiddenInsight,
+                        },
+                        solutions: solutions?.map(s => ({
+                          title: s.title,
+                          description: s.description,
+                          approach: s.approach,
+                          techStack: s.tech_stack,
+                        })),
+                        competitors: competitors?.map(c => ({
+                          name: c.name,
+                          description: c.description,
+                          rating_label: c.ratingLabel,
+                        })),
+                      });
+                      openLovableBuilder(prompt);
                     }}
                   >
-                    <ExternalLink className="h-4 w-4 mr-1" />
+                    <Rocket className="h-4 w-4 mr-1" />
                     Build with Lovable
                   </Button>
                 </motion.div>
