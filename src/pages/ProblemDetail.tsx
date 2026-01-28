@@ -434,31 +434,66 @@ const ProblemDetail = () => {
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                className="flex items-center gap-2"
               >
+                {/* Build with Lovable Button */}
                 <motion.div
                   animate={{ scale: [1, 1.05, 1] }}
                   transition={{ duration: 1.5, repeat: 2, ease: "easeInOut" }}
                 >
                   <Button 
                     size="sm"
-                    onClick={() => navigate("/submit", {
-                      state: {
-                        problem: {
-                          id: problem.id,
-                          title: problem.title,
-                          subtitle: problem.subtitle,
-                          niche: problem.niche,
-                          opportunityScore: problem.opportunityScore,
-                          sentiment: problem.sentiment,
-                        },
-                        joinType: "solo",
-                      },
-                    })}
+                    variant="glow"
+                    onClick={() => {
+                      // Build prompt from problem context
+                      const prompt = `Build a SaaS solution for this problem:
+
+**Problem:** ${problem.title}
+**Description:** ${problem.subtitle || ""}
+**Category:** ${problem.category}
+**Niche:** ${problem.niche}
+
+Key pain points to address:
+${problem.painPoints?.map((p: string) => `- ${p}`).join('\n') || '- Core problem solving\n- User-friendly interface\n- Fast and reliable'}
+
+Requirements:
+- Modern, clean UI using Tailwind CSS
+- Mobile-responsive design
+- User authentication
+- Database for storing user data
+- Dashboard for users to track their progress`;
+                      
+                      const encodedPrompt = encodeURIComponent(prompt);
+                      const lovableUrl = `https://lovable.dev/?autosubmit=true#prompt=${encodedPrompt}`;
+                      window.open(lovableUrl, '_blank');
+                    }}
                   >
-                    <Plus className="h-4 w-4 mr-1" />
-                    Submit Build
+                    <ExternalLink className="h-4 w-4 mr-1" />
+                    Build with Lovable
                   </Button>
                 </motion.div>
+                
+                {/* Submit Build Button */}
+                <Button 
+                  size="sm"
+                  variant="outline"
+                  onClick={() => navigate("/submit", {
+                    state: {
+                      problem: {
+                        id: problem.id,
+                        title: problem.title,
+                        subtitle: problem.subtitle,
+                        niche: problem.niche,
+                        opportunityScore: problem.opportunityScore,
+                        sentiment: problem.sentiment,
+                      },
+                      joinType: "solo",
+                    },
+                  })}
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  Submit Build
+                </Button>
               </motion.div>
             )}
             <Button 
