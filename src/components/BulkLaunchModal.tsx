@@ -39,8 +39,8 @@ export function BulkLaunchModal({ open, onOpenChange }: BulkLaunchModalProps) {
     const encodedPrompt = encodeURIComponent(prompt);
     
     if (platform === "claude") {
-      // Claude uses a different URL format
-      return `https://claude.ai/new?q=${encodedPrompt}`;
+      // Claude desktop app URL scheme
+      return `claude://new?prompt=${encodedPrompt}`;
     }
     
     // Lovable URL
@@ -182,9 +182,9 @@ export function BulkLaunchModal({ open, onOpenChange }: BulkLaunchModalProps) {
                     className="flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer transition-all"
                   >
                     <Terminal className="h-8 w-8 text-foreground" />
-                    <span className="text-sm font-medium">Claude</span>
+                    <span className="text-sm font-medium">Claude Desktop</span>
                     <span className="text-xs text-muted-foreground text-center">
-                      AI assistant chat
+                      Opens local app
                     </span>
                   </Label>
                 </div>
