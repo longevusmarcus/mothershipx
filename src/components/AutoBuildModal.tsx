@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { WaitlistForm } from "@/components/WaitlistForm";
 import { useKeyboardSound } from "@/hooks/useKeyboardSound";
-import lovableLogo from "@/assets/lovable-logo.png";
+import superloveLogo from "@/assets/superlove-logo.png";
 
 interface SignalContext {
   title: string;
@@ -152,7 +152,7 @@ export function AutoBuildModal({ open, onOpenChange, signal }: AutoBuildModalPro
           <div className="flex items-center gap-3 mb-6">
             <div className="relative">
               <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border border-primary/30">
-                <img src={lovableLogo} alt="Lovable" className="h-5 w-5 object-contain" />
+                <img src={superloveLogo} alt="SuperLove" className="h-5 w-5 object-contain" />
               </div>
               <motion.div
                 className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-primary"
