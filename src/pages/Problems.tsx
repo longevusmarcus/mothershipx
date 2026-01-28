@@ -40,7 +40,7 @@ const Problems = () => {
 
   // Cycle through column counts
   const cycleColumns = useCallback(() => {
-    setColumnCount(prev => {
+    setColumnCount((prev) => {
       const next = prev === 2 ? 3 : prev === 3 ? 4 : 2;
       localStorage.setItem(COLUMNS_KEY, String(next));
       return next;
@@ -101,7 +101,7 @@ const Problems = () => {
           <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">Live Signals</h1>
           <p className="text-sm text-muted-foreground mt-1">
             {filteredProblems.length} pain points and trends with real momentum to build for in Q1 2026 (continuously
-            AI-validated)
+            updated + AI-validated)
           </p>
 
           {/* Action Buttons - hidden on mobile */}
@@ -115,8 +115,8 @@ const Problems = () => {
                 className="text-muted-foreground hover:text-foreground h-12 w-12 group relative"
               >
                 <img
-                  src={superloveLogo} 
-                  alt="Auto-build" 
+                  src={superloveLogo}
+                  alt="Auto-build"
                   className="h-9 w-9 object-contain opacity-60 group-hover:opacity-100 transition-opacity"
                 />
                 <motion.div
