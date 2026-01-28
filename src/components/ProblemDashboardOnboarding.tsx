@@ -2,8 +2,9 @@ import { useState, useEffect, RefObject } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check } from "lucide-react";
 
-const ONBOARDING_KEY = "problem_dashboard_onboarding_seen";
+const ONBOARDING_COUNT_KEY = "problem_dashboard_onboarding_count";
 const JOINED_GUIDE_KEY = "problem_joined_guide_dismissed";
+const MAX_ONBOARDING_VIEWS = 3;
 
 interface ProblemDashboardOnboardingProps {
   isJoined: boolean;
@@ -64,18 +65,22 @@ export function ProblemDashboardOnboarding({
     };
   }, [showInitialHighlight, startBuildingRef]);
 
-  // Check if first-time visitor - only show after matrix effect completes
+  // Check if first-time visitor - show for first 3 visits
   useEffect(() => {
     // If waiting for matrix, don't show yet
     if (waitForMatrix) return;
     
-    const hasSeenOnboarding = localStorage.getItem(ONBOARDING_KEY);
-    if (!hasSeenOnboarding && !isJoined) {
+    const viewCount = parseInt(localStorage.getItem(ONBOARDING_COUNT_KEY) || "0", 10);
+    
+    if (viewCount < MAX_ONBOARDING_VIEWS && !isJoined) {
       setShowInitialHighlight(true);
+      
+      // Increment the view count
+      localStorage.setItem(ONBOARDING_COUNT_KEY, String(viewCount + 1));
+      
       // Auto-dismiss after 4 seconds
       const timer = setTimeout(() => {
         setShowInitialHighlight(false);
-        localStorage.setItem(ONBOARDING_KEY, "true");
       }, 4000);
       return () => clearTimeout(timer);
     }
@@ -99,7 +104,6 @@ export function ProblemDashboardOnboarding({
 
   const dismissInitialHighlight = () => {
     setShowInitialHighlight(false);
-    localStorage.setItem(ONBOARDING_KEY, "true");
   };
 
   return (
@@ -198,7 +202,7 @@ export function ProblemDashboardOnboarding({
                 <span className="text-sm font-medium tracking-tight">You're in</span>
               </div>
 
-              {/* Steps - horizontal pills on mobile, clean grid */}
+              {/* Steps - horizontal pills on mobile, clean grid with hover effects */}
               <div className="grid grid-cols-2 gap-2">
                 {NEXT_STEPS.map((step, index) => (
                   <motion.div
@@ -206,17 +210,19 @@ export function ProblemDashboardOnboarding({
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 + index * 0.08 }}
-                    className="group relative bg-muted/50 hover:bg-muted rounded-lg p-3 transition-colors"
+                    whileHover={{ scale: 1.03, backgroundColor: "hsl(var(--muted))" }}
+                    whileTap={{ scale: 0.98 }}
+                    className="group relative bg-muted/50 rounded-lg p-3 transition-colors cursor-pointer"
                   >
                     <div className="flex items-baseline gap-2 mb-0.5">
-                      <span className="text-[10px] font-mono text-muted-foreground/60">
+                      <span className="text-[10px] font-mono text-muted-foreground/60 group-hover:text-muted-foreground transition-colors">
                         {String(index + 1).padStart(2, '0')}
                       </span>
                       <span className="text-xs font-medium text-foreground">
                         {step.label}
                       </span>
                     </div>
-                    <p className="text-[10px] text-muted-foreground leading-snug pl-5">
+                    <p className="text-[10px] text-muted-foreground leading-snug pl-5 group-hover:text-foreground/70 transition-colors">
                       {step.description}
                     </p>
                   </motion.div>
