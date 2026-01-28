@@ -149,10 +149,10 @@ export function AutoBuildModal({ open, onOpenChange, signal }: AutoBuildModalPro
         {/* Content */}
         <div className="relative z-10 p-8">
           {/* Header */}
-          <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-4 mb-6">
             <div className="relative">
-              <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border border-primary/30">
-                <img src={superloveLogo} alt="SuperLove" className="h-6 w-6 object-contain" />
+              <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border border-primary/30">
+                <img src={superloveLogo} alt="SuperLove" className="h-9 w-9 object-contain" />
               </div>
               <motion.div
                 className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-primary"
