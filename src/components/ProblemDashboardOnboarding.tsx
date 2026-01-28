@@ -10,13 +10,16 @@ interface ProblemDashboardOnboardingProps {
   justJoined: boolean;
   onDismiss?: () => void;
   startBuildingRef?: RefObject<HTMLButtonElement>;
+  /** Wait for matrix effect to complete before showing onboarding */
+  waitForMatrix?: boolean;
 }
 
 export function ProblemDashboardOnboarding({
   isJoined,
   justJoined,
   onDismiss,
-  startBuildingRef
+  startBuildingRef,
+  waitForMatrix = false
 }: ProblemDashboardOnboardingProps) {
   const [showInitialHighlight, setShowInitialHighlight] = useState(false);
   const [showJoinedGuide, setShowJoinedGuide] = useState(false);
@@ -42,8 +45,11 @@ export function ProblemDashboardOnboarding({
     };
   }, [showInitialHighlight, startBuildingRef]);
 
-  // Check if first-time visitor
+  // Check if first-time visitor - only show after matrix effect completes
   useEffect(() => {
+    // If waiting for matrix, don't show yet
+    if (waitForMatrix) return;
+    
     const hasSeenOnboarding = localStorage.getItem(ONBOARDING_KEY);
     if (!hasSeenOnboarding && !isJoined) {
       setShowInitialHighlight(true);
@@ -54,7 +60,7 @@ export function ProblemDashboardOnboarding({
       }, 4000);
       return () => clearTimeout(timer);
     }
-  }, [isJoined]);
+  }, [isJoined, waitForMatrix]);
 
   // Show guide after joining
   useEffect(() => {
