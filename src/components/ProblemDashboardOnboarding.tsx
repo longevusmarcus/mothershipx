@@ -2,7 +2,7 @@ import { useState, useEffect, RefObject } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
+import { useSubscription } from "@/contexts/SubscriptionContext";
 const ONBOARDING_COUNT_KEY = "problem_dashboard_onboarding_count";
 const JOINED_GUIDE_KEY = "problem_joined_guide_dismissed";
 const MAX_ONBOARDING_VIEWS = 3;
@@ -60,6 +60,7 @@ export function ProblemDashboardOnboarding({
   startBuildingRef,
   waitForMatrix = false
 }: ProblemDashboardOnboardingProps) {
+  const { hasPremiumAccess } = useSubscription();
   const [showTutorial, setShowTutorial] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
@@ -95,9 +96,11 @@ export function ProblemDashboardOnboarding({
     };
   }, [showTutorial, currentStep, step.selector]);
 
-  // Check if should show tutorial
+  // Check if should show tutorial - only for subscribed users
   useEffect(() => {
     if (waitForMatrix) return;
+    // Only show tutorial for premium/subscribed users
+    if (!hasPremiumAccess) return;
     
     const viewCount = parseInt(localStorage.getItem(ONBOARDING_COUNT_KEY) || "0", 10);
     
@@ -110,7 +113,7 @@ export function ProblemDashboardOnboarding({
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [isJoined, waitForMatrix]);
+  }, [isJoined, waitForMatrix, hasPremiumAccess]);
 
   // Show guide after joining
   useEffect(() => {
