@@ -31,6 +31,7 @@ import { SubscriptionPaywall } from "@/components/SubscriptionPaywall";
 import { SubscriptionLoadingGate } from "@/components/SubscriptionLoadingGate";
 import { PromptsGenerator } from "@/components/PromptsGenerator";
 import { AutoBuildModal } from "@/components/AutoBuildModal";
+import { BuildWithLovableModal } from "@/components/BuildWithLovableModal";
 import { ProblemDashboardOnboarding } from "@/components/ProblemDashboardOnboarding";
 import { ProblemEvidenceSection } from "@/components/ProblemEvidenceSection";
 import { MatrixOnboardingEffect, useMatrixOnboarding } from "@/components/MatrixOnboardingEffect";
@@ -49,7 +50,6 @@ import { useSolutions } from "@/hooks/useSolutions";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { cn } from "@/lib/utils";
-import { generateLovablePrompt, openLovableBuilder } from "@/lib/buildLovablePrompt";
 import superloveLogo from "@/assets/superlove-logo.png";
 
 const formatNumber = (num: number): string => {
@@ -107,6 +107,7 @@ const ProblemDetail = () => {
   const [searchCompetitors, setSearchCompetitors] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const [autoBuildOpen, setAutoBuildOpen] = useState(false);
+  const [buildModalOpen, setBuildModalOpen] = useState(false);
   const [justJoined, setJustJoined] = useState(false);
   const wasJoined = useRef(false);
   const startBuildingRef = useRef<HTMLButtonElement>(null);
@@ -448,34 +449,7 @@ const ProblemDetail = () => {
                   <Button 
                     size="sm"
                     variant="glow"
-                    onClick={() => {
-                      // Generate expert-level prompt with solutions and competitors context
-                      const prompt = generateLovablePrompt({
-                        problem: {
-                          title: problem.title,
-                          subtitle: problem.subtitle,
-                          category: problem.category,
-                          niche: problem.niche,
-                          painPoints: problem.painPoints,
-                          marketSize: problem.marketSize,
-                          opportunityScore: problem.opportunityScore,
-                          sentiment: problem.sentiment,
-                          hiddenInsight: problem.hiddenInsight,
-                        },
-                        solutions: solutions?.map(s => ({
-                          title: s.title,
-                          description: s.description,
-                          approach: s.approach,
-                          techStack: s.tech_stack,
-                        })),
-                        competitors: competitors?.map(c => ({
-                          name: c.name,
-                          description: c.description,
-                          rating_label: c.ratingLabel,
-                        })),
-                      });
-                      openLovableBuilder(prompt);
-                    }}
+                    onClick={() => setBuildModalOpen(true)}
                   >
                     <Rocket className="h-4 w-4 mr-1" />
                     Build with Lovable
@@ -953,6 +927,25 @@ const ProblemDetail = () => {
         onDismiss={() => setJustJoined(false)}
         startBuildingRef={startBuildingRef}
         waitForMatrix={!hasCompletedMatrix}
+      />
+
+      {/* Build with Lovable Modal */}
+      <BuildWithLovableModal
+        open={buildModalOpen}
+        onOpenChange={setBuildModalOpen}
+        problem={{
+          title: problem.title,
+          subtitle: problem.subtitle,
+          category: problem.category,
+          niche: problem.niche,
+          painPoints: problem.painPoints,
+          marketSize: problem.marketSize,
+          opportunityScore: problem.opportunityScore,
+          sentiment: problem.sentiment,
+          hiddenInsight: problem.hiddenInsight,
+        }}
+        solutions={solutions}
+        competitors={competitors}
       />
       </AppLayout>
     </>
