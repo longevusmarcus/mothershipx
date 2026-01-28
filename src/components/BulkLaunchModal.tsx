@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Rocket, AlertTriangle, Check, Loader2, ExternalLink, Terminal } from "lucide-react";
+import { Rocket, AlertTriangle, Check, Loader2, ExternalLink } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -10,14 +10,9 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useProblems } from "@/hooks/useProblems";
 import { generateLovablePrompt } from "@/lib/buildLovablePrompt";
-import lovableLogo from "@/assets/lovable-logo.png";
-
-type Platform = "lovable" | "claude";
 
 interface BulkLaunchModalProps {
   open: boolean;
@@ -30,22 +25,9 @@ export function BulkLaunchModal({ open, onOpenChange }: BulkLaunchModalProps) {
   const [isLaunching, setIsLaunching] = useState(false);
   const [launched, setLaunched] = useState(0);
   const [showInstructions, setShowInstructions] = useState(true);
-  const [selectedPlatform, setSelectedPlatform] = useState<Platform>("lovable");
 
   const LAUNCH_COUNT = 10;
   const DELAY_MS = 1500; // 1.5 seconds between each launch
-
-  const getPlatformUrl = (prompt: string, platform: Platform): string => {
-    const encodedPrompt = encodeURIComponent(prompt);
-    
-    if (platform === "claude") {
-      // Claude desktop app URL scheme
-      return `claude://new?prompt=${encodedPrompt}`;
-    }
-    
-    // Lovable URL
-    return `https://lovable.dev/?autosubmit=true#prompt=${encodedPrompt}`;
-  };
 
   const handleLaunch = async () => {
     if (!problems || problems.length === 0) {
@@ -82,10 +64,11 @@ export function BulkLaunchModal({ open, onOpenChange }: BulkLaunchModalProps) {
         },
       });
 
-      // Get URL based on selected platform
-      const url = getPlatformUrl(prompt, selectedPlatform);
+      // Open Lovable builder
+      const encodedPrompt = encodeURIComponent(prompt);
+      const lovableUrl = `https://lovable.dev/?autosubmit=true#prompt=${encodedPrompt}`;
       
-      const newWindow = window.open(url, '_blank');
+      const newWindow = window.open(lovableUrl, '_blank');
       
       if (!newWindow || newWindow.closed) {
         toast({
@@ -106,10 +89,9 @@ export function BulkLaunchModal({ open, onOpenChange }: BulkLaunchModalProps) {
     }
 
     setIsLaunching(false);
-    const platformName = selectedPlatform === "lovable" ? "Lovable" : "Claude";
     toast({
       title: "All ideas launched!",
-      description: `Successfully opened ${ideasToLaunch.length} ${platformName} sessions.`,
+      description: `Successfully opened ${ideasToLaunch.length} Lovable projects.`,
     });
   };
 
@@ -122,7 +104,6 @@ export function BulkLaunchModal({ open, onOpenChange }: BulkLaunchModalProps) {
   };
 
   const progress = (launched / LAUNCH_COUNT) * 100;
-  const platformName = selectedPlatform === "lovable" ? "Lovable" : "Claude";
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -133,64 +114,12 @@ export function BulkLaunchModal({ open, onOpenChange }: BulkLaunchModalProps) {
             Launch 10 Ideas
           </DialogTitle>
           <DialogDescription>
-            Choose your AI platform and launch 10 ideas at once
+            Open 10 Lovable projects simultaneously
           </DialogDescription>
         </DialogHeader>
 
         {showInstructions ? (
           <div className="space-y-4">
-            {/* Platform Selection */}
-            <div className="space-y-3">
-              <p className="text-sm font-medium">Choose your platform:</p>
-              <RadioGroup 
-                value={selectedPlatform} 
-                onValueChange={(v) => setSelectedPlatform(v as Platform)}
-                className="grid grid-cols-2 gap-3"
-              >
-                {/* Lovable Option */}
-                <div>
-                  <RadioGroupItem
-                    value="lovable"
-                    id="lovable"
-                    className="peer sr-only"
-                  />
-                  <Label
-                    htmlFor="lovable"
-                    className="flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer transition-all"
-                  >
-                    <img 
-                      src={lovableLogo} 
-                      alt="Lovable" 
-                      className="h-8 w-8 object-contain"
-                    />
-                    <span className="text-sm font-medium">Lovable</span>
-                    <span className="text-xs text-muted-foreground text-center">
-                      Visual AI builder
-                    </span>
-                  </Label>
-                </div>
-
-                {/* Claude Option */}
-                <div>
-                  <RadioGroupItem
-                    value="claude"
-                    id="claude"
-                    className="peer sr-only"
-                  />
-                  <Label
-                    htmlFor="claude"
-                    className="flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary cursor-pointer transition-all"
-                  >
-                    <Terminal className="h-8 w-8 text-foreground" />
-                    <span className="text-sm font-medium">Claude Desktop</span>
-                    <span className="text-xs text-muted-foreground text-center">
-                      Opens local app
-                    </span>
-                  </Label>
-                </div>
-              </RadioGroup>
-            </div>
-
             {/* Warning */}
             <div className="flex items-start gap-3 p-4 rounded-lg bg-warning/10 border border-warning/20">
               <AlertTriangle className="h-5 w-5 text-warning mt-0.5 shrink-0" />
@@ -216,18 +145,14 @@ export function BulkLaunchModal({ open, onOpenChange }: BulkLaunchModalProps) {
             {/* What will happen */}
             <div className="p-3 rounded-lg bg-secondary/50 text-sm">
               <p className="text-muted-foreground">
-                This will open <span className="text-foreground font-medium">10 new {platformName} tabs</span>, 
-                each with a different startup idea ready to build.
+                This will open <span className="text-foreground font-medium">10 new browser tabs</span>, 
+                each with a different startup idea ready to build in Lovable.
               </p>
             </div>
 
             <Button onClick={handleLaunch} className="w-full gap-2">
-              {selectedPlatform === "lovable" ? (
-                <Rocket className="h-4 w-4" />
-              ) : (
-                <Terminal className="h-4 w-4" />
-              )}
-              Launch in {platformName}
+              <Rocket className="h-4 w-4" />
+              Start Launching
             </Button>
           </div>
         ) : (
@@ -235,7 +160,7 @@ export function BulkLaunchModal({ open, onOpenChange }: BulkLaunchModalProps) {
             {/* Progress */}
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Launching to {platformName}...</span>
+                <span className="text-muted-foreground">Launching ideas...</span>
                 <span className="font-mono">{launched}/{LAUNCH_COUNT}</span>
               </div>
               <Progress value={progress} className="h-2" />
@@ -278,7 +203,7 @@ export function BulkLaunchModal({ open, onOpenChange }: BulkLaunchModalProps) {
                 <Check className="h-8 w-8 text-success mx-auto mb-2" />
                 <p className="font-medium text-success">All ideas launched!</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Check your {platformName} tabs
+                  Check your browser tabs
                 </p>
               </motion.div>
             )}
