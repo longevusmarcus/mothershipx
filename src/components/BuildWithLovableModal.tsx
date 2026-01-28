@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Rocket, Copy, Check, ExternalLink, Sparkles, Code2 } from "lucide-react";
+import { Copy, Check, ExternalLink, Sparkles, Code2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { generateLovablePrompt, openLovableBuilder } from "@/lib/buildLovablePrompt";
+import lovableLogo from "@/assets/lovable-logo.png";
 
 interface Solution {
   title: string;
@@ -126,12 +127,14 @@ export function BuildWithLovableModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col z-[100]">
         <DialogHeader className="flex-shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/20 flex items-center justify-center">
-              <Rocket className="h-5 w-5 text-primary" />
-            </div>
+          <div className="flex items-center gap-4">
+            <img 
+              src={lovableLogo} 
+              alt="Lovable" 
+              className="h-12 w-12 object-contain"
+            />
             <div>
-              <DialogTitle className="text-lg">Build with Lovable</DialogTitle>
+              <DialogTitle className="text-lg">Launch in Lovable</DialogTitle>
               <DialogDescription className="text-sm">
                 Review and customize your expert prompt before launching
               </DialogDescription>
