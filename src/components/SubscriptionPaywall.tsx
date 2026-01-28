@@ -181,7 +181,7 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                       transition={{ delay: 0.3, duration: 0.4, type: "spring" }}
                     >
                       <div className="flex flex-col sm:items-start items-center gap-1">
-                        <span className="text-sm text-muted-foreground line-through">$999 lifetime</span>
+                        <span className="text-sm text-muted-foreground line-through">299 lifetime</span>
                         <div className="inline-flex items-baseline">
                           <span className="text-4xl sm:text-5xl font-semibold tracking-tight">
                             ${SUBSCRIPTION_PRICE}
@@ -209,7 +209,9 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                         onClick={() => setShowWhyExplainer(!showWhyExplainer)}
                         className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors group mx-auto sm:mx-0"
                       >
-                        <span className="underline underline-offset-2 decoration-dashed">Why ${SUBSCRIPTION_PRICE}?</span>
+                        <span className="underline underline-offset-2 decoration-dashed">
+                          Why ${SUBSCRIPTION_PRICE}?
+                        </span>
                         <motion.div animate={{ rotate: showWhyExplainer ? 180 : 0 }} transition={{ duration: 0.2 }}>
                           <ChevronDown className="h-3 w-3" />
                         </motion.div>
@@ -285,10 +287,16 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                       transition={{ delay: 1, duration: 0.4 }}
                     >
                       <p className="text-center sm:text-left text-xs text-muted-foreground">
-                        {SUBSCRIPTION_IS_LIFETIME 
-                          ? <>Pay once.{" "}<span className="text-foreground/80 font-medium">Access forever.</span></>
-                          : <>Cancel anytime.{" "}<span className="text-foreground/80 font-medium">One win pays for 5 years.</span></>
-                        }
+                        {SUBSCRIPTION_IS_LIFETIME ? (
+                          <>
+                            Pay once. <span className="text-foreground/80 font-medium">Access forever.</span>
+                          </>
+                        ) : (
+                          <>
+                            Cancel anytime.{" "}
+                            <span className="text-foreground/80 font-medium">One win pays for 5 years.</span>
+                          </>
+                        )}
                       </p>
                       <p className="text-center sm:text-left text-[10px] text-muted-foreground/60">Secured by Stripe</p>
                     </motion.div>
