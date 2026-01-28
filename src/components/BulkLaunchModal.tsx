@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Rocket, AlertTriangle, Check, Loader2, ExternalLink } from "lucide-react";
+import { Layers, AlertTriangle, Check, Loader2, ExternalLink } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -110,7 +110,7 @@ export function BulkLaunchModal({ open, onOpenChange }: BulkLaunchModalProps) {
       <DialogContent className="max-w-md z-[100]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Rocket className="h-5 w-5 text-primary" />
+            <Layers className="h-5 w-5 text-primary" />
             Launch 10 Ideas
           </DialogTitle>
           <DialogDescription>
@@ -151,7 +151,7 @@ export function BulkLaunchModal({ open, onOpenChange }: BulkLaunchModalProps) {
             </div>
 
             <Button onClick={handleLaunch} className="w-full gap-2">
-              <Rocket className="h-4 w-4" />
+              <Layers className="h-4 w-4" />
               Start Launching
             </Button>
           </div>
