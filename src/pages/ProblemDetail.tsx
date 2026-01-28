@@ -456,7 +456,7 @@ const ProblemDetail = () => {
                 >
                   <Button 
                     size="sm"
-                    variant="glow"
+                    variant="outline"
                     onClick={() => setBuildModalOpen(true)}
                   >
                     <Rocket className="h-4 w-4 mr-1" />
@@ -467,7 +467,7 @@ const ProblemDetail = () => {
                 {/* Submit Build Button */}
                 <Button 
                   size="sm"
-                  variant="outline"
+                  variant="glow"
                   onClick={() => navigate("/submit", {
                     state: {
                       problem: {
