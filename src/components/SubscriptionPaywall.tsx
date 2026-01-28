@@ -287,7 +287,7 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                       <p className="text-center sm:text-left text-xs text-muted-foreground">
                         {SUBSCRIPTION_IS_LIFETIME ? (
                           <>
-                            Pay once. Access Forever.{" "}
+                            Pay once. Access Forever. Build things that pay.{" "}
                             <span className="text-foreground/80 font-medium">Limited to first 100 legends.</span>
                           </>
                         ) : (
