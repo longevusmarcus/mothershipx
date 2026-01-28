@@ -238,7 +238,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
               )}
             >
               <div className="h-4 w-4 shrink-0 flex items-center justify-center">
-                <img src={superloveLogo} alt="Builder" className="h-5 w-5 object-contain" />
+                <img src={superloveLogo} alt="Builder" className="h-6 w-6 object-contain" />
               </div>
               <AnimatePresence mode="wait">
                 {(!collapsed || isMobile) && (
