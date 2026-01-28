@@ -111,23 +111,36 @@ const ProblemDetail = () => {
   // Matrix onboarding effect
   const { showMatrix, hasCompletedMatrix, handleMatrixComplete } = useMatrixOnboarding();
 
-  // Check access on mount - only show paywall after subscription check completes
+  // Check access on mount - delay paywall by 8 seconds to let user explore first
   // Use a ref to track if we've already shown the paywall to prevent re-triggering
   const paywallCheckedRef = useRef(false);
+  const paywallTimerRef = useRef<NodeJS.Timeout | null>(null);
   
   useEffect(() => {
-    // Only check once when subscription loading finishes
-    if (!subscriptionLoading && user && !paywallCheckedRef.current) {
+    // Only check once when subscription loading finishes AND matrix effect is done
+    if (!subscriptionLoading && user && !paywallCheckedRef.current && hasCompletedMatrix) {
       paywallCheckedRef.current = true;
       if (!hasPremiumAccess) {
-        setShowPaywall(true);
+        // Delay paywall by 8 seconds to let user explore the dashboard
+        paywallTimerRef.current = setTimeout(() => {
+          setShowPaywall(true);
+        }, 8000);
       }
     }
     // Reset ref if user logs out
     if (!user) {
       paywallCheckedRef.current = false;
+      if (paywallTimerRef.current) {
+        clearTimeout(paywallTimerRef.current);
+      }
     }
-  }, [subscriptionLoading, user, hasPremiumAccess]);
+    
+    return () => {
+      if (paywallTimerRef.current) {
+        clearTimeout(paywallTimerRef.current);
+      }
+    };
+  }, [subscriptionLoading, user, hasPremiumAccess, hasCompletedMatrix]);
 
   const { data: problem, isLoading } = useProblem(id || "");
   const dbProblemId = problem?.dbId || id || "";
@@ -887,12 +900,13 @@ const ProblemDetail = () => {
         feature="problem"
       />
 
-      {/* Onboarding overlay for first-time visitors */}
+      {/* Onboarding overlay for first-time visitors - only show after matrix completes */}
       <ProblemDashboardOnboarding
         isJoined={isJoined}
         justJoined={justJoined}
         onDismiss={() => setJustJoined(false)}
         startBuildingRef={startBuildingRef}
+        waitForMatrix={!hasCompletedMatrix}
       />
       </AppLayout>
     </>
