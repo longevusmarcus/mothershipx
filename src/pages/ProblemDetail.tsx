@@ -830,11 +830,13 @@ const ProblemDetail = () => {
           aria-label="Auto-build ideas"
         >
           <div className="relative">
-            <img 
-              src={superloveLogo} 
-              alt="Auto-build" 
-              className="h-6 w-6 object-contain opacity-70 group-hover:opacity-100 transition-opacity"
-            />
+            <div className="h-4 w-4 flex items-center justify-center">
+              <img 
+                src={superloveLogo} 
+                alt="Auto-build" 
+                className="h-4 w-4 object-contain scale-[1.35] opacity-70 group-hover:opacity-100 transition-opacity"
+              />
+            </div>
             <motion.div
               className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-primary"
               animate={{ opacity: [1, 0.3, 1] }}
