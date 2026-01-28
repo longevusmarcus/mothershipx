@@ -237,8 +237,13 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
                 "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/50 transition-colors",
               )}
             >
+              {/* Keep alignment with other 16x16 icons, but visually boost the logo size */}
               <div className="h-4 w-4 shrink-0 flex items-center justify-center">
-                <img src={superloveLogo} alt="Builder" className="h-6 w-6 object-contain" />
+                <img
+                  src={superloveLogo}
+                  alt="Builder"
+                  className="h-4 w-4 object-contain scale-[1.35]"
+                />
               </div>
               <AnimatePresence mode="wait">
                 {(!collapsed || isMobile) && (
