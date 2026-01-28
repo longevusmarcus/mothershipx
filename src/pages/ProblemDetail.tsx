@@ -19,6 +19,7 @@ import {
   Plus,
   Terminal,
   Rocket,
+  Layers,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
@@ -466,6 +467,17 @@ const ProblemDetail = () => {
                     Launch in Lovable
                   </Button>
                 </motion.div>
+
+                {/* Launch 10 Ideas Button */}
+                <Button 
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setBulkLaunchOpen(true)}
+                  className="gap-1"
+                >
+                  <Layers className="h-4 w-4" />
+                  Launch 10
+                </Button>
                 
                 {/* Submit Build Button */}
                 <Button 
@@ -499,15 +511,6 @@ const ProblemDetail = () => {
             </Button>
             <Button variant="outline" size="sm" onClick={handleShare}>
               <Share2 className="h-4 w-4" />
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => setBulkLaunchOpen(true)}
-              className="hidden sm:flex gap-1"
-            >
-              <Rocket className="h-4 w-4" />
-              Launch 10
             </Button>
           </div>
           
