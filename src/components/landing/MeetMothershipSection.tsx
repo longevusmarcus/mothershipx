@@ -62,9 +62,9 @@ function TerminalIntro() {
         transition={{ duration: 1, repeat: Infinity }}
         className="text-primary"
       >
-        $
+        {'>'}
       </motion.span>{" "}
-      <span className="text-foreground/70">introducing</span>{" "}
+      <span className="text-foreground/70">initializing</span>{" "}
       <motion.span
         className="text-primary font-bold"
         animate={{
