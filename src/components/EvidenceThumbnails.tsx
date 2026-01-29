@@ -31,7 +31,7 @@ export function EvidenceThumbnails({ problemId, maxThumbnails = 4 }: EvidenceThu
   }
 
   return (
-    <div className="flex gap-1.5 mt-3 overflow-hidden">
+    <div className="flex gap-1.5 overflow-hidden">
       {thumbnails.map((video, index) => (
         <div
           key={video.id || index}
