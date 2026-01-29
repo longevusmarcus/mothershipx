@@ -205,7 +205,7 @@ export function LandingHero() {
             <div className="relative inline-block my-4">
               {/* Glitch layers */}
               <motion.span
-                className="absolute inset-0 font-mono text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary/30"
+                className="absolute inset-0 font-mono text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary/30 tracking-tight uppercase"
                 animate={{
                   x: [0, -2, 2, -1, 0],
                   opacity: [0.3, 0.5, 0.3, 0.4, 0.3],
@@ -213,10 +213,10 @@ export function LandingHero() {
                 transition={{ duration: 0.2, repeat: Infinity, repeatDelay: 3 }}
                 style={{ clipPath: "inset(0 0 50% 0)" }}
               >
-                speed of thought
+                speed_of_thought
               </motion.span>
               <motion.span
-                className="absolute inset-0 font-mono text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary/20"
+                className="absolute inset-0 font-mono text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary/20 tracking-tight uppercase"
                 animate={{
                   x: [0, 2, -2, 1, 0],
                   opacity: [0.2, 0.4, 0.2, 0.3, 0.2],
@@ -224,12 +224,12 @@ export function LandingHero() {
                 transition={{ duration: 0.15, repeat: Infinity, repeatDelay: 2.5 }}
                 style={{ clipPath: "inset(50% 0 0 0)" }}
               >
-                speed of thought
+                speed_of_thought
               </motion.span>
 
               {/* Main text */}
               <motion.span
-                className="relative font-mono text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground"
+                className="relative font-mono text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground tracking-tight uppercase"
                 animate={{
                   textShadow: [
                     "0 0 20px hsl(var(--primary) / 0.5), 0 0 40px hsl(var(--primary) / 0.3)",
@@ -239,7 +239,7 @@ export function LandingHero() {
                 }}
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               >
-                speed of thought
+                speed_of_thought
               </motion.span>
 
               {/* Scan line effect */}
