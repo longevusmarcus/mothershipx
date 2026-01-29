@@ -255,7 +255,7 @@ export function LandingHero() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-center mb-4"
             >
-              <span className="text-muted-foreground">Build useful apps at the</span>
+              <span className="text-muted-foreground">Build useful apps, websites and digital products at the</span>
             </motion.h2>
 
             {/* Speed of Thought - hero emphasis like MothershipX */}
