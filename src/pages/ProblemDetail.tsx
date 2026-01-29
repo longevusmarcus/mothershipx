@@ -897,14 +897,14 @@ const ProblemDetail = () => {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
           onClick={() => setAutoBuildOpen(true)}
-          className="h-11 w-11 rounded-full bg-foreground border border-border shadow-lg hover:scale-105 active:scale-95 transition-transform flex items-center justify-center group"
+          className="h-11 w-11 rounded-full bg-card border border-border shadow-lg hover:scale-105 active:scale-95 transition-transform flex items-center justify-center group"
           aria-label="Auto-build ideas"
         >
           <div className="relative">
             <img 
               src={superloveLogo} 
               alt="Auto-build" 
-              className="h-5 w-5 object-contain invert dark:invert-0" 
+              className="h-5 w-5 object-contain" 
             />
             <motion.div
               className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-primary"
