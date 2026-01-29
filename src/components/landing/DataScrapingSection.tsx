@@ -758,7 +758,7 @@ function MobileDataScrapingLayout() {
                       transition={{ boxShadow: { duration: 2, repeat: Infinity } }}
                     >
                       <span>→</span>
-                      <span>Turn into solution</span>
+                      <span>Turn into solutions</span>
                     </motion.button>
                   </div>
                 )}
