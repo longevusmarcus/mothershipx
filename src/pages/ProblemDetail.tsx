@@ -539,11 +539,11 @@ const ProblemDetail = () => {
                 Ideas
               </TabsTrigger>
               <TabsTrigger value="competitors" className="text-[10px] md:text-xs px-2 md:px-3 data-[state=active]:bg-background whitespace-nowrap">
-                Comp.
+                Competitors
               </TabsTrigger>
               <TabsTrigger value="prompts" className="text-[10px] md:text-xs px-2 md:px-3 data-[state=active]:bg-background gap-1 whitespace-nowrap">
                 <Terminal className="h-3 w-3" />
-                <span className="hidden md:inline">Prompts</span>
+                Prompts
               </TabsTrigger>
             </TabsList>
           </div>
