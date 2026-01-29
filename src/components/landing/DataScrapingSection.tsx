@@ -15,30 +15,29 @@ const platforms = [
   { id: "linkedin", name: "LinkedIn", icon: "in", delay: 0.7 },
 ];
 
-// Floating data particles
+// Minimal data particle - subtle and elegant
 function DataParticle({ delay, startX, startY }: { delay: number; startX: number; startY: number }) {
   return (
     <motion.div
-      className="absolute w-1 h-1 rounded-full bg-primary"
-      initial={{ x: startX, y: startY, opacity: 0, scale: 0 }}
+      className="absolute w-0.5 h-0.5 rounded-full bg-primary/60"
+      initial={{ x: startX, y: startY, opacity: 0 }}
       animate={{
         x: [startX, 0],
         y: [startY, 0],
-        opacity: [0, 1, 1, 0],
-        scale: [0, 1.5, 1, 0],
+        opacity: [0, 0.8, 0.8, 0],
       }}
       transition={{
-        duration: 2.5,
+        duration: 3,
         delay,
         repeat: Infinity,
-        repeatDelay: Math.random() * 2,
+        repeatDelay: Math.random() * 3,
         ease: "easeInOut",
       }}
     />
   );
 }
 
-// Platform node with pulsing effect
+// Elegant platform node - minimal and refined
 function PlatformNode({ platform, angle, radius }: { platform: typeof platforms[0]; angle: number; radius: number }) {
   const x = Math.cos(angle) * radius;
   const y = Math.sin(angle) * radius;
@@ -46,55 +45,41 @@ function PlatformNode({ platform, angle, radius }: { platform: typeof platforms[
   return (
     <motion.div
       className="absolute flex flex-col items-center"
-      style={{ left: `calc(50% + ${x}px)`, top: `calc(50% + ${y}px)` }}
-      initial={{ opacity: 0, scale: 0 }}
+      style={{ 
+        left: `calc(50% + ${x}px)`, 
+        top: `calc(50% + ${y}px)`,
+        transform: 'translate(-50%, -50%)'
+      }}
+      initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: platform.delay, duration: 0.5, ease: "backOut" }}
+      transition={{ delay: platform.delay, duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
     >
-      {/* Connection line to center */}
+      {/* Platform icon - clean, minimal card */}
       <motion.div
-        className="absolute h-px bg-gradient-to-r from-primary/50 to-transparent origin-left"
-        style={{
-          width: radius,
-          left: x > 0 ? -radius : 0,
-          transform: `rotate(${x > 0 ? 180 + (angle * 180) / Math.PI : (angle * 180) / Math.PI}deg)`,
+        className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-card/90 border border-border/40 flex items-center justify-center font-mono text-sm font-medium text-foreground/80 backdrop-blur-md"
+        whileHover={{ 
+          scale: 1.08, 
+          borderColor: "hsl(var(--primary) / 0.5)",
+          backgroundColor: "hsl(var(--card))"
         }}
-        initial={{ scaleX: 0 }}
-        animate={{ scaleX: 1 }}
-        transition={{ delay: platform.delay + 0.3, duration: 0.8 }}
-      />
-
-      {/* Platform icon */}
-      <motion.div
-        className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-card border border-border/50 flex items-center justify-center font-mono text-xs sm:text-sm font-bold text-foreground shadow-lg backdrop-blur-sm"
-        whileHover={{ scale: 1.1, borderColor: "hsl(var(--primary))" }}
-        animate={{
-          boxShadow: [
-            "0 0 0 0 hsl(var(--primary) / 0)",
-            "0 0 20px 2px hsl(var(--primary) / 0.3)",
-            "0 0 0 0 hsl(var(--primary) / 0)",
-          ],
-        }}
-        transition={{
-          boxShadow: { duration: 2, repeat: Infinity, delay: platform.delay },
-        }}
+        transition={{ duration: 0.2 }}
       >
         {platform.icon}
-
-        {/* Data flow indicator */}
+        
+        {/* Subtle active indicator */}
         <motion.div
-          className="absolute -right-1 -top-1 w-2 h-2 rounded-full bg-primary"
-          animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
-          transition={{ duration: 1, repeat: Infinity, delay: platform.delay * 0.5 }}
+          className="absolute -right-0.5 -top-0.5 w-1.5 h-1.5 rounded-full bg-primary/80"
+          animate={{ opacity: [0.4, 1, 0.4] }}
+          transition={{ duration: 2, repeat: Infinity, delay: platform.delay }}
         />
       </motion.div>
 
-      {/* Platform name */}
+      {/* Platform name - understated */}
       <motion.span
-        className="mt-1 text-[9px] sm:text-xs text-muted-foreground font-mono"
+        className="mt-1.5 text-[10px] text-muted-foreground/70 font-mono tracking-wide"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: platform.delay + 0.5 }}
+        transition={{ delay: platform.delay + 0.3 }}
       >
         {platform.name}
       </motion.span>
@@ -102,47 +87,67 @@ function PlatformNode({ platform, angle, radius }: { platform: typeof platforms[
   );
 }
 
-// Central processing core with Mothership logo
+// Sophisticated central processing core - minimal and elegant
 function ProcessingCore({ size = "normal" }: { size?: "small" | "normal" }) {
-  const sizeClasses = size === "small" ? "w-24 h-24" : "w-32 h-32 sm:w-40 sm:h-40";
-  const logoSize = size === "small" ? "w-6 h-6" : "w-8 h-8 sm:w-10 sm:h-10";
+  const containerSize = size === "small" ? 80 : 100;
+  const sizeClasses = size === "small" ? "w-20 h-20" : "w-24 h-24 sm:w-28 sm:h-28";
+  const logoSize = size === "small" ? "w-5 h-5" : "w-6 h-6 sm:w-7 sm:h-7";
   
   return (
     <motion.div className={`relative ${sizeClasses} flex items-center justify-center`}>
-      {/* Outer rotating ring */}
+      {/* Outer orbit ring - subtle dashed */}
       <motion.div
-        className="absolute inset-0 rounded-full border-2 border-dashed border-primary/30"
+        className="absolute inset-0 rounded-full"
+        style={{
+          border: '1px dashed hsl(var(--muted-foreground) / 0.2)',
+        }}
         animate={{ rotate: 360 }}
-        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
       />
 
-      {/* Middle pulsing ring */}
+      {/* Middle ring - solid, subtle */}
       <motion.div
-        className="absolute inset-4 rounded-full border border-primary/50"
-        animate={{ scale: [1, 1.1, 1], opacity: [0.5, 1, 0.5] }}
-        transition={{ duration: 2, repeat: Infinity }}
+        className="absolute rounded-full border border-border/50"
+        style={{
+          inset: size === "small" ? 8 : 10,
+        }}
+        animate={{ opacity: [0.3, 0.6, 0.3] }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* Inner core with logo */}
+      {/* Inner core - refined gradient */}
       <motion.div
-        className="absolute inset-8 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/60 flex items-center justify-center backdrop-blur-sm overflow-hidden"
+        className="absolute rounded-full bg-gradient-to-br from-card via-card to-muted/50 border border-border/60 flex items-center justify-center backdrop-blur-sm overflow-hidden shadow-lg"
+        style={{
+          inset: size === "small" ? 16 : 20,
+        }}
         animate={{
           boxShadow: [
-            "0 0 30px 10px hsl(var(--primary) / 0.2)",
-            "0 0 50px 20px hsl(var(--primary) / 0.4)",
-            "0 0 30px 10px hsl(var(--primary) / 0.2)",
+            "0 0 20px 5px hsl(var(--primary) / 0.1)",
+            "0 0 30px 8px hsl(var(--primary) / 0.2)",
+            "0 0 20px 5px hsl(var(--primary) / 0.1)",
           ],
         }}
-        transition={{ duration: 3, repeat: Infinity }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       >
         <motion.img
           src={logoIcon}
           alt="Mothership"
-          className={`${logoSize} object-contain dark:invert-0 invert`}
-          animate={{ opacity: [0.7, 1, 0.7], scale: [0.95, 1, 0.95] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
+          className={`${logoSize} object-contain dark:invert-0 invert opacity-80`}
+          animate={{ opacity: [0.6, 0.9, 0.6] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
         />
       </motion.div>
+      
+      {/* Subtle glow accent */}
+      <motion.div 
+        className="absolute inset-0 rounded-full pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle, hsl(var(--primary) / 0.05) 0%, transparent 70%)',
+        }}
+        animate={{ opacity: [0.5, 1, 0.5] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+      />
     </motion.div>
   );
 }
@@ -339,32 +344,51 @@ function MobileCarouselContent({ activeSection }: { activeSection: number }) {
           className="flex flex-col items-center"
         >
           <motion.p
-            className="font-mono text-xs text-primary mb-4"
+            className="font-mono text-[10px] text-primary/80 mb-4 tracking-wide"
             animate={{ opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
             {'>'} SCANNING 12+ PLATFORMS...
           </motion.p>
           
-          <div className="relative h-[280px] w-full flex items-center justify-center">
-            <div className="relative w-full h-full max-w-[300px] mx-auto">
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                <ProcessingCore size="small" />
-              </div>
-              {platforms.map((platform, i) => {
-                const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
-                const radius = 100;
-                return <PlatformNode key={platform.id} platform={platform} angle={angle} radius={radius} />;
-              })}
-              {Array.from({ length: 10 }).map((_, i) => (
-                <DataParticle
-                  key={i}
-                  delay={i * 0.3}
-                  startX={(Math.random() - 0.5) * 200}
-                  startY={(Math.random() - 0.5) * 200}
-                />
-              ))}
+          {/* Refined orbit display */}
+          <div className="relative flex items-center justify-center" style={{ width: 260, height: 260 }}>
+            {/* Orbit track */}
+            <motion.div
+              className="absolute rounded-full border border-border/20"
+              style={{
+                left: '50%',
+                top: '50%',
+                width: 200,
+                height: 200,
+                transform: 'translate(-50%, -50%)',
+              }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8 }}
+            />
+            
+            {/* Core - centered */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+              <ProcessingCore size="small" />
             </div>
+            
+            {/* Platform nodes */}
+            {platforms.map((platform, i) => {
+              const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
+              const radius = 100;
+              return <PlatformNode key={platform.id} platform={platform} angle={angle} radius={radius} />;
+            })}
+            
+            {/* Minimal particles */}
+            {Array.from({ length: 6 }).map((_, i) => (
+              <DataParticle
+                key={i}
+                delay={i * 0.4}
+                startX={(Math.random() - 0.5) * 200}
+                startY={(Math.random() - 0.5) * 200}
+              />
+            ))}
           </div>
         </motion.div>
       )}
@@ -639,32 +663,51 @@ function MobileDataScrapingLayout() {
                 {activeSection === 0 && (
                   <div className="flex flex-col items-center">
                     <motion.p
-                      className="font-mono text-xs text-primary mb-4"
+                      className="font-mono text-[10px] text-primary/80 mb-4 tracking-wide"
                       animate={{ opacity: [0.5, 1, 0.5] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
                       {'>'} SCANNING PLATFORMS...
                     </motion.p>
                     
-                    <div className="relative h-[280px] w-full flex items-center justify-center">
-                      <div className="relative w-full h-full max-w-[300px] mx-auto">
-                        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                          <ProcessingCore size="small" />
-                        </div>
-                        {platforms.map((platform, i) => {
-                          const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
-                          const radius = 100;
-                          return <PlatformNode key={platform.id} platform={platform} angle={angle} radius={radius} />;
-                        })}
-                        {Array.from({ length: 10 }).map((_, i) => (
-                          <DataParticle
-                            key={i}
-                            delay={i * 0.3}
-                            startX={(Math.random() - 0.5) * 200}
-                            startY={(Math.random() - 0.5) * 200}
-                          />
-                        ))}
+                    {/* Refined mobile orbit */}
+                    <div className="relative flex items-center justify-center" style={{ width: 260, height: 260 }}>
+                      {/* Orbit track */}
+                      <motion.div
+                        className="absolute rounded-full border border-border/20"
+                        style={{
+                          left: '50%',
+                          top: '50%',
+                          width: 200,
+                          height: 200,
+                          transform: 'translate(-50%, -50%)',
+                        }}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.8 }}
+                      />
+                      
+                      {/* Core - centered */}
+                      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+                        <ProcessingCore size="small" />
                       </div>
+                      
+                      {/* Platform nodes */}
+                      {platforms.map((platform, i) => {
+                        const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
+                        const radius = 100;
+                        return <PlatformNode key={platform.id} platform={platform} angle={angle} radius={radius} />;
+                      })}
+                      
+                      {/* Minimal particles */}
+                      {Array.from({ length: 6 }).map((_, i) => (
+                        <DataParticle
+                          key={i}
+                          delay={i * 0.4}
+                          startX={(Math.random() - 0.5) * 200}
+                          startY={(Math.random() - 0.5) * 200}
+                        />
+                      ))}
                     </div>
                   </div>
                 )}
@@ -791,27 +834,53 @@ function DesktopDataScrapingLayout() {
 
           {/* Main visualization grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-center">
-            {/* Left: Platform nodes orbital display */}
-            <div className="relative h-[300px] sm:h-[350px] flex items-center justify-center order-2 lg:order-1">
-              <div className="relative w-full h-full max-w-[350px] mx-auto">
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+            {/* Left: Platform nodes orbital display - centered and refined */}
+            <motion.div 
+              className="relative h-[320px] sm:h-[360px] flex items-center justify-center order-2 lg:order-1"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8 }}
+            >
+              {/* Central orbit container */}
+              <div className="relative" style={{ width: 300, height: 300 }}>
+                {/* Orbit track - elegant circle */}
+                <motion.div
+                  className="absolute rounded-full border border-border/20"
+                  style={{
+                    left: '50%',
+                    top: '50%',
+                    width: 240,
+                    height: 240,
+                    transform: 'translate(-50%, -50%)',
+                  }}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 1, delay: 0.2 }}
+                />
+                
+                {/* Processing core - perfectly centered */}
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
                   <ProcessingCore />
                 </div>
+                
+                {/* Platform nodes orbiting around center */}
                 {platforms.map((platform, i) => {
                   const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
                   const radius = 120;
                   return <PlatformNode key={platform.id} platform={platform} angle={angle} radius={radius} />;
                 })}
-                {Array.from({ length: 15 }).map((_, i) => (
+                
+                {/* Subtle data particles */}
+                {Array.from({ length: 8 }).map((_, i) => (
                   <DataParticle
                     key={i}
-                    delay={i * 0.3}
-                    startX={(Math.random() - 0.5) * 300}
-                    startY={(Math.random() - 0.5) * 300}
+                    delay={i * 0.4}
+                    startX={(Math.random() - 0.5) * 240}
+                    startY={(Math.random() - 0.5) * 240}
                   />
                 ))}
               </div>
-            </div>
+            </motion.div>
 
             {/* Center: Pain points extraction */}
             <div className="flex flex-col items-center gap-6 order-1 lg:order-2">
