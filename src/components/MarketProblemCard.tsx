@@ -170,8 +170,11 @@ export function MarketProblemCard({ problem, delay = 0, isPinned = false, onTogg
           </div>
         )}
 
+        {/* Evidence Video Thumbnails - moved above metrics */}
+        <EvidenceThumbnails problemId={problem.id} maxThumbnails={4} />
+
         {/* Stats Row - source-specific */}
-        <div className="flex items-center gap-4 text-xs text-muted-foreground mb-3">
+        <div className="flex items-center gap-4 text-xs text-muted-foreground mt-3">
           {sourceType === "reddit" ? (
             <>
               {problem.views > 0 && (
@@ -231,9 +234,6 @@ export function MarketProblemCard({ problem, delay = 0, isPinned = false, onTogg
             </>
           )}
         </div>
-
-        {/* Evidence Video Thumbnails */}
-        <EvidenceThumbnails problemId={problem.id} maxThumbnails={4} />
 
         {/* CTA */}
         <div className="flex items-center justify-between text-xs mt-3">
