@@ -175,11 +175,11 @@ export function MarketProblemCard({ problem, delay = 0, isPinned = false, onTogg
         
         {/* Reddit text post thumbnails - shown for cards with upvotes/comments */}
         {sourceType === "reddit" && (
-          <div className="flex gap-1.5 mt-2 overflow-hidden">
-            {[{ lines: 3, hasAward: true }, { lines: 2, hasAward: false }].map((post, index) => (
+          <div className="flex flex-nowrap gap-1.5 mt-2 overflow-hidden">
+            {[{ lines: 3, hasAward: true }, { lines: 2, hasAward: false }, { lines: 2, hasAward: true }, { lines: 3, hasAward: false }].map((post, index) => (
               <div
                 key={`reddit-post-${index}`}
-                className="relative w-12 h-14 flex-shrink-0 rounded overflow-hidden bg-[#1a1a1b] border border-[#343536] p-1.5"
+                className="relative w-10 h-14 flex-shrink-0 rounded overflow-hidden bg-[#1a1a1b] border border-[#343536] p-1.5"
               >
                 {/* Reddit post header */}
                 <div className="flex items-center gap-0.5 mb-1">
