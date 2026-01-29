@@ -48,7 +48,7 @@ import { useCompetitors } from "@/hooks/useCompetitors";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { cn } from "@/lib/utils";
-import lovableLogo from "@/assets/lovable-logo.png";
+import superloveLogo from "@/assets/superlove-logo.png";
 
 const formatNumber = (num: number): string => {
   if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
@@ -499,7 +499,7 @@ const ProblemDetail = () => {
               onClick={() => setAutoBuildOpen(true)}
               className="ml-auto"
             >
-              <img src={lovableLogo} alt="SuperLovable" className="h-4 w-4 scale-[1.35]" />
+              <img src={superloveLogo} alt="SuperLovable" className="h-4 w-4 scale-[1.35]" />
             </Button>
           </div>
           
@@ -861,7 +861,7 @@ const ProblemDetail = () => {
         >
           <div className="relative">
             <img 
-              src={lovableLogo} 
+              src={superloveLogo} 
               alt="Auto-build" 
               className="h-5 w-5 object-contain opacity-70 group-hover:opacity-100 transition-opacity" 
             />
