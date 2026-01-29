@@ -18,8 +18,6 @@ import {
   MessageSquare,
   Plus,
   Terminal,
-  Rocket,
-  Layers,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
@@ -32,11 +30,8 @@ import { SubscriptionPaywall } from "@/components/SubscriptionPaywall";
 import { SubscriptionLoadingGate } from "@/components/SubscriptionLoadingGate";
 import { PromptsGenerator } from "@/components/PromptsGenerator";
 import { AutoBuildModal } from "@/components/AutoBuildModal";
-import { BuildWithLovableModal } from "@/components/BuildWithLovableModal";
-import { BulkLaunchModal } from "@/components/BulkLaunchModal";
 import { ProblemDashboardOnboarding } from "@/components/ProblemDashboardOnboarding";
 import { ProblemEvidenceSection } from "@/components/ProblemEvidenceSection";
-import { MatrixOnboardingEffect, useMatrixOnboarding } from "@/components/MatrixOnboardingEffect";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -48,11 +43,10 @@ import { useProblem } from "@/hooks/useProblems";
 import { useProblemBuilders } from "@/hooks/useProblemBuilders";
 import { useRefreshProblem } from "@/hooks/useRefreshProblem";
 import { useCompetitors } from "@/hooks/useCompetitors";
-import { useSolutions } from "@/hooks/useSolutions";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { cn } from "@/lib/utils";
-import superloveLogo from "@/assets/superlove-logo.png";
+import lovableLogo from "@/assets/lovable-logo.png";
 
 const formatNumber = (num: number): string => {
   if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
@@ -109,51 +103,36 @@ const ProblemDetail = () => {
   const [searchCompetitors, setSearchCompetitors] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const [autoBuildOpen, setAutoBuildOpen] = useState(false);
-  const [buildModalOpen, setBuildModalOpen] = useState(false);
-  const [bulkLaunchOpen, setBulkLaunchOpen] = useState(false);
   const [justJoined, setJustJoined] = useState(false);
   const wasJoined = useRef(false);
   const startBuildingRef = useRef<HTMLButtonElement>(null);
 
-  // Matrix onboarding effect
-  const { showMatrix, hasCompletedMatrix, handleMatrixComplete } = useMatrixOnboarding();
-
-  // Check access on mount - delay paywall by 8 seconds to let user explore first
+  // Check access on mount - only show paywall after subscription check completes
   // Use a ref to track if we've already shown the paywall to prevent re-triggering
   const paywallCheckedRef = useRef(false);
-  const paywallTimerRef = useRef<NodeJS.Timeout | null>(null);
   
   useEffect(() => {
-    // Only check once when subscription loading finishes AND matrix effect is done
-    if (!subscriptionLoading && user && !paywallCheckedRef.current && hasCompletedMatrix) {
+    // Only check once when subscription loading finishes
+    if (!subscriptionLoading && user && !paywallCheckedRef.current) {
       paywallCheckedRef.current = true;
       if (!hasPremiumAccess) {
-        // Delay paywall by 8 seconds to let user explore the dashboard
-        paywallTimerRef.current = setTimeout(() => {
-          setShowPaywall(true);
-        }, 8000);
+        setShowPaywall(true);
       }
+    }
+    // Dismiss paywall if access is granted (e.g. after a retry succeeds)
+    if (hasPremiumAccess && showPaywall) {
+      setShowPaywall(false);
     }
     // Reset ref if user logs out
     if (!user) {
       paywallCheckedRef.current = false;
-      if (paywallTimerRef.current) {
-        clearTimeout(paywallTimerRef.current);
-      }
     }
-    
-    return () => {
-      if (paywallTimerRef.current) {
-        clearTimeout(paywallTimerRef.current);
-      }
-    };
-  }, [subscriptionLoading, user, hasPremiumAccess, hasCompletedMatrix]);
+  }, [subscriptionLoading, user, hasPremiumAccess, showPaywall]);
 
   const { data: problem, isLoading } = useProblem(id || "");
   const dbProblemId = problem?.dbId || id || "";
   const { isJoined, joinProblem, leaveProblem } = useProblemBuilders(dbProblemId);
   const { refresh, isRefreshing } = useRefreshProblem(dbProblemId);
-  const { solutions } = useSolutions(dbProblemId);
 
   // Track when user just joined (transition from not joined to joined)
   useEffect(() => {
@@ -219,7 +198,6 @@ const ProblemDetail = () => {
   
   const slotsRemaining = problem.slotsTotal - problem.slotsFilled;
   const fillPercentage = (problem.slotsFilled / problem.slotsTotal) * 100;
-  const isCapacityFull = problem.slotsFilled >= problem.slotsTotal;
   const sentiment = getSentimentLabel(problem.sentiment);
   const sourceType = detectSourceType(problem.sources);
 
@@ -236,14 +214,6 @@ const ProblemDetail = () => {
     if (isJoined) {
       leaveProblem.mutate();
     } else {
-      // If capacity is full, show informational toast and don't allow joining
-      if (isCapacityFull) {
-        toast({
-          title: "Builder capacity reached",
-          description: "You can still build this idea independently, but you won't be eligible for leaderboard rewards. Submissions are closed for this cohort.",
-        });
-        return;
-      }
       joinProblem.mutate();
     }
   };
@@ -310,18 +280,14 @@ const ProblemDetail = () => {
     : `https://mothershipx.lovable.app/problems/${id}`;
 
   return (
-    <>
-      {/* Matrix-style onboarding effect for first-time visitors */}
-      <MatrixOnboardingEffect show={showMatrix} onComplete={handleMatrixComplete} />
-      
-      <AppLayout>
-        <SEO
-          title={problem.title}
-          description={problem.subtitle || `Discover this ${problem.category} opportunity with ${formatNumber(problem.views)} views.`}
-          url={canonicalUrl}
-          type="article"
-        />
-        <div className="max-w-3xl mx-auto space-y-6">
+    <AppLayout>
+      <SEO
+        title={problem.title}
+        description={problem.subtitle || `Discover this ${problem.category} opportunity with ${formatNumber(problem.views)} views.`}
+        url={canonicalUrl}
+        type="article"
+      />
+      <div className="max-w-3xl mx-auto space-y-6">
         {/* Back Navigation */}
         <Link 
           to="/problems" 
@@ -436,7 +402,6 @@ const ProblemDetail = () => {
               onClick={handleJoinToggle}
               disabled={joinProblem.isPending || leaveProblem.isPending}
               className={isJoined ? "text-success border-success/30" : ""}
-              data-tutorial="start-building"
             >
               {isJoined ? (
                 <>
@@ -447,62 +412,36 @@ const ProblemDetail = () => {
                 "Start Building"
               )}
             </Button>
-            {isJoined && !isCapacityFull && (
+            {isJoined && (
               <motion.div
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                className="flex items-center gap-2"
               >
-                {/* Build with Lovable Button */}
                 <motion.div
                   animate={{ scale: [1, 1.05, 1] }}
                   transition={{ duration: 1.5, repeat: 2, ease: "easeInOut" }}
                 >
                   <Button 
                     size="sm"
-                    variant="outline"
-                    onClick={() => setBuildModalOpen(true)}
-                    data-tutorial="launch-button"
+                    onClick={() => navigate("/submit", {
+                      state: {
+                        problem: {
+                          id: problem.id,
+                          title: problem.title,
+                          subtitle: problem.subtitle,
+                          niche: problem.niche,
+                          opportunityScore: problem.opportunityScore,
+                          sentiment: problem.sentiment,
+                        },
+                        joinType: "solo",
+                      },
+                    })}
                   >
-                    <Rocket className="h-4 w-4 mr-1" />
-                    Launch in Lovable
+                    <Plus className="h-4 w-4 mr-1" />
+                    Submit Build
                   </Button>
                 </motion.div>
-
-                {/* Launch 10 Ideas Button */}
-                <Button 
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setBulkLaunchOpen(true)}
-                  className="gap-1"
-                >
-                  <Layers className="h-4 w-4" />
-                  Launch 10 Ideas
-                </Button>
-                
-                {/* Submit Build Button */}
-                <Button 
-                  size="sm"
-                  variant="glow"
-                  data-tutorial="submit-button"
-                  onClick={() => navigate("/submit", {
-                    state: {
-                      problem: {
-                        id: problem.id,
-                        title: problem.title,
-                        subtitle: problem.subtitle,
-                        niche: problem.niche,
-                        opportunityScore: problem.opportunityScore,
-                        sentiment: problem.sentiment,
-                      },
-                      joinType: "solo",
-                    },
-                  })}
-                >
-                  <Plus className="h-4 w-4 mr-1" />
-                  Submit Build
-                </Button>
               </motion.div>
             )}
             <Button 
@@ -542,10 +481,10 @@ const ProblemDetail = () => {
             <TabsTrigger value="overview" className="text-xs data-[state=active]:bg-background">
               Overview
             </TabsTrigger>
-            <TabsTrigger value="squads" className="text-xs data-[state=active]:bg-background" data-tutorial="squads-tab">
+            <TabsTrigger value="squads" className="text-xs data-[state=active]:bg-background">
               Squads
             </TabsTrigger>
-            <TabsTrigger value="solutions" className="text-xs data-[state=active]:bg-background" data-tutorial="ideas-tab">
+            <TabsTrigger value="solutions" className="text-xs data-[state=active]:bg-background">
               Ideas
             </TabsTrigger>
             <TabsTrigger value="competitors" className="text-xs data-[state=active]:bg-background">
@@ -862,68 +801,64 @@ const ProblemDetail = () => {
         </Tabs>
       </div>
 
-      {/* Floating Buttons Container - only show when capacity not full */}
-      {!isCapacityFull && (
-        <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3 items-center">
-          {/* Auto-Build Button */}
-          <motion.button
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-            onClick={() => setAutoBuildOpen(true)}
-            className="h-14 w-14 rounded-full bg-black border border-primary/30 shadow-lg hover:scale-105 active:scale-95 transition-transform flex items-center justify-center group"
-            aria-label="Auto-build ideas"
-          >
-            <div className="relative">
-              <div className="h-6 w-6 flex items-center justify-center">
-                <img 
-                  src={superloveLogo} 
-                  alt="Auto-build" 
-                  className="h-6 w-6 object-contain scale-[1.35] opacity-70 group-hover:opacity-100 transition-opacity"
-                />
-              </div>
-              <motion.div
-                className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-primary"
-                animate={{ opacity: [1, 0.3, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-            </div>
-          </motion.button>
+      {/* Floating Buttons Container */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3 items-center">
+        {/* Auto-Build Button */}
+        <motion.button
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+          onClick={() => setAutoBuildOpen(true)}
+          className="h-11 w-11 rounded-full bg-black border border-primary/30 shadow-lg hover:scale-105 active:scale-95 transition-transform flex items-center justify-center group"
+          aria-label="Auto-build ideas"
+        >
+          <div className="relative">
+            <img 
+              src={lovableLogo} 
+              alt="Auto-build" 
+              className="h-5 w-5 object-contain opacity-70 group-hover:opacity-100 transition-opacity" 
+            />
+            <motion.div
+              className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-primary"
+              animate={{ opacity: [1, 0.3, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+          </div>
+        </motion.button>
 
-          {/* Submit Build Button */}
-          <motion.button
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
-            onClick={() => {
-              if (!user) {
-                toast({
-                  title: "Sign in required",
-                  description: "Please sign in to submit a build",
-                });
-                return;
-              }
-              navigate("/submit", {
-                state: {
-                  problem: {
-                    id: problem.id,
-                    title: problem.title,
-                    subtitle: problem.subtitle,
-                    niche: problem.niche,
-                    opportunityScore: problem.opportunityScore,
-                    sentiment: problem.sentiment,
-                  },
-                  joinType: "solo",
-                },
+        {/* Submit Build Button */}
+        <motion.button
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
+          onClick={() => {
+            if (!user) {
+              toast({
+                title: "Sign in required",
+                description: "Please sign in to submit a build",
               });
-            }}
-            className="h-14 w-14 rounded-full bg-foreground text-background shadow-lg hover:scale-105 active:scale-95 transition-transform flex items-center justify-center group"
-            aria-label="Submit build"
-          >
-            <Plus className="h-6 w-6 transition-transform group-hover:rotate-90" />
-          </motion.button>
-        </div>
-      )}
+              return;
+            }
+            navigate("/submit", {
+              state: {
+                problem: {
+                  id: problem.id,
+                  title: problem.title,
+                  subtitle: problem.subtitle,
+                  niche: problem.niche,
+                  opportunityScore: problem.opportunityScore,
+                  sentiment: problem.sentiment,
+                },
+                joinType: "solo",
+              },
+            });
+          }}
+          className="h-14 w-14 rounded-full bg-foreground text-background shadow-lg hover:scale-105 active:scale-95 transition-transform flex items-center justify-center group"
+          aria-label="Submit build"
+        >
+          <Plus className="h-6 w-6 transition-transform group-hover:rotate-90" />
+        </motion.button>
+      </div>
 
       {/* Auto-Build Modal */}
       <AutoBuildModal 
@@ -948,41 +883,14 @@ const ProblemDetail = () => {
         feature="problem"
       />
 
-      {/* Onboarding overlay for first-time visitors - only show after matrix completes */}
+      {/* Onboarding overlay for first-time visitors */}
       <ProblemDashboardOnboarding
         isJoined={isJoined}
         justJoined={justJoined}
         onDismiss={() => setJustJoined(false)}
         startBuildingRef={startBuildingRef}
-        waitForMatrix={!hasCompletedMatrix}
       />
-
-      {/* Build with Lovable Modal */}
-      <BuildWithLovableModal
-        open={buildModalOpen}
-        onOpenChange={setBuildModalOpen}
-        problem={{
-          title: problem.title,
-          subtitle: problem.subtitle,
-          category: problem.category,
-          niche: problem.niche,
-          painPoints: problem.painPoints,
-          marketSize: problem.marketSize,
-          opportunityScore: problem.opportunityScore,
-          sentiment: problem.sentiment,
-          hiddenInsight: problem.hiddenInsight,
-        }}
-        solutions={solutions}
-        competitors={competitors}
-      />
-
-      {/* Bulk Launch Modal */}
-      <BulkLaunchModal
-        open={bulkLaunchOpen}
-        onOpenChange={setBulkLaunchOpen}
-      />
-      </AppLayout>
-    </>
+    </AppLayout>
   );
 };
 
