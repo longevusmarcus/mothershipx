@@ -733,13 +733,13 @@ function MobileDataScrapingLayout() {
                 {activeSection === 1 && (
                   <div className="flex flex-col items-center w-full px-4">
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center mb-6">
-                      <p className="font-mono text-xs text-muted-foreground mb-1">EXTRACTED PAIN POINTS</p>
+                      <p className="font-mono text-xs text-muted-foreground mb-1">PAIN POINTS AFFECTING 100K+ PEOPLE</p>
                       <motion.p
                         className="font-mono text-3xl font-bold text-primary"
                         animate={{ opacity: [0.8, 1, 0.8] }}
                         transition={{ duration: 1.5, repeat: Infinity }}
                       >
-                        1,247
+                        250
                       </motion.p>
                     </motion.div>
 
@@ -841,7 +841,7 @@ function DesktopDataScrapingLayout() {
             <h2 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-foreground">
               Scraping <span className="text-primary font-mono">12+</span> platforms
             </h2>
-            <p className="text-muted-foreground mt-2 font-mono text-sm">Real-time market intelligence extraction</p>
+            <p className="text-muted-foreground mt-2 font-mono text-sm">Real-time arena</p>
           </motion.div>
 
           {/* Main visualization grid */}
@@ -903,7 +903,7 @@ function DesktopDataScrapingLayout() {
                 transition={{ delay: 1.5 }}
                 className="text-center"
               >
-                <p className="font-mono text-xs text-muted-foreground mb-1">EXTRACTED PAIN POINTS</p>
+                <p className="font-mono text-xs text-muted-foreground mb-1">PAIN POINTS AFFECTING 100K+ PEOPLE</p>
                 <motion.p
                   className="font-mono text-2xl sm:text-3xl font-bold text-primary"
                   animate={{ opacity: [0.8, 1, 0.8] }}
