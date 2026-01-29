@@ -98,276 +98,272 @@ export function LandingHero() {
     <>
       {/* Activation Animation Overlay */}
       <AnimatePresence>
-        {showActivation && (
-          <ActivationAnimation onComplete={handleActivationComplete} />
-        )}
+        {showActivation && <ActivationAnimation onComplete={handleActivationComplete} />}
       </AnimatePresence>
 
       <div ref={containerRef} className="bg-background h-screen overflow-y-auto snap-y snap-mandatory">
         {/* Floating Mascot that follows scroll */}
         <FloatingMascot containerRef={containerRef as React.RefObject<HTMLDivElement>} />
         {/* PAGE 1: Terminal Only */}
-      <section className="h-screen snap-start flex flex-col items-center justify-center px-6 relative overflow-hidden">
-        {/* Subtle dot grid */}
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
-            backgroundSize: "24px 24px",
-          }}
-        />
+        <section className="h-screen snap-start flex flex-col items-center justify-center px-6 relative overflow-hidden">
+          {/* Subtle dot grid */}
+          <div
+            className="absolute inset-0 opacity-[0.04]"
+            style={{
+              backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
+              backgroundSize: "24px 24px",
+            }}
+          />
 
-        <div className="relative z-10 w-full max-w-4xl mx-auto">
-          {/* Trembling Logo */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-            className="flex justify-center mb-8"
-          >
+          <div className="relative z-10 w-full max-w-4xl mx-auto">
+            {/* Trembling Logo */}
             <motion.div
-              animate={{
-                x: [0, -1, 1, -1, 0],
-                y: [0, 1, -1, 0, 1],
-              }}
-              transition={{
-                duration: 0.15,
-                repeat: Infinity,
-                ease: "linear",
-              }}
-            >
-              <div className="w-14 h-14 md:w-16 md:h-16 relative">
-                <img src={logoIcon} alt="MothershipX" className="w-full h-full object-contain dark:invert-0 invert" />
-              </div>
-            </motion.div>
-          </motion.div>
-
-          {/* Terminal */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-          >
-            <TerminalTyping />
-          </motion.div>
-
-          {/* Scroll hint */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 2 }}
-            className="flex justify-center mt-12"
-          >
-            <motion.div
-              animate={{ y: [0, 8, 0] }}
-              transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-              className="w-6 h-10 rounded-full border-2 border-muted-foreground/30 flex items-start justify-center p-2"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6 }}
+              className="flex justify-center mb-8"
             >
               <motion.div
-                animate={{ y: [0, 12, 0] }}
-                transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-                className="w-1 h-2 rounded-full bg-muted-foreground/50"
-              />
+                animate={{
+                  x: [0, -1, 1, -1, 0],
+                  y: [0, 1, -1, 0, 1],
+                }}
+                transition={{
+                  duration: 0.15,
+                  repeat: Infinity,
+                  ease: "linear",
+                }}
+              >
+                <div className="w-14 h-14 md:w-16 md:h-16 relative">
+                  <img src={logoIcon} alt="MothershipX" className="w-full h-full object-contain dark:invert-0 invert" />
+                </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        </div>
-      </section>
 
-      {/* PAGE 2: Main Headline */}
-      <section className="h-screen snap-start flex flex-col items-center justify-center px-6 relative overflow-hidden">
-        {/* Gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-muted/20" />
+            {/* Terminal */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.8 }}
+            >
+              <TerminalTyping />
+            </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="relative z-10 text-center max-w-5xl mx-auto"
-        >
-          <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-normal tracking-tight text-foreground leading-[1.1]">
-            Know what to build.
-            <br />
-            <span className="text-muted-foreground">Compete to ship it.</span>
-            <br />
-            Earn rewards from
-            <br />
-            <em className="font-accent">real outcomes.</em>
-          </h1>
-        </motion.div>
-      </section>
+            {/* Scroll hint */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 2 }}
+              className="flex justify-center mt-12"
+            >
+              <motion.div
+                animate={{ y: [0, 8, 0] }}
+                transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                className="w-6 h-10 rounded-full border-2 border-muted-foreground/30 flex items-start justify-center p-2"
+              >
+                <motion.div
+                  animate={{ y: [0, 12, 0] }}
+                  transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                  className="w-1 h-2 rounded-full bg-muted-foreground/50"
+                />
+              </motion.div>
+            </motion.div>
+          </div>
+        </section>
 
-      {/* PAGE 3: Meet Mothership */}
-      <MeetMothershipSection />
+        {/* PAGE 2: Main Headline */}
+        <section className="h-screen snap-start flex flex-col items-center justify-center px-6 relative overflow-hidden">
+          {/* Gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-muted/20" />
 
-      {/* PAGE 4: Data Scraping Visualization */}
-      <DataScrapingSection />
-
-      {/* PAGE 5: Tagline + Screenshots */}
-      <section className="min-h-screen snap-start py-12 md:py-20 px-4 md:px-6 relative overflow-hidden flex flex-col justify-center">
-        {/* Background glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
-
-        <div className="relative z-10 max-w-6xl mx-auto w-full">
-          {/* Tagline - matching MeetMothershipSection style */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="text-center max-w-3xl mx-auto mb-10 md:mb-16"
+            className="relative z-10 text-center max-w-5xl mx-auto"
           >
-            {/* Hacker-style intro */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-              className="font-mono text-xs sm:text-sm mb-6"
-            >
-              <motion.span
-                className="text-primary/80 tracking-widest"
-                animate={{ opacity: [0.6, 1, 0.6] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                {'>'} 
-              </motion.span>
-              <motion.span
-                className="text-muted-foreground/70 ml-1"
-                animate={{
-                  textShadow: [
-                    "0 0 0px transparent",
-                    "0 0 8px hsl(var(--primary) / 0.3)",
-                    "0 0 0px transparent",
-                  ],
-                }}
-                transition={{ duration: 3, repeat: Infinity }}
-              >
-                the_future_of_building
-              </motion.span>
-            </motion.div>
-
-            {/* Main headline */}
-            <motion.h2
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-center mb-4"
-            >
-              <span className="text-muted-foreground">Build useful apps, websites and digital products at the</span>
-            </motion.h2>
-
-            {/* Speed of Thought - hero emphasis like MothershipX */}
-            <motion.div
-              ref={speedOfThoughtRef}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="mb-4"
-            >
-              <motion.span
-                className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal text-foreground"
-                animate={{
-                  textShadow: [
-                    "0 0 20px hsl(var(--primary) / 0.3)",
-                    "0 0 40px hsl(var(--primary) / 0.5)",
-                    "0 0 20px hsl(var(--primary) / 0.3)",
-                  ],
-                }}
-                transition={{ duration: 3, repeat: Infinity }}
-              >
-                speed of thought
-              </motion.span>
-            </motion.div>
-
-            {/* Subtitle line - like "Think Lovable on steroids" style */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.5 }}
-              className="flex items-center justify-center gap-2 flex-wrap"
-            >
-              <span className="font-mono text-sm sm:text-base text-muted-foreground">backed by</span>
-              <motion.span
-                className="font-mono text-sm sm:text-base font-bold text-primary"
-                animate={{
-                  textShadow: [
-                    "0 0 10px hsl(var(--primary) / 0.5)",
-                    "0 0 20px hsl(var(--primary) / 0.8)",
-                    "0 0 10px hsl(var(--primary) / 0.5)",
-                  ],
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                real market demand
-              </motion.span>
-              <span className="font-mono text-sm sm:text-base text-muted-foreground/50">·</span>
-              <span className="font-mono text-sm sm:text-base text-muted-foreground">rewarded for</span>
-              <motion.span
-                className="font-mono text-sm sm:text-base font-bold text-primary"
-                animate={{
-                  textShadow: [
-                    "0 0 10px hsl(var(--primary) / 0.5)",
-                    "0 0 20px hsl(var(--primary) / 0.8)",
-                    "0 0 10px hsl(var(--primary) / 0.5)",
-                  ],
-                }}
-                transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-              >
-                real impact
-              </motion.span>
-            </motion.div>
+            <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-normal tracking-tight text-foreground leading-[1.1]">
+              Know what to build.
+              <br />
+              <span className="text-muted-foreground">Compete to ship it.</span>
+              <br />
+              Earn rewards from
+              <br />
+              <em className="font-accent">real outcomes.</em>
+            </h1>
           </motion.div>
+        </section>
 
-          {/* Screenshots - Carousel on mobile, side-by-side on desktop */}
-          <ScreenshotCarousel
-            images={[
-              { src: showcaseSignals, alt: "Live Signals Dashboard" },
-              { src: showcaseDetail, alt: "Problem Analysis" },
-              { src: showcaseArena, alt: "Builder Arena" },
-            ]}
-          />
+        {/* PAGE 3: Meet Mothership */}
+        <MeetMothershipSection />
 
-          {/* CTA Button */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.5, duration: 0.6 }}
-            className="flex flex-col items-center mt-16"
-          >
-            <Button
-              onClick={handleEnter}
-              size="lg"
-              className="group text-base px-8 py-6 rounded-full bg-foreground text-background hover:bg-foreground/90 transition-all duration-300 shadow-lg hover:shadow-xl"
+        {/* PAGE 4: Data Scraping Visualization */}
+        <DataScrapingSection />
+
+        {/* PAGE 5: Tagline + Screenshots */}
+        <section className="min-h-screen snap-start py-12 md:py-20 px-4 md:px-6 relative overflow-hidden flex flex-col justify-center">
+          {/* Background glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
+
+          <div className="relative z-10 max-w-6xl mx-auto w-full">
+            {/* Tagline - matching MeetMothershipSection style */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="text-center max-w-3xl mx-auto mb-10 md:mb-16"
             >
-              Enter MothershipX
-              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
+              {/* Hacker-style intro */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 }}
+                className="font-mono text-xs sm:text-sm mb-6"
+              >
+                <motion.span
+                  className="text-primary/80 tracking-widest"
+                  animate={{ opacity: [0.6, 1, 0.6] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  {">"}
+                </motion.span>
+                <motion.span
+                  className="text-muted-foreground/70 ml-1"
+                  animate={{
+                    textShadow: ["0 0 0px transparent", "0 0 8px hsl(var(--primary) / 0.3)", "0 0 0px transparent"],
+                  }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                >
+                  the_future_of_building
+                </motion.span>
+              </motion.div>
 
-            <p className="mt-4 text-xs text-muted-foreground/50 font-mono">Press Enter to begin</p>
-          </motion.div>
+              {/* Main headline */}
+              <motion.h2
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-center mb-4"
+              >
+                <span className="text-muted-foreground">
+                  Make money by building useful apps, websites and digital products at the
+                </span>
+              </motion.h2>
 
-          {/* Footer - embedded in this section */}
-          <div className="mt-20 pt-8 border-t border-border/30">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-              <p>© 2026 MothershipX. All rights reserved.</p>
-              <div className="flex items-center gap-6">
-                <a href="/terms" className="hover:text-foreground transition-colors">
-                  Terms
-                </a>
-                <a href="/privacy" className="hover:text-foreground transition-colors">
-                  Privacy
-                </a>
+              {/* Speed of Thought - hero emphasis like MothershipX */}
+              <motion.div
+                ref={speedOfThoughtRef}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+                className="mb-4"
+              >
+                <motion.span
+                  className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal text-foreground"
+                  animate={{
+                    textShadow: [
+                      "0 0 20px hsl(var(--primary) / 0.3)",
+                      "0 0 40px hsl(var(--primary) / 0.5)",
+                      "0 0 20px hsl(var(--primary) / 0.3)",
+                    ],
+                  }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                >
+                  speed of thought
+                </motion.span>
+              </motion.div>
+
+              {/* Subtitle line - like "Think Lovable on steroids" style */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.5 }}
+                className="flex items-center justify-center gap-2 flex-wrap"
+              >
+                <span className="font-mono text-sm sm:text-base text-muted-foreground">backed by</span>
+                <motion.span
+                  className="font-mono text-sm sm:text-base font-bold text-primary"
+                  animate={{
+                    textShadow: [
+                      "0 0 10px hsl(var(--primary) / 0.5)",
+                      "0 0 20px hsl(var(--primary) / 0.8)",
+                      "0 0 10px hsl(var(--primary) / 0.5)",
+                    ],
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  real market demand
+                </motion.span>
+                <span className="font-mono text-sm sm:text-base text-muted-foreground/50">·</span>
+                <span className="font-mono text-sm sm:text-base text-muted-foreground">rewarded for</span>
+                <motion.span
+                  className="font-mono text-sm sm:text-base font-bold text-primary"
+                  animate={{
+                    textShadow: [
+                      "0 0 10px hsl(var(--primary) / 0.5)",
+                      "0 0 20px hsl(var(--primary) / 0.8)",
+                      "0 0 10px hsl(var(--primary) / 0.5)",
+                    ],
+                  }}
+                  transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+                >
+                  real impact
+                </motion.span>
+              </motion.div>
+            </motion.div>
+
+            {/* Screenshots - Carousel on mobile, side-by-side on desktop */}
+            <ScreenshotCarousel
+              images={[
+                { src: showcaseSignals, alt: "Live Signals Dashboard" },
+                { src: showcaseDetail, alt: "Problem Analysis" },
+                { src: showcaseArena, alt: "Builder Arena" },
+              ]}
+            />
+
+            {/* CTA Button */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5, duration: 0.6 }}
+              className="flex flex-col items-center mt-16"
+            >
+              <Button
+                onClick={handleEnter}
+                size="lg"
+                className="group text-base px-8 py-6 rounded-full bg-foreground text-background hover:bg-foreground/90 transition-all duration-300 shadow-lg hover:shadow-xl"
+              >
+                Enter MothershipX
+                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+
+              <p className="mt-4 text-xs text-muted-foreground/50 font-mono">Press Enter to begin</p>
+            </motion.div>
+
+            {/* Footer - embedded in this section */}
+            <div className="mt-20 pt-8 border-t border-border/30">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+                <p>© 2026 MothershipX. All rights reserved.</p>
+                <div className="flex items-center gap-6">
+                  <a href="/terms" className="hover:text-foreground transition-colors">
+                    Terms
+                  </a>
+                  <a href="/privacy" className="hover:text-foreground transition-colors">
+                    Privacy
+                  </a>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
-    </div>
+        </section>
+      </div>
     </>
   );
 }
@@ -375,7 +371,7 @@ export function LandingHero() {
 // Screenshot carousel for mobile with rotation effect
 function ScreenshotCarousel({ images }: { images: { src: string; alt: string }[] }) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
 
   // Auto-rotate on mobile
   useEffect(() => {
@@ -411,8 +407,9 @@ function ScreenshotCarousel({ images }: { images: { src: string; alt: string }[]
         {images.map((img, i) => {
           const offset = i - activeIndex;
           const normalizedOffset = ((offset % images.length) + images.length) % images.length;
-          const adjustedOffset = normalizedOffset > images.length / 2 ? normalizedOffset - images.length : normalizedOffset;
-          
+          const adjustedOffset =
+            normalizedOffset > images.length / 2 ? normalizedOffset - images.length : normalizedOffset;
+
           return (
             <motion.div
               key={img.alt}
@@ -434,7 +431,7 @@ function ScreenshotCarousel({ images }: { images: { src: string; alt: string }[]
                 className="absolute inset-0 rounded-xl bg-primary/30 blur-2xl"
                 animate={{ opacity: adjustedOffset === 0 ? 0.6 : 0.2 }}
               />
-              
+
               <div className="relative rounded-xl overflow-hidden shadow-2xl border border-primary/20">
                 <img src={img.src} alt={img.alt} className="block w-full h-auto" />
                 <div className="absolute inset-0 bg-gradient-to-t from-background/30 via-transparent to-transparent pointer-events-none" />
@@ -488,11 +485,7 @@ function ScreenshotCard({
         transition={{ duration: 0.8, delay, ease: "easeOut" }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`relative shrink-0 group cursor-pointer ${
-          isCenter
-            ? "w-80 lg:w-96 z-10"
-            : "w-64 lg:w-72"
-        }`}
+        className={`relative shrink-0 group cursor-pointer ${isCenter ? "w-80 lg:w-96 z-10" : "w-64 lg:w-72"}`}
       >
         {/* Glow effect behind the image */}
         <div
@@ -532,12 +525,12 @@ function ScreenshotCard({
             >
               {/* Glow */}
               <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-2xl" />
-              
+
               {/* Image */}
               <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-primary/30">
                 <img src={image} alt={alt} className="block w-full h-auto" />
               </div>
-              
+
               {/* Caption */}
               <motion.p
                 initial={{ opacity: 0, y: 10 }}
