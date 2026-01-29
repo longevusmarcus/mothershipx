@@ -175,7 +175,7 @@ export function MarketProblemCard({ problem, delay = 0, isPinned = false, onTogg
         
         {/* Reddit text post thumbnails - shown for cards with upvotes/comments */}
         {sourceType === "reddit" && (
-          <div className="flex gap-1.5 mt-2">
+          <div className="flex gap-1.5 mt-2 overflow-hidden">
             {[{ lines: 3, hasAward: true }, { lines: 2, hasAward: false }].map((post, index) => (
               <div
                 key={`reddit-post-${index}`}
