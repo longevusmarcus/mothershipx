@@ -14,7 +14,7 @@ export interface SubscriptionStatus {
 // Lifetime access pricing (kept for reference, but edge function controls the actual price)
 export const SUBSCRIPTION_PRICE_ID = "price_1Su9HS2LCwPxHz0nJtdFrBXd";
 export const SUBSCRIPTION_PRODUCT_ID = "prod_TpcrDIRieLAbv5";
-export const SUBSCRIPTION_PRICE = 29.9;
+export const SUBSCRIPTION_PRICE = 29;
 export const SUBSCRIPTION_IS_LIFETIME = true;
 
 interface SubscriptionContextType extends SubscriptionStatus {
