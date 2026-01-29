@@ -8,7 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { useDeleteProblem } from "@/hooks/useDeleteProblem";
 import { EvidenceThumbnails } from "@/components/EvidenceThumbnails";
-import type { MarketProblem } from "@/data/marketIntelligence";
+import { getDbProblemId, type MarketProblem } from "@/data/marketIntelligence";
 
 interface MarketProblemCardProps {
   problem: MarketProblem;
@@ -171,7 +171,7 @@ export function MarketProblemCard({ problem, delay = 0, isPinned = false, onTogg
         )}
 
         {/* Evidence Video Thumbnails - moved above metrics */}
-        <EvidenceThumbnails problemId={problem.id} maxThumbnails={4} />
+        <EvidenceThumbnails problemId={getDbProblemId(problem.dbId || problem.id)} maxThumbnails={4} />
 
         {/* Stats Row - source-specific */}
         <div className="flex items-center gap-4 text-xs text-muted-foreground mt-3">
