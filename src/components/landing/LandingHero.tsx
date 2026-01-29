@@ -250,7 +250,7 @@ export function LandingHero() {
                 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-center mb-4"
               >
                 <span className="text-muted-foreground">
-                  Make money by building useful apps, websites and digital products at the
+                  Make money by building useful apps·websites·digital goods at the
                 </span>
               </motion.h2>
 

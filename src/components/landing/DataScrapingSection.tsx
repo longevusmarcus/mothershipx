@@ -409,7 +409,7 @@ function MobileCarouselContent({ activeSection }: { activeSection: number }) {
               animate={{ opacity: [0.8, 1, 0.8] }}
               transition={{ duration: 1.5, repeat: Infinity }}
             >
-              1,247
+              247
             </motion.p>
           </motion.div>
 
@@ -911,7 +911,7 @@ function DesktopDataScrapingLayout() {
                   animate={{ opacity: [0.8, 1, 0.8] }}
                   transition={{ duration: 1.5, repeat: Infinity }}
                 >
-                  1,247
+                  247
                 </motion.p>
               </motion.div>
 
