@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataScrapingSection } from "./DataScrapingSection";
+import { MeetMothershipSection } from "./MeetMothershipSection";
+import { FloatingMascot } from "./FloatingMascot";
 import logoIcon from "@/assets/logo-icon.png";
 import showcaseSignals from "@/assets/showcase-signals.png";
 import showcaseDetail from "@/assets/showcase-detail.png";
@@ -89,6 +91,8 @@ export function LandingHero() {
 
   return (
     <div ref={containerRef} className="bg-background h-screen overflow-y-auto snap-y snap-mandatory">
+      {/* Floating Mascot that follows scroll */}
+      <FloatingMascot containerRef={containerRef as React.RefObject<HTMLDivElement>} />
       {/* PAGE 1: Terminal Only */}
       <section className="h-screen snap-start flex flex-col items-center justify-center px-6 relative overflow-hidden">
         {/* Subtle dot grid */}
@@ -180,10 +184,13 @@ export function LandingHero() {
         </motion.div>
       </section>
 
-      {/* PAGE 3: Data Scraping Visualization */}
+      {/* PAGE 3: Meet Mothership */}
+      <MeetMothershipSection />
+
+      {/* PAGE 4: Data Scraping Visualization */}
       <DataScrapingSection />
 
-      {/* PAGE 3: Tagline + Screenshots */}
+      {/* PAGE 5: Tagline + Screenshots */}
       <section className="min-h-screen snap-start py-20 px-6 relative overflow-hidden flex flex-col justify-center">
         {/* Background glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
