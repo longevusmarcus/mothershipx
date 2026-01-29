@@ -1,11 +1,12 @@
 import { useRef, useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataScrapingSection } from "./DataScrapingSection";
 import { MeetMothershipSection } from "./MeetMothershipSection";
 import { FloatingMascot } from "./FloatingMascot";
+import { ActivationAnimation } from "./ActivationAnimation";
 import logoIcon from "@/assets/logo-icon.png";
 import showcaseSignals from "@/assets/showcase-signals.png";
 import showcaseDetail from "@/assets/showcase-detail.png";
@@ -72,8 +73,13 @@ function TerminalTyping() {
 export function LandingHero() {
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showActivation, setShowActivation] = useState(false);
 
   const handleEnter = () => {
+    setShowActivation(true);
+  };
+
+  const handleActivationComplete = () => {
     localStorage.setItem("mothershipx-visited", "true");
     navigate("/problems");
   };
@@ -90,10 +96,18 @@ export function LandingHero() {
   }, []);
 
   return (
-    <div ref={containerRef} className="bg-background h-screen overflow-y-auto snap-y snap-mandatory">
-      {/* Floating Mascot that follows scroll */}
-      <FloatingMascot containerRef={containerRef as React.RefObject<HTMLDivElement>} />
-      {/* PAGE 1: Terminal Only */}
+    <>
+      {/* Activation Animation Overlay */}
+      <AnimatePresence>
+        {showActivation && (
+          <ActivationAnimation onComplete={handleActivationComplete} />
+        )}
+      </AnimatePresence>
+
+      <div ref={containerRef} className="bg-background h-screen overflow-y-auto snap-y snap-mandatory">
+        {/* Floating Mascot that follows scroll */}
+        <FloatingMascot containerRef={containerRef as React.RefObject<HTMLDivElement>} />
+        {/* PAGE 1: Terminal Only */}
       <section className="h-screen snap-start flex flex-col items-center justify-center px-6 relative overflow-hidden">
         {/* Subtle dot grid */}
         <div
@@ -343,6 +357,7 @@ export function LandingHero() {
         </div>
       </section>
     </div>
+    </>
   );
 }
 
