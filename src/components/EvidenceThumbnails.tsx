@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Play } from "lucide-react";
 import { useProblemEvidence } from "@/hooks/useProblemEvidence";
 
@@ -9,25 +9,21 @@ interface EvidenceThumbnailsProps {
 
 export function EvidenceThumbnails({ problemId, maxThumbnails = 4 }: EvidenceThumbnailsProps) {
   const { data, isLoading } = useProblemEvidence(problemId);
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
   const thumbnails = useMemo(() => {
     if (!data?.videos) return [];
     return data.videos
-      .filter((v) => v.video_thumbnail)
+      .filter((v) => v.video_thumbnail && !failedImages.has(v.id))
       .slice(0, maxThumbnails);
-  }, [data?.videos, maxThumbnails]);
+  }, [data?.videos, maxThumbnails, failedImages]);
+
+  const handleImageError = (videoId: string) => {
+    setFailedImages((prev) => new Set(prev).add(videoId));
+  };
 
   if (isLoading) {
-    return (
-      <div className="flex gap-1.5 mt-3">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div
-            key={i}
-            className="w-10 h-14 rounded bg-muted animate-pulse"
-          />
-        ))}
-      </div>
-    );
+    return null; // Don't show loading state to keep cards clean
   }
 
   if (thumbnails.length === 0) {
@@ -46,6 +42,7 @@ export function EvidenceThumbnails({ problemId, maxThumbnails = 4 }: EvidenceThu
             alt=""
             className="w-full h-full object-cover"
             loading="lazy"
+            onError={() => handleImageError(video.id)}
           />
           {/* Play overlay */}
           <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -54,10 +51,10 @@ export function EvidenceThumbnails({ problemId, maxThumbnails = 4 }: EvidenceThu
         </div>
       ))}
       {/* Show count if more videos exist */}
-      {data?.videos && data.videos.length > maxThumbnails && (
+      {data?.videos && data.videos.filter(v => v.video_thumbnail && !failedImages.has(v.id)).length > maxThumbnails && (
         <div className="w-10 h-14 flex-shrink-0 rounded bg-muted/50 flex items-center justify-center">
           <span className="text-[10px] text-muted-foreground font-medium">
-            +{data.videos.length - maxThumbnails}
+            +{data.videos.filter(v => v.video_thumbnail && !failedImages.has(v.id)).length - maxThumbnails}
           </span>
         </div>
       )}
