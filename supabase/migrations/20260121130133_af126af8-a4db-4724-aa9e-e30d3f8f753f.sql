@@ -1,5 +1,12 @@
 -- Update cron job to run daily at 3 AM UTC instead of every 3 days
-SELECT cron.unschedule('refresh-problem-data-every-3-days');
+-- Only unschedule if the job exists (safe for local dev)
+DO $$
+BEGIN
+  PERFORM cron.unschedule('refresh-problem-data-every-3-days');
+EXCEPTION WHEN OTHERS THEN
+  -- Job doesn't exist, ignore
+  NULL;
+END $$;
 
 SELECT cron.schedule(
   'refresh-problem-data-daily',
