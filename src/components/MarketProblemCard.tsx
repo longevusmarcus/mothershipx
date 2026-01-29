@@ -172,6 +172,41 @@ export function MarketProblemCard({ problem, delay = 0, isPinned = false, onTogg
 
         {/* Evidence Video Thumbnails - moved above metrics */}
         <EvidenceThumbnails problemId={getDbProblemId(problem.dbId || problem.id)} maxThumbnails={4} sourceType={sourceType} />
+        
+        {/* Reddit text post thumbnails - shown for cards with upvotes/comments */}
+        {sourceType === "reddit" && (
+          <div className="flex gap-1.5 mt-2">
+            {[{ lines: 3, hasAward: true }, { lines: 2, hasAward: false }].map((post, index) => (
+              <div
+                key={`reddit-post-${index}`}
+                className="relative w-12 h-14 flex-shrink-0 rounded overflow-hidden bg-[#1a1a1b] border border-[#343536] p-1.5"
+              >
+                {/* Reddit post header */}
+                <div className="flex items-center gap-0.5 mb-1">
+                  <div className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+                  <div className="h-1 w-4 bg-[#818384] rounded-sm" />
+                </div>
+                {/* Text lines */}
+                <div className="space-y-0.5">
+                  {Array.from({ length: post.lines }).map((_, i) => (
+                    <div 
+                      key={i} 
+                      className="h-1 bg-[#d7dadc]/60 rounded-sm" 
+                      style={{ width: `${85 - i * 15}%` }}
+                    />
+                  ))}
+                </div>
+                {/* Bottom bar with comment icon */}
+                <div className="absolute bottom-1 left-1.5 flex items-center gap-1">
+                  <MessageSquare className="h-2 w-2 text-[#818384]" />
+                  {post.hasAward && (
+                    <div className="w-2 h-2 rounded-full bg-yellow-500/80" />
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Stats Row - source-specific */}
         <div className="flex items-center gap-4 text-xs text-muted-foreground mt-3">
