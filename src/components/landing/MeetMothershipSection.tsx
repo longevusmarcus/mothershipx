@@ -62,7 +62,7 @@ function TerminalIntro() {
         transition={{ duration: 1, repeat: Infinity }}
         className="text-primary"
       >
-        {'>'}
+        {">"}
       </motion.span>{" "}
       <span className="text-foreground/70">initializing</span>{" "}
       <motion.span
@@ -177,7 +177,7 @@ export function MeetMothershipSection() {
             transition={{ delay: 0.6 }}
             className="text-sm sm:text-base text-muted-foreground text-center max-w-md mb-10 px-4 leading-relaxed"
           >
-            We show what to build, let hundreds of builders ship it in 1 click, and reward the best results.
+            We show what to build, let hundreds of builders ship all at once in one click, and reward the best results.
           </motion.p>
 
           {/* Mascot with floating animation */}
