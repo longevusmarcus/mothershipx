@@ -303,19 +303,19 @@ export function LandingHero() {
               Press Enter to begin →
             </p>
           </motion.div>
-        </div>
-      </section>
 
-      {/* Footer */}
-      <footer className="py-8 px-6 border-t border-border snap-start">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-          <p>© 2026 MothershipX. All rights reserved.</p>
-          <div className="flex items-center gap-6">
-            <a href="/terms" className="hover:text-foreground transition-colors">Terms</a>
-            <a href="/privacy" className="hover:text-foreground transition-colors">Privacy</a>
+          {/* Footer - embedded in this section */}
+          <div className="mt-20 pt-8 border-t border-border/30">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+              <p>© 2026 MothershipX. All rights reserved.</p>
+              <div className="flex items-center gap-6">
+                <a href="/terms" className="hover:text-foreground transition-colors">Terms</a>
+                <a href="/privacy" className="hover:text-foreground transition-colors">Privacy</a>
+              </div>
+            </div>
           </div>
         </div>
-      </footer>
+      </section>
     </div>
   );
 }
