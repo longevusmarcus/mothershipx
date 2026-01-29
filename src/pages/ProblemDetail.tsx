@@ -484,22 +484,9 @@ const ProblemDetail = () => {
             <Button 
               variant="outline" 
               size="sm"
-              onClick={handleSave}
+              onClick={handleShare}
             >
-              <Bookmark className={`h-4 w-4 ${isSaved ? "fill-current" : ""}`} />
-            </Button>
-            <Button variant="outline" size="sm" onClick={handleShare}>
               <Share2 className="h-4 w-4" />
-            </Button>
-            
-            {/* SuperLovable Auto-Build Button */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setAutoBuildOpen(true)}
-              className="ml-auto"
-            >
-              <img src={superloveLogo} alt="SuperLovable" className="h-4 w-4 scale-[1.35]" />
             </Button>
           </div>
           
