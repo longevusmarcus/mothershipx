@@ -352,16 +352,17 @@ function MobileCarouselContent({ activeSection }: { activeSection: number }) {
           </motion.p>
           
           {/* Refined orbit display */}
-          <div className="relative flex items-center justify-center" style={{ width: 260, height: 260 }}>
-            {/* Orbit track */}
+          <div className="relative flex items-center justify-center" style={{ width: 280, height: 280 }}>
+            {/* Orbit track - centered with platform nodes */}
             <motion.div
-              className="absolute rounded-full border border-border/20"
+              className="absolute rounded-full border border-border/30"
               style={{
                 left: '50%',
                 top: '50%',
-                width: 200,
-                height: 200,
-                transform: 'translate(-50%, -50%)',
+                width: 220,
+                height: 220,
+                marginLeft: -110,
+                marginTop: -110,
               }}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -376,7 +377,7 @@ function MobileCarouselContent({ activeSection }: { activeSection: number }) {
             {/* Platform nodes */}
             {platforms.map((platform, i) => {
               const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
-              const radius = 100;
+              const radius = 110;
               return <PlatformNode key={platform.id} platform={platform} angle={angle} radius={radius} />;
             })}
             
@@ -385,8 +386,8 @@ function MobileCarouselContent({ activeSection }: { activeSection: number }) {
               <DataParticle
                 key={i}
                 delay={i * 0.4}
-                startX={(Math.random() - 0.5) * 200}
-                startY={(Math.random() - 0.5) * 200}
+                startX={(Math.random() - 0.5) * 220}
+                startY={(Math.random() - 0.5) * 220}
               />
             ))}
           </div>
@@ -671,16 +672,17 @@ function MobileDataScrapingLayout() {
                     </motion.p>
                     
                     {/* Refined mobile orbit */}
-                    <div className="relative flex items-center justify-center" style={{ width: 260, height: 260 }}>
-                      {/* Orbit track */}
+                    <div className="relative flex items-center justify-center" style={{ width: 280, height: 280 }}>
+                      {/* Orbit track - centered with platform nodes */}
                       <motion.div
-                        className="absolute rounded-full border border-border/20"
+                        className="absolute rounded-full border border-border/30"
                         style={{
                           left: '50%',
                           top: '50%',
-                          width: 200,
-                          height: 200,
-                          transform: 'translate(-50%, -50%)',
+                          width: 220,
+                          height: 220,
+                          marginLeft: -110,
+                          marginTop: -110,
                         }}
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -695,7 +697,7 @@ function MobileDataScrapingLayout() {
                       {/* Platform nodes */}
                       {platforms.map((platform, i) => {
                         const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
-                        const radius = 100;
+                        const radius = 110;
                         return <PlatformNode key={platform.id} platform={platform} angle={angle} radius={radius} />;
                       })}
                       
@@ -704,8 +706,8 @@ function MobileDataScrapingLayout() {
                         <DataParticle
                           key={i}
                           delay={i * 0.4}
-                          startX={(Math.random() - 0.5) * 200}
-                          startY={(Math.random() - 0.5) * 200}
+                          startX={(Math.random() - 0.5) * 220}
+                          startY={(Math.random() - 0.5) * 220}
                         />
                       ))}
                     </div>
@@ -842,16 +844,17 @@ function DesktopDataScrapingLayout() {
               transition={{ duration: 0.8 }}
             >
               {/* Central orbit container */}
-              <div className="relative" style={{ width: 300, height: 300 }}>
-                {/* Orbit track - elegant circle */}
+              <div className="relative" style={{ width: 320, height: 320 }}>
+                {/* Orbit track - positioned exactly where platform nodes orbit */}
                 <motion.div
-                  className="absolute rounded-full border border-border/20"
+                  className="absolute rounded-full border border-border/30"
                   style={{
                     left: '50%',
                     top: '50%',
-                    width: 240,
-                    height: 240,
-                    transform: 'translate(-50%, -50%)',
+                    width: 260,
+                    height: 260,
+                    marginLeft: -130,
+                    marginTop: -130,
                   }}
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -866,7 +869,7 @@ function DesktopDataScrapingLayout() {
                 {/* Platform nodes orbiting around center */}
                 {platforms.map((platform, i) => {
                   const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
-                  const radius = 120;
+                  const radius = 130;
                   return <PlatformNode key={platform.id} platform={platform} angle={angle} radius={radius} />;
                 })}
                 
@@ -875,8 +878,8 @@ function DesktopDataScrapingLayout() {
                   <DataParticle
                     key={i}
                     delay={i * 0.4}
-                    startX={(Math.random() - 0.5) * 240}
-                    startY={(Math.random() - 0.5) * 240}
+                    startX={(Math.random() - 0.5) * 260}
+                    startY={(Math.random() - 0.5) * 260}
                   />
                 ))}
               </div>
