@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import mothershipMascot from "@/assets/mothership-mascot.png";
+import lovableLogo from "@/assets/lovable-logo.png";
 
 // Floating particles around the mascot
 function FloatingParticle({ delay, x, y }: { delay: number; x: number; y: number }) {
@@ -144,14 +145,43 @@ export function MeetMothershipSection() {
             </motion.span>
           </motion.h2>
 
-          {/* Subtitle */}
-          <motion.p
+          {/* Subtitle - Think Lovable on steroids */}
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="font-mono text-xs sm:text-sm text-muted-foreground text-center max-w-md mb-12"
+            className="flex items-center justify-center gap-2 mb-4"
           >
-            Your AI co-pilot for discovering validated startup ideas
+            <span className="font-mono text-sm sm:text-base text-muted-foreground">Think</span>
+            <img 
+              src={lovableLogo} 
+              alt="Lovable" 
+              className="h-5 sm:h-6 object-contain dark:invert-0 invert" 
+            />
+            <span className="font-mono text-sm sm:text-base text-muted-foreground">on</span>
+            <motion.span 
+              className="font-mono text-sm sm:text-base font-bold text-primary"
+              animate={{
+                textShadow: [
+                  "0 0 10px hsl(var(--primary) / 0.5)",
+                  "0 0 20px hsl(var(--primary) / 0.8)",
+                  "0 0 10px hsl(var(--primary) / 0.5)",
+                ],
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              steroids
+            </motion.span>
+          </motion.div>
+
+          {/* Description */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            className="text-sm sm:text-base text-muted-foreground text-center max-w-md mb-10 px-4 leading-relaxed"
+          >
+            MothershipX shows what to build, lets hundreds of builders ship it in one click, and rewards the best outcomes.
           </motion.p>
 
           {/* Mascot with floating animation */}
@@ -232,25 +262,6 @@ export function MeetMothershipSection() {
             </motion.div>
           </motion.div>
 
-          {/* Feature highlights */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
-            className="mt-12 flex flex-wrap justify-center gap-3"
-          >
-            {["Real-time signals", "AI-powered analysis", "Community builds"].map((feature, i) => (
-              <motion.div
-                key={feature}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1 + i * 0.1 }}
-                className="px-4 py-2 rounded-full bg-card/80 border border-border/50 backdrop-blur-sm"
-              >
-                <span className="font-mono text-xs text-muted-foreground">{feature}</span>
-              </motion.div>
-            ))}
-          </motion.div>
 
           {/* Scroll indicator */}
           <motion.div
