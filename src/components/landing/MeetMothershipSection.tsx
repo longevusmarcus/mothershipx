@@ -141,7 +141,7 @@ export function MeetMothershipSection() {
               }}
               transition={{ duration: 3, repeat: Infinity }}
             >
-              Mothership
+              MothershipX
             </motion.span>
           </motion.h2>
 
@@ -181,7 +181,7 @@ export function MeetMothershipSection() {
             transition={{ delay: 0.6 }}
             className="text-sm sm:text-base text-muted-foreground text-center max-w-md mb-10 px-4 leading-relaxed"
           >
-            MothershipX shows what to build, lets hundreds of builders ship it in one click, and rewards the best outcomes.
+            We show what to build, lets hundreds of builders ship it in 1 click, and rewards the best results.
           </motion.p>
 
           {/* Mascot with floating animation */}
