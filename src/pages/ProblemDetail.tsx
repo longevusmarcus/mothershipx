@@ -47,6 +47,7 @@ import { useProblem } from "@/hooks/useProblems";
 import { useProblemBuilders } from "@/hooks/useProblemBuilders";
 import { useRefreshProblem } from "@/hooks/useRefreshProblem";
 import { useCompetitors } from "@/hooks/useCompetitors";
+import { useSolutions } from "@/hooks/useSolutions";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { cn } from "@/lib/utils";
@@ -139,6 +140,7 @@ const ProblemDetail = () => {
   const dbProblemId = problem?.dbId || id || "";
   const { isJoined, joinProblem, leaveProblem } = useProblemBuilders(dbProblemId);
   const { refresh, isRefreshing } = useRefreshProblem(dbProblemId);
+  const { solutions } = useSolutions(dbProblemId);
 
   // Track when user just joined (transition from not joined to joined)
   useEffect(() => {
@@ -989,6 +991,12 @@ const ProblemDetail = () => {
           name: c.name,
           description: c.description,
           ratingLabel: c.ratingLabel,
+        }))}
+        solutions={solutions?.map(s => ({
+          title: s.title,
+          description: s.description,
+          approach: s.approach,
+          tech_stack: s.tech_stack,
         }))}
       />
 
