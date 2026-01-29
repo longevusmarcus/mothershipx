@@ -14,7 +14,7 @@ export function ArenaOnboardingOverlay({ onComplete, onStepChange }: ArenaOnboar
 
   useEffect(() => {
     const hasSeenGuide = localStorage.getItem(GUIDE_SEEN_KEY);
-    
+
     if (!hasSeenGuide) {
       // Small delay before showing
       const showTimer = setTimeout(() => {
@@ -97,12 +97,8 @@ export function ArenaOnboardingOverlay({ onComplete, onStepChange }: ArenaOnboar
               >
                 {step === 0 && (
                   <>
-                    <p className="font-mono text-sm text-muted-foreground tracking-wide">
-                      Welcome to the Arena
-                    </p>
-                    <p className="font-mono text-xs text-muted-foreground/60">
-                      Compete. Build. Win.
-                    </p>
+                    <p className="font-mono text-sm text-muted-foreground tracking-wide">Welcome to the Arena</p>
+                    <p className="font-mono text-xs text-muted-foreground/60">Compete. Build. Win.</p>
                   </>
                 )}
                 {step === 1 && (
@@ -110,29 +106,19 @@ export function ArenaOnboardingOverlay({ onComplete, onStepChange }: ArenaOnboar
                     <p className="font-mono text-sm text-muted-foreground tracking-wide">
                       $5 entry → $1,000 prize pool
                     </p>
-                    <p className="font-mono text-xs text-muted-foreground/60">
-                      Winner takes 90%
-                    </p>
+                    <p className="font-mono text-xs text-muted-foreground/60">Winner takes 90%</p>
                   </>
                 )}
                 {step === 2 && (
                   <>
-                    <p className="font-mono text-sm text-muted-foreground tracking-wide">
-                      This is a challenge
-                    </p>
-                    <p className="font-mono text-xs text-muted-foreground/60">
-                      Review the brief, then join
-                    </p>
+                    <p className="font-mono text-sm text-muted-foreground tracking-wide">This is a challenge</p>
+                    <p className="font-mono text-xs text-muted-foreground/60">Review the brief, then join</p>
                   </>
                 )}
                 {step === 3 && (
                   <>
-                    <p className="font-mono text-sm text-muted-foreground tracking-wide">
-                      Click Join to enter
-                    </p>
-                    <p className="font-mono text-xs text-muted-foreground/60">
-                      $5 to compete for $900
-                    </p>
+                    <p className="font-mono text-sm text-muted-foreground tracking-wide">Click Join to enter</p>
+                    <p className="font-mono text-xs text-muted-foreground/60">$5 to compete for $1000</p>
                   </>
                 )}
               </motion.div>
