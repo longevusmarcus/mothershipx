@@ -38,63 +38,89 @@ function DataParticle({ delay, startX, startY }: { delay: number; startX: number
   );
 }
 
-// Platform node with pulsing effect
-function PlatformNode({ platform, angle, radius }: { platform: typeof platforms[0]; angle: number; radius: number }) {
+// Platform node with refined, elegant design
+function PlatformNode({ platform, angle, radius, index }: { platform: typeof platforms[0]; angle: number; radius: number; index: number }) {
   const x = Math.cos(angle) * radius;
   const y = Math.sin(angle) * radius;
 
   return (
     <motion.div
-      className="absolute flex flex-col items-center"
+      className="absolute flex flex-col items-center -translate-x-1/2 -translate-y-1/2"
       style={{ left: `calc(50% + ${x}px)`, top: `calc(50% + ${y}px)` }}
-      initial={{ opacity: 0, scale: 0 }}
+      initial={{ opacity: 0, scale: 0.5 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: platform.delay, duration: 0.5, ease: "backOut" }}
+      transition={{ delay: platform.delay * 0.8, duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
     >
-      {/* Connection line to center */}
-      <motion.div
-        className="absolute h-px bg-gradient-to-r from-primary/50 to-transparent origin-left"
+      {/* Elegant connection line - curved arc effect */}
+      <svg
+        className="absolute pointer-events-none"
         style={{
-          width: radius,
-          left: x > 0 ? -radius : 0,
-          transform: `rotate(${x > 0 ? 180 + (angle * 180) / Math.PI : (angle * 180) / Math.PI}deg)`,
-        }}
-        initial={{ scaleX: 0 }}
-        animate={{ scaleX: 1 }}
-        transition={{ delay: platform.delay + 0.3, duration: 0.8 }}
-      />
-
-      {/* Platform icon */}
-      <motion.div
-        className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-card border border-border/50 flex items-center justify-center font-mono text-xs sm:text-sm font-bold text-foreground shadow-lg backdrop-blur-sm"
-        whileHover={{ scale: 1.1, borderColor: "hsl(var(--primary))" }}
-        animate={{
-          boxShadow: [
-            "0 0 0 0 hsl(var(--primary) / 0)",
-            "0 0 20px 2px hsl(var(--primary) / 0.3)",
-            "0 0 0 0 hsl(var(--primary) / 0)",
-          ],
-        }}
-        transition={{
-          boxShadow: { duration: 2, repeat: Infinity, delay: platform.delay },
+          width: radius * 2,
+          height: radius * 2,
+          left: -radius,
+          top: -radius,
         }}
       >
-        {platform.icon}
-
-        {/* Data flow indicator */}
-        <motion.div
-          className="absolute -right-1 -top-1 w-2 h-2 rounded-full bg-primary"
-          animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
-          transition={{ duration: 1, repeat: Infinity, delay: platform.delay * 0.5 }}
+        <motion.line
+          x1={radius}
+          y1={radius}
+          x2={radius - x}
+          y2={radius - y}
+          stroke="url(#lineGradient)"
+          strokeWidth="1"
+          strokeLinecap="round"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 0.4 }}
+          transition={{ delay: platform.delay + 0.2, duration: 1, ease: "easeOut" }}
         />
+        <defs>
+          <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.6" />
+            <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+      </svg>
+
+      {/* Platform icon - refined glass morphism */}
+      <motion.div
+        className="relative group"
+        whileHover={{ scale: 1.08 }}
+        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+      >
+        {/* Subtle outer glow on hover */}
+        <motion.div
+          className="absolute -inset-1 rounded-2xl bg-primary/20 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        />
+        
+        <div className="relative w-11 h-11 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-card/90 to-card/50 border border-border/30 flex items-center justify-center backdrop-blur-xl shadow-lg overflow-hidden">
+          {/* Inner gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent" />
+          
+          {/* Icon */}
+          <span className="relative font-mono text-sm sm:text-base font-medium text-foreground/80 group-hover:text-foreground transition-colors duration-300">
+            {platform.icon}
+          </span>
+
+          {/* Subtle data pulse - only on specific nodes */}
+          {index % 3 === 0 && (
+            <motion.div
+              className="absolute -right-0.5 -top-0.5 w-1.5 h-1.5 rounded-full bg-primary/80"
+              animate={{ 
+                scale: [1, 1.3, 1],
+                opacity: [0.8, 0.4, 0.8] 
+              }}
+              transition={{ duration: 2, repeat: Infinity, delay: index * 0.3 }}
+            />
+          )}
+        </div>
       </motion.div>
 
-      {/* Platform name */}
+      {/* Platform name - refined typography */}
       <motion.span
-        className="mt-1 text-[9px] sm:text-xs text-muted-foreground font-mono"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: platform.delay + 0.5 }}
+        className="mt-2 text-[10px] sm:text-xs text-muted-foreground/60 font-medium tracking-wide"
+        initial={{ opacity: 0, y: 5 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: platform.delay + 0.4, duration: 0.4 }}
       >
         {platform.name}
       </motion.span>
@@ -102,47 +128,97 @@ function PlatformNode({ platform, angle, radius }: { platform: typeof platforms[
   );
 }
 
-// Central processing core with Mothership logo
+// Central processing core - refined minimal design
 function ProcessingCore({ size = "normal" }: { size?: "small" | "normal" }) {
-  const sizeClasses = size === "small" ? "w-24 h-24" : "w-32 h-32 sm:w-40 sm:h-40";
-  const logoSize = size === "small" ? "w-6 h-6" : "w-8 h-8 sm:w-10 sm:h-10";
+  const dimensions = size === "small" ? { outer: 96, inner: 48 } : { outer: 140, inner: 72 };
+  const logoSize = size === "small" ? "w-5 h-5" : "w-7 h-7 sm:w-9 sm:h-9";
   
   return (
-    <motion.div className={`relative ${sizeClasses} flex items-center justify-center`}>
-      {/* Outer rotating ring */}
+    <motion.div 
+      className="relative flex items-center justify-center"
+      style={{ width: dimensions.outer, height: dimensions.outer }}
+    >
+      {/* Outer orbital ring - elegant thin line */}
       <motion.div
-        className="absolute inset-0 rounded-full border-2 border-dashed border-primary/30"
+        className="absolute inset-0 rounded-full"
+        style={{
+          border: '1px solid',
+          borderColor: 'hsl(var(--primary) / 0.15)',
+        }}
         animate={{ rotate: 360 }}
-        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
       />
 
-      {/* Middle pulsing ring */}
+      {/* Secondary orbital ring - offset */}
       <motion.div
-        className="absolute inset-4 rounded-full border border-primary/50"
-        animate={{ scale: [1, 1.1, 1], opacity: [0.5, 1, 0.5] }}
-        transition={{ duration: 2, repeat: Infinity }}
+        className="absolute rounded-full"
+        style={{
+          inset: 8,
+          border: '1px dashed',
+          borderColor: 'hsl(var(--primary) / 0.1)',
+        }}
+        animate={{ rotate: -360 }}
+        transition={{ duration: 45, repeat: Infinity, ease: "linear" }}
       />
 
-      {/* Inner core with logo */}
+      {/* Inner core container */}
       <motion.div
-        className="absolute inset-8 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/60 flex items-center justify-center backdrop-blur-sm overflow-hidden"
+        className="absolute rounded-full bg-gradient-to-br from-card via-card/80 to-card/60 border border-border/40 flex items-center justify-center backdrop-blur-xl overflow-hidden"
+        style={{
+          width: dimensions.inner,
+          height: dimensions.inner,
+        }}
         animate={{
           boxShadow: [
-            "0 0 30px 10px hsl(var(--primary) / 0.2)",
-            "0 0 50px 20px hsl(var(--primary) / 0.4)",
-            "0 0 30px 10px hsl(var(--primary) / 0.2)",
+            "0 0 40px 0 hsl(var(--primary) / 0.1)",
+            "0 0 60px 10px hsl(var(--primary) / 0.2)",
+            "0 0 40px 0 hsl(var(--primary) / 0.1)",
           ],
         }}
-        transition={{ duration: 3, repeat: Infinity }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       >
+        {/* Subtle inner gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
+        
+        {/* Logo */}
         <motion.img
           src={logoIcon}
           alt="Mothership"
-          className={`${logoSize} object-contain dark:invert-0 invert`}
-          animate={{ opacity: [0.7, 1, 0.7], scale: [0.95, 1, 0.95] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
+          className={`${logoSize} object-contain dark:invert-0 invert relative z-10`}
+          animate={{ 
+            opacity: [0.85, 1, 0.85],
+          }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
         />
       </motion.div>
+
+      {/* Orbiting accent dots */}
+      {[0, 120, 240].map((rotation, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-1 h-1 rounded-full bg-primary/40"
+          style={{
+            top: '50%',
+            left: '50%',
+          }}
+          animate={{
+            x: [
+              Math.cos((rotation * Math.PI) / 180) * (dimensions.outer / 2 - 2),
+              Math.cos(((rotation + 360) * Math.PI) / 180) * (dimensions.outer / 2 - 2),
+            ],
+            y: [
+              Math.sin((rotation * Math.PI) / 180) * (dimensions.outer / 2 - 2),
+              Math.sin(((rotation + 360) * Math.PI) / 180) * (dimensions.outer / 2 - 2),
+            ],
+          }}
+          transition={{ 
+            duration: 20, 
+            repeat: Infinity, 
+            ease: "linear",
+            delay: i * 0.5,
+          }}
+        />
+      ))}
     </motion.div>
   );
 }
@@ -354,7 +430,7 @@ function MobileCarouselContent({ activeSection }: { activeSection: number }) {
               {platforms.map((platform, i) => {
                 const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
                 const radius = 100;
-                return <PlatformNode key={platform.id} platform={platform} angle={angle} radius={radius} />;
+                return <PlatformNode key={platform.id} platform={platform} angle={angle} radius={radius} index={i} />;
               })}
               {Array.from({ length: 10 }).map((_, i) => (
                 <DataParticle
@@ -654,7 +730,7 @@ function MobileDataScrapingLayout() {
                         {platforms.map((platform, i) => {
                           const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
                           const radius = 100;
-                          return <PlatformNode key={platform.id} platform={platform} angle={angle} radius={radius} />;
+                          return <PlatformNode key={platform.id} platform={platform} angle={angle} radius={radius} index={i} />;
                         })}
                         {Array.from({ length: 10 }).map((_, i) => (
                           <DataParticle
@@ -800,7 +876,7 @@ function DesktopDataScrapingLayout() {
                 {platforms.map((platform, i) => {
                   const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
                   const radius = 120;
-                  return <PlatformNode key={platform.id} platform={platform} angle={angle} radius={radius} />;
+                  return <PlatformNode key={platform.id} platform={platform} angle={angle} radius={radius} index={i} />;
                 })}
                 {Array.from({ length: 15 }).map((_, i) => (
                   <DataParticle
