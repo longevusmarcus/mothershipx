@@ -148,13 +148,6 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                       >
                         <img src={logoIcon} alt="" className="h-8 w-8 object-contain" />
-                        <motion.div
-                          className="absolute -top-1 -right-1"
-                          animate={{ rotate: [0, 15, -15, 0] }}
-                          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                        >
-                          <Sparkles className="h-4 w-4 text-primary" />
-                        </motion.div>
                       </motion.div>
                     </motion.div>
 
