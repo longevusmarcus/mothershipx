@@ -462,12 +462,12 @@ const ProblemDetail = () => {
             {/* Launch in Lovable Button - icon only on mobile */}
             <Button
               variant="outline"
-              size="sm"
+              size="icon"
               onClick={() => {
                 const prompt = encodeURIComponent(`Build a solution for: ${problem.title}\n\n${problem.subtitle || ""}\n\nNiche: ${problem.niche}\nCategory: ${problem.category}`);
                 window.open(`https://lovable.dev/projects/create?prompt=${prompt}`, "_blank");
               }}
-              className="h-8 w-8 p-0 md:h-auto md:w-auto md:px-3"
+              className="md:w-auto md:px-3"
             >
               <Rocket className="h-4 w-4 md:mr-1" />
               <span className="hidden md:inline">Launch in Lovable</span>
@@ -476,7 +476,7 @@ const ProblemDetail = () => {
             {/* Launch 10 Ideas Button - icon only on mobile */}
             <Button
               variant="outline"
-              size="sm"
+              size="icon"
               onClick={async () => {
                 toast({
                   title: "Launching ideas...",
@@ -488,7 +488,7 @@ const ProblemDetail = () => {
                   await new Promise((resolve) => setTimeout(resolve, 1500));
                 }
               }}
-              className="h-8 w-8 p-0 md:h-auto md:w-auto md:px-3"
+              className="md:w-auto md:px-3"
             >
               <Layers className="h-4 w-4 md:mr-1" />
               <span className="hidden md:inline">Launch 10 Ideas</span>
