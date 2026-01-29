@@ -1,5 +1,5 @@
-import { useRef, useState, useEffect } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
+import { useRef, useState, useEffect, useCallback } from "react";
+import { motion, useInView, AnimatePresence, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import logoIcon from "@/assets/logo-icon.png";
 
@@ -445,66 +445,305 @@ function MobileCarouselContent({ activeSection }: { activeSection: number }) {
   );
 }
 
-// Mobile layout with rotating carousel
+// Mobile layout with scroll-linked horizontal carousel
 function MobileDataScrapingLayout() {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(sectionRef, { once: true, margin: "-50px" });
   const [activeSection, setActiveSection] = useState(0);
+  const [isLocked, setIsLocked] = useState(false);
+  const lastScrollY = useRef(0);
+  const scrollAccumulator = useRef(0);
+  const touchStartY = useRef(0);
 
-  // Auto-rotate sections
+  // Handle scroll/touch to advance sections horizontally
+  const handleScroll = useCallback((deltaY: number) => {
+    if (!isLocked) return;
+    
+    scrollAccumulator.current += deltaY;
+    
+    // Threshold for changing section
+    const threshold = 80;
+    
+    if (scrollAccumulator.current > threshold) {
+      // Scroll down -> next section
+      if (activeSection < 2) {
+        setActiveSection(prev => prev + 1);
+        scrollAccumulator.current = 0;
+      } else {
+        // At last section, unlock and allow normal scroll
+        setIsLocked(false);
+      }
+    } else if (scrollAccumulator.current < -threshold) {
+      // Scroll up -> previous section
+      if (activeSection > 0) {
+        setActiveSection(prev => prev - 1);
+        scrollAccumulator.current = 0;
+      } else {
+        // At first section, unlock and allow normal scroll up
+        setIsLocked(false);
+      }
+    }
+  }, [activeSection, isLocked]);
+
+  // Lock scrolling when section comes into view at center
   useEffect(() => {
-    if (!isInView) return;
-    const interval = setInterval(() => {
-      setActiveSection((prev) => (prev + 1) % 3);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [isInView]);
+    if (!sectionRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio > 0.6) {
+            setIsLocked(true);
+            scrollAccumulator.current = 0;
+          }
+        });
+      },
+      { threshold: [0.6] }
+    );
+
+    observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  // Wheel event handler
+  useEffect(() => {
+    if (!isLocked) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      if (isLocked) {
+        e.preventDefault();
+        handleScroll(e.deltaY);
+      }
+    };
+
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    return () => window.removeEventListener('wheel', handleWheel);
+  }, [isLocked, handleScroll]);
+
+  // Touch event handlers for mobile
+  useEffect(() => {
+    if (!isLocked) return;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY.current = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isLocked) return;
+      
+      const currentY = e.touches[0].clientY;
+      const deltaY = touchStartY.current - currentY;
+      
+      if (Math.abs(deltaY) > 10) {
+        e.preventDefault();
+        handleScroll(deltaY);
+        touchStartY.current = currentY;
+      }
+    };
+
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, [isLocked, handleScroll]);
 
   return (
     <section
-      ref={ref}
+      ref={sectionRef}
       className="h-screen snap-start flex flex-col items-center justify-center px-4 relative overflow-hidden"
     >
       <BackgroundEffects />
 
       {isInView && (
-        <div className="relative z-10 w-full max-w-md mx-auto flex flex-col items-center" style={{ perspective: "1000px" }}>
-          {/* Title */}
+        <div ref={containerRef} className="relative z-10 w-full max-w-md mx-auto flex flex-col items-center" style={{ perspective: "1000px" }}>
+          {/* Title with dynamic text */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-center mb-6"
+            className="text-center mb-4"
           >
-            <h2 className="font-display text-2xl font-normal text-foreground">
-              Scraping <span className="text-primary font-mono">12+</span> platforms
-            </h2>
+            <AnimatePresence mode="wait">
+              <motion.h2
+                key={activeSection}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+                className="font-display text-xl font-normal text-foreground"
+              >
+                {activeSection === 0 && (
+                  <>Scraping <span className="text-primary font-mono">12+</span> platforms</>
+                )}
+                {activeSection === 1 && (
+                  <>Extracting <span className="text-primary font-mono">Pain Points</span></>
+                )}
+                {activeSection === 2 && (
+                  <>Real-time <span className="text-primary font-mono">Intelligence</span></>
+                )}
+              </motion.h2>
+            </AnimatePresence>
+            
+            {/* Status indicator */}
+            <motion.p
+              className="font-mono text-[10px] text-primary/70 mt-2"
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            >
+              {isLocked ? "↕ SCROLL TO NAVIGATE" : "INITIALIZING..."}
+            </motion.p>
           </motion.div>
 
-          {/* Carousel content */}
-          <div className="w-full min-h-[380px] flex items-center justify-center">
-            <MobileCarouselContent activeSection={activeSection} />
+          {/* Horizontal scroll indicator */}
+          <div className="flex items-center gap-2 mb-4">
+            {[0, 1, 2].map((i) => (
+              <motion.div
+                key={i}
+                className="relative overflow-hidden"
+                animate={{
+                  width: i === activeSection ? 32 : 8,
+                }}
+                transition={{ duration: 0.3 }}
+              >
+                <div 
+                  className={`h-1 rounded-full ${i === activeSection ? 'bg-primary' : 'bg-muted-foreground/30'}`}
+                  style={{ width: '100%' }}
+                />
+                {i === activeSection && (
+                  <motion.div
+                    className="absolute inset-0 bg-primary/50 rounded-full"
+                    initial={{ x: '-100%' }}
+                    animate={{ x: '100%' }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  />
+                )}
+              </motion.div>
+            ))}
           </div>
 
-          {/* Section indicators */}
-          <div className="flex items-center gap-3 mt-6">
+          {/* Carousel content with horizontal slide animation */}
+          <div className="w-full min-h-[380px] flex items-center justify-center overflow-hidden">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={activeSection}
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -100 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="w-full"
+              >
+                {activeSection === 0 && (
+                  <div className="flex flex-col items-center">
+                    <motion.p
+                      className="font-mono text-xs text-primary mb-4"
+                      animate={{ opacity: [0.5, 1, 0.5] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      {'>'} SCANNING PLATFORMS...
+                    </motion.p>
+                    
+                    <div className="relative h-[280px] w-full flex items-center justify-center">
+                      <div className="relative w-full h-full max-w-[300px] mx-auto">
+                        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                          <ProcessingCore size="small" />
+                        </div>
+                        {platforms.map((platform, i) => {
+                          const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
+                          const radius = 100;
+                          return <PlatformNode key={platform.id} platform={platform} angle={angle} radius={radius} />;
+                        })}
+                        {Array.from({ length: 10 }).map((_, i) => (
+                          <DataParticle
+                            key={i}
+                            delay={i * 0.3}
+                            startX={(Math.random() - 0.5) * 200}
+                            startY={(Math.random() - 0.5) * 200}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeSection === 1 && (
+                  <div className="flex flex-col items-center w-full px-4">
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-center mb-6"
+                    >
+                      <p className="font-mono text-xs text-muted-foreground mb-1">EXTRACTED PAIN POINTS</p>
+                      <motion.p
+                        className="font-mono text-3xl font-bold text-primary"
+                        animate={{ opacity: [0.8, 1, 0.8] }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                      >
+                        1,247
+                      </motion.p>
+                    </motion.div>
+
+                    <PainPointExtraction />
+
+                    <motion.button
+                      className="mt-6 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-mono text-sm font-medium flex items-center gap-2"
+                      whileTap={{ scale: 0.98 }}
+                      animate={{
+                        boxShadow: [
+                          "0 0 15px 0 hsl(var(--primary) / 0.3)",
+                          "0 0 30px 5px hsl(var(--primary) / 0.5)",
+                          "0 0 15px 0 hsl(var(--primary) / 0.3)",
+                        ],
+                      }}
+                      transition={{ boxShadow: { duration: 2, repeat: Infinity } }}
+                    >
+                      <span>→</span>
+                      <span>Turn into solution</span>
+                    </motion.button>
+                  </div>
+                )}
+
+                {activeSection === 2 && (
+                  <div className="flex flex-col items-center gap-5 w-full px-4">
+                    <LeaderboardPreview />
+
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.5 }}
+                      className="grid grid-cols-2 gap-3 w-full max-w-xs"
+                    >
+                      <div className="bg-card/50 border border-border/30 rounded-lg p-3 text-center backdrop-blur-sm">
+                        <p className="font-mono text-xl font-bold text-foreground">847</p>
+                        <p className="font-mono text-[10px] text-muted-foreground">BUILDERS</p>
+                      </div>
+                      <div className="bg-card/50 border border-border/30 rounded-lg p-3 text-center backdrop-blur-sm">
+                        <p className="font-mono text-xl font-bold text-primary">$12K</p>
+                        <p className="font-mono text-[10px] text-muted-foreground">PRIZES</p>
+                      </div>
+                    </motion.div>
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Section labels */}
+          <div className="flex items-center gap-4 mt-4">
             {sectionLabels.map((label, i) => (
               <button
                 key={label}
                 onClick={() => setActiveSection(i)}
-                className="flex flex-col items-center gap-1"
+                className={`font-mono text-xs transition-all ${
+                  i === activeSection 
+                    ? "text-primary scale-110" 
+                    : "text-muted-foreground/50 hover:text-muted-foreground"
+                }`}
               >
-                <motion.div
-                  className="w-8 h-1 rounded-full"
-                  animate={{
-                    backgroundColor: i === activeSection ? "hsl(var(--primary))" : "hsl(var(--muted-foreground) / 0.3)",
-                    scaleX: i === activeSection ? 1.2 : 1,
-                  }}
-                  transition={{ duration: 0.3 }}
-                />
-                <span className={`font-mono text-[10px] transition-colors ${i === activeSection ? "text-primary" : "text-muted-foreground/50"}`}>
-                  {label}
-                </span>
+                {label}
               </button>
             ))}
           </div>
