@@ -58,9 +58,6 @@ function TerminalTyping() {
           <img src={terminalAvatar} alt="Builder" className="w-full h-full object-cover" />
         </div>
         <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-primary font-bold">$</span>
-          </div>
           <div className="break-words whitespace-pre-wrap leading-relaxed">
             {displayedText}
             <span className={`${showCursor ? "opacity-100" : "opacity-0"} text-primary transition-opacity`}>▌</span>
@@ -220,34 +217,33 @@ export function LandingHero() {
             transition={{ duration: 0.8 }}
             className="text-center max-w-3xl mx-auto mb-10 md:mb-16"
           >
-            {/* Terminal-style intro */}
+            {/* Hacker-style intro */}
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
-              className="font-mono text-xs sm:text-sm text-muted-foreground mb-6"
+              className="font-mono text-xs sm:text-sm mb-6"
             >
               <motion.span
-                animate={{ opacity: [1, 0.5, 1] }}
-                transition={{ duration: 1, repeat: Infinity }}
-                className="text-primary"
-              >
-                $
-              </motion.span>{" "}
-              <span className="text-foreground/70">./build</span>{" "}
-              <motion.span
-                className="text-primary font-bold"
-                animate={{
-                  textShadow: [
-                    "0 0 5px hsl(var(--primary) / 0.5)",
-                    "0 0 15px hsl(var(--primary) / 0.8)",
-                    "0 0 5px hsl(var(--primary) / 0.5)",
-                  ],
-                }}
+                className="text-primary/80 tracking-widest"
+                animate={{ opacity: [0.6, 1, 0.6] }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
-                --validated
+                {'>'} 
+              </motion.span>
+              <motion.span
+                className="text-muted-foreground/70 ml-1"
+                animate={{
+                  textShadow: [
+                    "0 0 0px transparent",
+                    "0 0 8px hsl(var(--primary) / 0.3)",
+                    "0 0 0px transparent",
+                  ],
+                }}
+                transition={{ duration: 3, repeat: Infinity }}
+              >
+                the_future_of_building
               </motion.span>
             </motion.div>
 
