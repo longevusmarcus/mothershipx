@@ -842,7 +842,7 @@ function DesktopDataScrapingLayout() {
               Scraping <span className="text-primary font-mono">12+</span> platforms
             </h2>
             <p className="text-muted-foreground mt-2 font-mono text-sm">
-              Real-time market intelligence x mass-builder agent x hackathon arena
+              Real-time market intelligence x mass-shipper agent x hackathon arena
             </p>
           </motion.div>
 
