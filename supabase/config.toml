@@ -65,3 +65,6 @@ verify_jwt = false
 
 [functions.batch-search-competitors]
 verify_jwt = false
+
+[functions.purge-mock-solutions]
+verify_jwt = false

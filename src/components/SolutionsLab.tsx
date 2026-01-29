@@ -409,6 +409,7 @@ export const SolutionsLab = ({
     toggleUpvote,
     forkSolution,
     deleteSolution,
+    purgeMockSolutions,
   } = useSolutions(problemId);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -480,16 +481,35 @@ export const SolutionsLab = ({
           <h3 className="font-serif text-lg">Solutions Lab</h3>
           <p className="text-sm text-muted-foreground">Wiki-style collaborative ideas • {solutions.length} solutions</p>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setShowAIGenerator(true)}
-          className="gap-2 group"
-          disabled={!user}
-        >
-          <Sparkles className="h-3.5 w-3.5 group-hover:text-primary transition-colors" />
-          New Idea
-        </Button>
+        <div className="flex items-center gap-2">
+          {isAdmin && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => purgeMockSolutions.mutate()}
+              disabled={purgeMockSolutions.isPending}
+              className="h-9 px-3 text-xs"
+              title="Remove legacy mock ideas"
+            >
+              {purgeMockSolutions.isPending ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Trash2 className="h-3.5 w-3.5" />
+              )}
+              <span className="ml-2">Purge mocks</span>
+            </Button>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowAIGenerator(true)}
+            className="gap-2 group"
+            disabled={!user}
+          >
+            <Sparkles className="h-3.5 w-3.5 group-hover:text-primary transition-colors" />
+            New Idea
+          </Button>
+        </div>
       </div>
 
       {/* Solutions List */}
