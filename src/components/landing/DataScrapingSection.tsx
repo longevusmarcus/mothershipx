@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
+import logoIcon from "@/assets/logo-icon.png";
 
 // Platform icons with their brand colors (using semantic tokens for theming)
 const platforms = [
@@ -104,10 +105,10 @@ function PlatformNode({ platform, angle, radius }: { platform: typeof platforms[
   );
 }
 
-// Central processing core
+// Central processing core with Mothership logo
 function ProcessingCore() {
   return (
-    <motion.div className="relative w-32 h-32 sm:w-40 sm:h-40">
+    <motion.div className="relative w-32 h-32 sm:w-40 sm:h-40 flex items-center justify-center">
       {/* Outer rotating ring */}
       <motion.div
         className="absolute inset-0 rounded-full border-2 border-dashed border-primary/30"
@@ -122,9 +123,9 @@ function ProcessingCore() {
         transition={{ duration: 2, repeat: Infinity }}
       />
 
-      {/* Inner core */}
+      {/* Inner core with logo */}
       <motion.div
-        className="absolute inset-8 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/60 flex items-center justify-center backdrop-blur-sm"
+        className="absolute inset-8 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/60 flex items-center justify-center backdrop-blur-sm overflow-hidden"
         animate={{
           boxShadow: [
             "0 0 30px 10px hsl(var(--primary) / 0.2)",
@@ -134,13 +135,13 @@ function ProcessingCore() {
         }}
         transition={{ duration: 3, repeat: Infinity }}
       >
-        <motion.span
-          className="font-mono text-xl sm:text-2xl font-bold text-primary"
-          animate={{ opacity: [0.7, 1, 0.7] }}
+        <motion.img
+          src={logoIcon}
+          alt="Mothership"
+          className="w-8 h-8 sm:w-10 sm:h-10 object-contain dark:invert-0 invert"
+          animate={{ opacity: [0.7, 1, 0.7], scale: [0.95, 1, 0.95] }}
           transition={{ duration: 1.5, repeat: Infinity }}
-        >
-          AI
-        </motion.span>
+        />
       </motion.div>
 
       {/* Scanning effect */}
