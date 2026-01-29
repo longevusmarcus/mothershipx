@@ -462,7 +462,7 @@ function ScreenshotCarousel({ images }: { images: { src: string; alt: string }[]
   );
 }
 
-// Screenshot card with glowing effect (for desktop)
+// Screenshot card with hover zoom overlay (for desktop)
 function ScreenshotCard({
   image,
   alt,
@@ -476,34 +476,81 @@ function ScreenshotCard({
   delay: number;
   isCenter?: boolean;
 }) {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 50, rotate: rotation }}
-      whileInView={{ opacity: 1, y: 0, rotate: rotation }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.8, delay, ease: "easeOut" }}
-      whileHover={{ rotate: 0, scale: 1.03, y: -10 }}
-      className={`relative shrink-0 group ${
-        isCenter
-          ? "w-80 lg:w-96 z-10"
-          : "w-64 lg:w-72"
-      }`}
-    >
-      {/* Glow effect behind the image */}
-      <div
-        className={`absolute inset-0 rounded-2xl bg-primary/30 blur-2xl group-hover:blur-3xl transition-all duration-500 ${isCenter ? "scale-110" : "scale-105"} opacity-60 group-hover:opacity-80`}
-      />
+    <>
+      {/* Normal card */}
+      <motion.div
+        initial={{ opacity: 0, y: 50, rotate: rotation }}
+        whileInView={{ opacity: 1, y: 0, rotate: rotation }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, delay, ease: "easeOut" }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={`relative shrink-0 group cursor-pointer ${
+          isCenter
+            ? "w-80 lg:w-96 z-10"
+            : "w-64 lg:w-72"
+        }`}
+      >
+        {/* Glow effect behind the image */}
+        <div
+          className={`absolute inset-0 rounded-2xl bg-primary/30 blur-2xl group-hover:blur-3xl transition-all duration-500 ${isCenter ? "scale-110" : "scale-105"} opacity-60 group-hover:opacity-80`}
+        />
 
-      {/* Secondary outer glow */}
-      <div
-        className={`absolute -inset-4 rounded-3xl bg-primary/10 blur-3xl ${isCenter ? "opacity-50" : "opacity-30"}`}
-      />
+        {/* Secondary outer glow */}
+        <div
+          className={`absolute -inset-4 rounded-3xl bg-primary/10 blur-3xl ${isCenter ? "opacity-50" : "opacity-30"}`}
+        />
 
-      <div className="relative rounded-xl overflow-hidden shadow-2xl border border-primary/20 group-hover:border-primary/40 transition-colors">
-        <img src={image} alt={alt} className="block w-full h-auto" />
-        {/* Overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-background/30 via-transparent to-transparent pointer-events-none" />
-      </div>
-    </motion.div>
+        <div className="relative rounded-xl overflow-hidden shadow-2xl border border-primary/20 group-hover:border-primary/40 transition-colors">
+          <img src={image} alt={alt} className="block w-full h-auto" />
+          {/* Overlay gradient */}
+          <div className="absolute inset-0 bg-gradient-to-t from-background/30 via-transparent to-transparent pointer-events-none" />
+        </div>
+      </motion.div>
+
+      {/* Fullscreen zoom overlay */}
+      <AnimatePresence>
+        {isHovered && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[9999] flex items-center justify-center pointer-events-none"
+            style={{ backgroundColor: "hsl(var(--background) / 0.9)" }}
+          >
+            {/* Large image */}
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="relative w-[90vw] max-w-5xl"
+            >
+              {/* Glow */}
+              <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-2xl" />
+              
+              {/* Image */}
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-primary/30">
+                <img src={image} alt={alt} className="block w-full h-auto" />
+              </div>
+              
+              {/* Caption */}
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="text-center mt-4 font-mono text-sm text-muted-foreground"
+              >
+                {alt}
+              </motion.p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
