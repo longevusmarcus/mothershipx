@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { TerminalTyping } from "./TerminalTyping";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import logoIcon from "@/assets/logo-icon.png";
 
 const TERMINAL_COMMAND = `find 1,000 startup ideas from pain points on Reddit and TikTok, build and host landing pages, register domains, wire up Stripe, test in Chrome — zero mistakes allowed --dangerously-skip-permissions --chrome`;
 
@@ -87,8 +88,8 @@ export function LandingHero() {
                 transition={{ delay: 0.2 }}
                 className="flex justify-center"
               >
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-foreground to-foreground/80 flex items-center justify-center shadow-lg">
-                  <Sparkles className="w-8 h-8 text-background" />
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-foreground to-foreground/80 flex items-center justify-center shadow-lg p-3">
+                  <img src={logoIcon} alt="MothershipX" className="w-full h-full object-contain invert dark:invert-0" />
                 </div>
               </motion.div>
 
@@ -117,24 +118,14 @@ export function LandingHero() {
                 transition={{ delay: 0.6 }}
                 className="font-display text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed"
               >
-                Build useful apps, websites, and digital products at the speed of thought—backed by real market demand and rewarded for real outcomes.
-              </motion.p>
-
-              {/* Description */}
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 }}
-                className="text-sm text-muted-foreground/80 max-w-xl mx-auto"
-              >
-                Discover real problems and trends with proven momentum across TikTok, Reddit, YouTube, and more. Compete to build the best solutions. Earn rewards based on real outcomes.
+                Build useful apps, websites, and digital products at the speed of thought—backed by real market demand and rewarded for real impact.
               </motion.p>
 
               {/* CTA */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1 }}
+                transition={{ delay: 0.8 }}
                 onAnimationComplete={() => setPhase("complete")}
                 className="pt-4"
               >
@@ -152,7 +143,7 @@ export function LandingHero() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 1.5 }}
+                transition={{ delay: 1.2 }}
                 className="pt-8"
               >
                 <p className="text-xs text-muted-foreground/50 font-mono">
