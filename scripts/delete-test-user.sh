@@ -9,7 +9,7 @@ EMAILS=(
 )
 
 # Load password from .env
-source .env 2>/dev/null || true
+source .env.local 2>/dev/null || true
 DB_PASSWORD="${SECRET_SUPABASE_DB_PASSWORD}"
 
 if [ -z "$DB_PASSWORD" ]; then

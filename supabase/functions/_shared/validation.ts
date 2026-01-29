@@ -109,6 +109,7 @@ export const createCheckoutSchema = z.object({
 
 export const createSubscriptionCheckoutSchema = z.object({
   priceId: z.string().max(100).optional(),
+  billingType: z.enum(["lifetime", "monthly"]).optional(),
 });
 
 // ============= Validation Helper =============

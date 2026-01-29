@@ -14,8 +14,9 @@ const logStep = (step: string, details?: unknown) => {
   console.log(`[CREATE-SUBSCRIPTION-CHECKOUT] ${step}${detailsStr}`);
 };
 
-// Lifetime access pricing
-const SUBSCRIPTION_PRICE_ID = "price_1Su9HS2LCwPxHz0nJtdFrBXd";
+// Pricing - use env vars for local testing, fallback to production
+const LIFETIME_PRICE_ID = Deno.env.get("STRIPE_PRICE_ID") || "price_1Su9HS2LCwPxHz0nJtdFrBXd";
+const MONTHLY_PRICE_ID = Deno.env.get("STRIPE_MONTHLY_PRICE_ID") || null;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -42,8 +43,18 @@ serve(async (req) => {
       return validationErrorResponse(validation, corsHeaders);
     }
     
-    const { priceId } = validation.data!;
-    const finalPriceId = priceId || SUBSCRIPTION_PRICE_ID;
+    const { priceId, billingType } = validation.data as { priceId?: string; billingType?: string };
+
+    // Determine price: explicit priceId > billingType selection > default lifetime
+    let finalPriceId: string;
+    if (priceId) {
+      finalPriceId = priceId;
+    } else if (billingType === "monthly" && MONTHLY_PRICE_ID) {
+      finalPriceId = MONTHLY_PRICE_ID;
+    } else {
+      finalPriceId = LIFETIME_PRICE_ID;
+    }
+    logStep("Using price", { finalPriceId, billingType });
 
     const authHeader = req.headers.get("Authorization")!;
     const token = authHeader.replace("Bearer ", "");
@@ -54,45 +65,57 @@ serve(async (req) => {
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { apiVersion: "2023-10-16" });
     
-    // Check if customer exists
+    // Check if customer exists, create if not
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    let customerId;
+    let customerId: string;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
       logStep("Found existing customer", { customerId });
-      
-      // Check if already subscribed
-      const subscriptions = await stripe.subscriptions.list({
-        customer: customerId,
-        status: "active",
-        limit: 1,
+    } else {
+      // Create a new customer for portal access later
+      const newCustomer = await stripe.customers.create({
+        email: user.email,
+        metadata: { user_id: user.id },
       });
-      
-      if (subscriptions.data.length > 0) {
-        logStep("User already has active subscription");
-        return new Response(JSON.stringify({ 
-          error: "You already have an active subscription",
-          alreadySubscribed: true 
-        }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 400,
-        });
-      }
+      customerId = newCustomer.id;
+      logStep("Created new customer", { customerId });
+    }
+
+    // Check if already subscribed
+    const subscriptions = await stripe.subscriptions.list({
+      customer: customerId,
+      status: "active",
+      limit: 1,
+    });
+
+    if (subscriptions.data.length > 0) {
+      logStep("User already has active subscription");
+      return new Response(JSON.stringify({
+        error: "You already have an active subscription",
+        alreadySubscribed: true
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400,
+      });
     }
 
     const origin = req.headers.get("origin") || "https://mothershipx.lovable.app";
-    
+
+    // Retrieve price to determine if it's recurring or one-time
+    const price = await stripe.prices.retrieve(finalPriceId);
+    const isRecurring = price.type === "recurring";
+    const checkoutMode = isRecurring ? "subscription" : "payment";
+    logStep("Price type detected", { priceId: finalPriceId, type: price.type, mode: checkoutMode });
+
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
-      customer_email: customerId ? undefined : user.email,
       line_items: [
         {
           price: finalPriceId,
           quantity: 1,
         },
       ],
-      // Use 'payment' mode for lifetime one-time purchase
-      mode: "payment",
+      mode: checkoutMode,
       success_url: `${origin}/subscription/success`,
       cancel_url: `${origin}/profile`,
       metadata: {

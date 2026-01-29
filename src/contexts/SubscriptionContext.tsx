@@ -11,7 +11,7 @@ export interface SubscriptionStatus {
   isLoading: boolean;
 }
 
-// Lifetime access pricing
+// Lifetime access pricing (kept for reference, but edge function controls the actual price)
 export const SUBSCRIPTION_PRICE_ID = "price_1Su9HS2LCwPxHz0nJtdFrBXd";
 export const SUBSCRIPTION_PRODUCT_ID = "prod_TpcrDIRieLAbv5";
 export const SUBSCRIPTION_PRICE = 29.9;
@@ -20,7 +20,7 @@ export const SUBSCRIPTION_IS_LIFETIME = true;
 interface SubscriptionContextType extends SubscriptionStatus {
   hasPremiumAccess: boolean;
   checkSubscription: () => Promise<void>;
-  createCheckout: (priceId?: string) => Promise<string>;
+  createCheckout: () => Promise<string>;
   openCustomerPortal: () => Promise<void>;
 }
 
@@ -80,6 +80,8 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
           } else {
             setStatus((prev) => ({ ...prev, isLoading: false }));
           }
+          // IMPORTANT: Update lastCheckTime on error to prevent retry storms
+          lastCheckTime = Date.now();
           checkInProgressRef.current = false;
           return;
         }
@@ -120,13 +122,14 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
   }, [isAuthenticated, checkSubscription]);
 
   const createCheckout = useCallback(
-    async (priceId?: string) => {
+    async () => {
       if (!isAuthenticated) {
         throw new Error("User must be authenticated");
       }
 
+      // Price ID is controlled by the edge function via env var
       const { data, error } = await supabase.functions.invoke("create-subscription-checkout", {
-        body: { priceId: priceId || SUBSCRIPTION_PRICE_ID },
+        body: {},
       });
 
       if (error) throw error;

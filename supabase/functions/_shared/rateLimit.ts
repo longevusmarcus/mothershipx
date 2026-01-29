@@ -114,16 +114,21 @@ export async function withRateLimit(
   endpoint: string,
   options: RateLimitOptions & { userId?: string | null } = {}
 ): Promise<Response | null> {
+  // Skip rate limiting in local development
+  if (Deno.env.get("DISABLE_RATE_LIMIT") === "true") {
+    return null;
+  }
+
   const { userId, ...rateLimitOptions } = options;
   const identifier = getIdentifier(req, userId);
-  
+
   const result = await checkRateLimit(identifier, endpoint, rateLimitOptions);
-  
+
   if (!result.allowed) {
     console.log(`[RATE_LIMIT] Blocked: ${identifier} on ${endpoint} (${result.current}/${result.limit})`);
     return rateLimitResponse(result);
   }
-  
+
   return null;
 }
 

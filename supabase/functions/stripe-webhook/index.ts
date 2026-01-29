@@ -145,14 +145,14 @@ serve(async (req) => {
       }
     }
 
-    // Handle challenge checkout (existing logic)
+    // Handle checkout session completed
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
-      
-      // Only process challenge payments (not subscription checkouts)
       const challengeId = session.metadata?.challenge_id;
+      const userId = session.metadata?.user_id;
+
+      // Handle challenge payments
       if (challengeId) {
-        const userId = session.metadata?.user_id;
         const joinType = session.metadata?.join_type || "solo";
 
         logStep("Processing challenge payment", { userId, challengeId });
@@ -194,6 +194,53 @@ serve(async (req) => {
         }
 
         logStep("Challenge payment processed", { userId, challengeId });
+      }
+      // Handle lifetime subscription purchases (one-time payment mode)
+      else if (userId && session.mode === "payment" && session.payment_status === "paid") {
+        logStep("Processing lifetime subscription purchase", { userId, sessionId: session.id });
+
+        // Add subscriber role for the user
+        const { data: existingRole } = await supabase
+          .from("user_roles")
+          .select("id")
+          .eq("user_id", userId)
+          .eq("role", "subscriber")
+          .maybeSingle();
+
+        if (!existingRole) {
+          const { error: roleError } = await supabase
+            .from("user_roles")
+            .insert({ user_id: userId, role: "subscriber" });
+
+          if (roleError) {
+            logStep("Error adding subscriber role", { error: roleError.message });
+          } else {
+            logStep("Added subscriber role for lifetime purchase", { userId });
+          }
+        } else {
+          logStep("User already has subscriber role", { userId });
+        }
+
+        // Also store a record in subscriptions table for tracking
+        const { error: subError } = await supabase
+          .from("subscriptions")
+          .upsert({
+            user_id: userId,
+            stripe_subscription_id: `lifetime_${session.id}`,
+            stripe_customer_id: session.customer as string || null,
+            status: "lifetime",
+            price_id: session.metadata?.price_id || null,
+            current_period_start: new Date().toISOString(),
+            current_period_end: new Date("2099-12-31").toISOString(), // Lifetime = far future
+            cancel_at_period_end: false,
+            updated_at: new Date().toISOString(),
+          }, { onConflict: 'user_id' });
+
+        if (subError) {
+          logStep("Error upserting subscription record", { error: subError.message });
+        }
+
+        logStep("Lifetime subscription purchase processed", { userId });
       }
     }
 

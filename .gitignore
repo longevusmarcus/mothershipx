@@ -32,3 +32,6 @@ test-results/
 # Supabase local
 supabase/.branches/
 supabase/.temp/
+
+# Local dev logs
+.dev-logs/
