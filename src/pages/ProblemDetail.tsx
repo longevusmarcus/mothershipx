@@ -419,7 +419,7 @@ const ProblemDetail = () => {
                   Joined
                 </>
               ) : (
-                "Start Building"
+                "Compete to Build"
               )}
             </Button>
             
