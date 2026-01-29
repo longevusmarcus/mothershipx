@@ -7,6 +7,7 @@ import { AuthModal } from "@/components/AuthModal";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { useDeleteProblem } from "@/hooks/useDeleteProblem";
+import { EvidenceThumbnails } from "@/components/EvidenceThumbnails";
 import type { MarketProblem } from "@/data/marketIntelligence";
 
 interface MarketProblemCardProps {
@@ -231,8 +232,11 @@ export function MarketProblemCard({ problem, delay = 0, isPinned = false, onTogg
           )}
         </div>
 
+        {/* Evidence Video Thumbnails */}
+        <EvidenceThumbnails problemId={problem.id} maxThumbnails={4} />
+
         {/* CTA */}
-        <div className="flex items-center justify-between text-xs">
+        <div className="flex items-center justify-between text-xs mt-3">
           <span className="text-muted-foreground">Explore opportunity</span>
           <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
         </div>
