@@ -61,6 +61,7 @@ export interface LandingPageData {
 export function useSolutions(problemId: string) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const SYSTEM_USER_ID = "00000000-0000-0000-0000-000000000000";
 
   const { data: solutions = [], isLoading, error } = useQuery({
     queryKey: ["solutions", problemId],
@@ -72,6 +73,8 @@ export function useSolutions(problemId: string) {
         .from("solutions")
         .select("*")
         .eq("problem_id", dbProblemId)
+        // Filter out legacy/mock solutions created by the system placeholder user
+        .neq("created_by", SYSTEM_USER_ID)
         .order("upvotes", { ascending: false });
 
       if (error) throw error;
@@ -312,6 +315,21 @@ export function useSolutions(problemId: string) {
     },
   });
 
+  // Admin-only cleanup (RLS enforced): remove legacy/mock solutions created by the system placeholder user
+  const purgeMockSolutions = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("solutions").delete().eq("created_by", SYSTEM_USER_ID);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["solutions"] });
+      toast.success("Mock ideas removed");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
   return {
     solutions,
     isLoading,
@@ -321,5 +339,6 @@ export function useSolutions(problemId: string) {
     toggleUpvote,
     forkSolution,
     deleteSolution,
+    purgeMockSolutions,
   };
 }
