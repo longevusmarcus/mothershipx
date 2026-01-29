@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import logoIcon from "@/assets/logo-icon.png";
 
@@ -13,10 +13,6 @@ const platforms = [
   { id: "producthunt", name: "PH", icon: "P", delay: 0.5 },
   { id: "google", name: "Trends", icon: "G", delay: 0.6 },
   { id: "linkedin", name: "LinkedIn", icon: "in", delay: 0.7 },
-  { id: "discord", name: "Discord", icon: "◆", delay: 0.8 },
-  { id: "quora", name: "Quora", icon: "Q", delay: 0.9 },
-  { id: "medium", name: "Medium", icon: "M", delay: 1.0 },
-  { id: "indiehackers", name: "IH", icon: "⚡", delay: 1.1 },
 ];
 
 // Floating data particles
@@ -70,7 +66,7 @@ function PlatformNode({ platform, angle, radius }: { platform: typeof platforms[
 
       {/* Platform icon */}
       <motion.div
-        className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-card border border-border/50 flex items-center justify-center font-mono text-sm font-bold text-foreground shadow-lg backdrop-blur-sm"
+        className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-card border border-border/50 flex items-center justify-center font-mono text-xs sm:text-sm font-bold text-foreground shadow-lg backdrop-blur-sm"
         whileHover={{ scale: 1.1, borderColor: "hsl(var(--primary))" }}
         animate={{
           boxShadow: [
@@ -95,7 +91,7 @@ function PlatformNode({ platform, angle, radius }: { platform: typeof platforms[
 
       {/* Platform name */}
       <motion.span
-        className="mt-2 text-[10px] sm:text-xs text-muted-foreground font-mono"
+        className="mt-1 text-[9px] sm:text-xs text-muted-foreground font-mono"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: platform.delay + 0.5 }}
@@ -107,9 +103,12 @@ function PlatformNode({ platform, angle, radius }: { platform: typeof platforms[
 }
 
 // Central processing core with Mothership logo
-function ProcessingCore() {
+function ProcessingCore({ size = "normal" }: { size?: "small" | "normal" }) {
+  const sizeClasses = size === "small" ? "w-24 h-24" : "w-32 h-32 sm:w-40 sm:h-40";
+  const logoSize = size === "small" ? "w-6 h-6" : "w-8 h-8 sm:w-10 sm:h-10";
+  
   return (
-    <motion.div className="relative w-32 h-32 sm:w-40 sm:h-40 flex items-center justify-center">
+    <motion.div className={`relative ${sizeClasses} flex items-center justify-center`}>
       {/* Outer rotating ring */}
       <motion.div
         className="absolute inset-0 rounded-full border-2 border-dashed border-primary/30"
@@ -139,21 +138,9 @@ function ProcessingCore() {
         <motion.img
           src={logoIcon}
           alt="Mothership"
-          className="w-8 h-8 sm:w-10 sm:h-10 object-contain dark:invert-0 invert"
+          className={`${logoSize} object-contain dark:invert-0 invert`}
           animate={{ opacity: [0.7, 1, 0.7], scale: [0.95, 1, 0.95] }}
           transition={{ duration: 1.5, repeat: Infinity }}
-        />
-      </motion.div>
-
-      {/* Scanning effect */}
-      <motion.div
-        className="absolute inset-0 rounded-full overflow-hidden pointer-events-none"
-        style={{ mixBlendMode: "overlay" }}
-      >
-        <motion.div
-          className="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-primary/80 to-transparent"
-          animate={{ top: ["-10%", "110%"] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
         />
       </motion.div>
     </motion.div>
@@ -220,7 +207,7 @@ function PainPointItem({ text, delay }: { text: string; delay: number }) {
           animate={isTyping ? { scale: [1, 1.3, 1] } : { scale: 1 }}
           transition={{ duration: 0.5, repeat: isTyping ? Infinity : 0 }}
         />
-        <span className="font-mono text-xs sm:text-sm text-muted-foreground">
+        <span className="font-mono text-xs text-muted-foreground">
           {displayedText}
           {(isTyping || displayedText.length === 0) && (
             <span className={`${showCursor ? "opacity-100" : "opacity-0"} text-primary transition-opacity`}>▌</span>
@@ -237,13 +224,12 @@ function PainPointExtraction() {
     "need a better way to...",
     "I wish there was...",
     "looking for solution to...",
-    "struggle with...",
   ];
 
   return (
     <div className="flex flex-col gap-2">
       {painPoints.map((text, i) => (
-        <PainPointItem key={i} text={text} delay={0.5 + i * 0.8} />
+        <PainPointItem key={i} text={text} delay={0.3 + i * 0.6} />
       ))}
     </div>
   );
@@ -303,11 +289,11 @@ function BackgroundEffects() {
     <>
       {/* Matrix-style falling code background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.03]">
-        {Array.from({ length: 20 }).map((_, i) => (
+        {Array.from({ length: 15 }).map((_, i) => (
           <motion.div
             key={i}
             className="absolute font-mono text-xs text-primary whitespace-pre leading-tight"
-            style={{ left: `${i * 5}%` }}
+            style={{ left: `${i * 7}%` }}
             initial={{ y: -500 }}
             animate={{ y: "100vh" }}
             transition={{
@@ -336,176 +322,195 @@ function BackgroundEffects() {
   );
 }
 
-// Mobile section wrapper with snap scrolling
-function MobileSection({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+// Section labels for carousel
+const sectionLabels = ["Platforms", "Pain Points", "Leaderboard"];
+
+// Mobile carousel section content
+function MobileCarouselContent({ activeSection }: { activeSection: number }) {
   return (
-    <div className={`h-screen snap-start flex flex-col items-center justify-center px-4 relative ${className}`}>
-      {children}
-    </div>
+    <AnimatePresence mode="wait">
+      {activeSection === 0 && (
+        <motion.div
+          key="platforms"
+          initial={{ opacity: 0, rotateY: 90 }}
+          animate={{ opacity: 1, rotateY: 0 }}
+          exit={{ opacity: 0, rotateY: -90 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="flex flex-col items-center"
+        >
+          <motion.p
+            className="font-mono text-xs text-primary mb-4"
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            {'>'} SCANNING 12+ PLATFORMS...
+          </motion.p>
+          
+          <div className="relative h-[280px] w-full flex items-center justify-center">
+            <div className="relative w-full h-full max-w-[300px] mx-auto">
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                <ProcessingCore size="small" />
+              </div>
+              {platforms.map((platform, i) => {
+                const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
+                const radius = 100;
+                return <PlatformNode key={platform.id} platform={platform} angle={angle} radius={radius} />;
+              })}
+              {Array.from({ length: 10 }).map((_, i) => (
+                <DataParticle
+                  key={i}
+                  delay={i * 0.3}
+                  startX={(Math.random() - 0.5) * 200}
+                  startY={(Math.random() - 0.5) * 200}
+                />
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {activeSection === 1 && (
+        <motion.div
+          key="painpoints"
+          initial={{ opacity: 0, rotateY: 90 }}
+          animate={{ opacity: 1, rotateY: 0 }}
+          exit={{ opacity: 0, rotateY: -90 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="flex flex-col items-center w-full px-4"
+        >
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center mb-6"
+          >
+            <p className="font-mono text-xs text-muted-foreground mb-1">EXTRACTED PAIN POINTS</p>
+            <motion.p
+              className="font-mono text-3xl font-bold text-primary"
+              animate={{ opacity: [0.8, 1, 0.8] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            >
+              1,247
+            </motion.p>
+          </motion.div>
+
+          <PainPointExtraction />
+
+          <motion.button
+            className="mt-6 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-mono text-sm font-medium flex items-center gap-2"
+            whileTap={{ scale: 0.98 }}
+            animate={{
+              boxShadow: [
+                "0 0 15px 0 hsl(var(--primary) / 0.3)",
+                "0 0 30px 5px hsl(var(--primary) / 0.5)",
+                "0 0 15px 0 hsl(var(--primary) / 0.3)",
+              ],
+            }}
+            transition={{ boxShadow: { duration: 2, repeat: Infinity } }}
+          >
+            <span>→</span>
+            <span>Turn into solution</span>
+          </motion.button>
+        </motion.div>
+      )}
+
+      {activeSection === 2 && (
+        <motion.div
+          key="leaderboard"
+          initial={{ opacity: 0, rotateY: 90 }}
+          animate={{ opacity: 1, rotateY: 0 }}
+          exit={{ opacity: 0, rotateY: -90 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="flex flex-col items-center gap-5 w-full px-4"
+        >
+          <LeaderboardPreview />
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="grid grid-cols-2 gap-3 w-full max-w-xs"
+          >
+            <div className="bg-card/50 border border-border/30 rounded-lg p-3 text-center backdrop-blur-sm">
+              <p className="font-mono text-xl font-bold text-foreground">847</p>
+              <p className="font-mono text-[10px] text-muted-foreground">BUILDERS</p>
+            </div>
+            <div className="bg-card/50 border border-border/30 rounded-lg p-3 text-center backdrop-blur-sm">
+              <p className="font-mono text-xl font-bold text-primary">$12K</p>
+              <p className="font-mono text-[10px] text-muted-foreground">PRIZES</p>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
-// Mobile layout with separate snap-scroll sections
+// Mobile layout with rotating carousel
 function MobileDataScrapingLayout() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
+  const [activeSection, setActiveSection] = useState(0);
+
+  // Auto-rotate sections
+  useEffect(() => {
+    if (!isInView) return;
+    const interval = setInterval(() => {
+      setActiveSection((prev) => (prev + 1) % 3);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [isInView]);
 
   return (
-    <div ref={ref} className="h-[300vh] snap-start">
-      {/* Section 1: Platforms orbital visualization */}
-      <MobileSection>
-        <BackgroundEffects />
-        {isInView && (
-          <div className="relative z-10 w-full flex flex-col items-center">
-            {/* Title */}
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="text-center mb-6"
-            >
-              <motion.p
-                className="font-mono text-xs text-primary mb-2"
-                animate={{ opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                {'>'} INITIALIZING DATA EXTRACTION...
-              </motion.p>
-              <h2 className="font-display text-2xl font-normal text-foreground">
-                Scraping <span className="text-primary font-mono">12+</span> platforms
-              </h2>
-            </motion.div>
+    <section
+      ref={ref}
+      className="h-screen snap-start flex flex-col items-center justify-center px-4 relative overflow-hidden"
+    >
+      <BackgroundEffects />
 
-            {/* Platforms orbital display */}
-            <div className="relative h-[350px] w-full flex items-center justify-center">
-              <div className="relative w-full h-full max-w-[350px] mx-auto">
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                  <ProcessingCore />
-                </div>
-                {platforms.slice(0, 8).map((platform, i) => {
-                  const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
-                  const radius = 120;
-                  return <PlatformNode key={platform.id} platform={platform} angle={angle} radius={radius} />;
-                })}
-                {Array.from({ length: 15 }).map((_, i) => (
-                  <DataParticle
-                    key={i}
-                    delay={i * 0.3}
-                    startX={(Math.random() - 0.5) * 300}
-                    startY={(Math.random() - 0.5) * 300}
-                  />
-                ))}
-              </div>
-            </div>
+      {isInView && (
+        <div className="relative z-10 w-full max-w-md mx-auto flex flex-col items-center" style={{ perspective: "1000px" }}>
+          {/* Title */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-6"
+          >
+            <h2 className="font-display text-2xl font-normal text-foreground">
+              Scraping <span className="text-primary font-mono">12+</span> platforms
+            </h2>
+          </motion.div>
 
-            {/* Scroll indicator */}
-            <motion.div
-              className="mt-8 flex flex-col items-center gap-2"
-              animate={{ y: [0, 8, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-            >
-              <span className="text-xs text-muted-foreground font-mono">scroll</span>
-              <div className="w-px h-6 bg-gradient-to-b from-muted-foreground to-transparent" />
-            </motion.div>
+          {/* Carousel content */}
+          <div className="w-full min-h-[380px] flex items-center justify-center">
+            <MobileCarouselContent activeSection={activeSection} />
           </div>
-        )}
-      </MobileSection>
 
-      {/* Section 2: Problems found / Pain points */}
-      <MobileSection>
-        <BackgroundEffects />
-        {isInView && (
-          <div className="relative z-10 w-full flex flex-col items-center">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="text-center mb-6"
-            >
-              <p className="font-mono text-xs text-muted-foreground mb-1">EXTRACTED PAIN POINTS</p>
-              <motion.p
-                className="font-mono text-4xl font-bold text-primary"
-                animate={{ opacity: [0.8, 1, 0.8] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
+          {/* Section indicators */}
+          <div className="flex items-center gap-3 mt-6">
+            {sectionLabels.map((label, i) => (
+              <button
+                key={label}
+                onClick={() => setActiveSection(i)}
+                className="flex flex-col items-center gap-1"
               >
-                1,247
-              </motion.p>
-            </motion.div>
-
-            <PainPointExtraction />
-
-            {/* One-click solution button */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.5, duration: 0.5 }}
-              className="mt-8"
-            >
-              <motion.button
-                className="group px-6 py-3 rounded-xl bg-primary text-primary-foreground font-mono text-sm font-medium flex items-center gap-2 shadow-lg"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.98 }}
-                animate={{
-                  boxShadow: [
-                    "0 0 20px 0 hsl(var(--primary) / 0.3)",
-                    "0 0 40px 5px hsl(var(--primary) / 0.5)",
-                    "0 0 20px 0 hsl(var(--primary) / 0.3)",
-                  ],
-                }}
-                transition={{ boxShadow: { duration: 2, repeat: Infinity } }}
-              >
-                <span>→</span>
-                <span>Turn into solution</span>
-                <motion.span
-                  className="text-primary-foreground/70"
-                  animate={{ opacity: [0.5, 1, 0.5] }}
-                  transition={{ duration: 1, repeat: Infinity }}
-                >
-                  1-CLICK
-                </motion.span>
-              </motion.button>
-            </motion.div>
-
-            {/* Scroll indicator */}
-            <motion.div
-              className="mt-10 flex flex-col items-center gap-2"
-              animate={{ y: [0, 8, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-            >
-              <span className="text-xs text-muted-foreground font-mono">scroll</span>
-              <div className="w-px h-6 bg-gradient-to-b from-muted-foreground to-transparent" />
-            </motion.div>
+                <motion.div
+                  className="w-8 h-1 rounded-full"
+                  animate={{
+                    backgroundColor: i === activeSection ? "hsl(var(--primary))" : "hsl(var(--muted-foreground) / 0.3)",
+                    scaleX: i === activeSection ? 1.2 : 1,
+                  }}
+                  transition={{ duration: 0.3 }}
+                />
+                <span className={`font-mono text-[10px] transition-colors ${i === activeSection ? "text-primary" : "text-muted-foreground/50"}`}>
+                  {label}
+                </span>
+              </button>
+            ))}
           </div>
-        )}
-      </MobileSection>
-
-      {/* Section 3: Leaderboard & Stats */}
-      <MobileSection>
-        <BackgroundEffects />
-        {isInView && (
-          <div className="relative z-10 w-full flex flex-col items-center gap-6">
-            <LeaderboardPreview />
-
-            {/* Stats */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="grid grid-cols-2 gap-4 w-full max-w-xs"
-            >
-              <div className="bg-card/50 border border-border/30 rounded-lg p-4 text-center backdrop-blur-sm">
-                <p className="font-mono text-2xl font-bold text-foreground">847</p>
-                <p className="font-mono text-[10px] text-muted-foreground">ACTIVE BUILDERS</p>
-              </div>
-              <div className="bg-card/50 border border-border/30 rounded-lg p-4 text-center backdrop-blur-sm">
-                <p className="font-mono text-2xl font-bold text-primary">$12K</p>
-                <p className="font-mono text-[10px] text-muted-foreground">WEEKLY PRIZES</p>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </MobileSection>
-    </div>
+        </div>
+      )}
+    </section>
   );
 }
 
@@ -550,19 +555,14 @@ function DesktopDataScrapingLayout() {
             {/* Left: Platform nodes orbital display */}
             <div className="relative h-[300px] sm:h-[350px] flex items-center justify-center order-2 lg:order-1">
               <div className="relative w-full h-full max-w-[350px] mx-auto">
-                {/* Center core */}
                 <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
                   <ProcessingCore />
                 </div>
-
-                {/* Orbital platform nodes */}
-                {platforms.slice(0, 8).map((platform, i) => {
+                {platforms.map((platform, i) => {
                   const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
                   const radius = 120;
                   return <PlatformNode key={platform.id} platform={platform} angle={angle} radius={radius} />;
                 })}
-
-                {/* Data particles flowing to center */}
                 {Array.from({ length: 15 }).map((_, i) => (
                   <DataParticle
                     key={i}
@@ -594,7 +594,6 @@ function DesktopDataScrapingLayout() {
 
               <PainPointExtraction />
 
-              {/* One-click solution button */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -631,7 +630,6 @@ function DesktopDataScrapingLayout() {
             <div className="flex flex-col items-center gap-6 order-3">
               <LeaderboardPreview />
 
-              {/* Additional stats */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -658,7 +656,6 @@ function DesktopDataScrapingLayout() {
 export function DataScrapingSection() {
   const isMobile = useIsMobile();
 
-  // Show mobile layout with separate snap sections, desktop shows single section
   if (isMobile) {
     return <MobileDataScrapingLayout />;
   }
