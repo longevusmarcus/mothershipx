@@ -171,7 +171,7 @@ export function MarketProblemCard({ problem, delay = 0, isPinned = false, onTogg
         )}
 
         {/* Evidence Video Thumbnails - moved above metrics */}
-        <EvidenceThumbnails problemId={getDbProblemId(problem.dbId || problem.id)} maxThumbnails={4} />
+        <EvidenceThumbnails problemId={getDbProblemId(problem.dbId || problem.id)} maxThumbnails={4} sourceType={sourceType} />
 
         {/* Stats Row - source-specific */}
         <div className="flex items-center gap-4 text-xs text-muted-foreground mt-3">
