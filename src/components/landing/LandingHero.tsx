@@ -7,6 +7,7 @@ import logoIcon from "@/assets/logo-icon.png";
 import showcaseSignals from "@/assets/showcase-signals.png";
 import showcaseDetail from "@/assets/showcase-detail.png";
 import showcaseArena from "@/assets/showcase-arena.png";
+import terminalAvatar from "@/assets/terminal-avatar.png";
 
 // Terminal typing effect component
 function TerminalTyping() {
@@ -47,10 +48,22 @@ function TerminalTyping() {
         <span className="ml-3 text-muted-foreground/50 text-xs font-mono">~/mothership</span>
       </div>
       <div className="flex items-start gap-3">
-        <span className="text-primary font-bold shrink-0">$</span>
-        <div className="break-words whitespace-pre-wrap leading-relaxed">
-          {displayedText}
-          <span className={`${showCursor ? 'opacity-100' : 'opacity-0'} text-primary transition-opacity`}>▌</span>
+        {/* Avatar circle */}
+        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-primary/50 shrink-0">
+          <img 
+            src={terminalAvatar} 
+            alt="Builder" 
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-primary font-bold">$</span>
+          </div>
+          <div className="break-words whitespace-pre-wrap leading-relaxed">
+            {displayedText}
+            <span className={`${showCursor ? 'opacity-100' : 'opacity-0'} text-primary transition-opacity`}>▌</span>
+          </div>
         </div>
       </div>
     </div>
