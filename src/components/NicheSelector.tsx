@@ -105,6 +105,23 @@ export const NICHES = [
       "investment",
     ],
   },
+  {
+    id: "finance",
+    label: "Finance",
+    icon: Briefcase,
+    keywords: [
+      "finance",
+      "investing",
+      "stocks",
+      "trading",
+      "money",
+      "budgeting",
+      "debt",
+      "savings",
+      "cryptocurrency",
+      "retirement",
+    ],
+  },
 ] as const;
 
 export type NicheId = (typeof NICHES)[number]["id"];

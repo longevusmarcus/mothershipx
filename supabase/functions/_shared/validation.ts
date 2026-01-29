@@ -23,7 +23,8 @@ export const nicheSchema = z.enum([
   "productivity",
   "career",
   "connections",
-  "business"
+  "business",
+  "finance"
 ]);
 
 // ============= Edge Function Input Schemas =============
@@ -34,7 +35,7 @@ export const searchTikTokSchema = z.object({
 });
 
 export const searchRedditSchema = z.object({
-  subredditId: z.enum(["findapath"]),
+  subredditId: z.enum(["findapath", "finance", "problemgambling"]),
 });
 
 export const searchYouTubeSchema = z.object({

@@ -21,6 +21,20 @@ const SUBREDDITS: Subreddit[] = [
     description: "Career guidance, life direction & decision making",
     members: "800K+",
   },
+  {
+    id: "finance",
+    name: "r/finance",
+    displayName: "Finance",
+    description: "Financial news, analysis & market discussions",
+    members: "2M+",
+  },
+  {
+    id: "problemgambling",
+    name: "r/problemgambling",
+    displayName: "Problem Gambling",
+    description: "Support community for gambling addiction recovery",
+    members: "100K+",
+  },
 ];
 
 interface SubredditSelectorProps {
