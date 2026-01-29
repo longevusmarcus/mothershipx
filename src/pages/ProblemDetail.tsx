@@ -617,6 +617,12 @@ const ProblemDetail = () => {
               <SourceSignals sources={problem.sources} layout="horizontal" />
             </div>
 
+            {/* Source Evidence - Videos & Comments */}
+            <ProblemEvidenceSection 
+              problemId={dbProblemId} 
+              problemTitle={problem.title} 
+            />
+
             {/* Pain Points */}
             <div className="rounded-lg border border-border bg-card p-4">
               <p className="text-sm font-medium mb-3">Validated Pain Points</p>
@@ -632,12 +638,6 @@ const ProblemDetail = () => {
                 ))}
               </div>
             </div>
-
-            {/* Source Evidence - Videos & Comments */}
-            <ProblemEvidenceSection 
-              problemId={dbProblemId} 
-              problemTitle={problem.title} 
-            />
 
             {/* Peak Prediction */}
             {problem.peakPrediction && (
