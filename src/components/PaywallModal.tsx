@@ -144,7 +144,7 @@ export function PaywallModal({
                   className="w-full flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground/60 hover:text-muted-foreground transition-colors"
                 >
                   <Sparkles className="h-3 w-3" />
-                  <span>Or unlock everything for $29/mo</span>
+                  <span>Or unlock everything for $29/lifetime</span>
                 </button>
               </div>
             </motion.div>
@@ -152,10 +152,7 @@ export function PaywallModal({
         </div>
 
         {/* Subscription Paywall */}
-        <SubscriptionPaywall
-          open={showSubscriptionPaywall}
-          onOpenChange={setShowSubscriptionPaywall}
-        />
+        <SubscriptionPaywall open={showSubscriptionPaywall} onOpenChange={setShowSubscriptionPaywall} />
       </DialogContent>
     </Dialog>
   );
