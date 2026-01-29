@@ -153,13 +153,9 @@ export function MeetMothershipSection() {
             className="flex items-center justify-center gap-2 mb-4"
           >
             <span className="font-mono text-sm sm:text-base text-muted-foreground">Think</span>
-            <img 
-              src={lovableLogo} 
-              alt="Lovable" 
-              className="h-5 sm:h-6 object-contain dark:invert-0 invert" 
-            />
+            <img src={lovableLogo} alt="Lovable" className="h-5 sm:h-6 object-contain dark:invert-0 invert" />
             <span className="font-mono text-sm sm:text-base text-muted-foreground">on</span>
-            <motion.span 
+            <motion.span
               className="font-mono text-sm sm:text-base font-bold text-primary"
               animate={{
                 textShadow: [
@@ -181,7 +177,7 @@ export function MeetMothershipSection() {
             transition={{ delay: 0.6 }}
             className="text-sm sm:text-base text-muted-foreground text-center max-w-md mb-10 px-4 leading-relaxed"
           >
-            We show what to build, lets hundreds of builders ship it in 1 click, and rewards the best results.
+            We show what to build, let hundreds of builders ship it in 1 click, and reward the best results.
           </motion.p>
 
           {/* Mascot with floating animation */}
@@ -193,12 +189,7 @@ export function MeetMothershipSection() {
           >
             {/* Floating particles */}
             {Array.from({ length: 8 }).map((_, i) => (
-              <FloatingParticle
-                key={i}
-                delay={i * 0.3}
-                x={(Math.random() - 0.5) * 60}
-                y={(Math.random() - 0.5) * 40}
-              />
+              <FloatingParticle key={i} delay={i * 0.3} x={(Math.random() - 0.5) * 60} y={(Math.random() - 0.5) * 40} />
             ))}
 
             {/* Glow behind mascot */}
@@ -262,14 +253,8 @@ export function MeetMothershipSection() {
             </motion.div>
           </motion.div>
 
-
           {/* Scroll indicator */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5 }}
-            className="mt-12"
-          >
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }} className="mt-12">
             <motion.div
               animate={{ y: [0, 8, 0] }}
               transition={{ duration: 1.5, repeat: Infinity }}
