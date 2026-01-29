@@ -897,7 +897,7 @@ const ProblemDetail = () => {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
           onClick={() => setAutoBuildOpen(true)}
-          className="h-11 w-11 rounded-full bg-card border border-border shadow-lg hover:scale-105 active:scale-95 transition-transform flex items-center justify-center group"
+          className="h-11 w-11 rounded-full bg-foreground dark:bg-card border border-border shadow-lg hover:scale-105 active:scale-95 transition-transform flex items-center justify-center group"
           aria-label="Auto-build ideas"
         >
           <div className="relative">
