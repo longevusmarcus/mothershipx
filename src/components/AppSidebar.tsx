@@ -307,35 +307,6 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
         </div>
       </nav>
 
-      {/* Floating Action Buttons - SuperLovable & New */}
-      <div className="px-3 py-4 flex flex-col items-center gap-3">
-        {/* SuperLovable Button */}
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => window.open("https://lovable.dev/projects/create", "_blank")}
-          className="h-12 w-12 rounded-full bg-gradient-to-br from-pink-500 via-purple-500 to-indigo-500 flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow"
-          title="Launch SuperLovable"
-        >
-          <img
-            src={superloveLogo}
-            alt="SuperLovable"
-            className="h-6 w-6 object-contain"
-          />
-        </motion.button>
-
-        {/* Plus Button */}
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => navigate("/submit")}
-          className="h-12 w-12 rounded-full bg-foreground text-background flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow"
-          title="New Build"
-        >
-          <Plus className="h-5 w-5" />
-        </motion.button>
-      </div>
-
       {/* Profile Section */}
       <div className="px-3 py-3 border-t border-sidebar-border">
         {isAuthenticated ? (
