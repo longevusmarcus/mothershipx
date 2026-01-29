@@ -739,7 +739,7 @@ function MobileDataScrapingLayout() {
                         animate={{ opacity: [0.8, 1, 0.8] }}
                         transition={{ duration: 1.5, repeat: Infinity }}
                       >
-                        250
+                        247
                       </motion.p>
                     </motion.div>
 
