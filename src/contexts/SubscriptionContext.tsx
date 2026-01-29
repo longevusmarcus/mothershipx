@@ -14,7 +14,7 @@ export interface SubscriptionStatus {
 // Lifetime access pricing (kept for reference, but edge function controls the actual price)
 export const SUBSCRIPTION_PRICE_ID = "price_1Su9HS2LCwPxHz0nJtdFrBXd";
 export const SUBSCRIPTION_PRODUCT_ID = "prod_TpcrDIRieLAbv5";
-export const SUBSCRIPTION_PRICE = 29,00;
+export const SUBSCRIPTION_PRICE = 29.0;
 export const SUBSCRIPTION_IS_LIFETIME = true;
 
 interface SubscriptionContextType extends SubscriptionStatus {
@@ -121,24 +121,21 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(interval);
   }, [isAuthenticated, checkSubscription]);
 
-  const createCheckout = useCallback(
-    async () => {
-      if (!isAuthenticated) {
-        throw new Error("User must be authenticated");
-      }
+  const createCheckout = useCallback(async () => {
+    if (!isAuthenticated) {
+      throw new Error("User must be authenticated");
+    }
 
-      // Price ID is controlled by the edge function via env var
-      const { data, error } = await supabase.functions.invoke("create-subscription-checkout", {
-        body: {},
-      });
+    // Price ID is controlled by the edge function via env var
+    const { data, error } = await supabase.functions.invoke("create-subscription-checkout", {
+      body: {},
+    });
 
-      if (error) throw error;
-      if (data.error) throw new Error(data.error);
+    if (error) throw error;
+    if (data.error) throw new Error(data.error);
 
-      return data.url;
-    },
-    [isAuthenticated],
-  );
+    return data.url;
+  }, [isAuthenticated]);
 
   const openCustomerPortal = useCallback(async () => {
     if (!isAuthenticated) {
