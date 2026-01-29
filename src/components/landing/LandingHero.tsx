@@ -201,8 +201,22 @@ export function LandingHero() {
               Build useful apps, websites, and digital products at the
             </p>
 
-            {/* Speed of Thought - Matrix style highlight */}
+            {/* Speed of Thought - Matrix style highlight with CRT flicker */}
             <div className="relative inline-block my-4">
+              {/* CRT flicker overlay */}
+              <motion.div
+                className="absolute inset-0 pointer-events-none z-20"
+                animate={{
+                  opacity: [1, 0.97, 1, 0.98, 1, 0.96, 1],
+                }}
+                transition={{
+                  duration: 0.15,
+                  repeat: Infinity,
+                  repeatDelay: Math.random() * 2 + 1,
+                  times: [0, 0.1, 0.2, 0.4, 0.6, 0.8, 1],
+                }}
+              />
+
               {/* Glitch layers */}
               <motion.span
                 className="absolute inset-0 font-mono text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary/30 tracking-tight uppercase"
@@ -227,7 +241,7 @@ export function LandingHero() {
                 speed_of_thought
               </motion.span>
 
-              {/* Main text */}
+              {/* Main text with CRT flicker */}
               <motion.span
                 className="relative font-mono text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground tracking-tight uppercase"
                 animate={{
@@ -236,11 +250,23 @@ export function LandingHero() {
                     "0 0 30px hsl(var(--primary) / 0.7), 0 0 60px hsl(var(--primary) / 0.4)",
                     "0 0 20px hsl(var(--primary) / 0.5), 0 0 40px hsl(var(--primary) / 0.3)",
                   ],
+                  opacity: [1, 0.92, 1, 0.97, 1, 0.94, 1],
                 }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                transition={{
+                  textShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" },
+                  opacity: { duration: 0.1, repeat: Infinity, repeatDelay: 0.5 },
+                }}
               >
                 speed_of_thought
               </motion.span>
+
+              {/* Horizontal scan lines (CRT effect) */}
+              <div
+                className="absolute inset-0 pointer-events-none z-10 opacity-[0.03]"
+                style={{
+                  backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, hsl(var(--foreground)) 2px, hsl(var(--foreground)) 4px)",
+                }}
+              />
 
               {/* Scan line effect */}
               <motion.div
