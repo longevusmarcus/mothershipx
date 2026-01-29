@@ -18,6 +18,8 @@ import {
   MessageSquare,
   Plus,
   Terminal,
+  Rocket,
+  Layers,
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
@@ -394,7 +396,7 @@ const ProblemDetail = () => {
           </div>
           
           {/* Action Buttons */}
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center gap-2 mb-4 flex-wrap">
             <Button
               ref={startBuildingRef}
               size="sm"
@@ -412,6 +414,40 @@ const ProblemDetail = () => {
                 "Start Building"
               )}
             </Button>
+            
+            {/* Launch in Lovable Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const prompt = encodeURIComponent(`Build a solution for: ${problem.title}\n\n${problem.subtitle || ""}\n\nNiche: ${problem.niche}\nCategory: ${problem.category}`);
+                window.open(`https://lovable.dev/projects/create?prompt=${prompt}`, "_blank");
+              }}
+            >
+              <Rocket className="h-4 w-4 mr-1" />
+              Launch in Lovable
+            </Button>
+            
+            {/* Launch 10 Ideas Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={async () => {
+                toast({
+                  title: "Launching ideas...",
+                  description: "Opening 10 project tabs sequentially",
+                });
+                for (let i = 0; i < 10; i++) {
+                  const prompt = encodeURIComponent(`Build unique startup idea #${i + 1} for: ${problem.title}\n\nNiche: ${problem.niche}`);
+                  window.open(`https://lovable.dev/projects/create?prompt=${prompt}`, "_blank");
+                  await new Promise((resolve) => setTimeout(resolve, 1500));
+                }
+              }}
+            >
+              <Layers className="h-4 w-4 mr-1" />
+              Launch 10 Ideas
+            </Button>
+            
             {isJoined && (
               <motion.div
                 initial={{ scale: 0, opacity: 0 }}
@@ -424,6 +460,7 @@ const ProblemDetail = () => {
                 >
                   <Button 
                     size="sm"
+                    variant="glow"
                     onClick={() => navigate("/submit", {
                       state: {
                         problem: {
@@ -453,6 +490,16 @@ const ProblemDetail = () => {
             </Button>
             <Button variant="outline" size="sm" onClick={handleShare}>
               <Share2 className="h-4 w-4" />
+            </Button>
+            
+            {/* SuperLovable Auto-Build Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setAutoBuildOpen(true)}
+              className="ml-auto"
+            >
+              <img src={lovableLogo} alt="SuperLovable" className="h-4 w-4 scale-[1.35]" />
             </Button>
           </div>
           
