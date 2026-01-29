@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DataScrapingSection } from "./DataScrapingSection";
 import logoIcon from "@/assets/logo-icon.png";
 import showcaseSignals from "@/assets/showcase-signals.png";
 import showcaseDetail from "@/assets/showcase-detail.png";
@@ -178,6 +179,9 @@ export function LandingHero() {
           </h1>
         </motion.div>
       </section>
+
+      {/* PAGE 3: Data Scraping Visualization */}
+      <DataScrapingSection />
 
       {/* PAGE 3: Tagline + Screenshots */}
       <section className="min-h-screen snap-start py-20 px-6 relative overflow-hidden flex flex-col justify-center">
