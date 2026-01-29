@@ -937,7 +937,7 @@ function DesktopDataScrapingLayout() {
                   transition={{ boxShadow: { duration: 2, repeat: Infinity } }}
                 >
                   <span>→</span>
-                  <span>Turn into solution</span>
+                  <span>Turn into solutions</span>
                   <motion.span
                     className="text-primary-foreground/70"
                     animate={{ opacity: [0.5, 1, 0.5] }}
