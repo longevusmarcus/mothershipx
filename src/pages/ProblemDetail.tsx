@@ -403,8 +403,8 @@ const ProblemDetail = () => {
             )}
           </div>
           
-          {/* Action Buttons - Row 1: Joined + Launch buttons + Share */}
-          <div className="flex items-center gap-2 mb-2">
+          {/* Action Buttons - Row 1: Joined + Submit (desktop) + Launch buttons + Share */}
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
             <Button
               ref={startBuildingRef}
               size="sm"
@@ -422,6 +422,42 @@ const ProblemDetail = () => {
                 "Start Building"
               )}
             </Button>
+            
+            {/* Submit Build - inline on desktop only */}
+            {isJoined && (
+              <motion.div
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                className="hidden md:block"
+              >
+                <motion.div
+                  animate={{ scale: [1, 1.05, 1] }}
+                  transition={{ duration: 1.5, repeat: 2, ease: "easeInOut" }}
+                >
+                  <Button 
+                    size="sm"
+                    variant="glow"
+                    onClick={() => navigate("/submit", {
+                      state: {
+                        problem: {
+                          id: problem.id,
+                          title: problem.title,
+                          subtitle: problem.subtitle,
+                          niche: problem.niche,
+                          opportunityScore: problem.opportunityScore,
+                          sentiment: problem.sentiment,
+                        },
+                        joinType: "solo",
+                      },
+                    })}
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    Submit Build
+                  </Button>
+                </motion.div>
+              </motion.div>
+            )}
             
             {/* Launch in Lovable Button - icon only on mobile */}
             <Button
@@ -469,13 +505,13 @@ const ProblemDetail = () => {
             </Button>
           </div>
           
-          {/* Action Buttons - Row 2: Submit Build (full width on mobile when joined) */}
+          {/* Action Buttons - Row 2: Submit Build (full width on mobile only) */}
           {isJoined && (
             <motion.div
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", stiffness: 400, damping: 15 }}
-              className="mb-4"
+              className="mb-4 md:hidden"
             >
               <motion.div
                 animate={{ scale: [1, 1.05, 1] }}
@@ -497,7 +533,7 @@ const ProblemDetail = () => {
                       joinType: "solo",
                     },
                   })}
-                  className="w-full md:w-auto"
+                  className="w-full"
                 >
                   <Plus className="h-4 w-4 mr-1" />
                   Submit Build
