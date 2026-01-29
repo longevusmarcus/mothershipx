@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { Play, MessageSquare } from "lucide-react";
 import { useProblemEvidence } from "@/hooks/useProblemEvidence";
 
@@ -17,6 +17,24 @@ const MOCK_REDDIT_POSTS = [
 export function EvidenceThumbnails({ problemId, maxThumbnails = 4, sourceType = "default" }: EvidenceThumbnailsProps) {
   const { data, isLoading } = useProblemEvidence(problemId);
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
+
+  const handleImageError = useCallback((videoId: string) => {
+    // Only mark as failed if we haven't successfully loaded it before
+    if (!loadedImages.has(videoId)) {
+      setFailedImages((prev) => new Set(prev).add(videoId));
+    }
+  }, [loadedImages]);
+
+  const handleImageLoad = useCallback((videoId: string) => {
+    setLoadedImages((prev) => new Set(prev).add(videoId));
+    // Remove from failed if it was there
+    setFailedImages((prev) => {
+      const next = new Set(prev);
+      next.delete(videoId);
+      return next;
+    });
+  }, []);
 
   const thumbnails = useMemo(() => {
     if (!data?.videos) return [];
@@ -24,10 +42,6 @@ export function EvidenceThumbnails({ problemId, maxThumbnails = 4, sourceType = 
       .filter((v) => v.video_thumbnail && !failedImages.has(v.id))
       .slice(0, maxThumbnails);
   }, [data?.videos, maxThumbnails, failedImages]);
-
-  const handleImageError = (videoId: string) => {
-    setFailedImages((prev) => new Set(prev).add(videoId));
-  };
 
   // For Reddit sources with no video evidence, show mock Reddit text post thumbnails
   if (sourceType === "reddit" && thumbnails.length === 0 && !isLoading) {
@@ -86,7 +100,10 @@ export function EvidenceThumbnails({ problemId, maxThumbnails = 4, sourceType = 
             alt=""
             className="w-full h-full object-cover"
             loading="lazy"
+            referrerPolicy="no-referrer"
+            crossOrigin="anonymous"
             onError={() => handleImageError(video.id)}
+            onLoad={() => handleImageLoad(video.id)}
           />
           {/* Play overlay */}
           <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">

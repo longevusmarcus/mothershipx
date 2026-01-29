@@ -3,7 +3,7 @@ import { Video, MessageSquare, ExternalLink, ThumbsUp, Eye, Play, RefreshCw, Loc
 import { useProblemEvidence, useScrapeEvidence } from "@/hooks/useProblemEvidence";
 import { Button } from "@/components/ui/button";
 import { formatNumber } from "@/lib/utils";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { toast } from "sonner";
 import type { ProblemEvidence } from "@/hooks/useProblemEvidence";
 
@@ -30,11 +30,25 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
   const scrapeEvidence = useScrapeEvidence();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   const [showAll, setShowAll] = useState(false);
 
-  const handleImageError = (videoId: string) => {
-    setFailedImages((prev) => new Set(prev).add(videoId));
-  };
+  const handleImageError = useCallback((videoId: string) => {
+    // Only mark as failed if we haven't successfully loaded it before
+    if (!loadedImages.has(videoId)) {
+      setFailedImages((prev) => new Set(prev).add(videoId));
+    }
+  }, [loadedImages]);
+
+  const handleImageLoad = useCallback((videoId: string) => {
+    setLoadedImages((prev) => new Set(prev).add(videoId));
+    // Remove from failed if it was there
+    setFailedImages((prev) => {
+      const next = new Set(prev);
+      next.delete(videoId);
+      return next;
+    });
+  }, []);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -182,7 +196,10 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
                       src={video.video_thumbnail!}
                       alt={video.video_title || "Video thumbnail"}
                       className="w-full h-full object-cover"
+                      referrerPolicy="no-referrer"
+                      crossOrigin="anonymous"
                       onError={() => handleImageError(video.id)}
+                      onLoad={() => handleImageLoad(video.id)}
                     />
 
                     {/* Overlay */}
