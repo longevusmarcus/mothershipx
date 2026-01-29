@@ -28,9 +28,10 @@ import logo from "@/assets/logo.png";
 
 interface AppLayoutProps {
   children: ReactNode;
+  hideChrome?: boolean; // Hide header and bottom nav on mobile (for immersive dashboard view)
 }
 
-export function AppLayout({ children }: AppLayoutProps) {
+export function AppLayout({ children, hideChrome = false }: AppLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const { profile, user, signOut, isAuthenticated } = useAuth();
@@ -79,7 +80,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       <div className="flex-1 flex flex-col w-full">
         {/* Header */}
-        <header className="h-14 md:h-16 border-b border-border bg-background/80 backdrop-blur-lg sticky top-0 z-40">
+        <header className={`h-14 md:h-16 border-b border-border bg-background/80 backdrop-blur-lg sticky top-0 z-40 ${hideChrome ? 'hidden md:block' : ''}`}>
           <div className="h-full px-4 md:px-6 flex items-center justify-between">
             <div className="flex items-center gap-3">
               {/* Mobile Logo - only icon */}
@@ -189,12 +190,12 @@ export function AppLayout({ children }: AppLayoutProps) {
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 p-4 md:p-6 pb-20 md:pb-6">
+        <main className={`flex-1 p-4 md:p-6 ${hideChrome ? 'pb-4' : 'pb-20'} md:pb-6`}>
           {children}
         </main>
 
-        {/* Mobile Bottom Nav */}
-        <MobileBottomNav />
+        {/* Mobile Bottom Nav - hidden when hideChrome is true */}
+        {!hideChrome && <MobileBottomNav />}
       </div>
 
       {/* Welcome Chatbot - shows on all pages for first-time visitors */}

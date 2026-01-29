@@ -282,7 +282,7 @@ const ProblemDetail = () => {
     : `https://mothershipx.lovable.app/problems/${id}`;
 
   return (
-    <AppLayout>
+    <AppLayout hideChrome>
       <SEO
         title={problem.title}
         description={problem.subtitle || `Discover this ${problem.category} opportunity with ${formatNumber(problem.views)} views.`}
@@ -415,7 +415,7 @@ const ProblemDetail = () => {
               )}
             </Button>
             
-            {/* Launch in Lovable Button */}
+            {/* Launch in Lovable Button - icon only on mobile */}
             <Button
               variant="outline"
               size="sm"
@@ -423,12 +423,13 @@ const ProblemDetail = () => {
                 const prompt = encodeURIComponent(`Build a solution for: ${problem.title}\n\n${problem.subtitle || ""}\n\nNiche: ${problem.niche}\nCategory: ${problem.category}`);
                 window.open(`https://lovable.dev/projects/create?prompt=${prompt}`, "_blank");
               }}
+              className="h-8 w-8 p-0 md:h-auto md:w-auto md:px-3"
             >
-              <Rocket className="h-4 w-4 mr-1" />
-              Launch in Lovable
+              <Rocket className="h-4 w-4 md:mr-1" />
+              <span className="hidden md:inline">Launch in Lovable</span>
             </Button>
             
-            {/* Launch 10 Ideas Button */}
+            {/* Launch 10 Ideas Button - icon only on mobile */}
             <Button
               variant="outline"
               size="sm"
@@ -443,9 +444,10 @@ const ProblemDetail = () => {
                   await new Promise((resolve) => setTimeout(resolve, 1500));
                 }
               }}
+              className="h-8 w-8 p-0 md:h-auto md:w-auto md:px-3"
             >
-              <Layers className="h-4 w-4 mr-1" />
-              Launch 10 Ideas
+              <Layers className="h-4 w-4 md:mr-1" />
+              <span className="hidden md:inline">Launch 10 Ideas</span>
             </Button>
             
             {isJoined && (
@@ -511,24 +513,26 @@ const ProblemDetail = () => {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="h-9 p-1 bg-secondary/50">
-            <TabsTrigger value="overview" className="text-xs data-[state=active]:bg-background">
-              Overview
-            </TabsTrigger>
-            <TabsTrigger value="squads" className="text-xs data-[state=active]:bg-background">
-              Squads
-            </TabsTrigger>
-            <TabsTrigger value="solutions" className="text-xs data-[state=active]:bg-background">
-              Ideas
-            </TabsTrigger>
-            <TabsTrigger value="competitors" className="text-xs data-[state=active]:bg-background">
-              Competitors
-            </TabsTrigger>
-            <TabsTrigger value="prompts" className="text-xs data-[state=active]:bg-background gap-1">
-              <Terminal className="h-3 w-3" />
-              Prompts
-            </TabsTrigger>
-          </TabsList>
+          <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
+            <TabsList className="h-9 p-1 bg-secondary/50 w-max md:w-auto">
+              <TabsTrigger value="overview" className="text-xs data-[state=active]:bg-background whitespace-nowrap">
+                Overview
+              </TabsTrigger>
+              <TabsTrigger value="squads" className="text-xs data-[state=active]:bg-background whitespace-nowrap">
+                Squads
+              </TabsTrigger>
+              <TabsTrigger value="solutions" className="text-xs data-[state=active]:bg-background whitespace-nowrap">
+                Ideas
+              </TabsTrigger>
+              <TabsTrigger value="competitors" className="text-xs data-[state=active]:bg-background whitespace-nowrap">
+                Competitors
+              </TabsTrigger>
+              <TabsTrigger value="prompts" className="text-xs data-[state=active]:bg-background gap-1 whitespace-nowrap">
+                <Terminal className="h-3 w-3" />
+                Prompts
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="overview" forceMount className={`mt-4 space-y-4 ${activeTab !== "overview" ? "hidden" : ""}`}>
             {/* Opportunity + Hidden Insight */}
