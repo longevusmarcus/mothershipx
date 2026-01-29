@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useInView } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import showcaseSignals from "@/assets/showcase-signals.png";
 import showcaseDetail from "@/assets/showcase-detail.png";
 import showcaseArena from "@/assets/showcase-arena.png";
 import terminalAvatar from "@/assets/terminal-avatar.png";
+import mothershipMascot from "@/assets/mothership-mascot.png";
 
 // Terminal typing effect component
 function TerminalTyping() {
@@ -205,98 +206,271 @@ export function LandingHero() {
       <DataScrapingSection />
 
       {/* PAGE 5: Tagline + Screenshots */}
-      <section className="min-h-screen snap-start py-12 md:py-20 px-4 md:px-6 relative overflow-hidden flex flex-col justify-center">
-        {/* Background glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
+      <SpeedOfThoughtSection handleEnter={handleEnter} />
+    </div>
+    </>
+  );
+}
 
-        <div className="relative z-10 max-w-6xl mx-auto w-full">
-          {/* Tagline with "speed of thought" emphasis - fixed for mobile */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="text-center max-w-4xl mx-auto mb-10 md:mb-16"
-          >
-            <p className="font-display text-lg sm:text-xl md:text-3xl lg:text-4xl text-muted-foreground leading-relaxed px-2">
-              Build useful apps, websites, and digital products at the
-            </p>
+// Speed of Thought Section with orbiting mascot
+function SpeedOfThoughtSection({ handleEnter }: { handleEnter: () => void }) {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(sectionRef, { once: true, margin: "-30%" });
+  const [animationPhase, setAnimationPhase] = useState<"idle" | "orbiting" | "flyaway">("idle");
 
-            {/* Speed of Thought - styled exactly like MothershipX */}
-            <div className="relative inline-block my-3 md:my-4">
-              <motion.span
-                className="relative font-display text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-normal text-primary tracking-tight glow-text"
-                animate={{
-                  textShadow: [
-                    "0 0 20px hsl(var(--primary) / 0.3), 0 0 40px hsl(var(--primary) / 0.15)",
-                    "0 0 30px hsl(var(--primary) / 0.5), 0 0 60px hsl(var(--primary) / 0.25)",
-                    "0 0 20px hsl(var(--primary) / 0.3), 0 0 40px hsl(var(--primary) / 0.15)",
-                  ],
-                }}
-                transition={{
-                  textShadow: { duration: 3, repeat: Infinity, ease: "easeInOut" },
-                }}
-              >
-                speed of thought
-              </motion.span>
-            </div>
+  // Start orbiting animation when section comes into view
+  useEffect(() => {
+    if (isInView && animationPhase === "idle") {
+      setAnimationPhase("orbiting");
+      
+      // After orbiting, fly away
+      const flyawayTimer = setTimeout(() => {
+        setAnimationPhase("flyaway");
+      }, 3500); // 3.5 seconds of orbiting
+      
+      return () => clearTimeout(flyawayTimer);
+    }
+  }, [isInView, animationPhase]);
 
-            <p className="font-display text-sm sm:text-lg md:text-2xl lg:text-3xl text-muted-foreground leading-relaxed px-2">
-              backed by <em className="text-foreground font-accent">real market demand</em>
-              <br className="sm:hidden" />
-              <span className="hidden sm:inline"> and </span>
-              <span className="sm:hidden"> & </span>
-              rewarded for <em className="text-foreground font-accent">real impact</em>
-            </p>
-          </motion.div>
+  return (
+    <section 
+      ref={sectionRef}
+      className="min-h-screen snap-start py-12 md:py-20 px-4 md:px-6 relative overflow-hidden flex flex-col justify-center"
+    >
+      {/* Background glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
 
-          {/* Screenshots - Carousel on mobile, side-by-side on desktop */}
-          <ScreenshotCarousel
-            images={[
-              { src: showcaseSignals, alt: "Live Signals Dashboard" },
-              { src: showcaseDetail, alt: "Problem Analysis" },
-              { src: showcaseArena, alt: "Builder Arena" },
-            ]}
-          />
+      <div className="relative z-10 max-w-6xl mx-auto w-full">
+        {/* Tagline with "speed of thought" emphasis */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="text-center max-w-4xl mx-auto mb-10 md:mb-16"
+        >
+          <p className="font-display text-lg sm:text-xl md:text-3xl lg:text-4xl text-muted-foreground leading-relaxed px-2">
+            Build useful apps, websites, and digital products at the
+          </p>
 
-          {/* CTA Button */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.5, duration: 0.6 }}
-            className="flex flex-col items-center mt-16"
-          >
-            <Button
-              onClick={handleEnter}
-              size="lg"
-              className="group text-base px-8 py-6 rounded-full bg-foreground text-background hover:bg-foreground/90 transition-all duration-300 shadow-lg hover:shadow-xl"
+          {/* Speed of Thought with orbiting mascot */}
+          <div ref={textRef} className="relative inline-block my-3 md:my-4">
+            {/* Orbiting mascot */}
+            <AnimatePresence>
+              {animationPhase !== "idle" && (
+                <OrbitingMascot phase={animationPhase} />
+              )}
+            </AnimatePresence>
+            
+            <motion.span
+              className="relative font-display text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-normal text-primary tracking-tight glow-text"
+              animate={{
+                textShadow: [
+                  "0 0 20px hsl(var(--primary) / 0.3), 0 0 40px hsl(var(--primary) / 0.15)",
+                  "0 0 30px hsl(var(--primary) / 0.5), 0 0 60px hsl(var(--primary) / 0.25)",
+                  "0 0 20px hsl(var(--primary) / 0.3), 0 0 40px hsl(var(--primary) / 0.15)",
+                ],
+              }}
+              transition={{
+                textShadow: { duration: 3, repeat: Infinity, ease: "easeInOut" },
+              }}
             >
-              Enter MothershipX
-              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
+              speed of thought
+            </motion.span>
+          </div>
 
-            <p className="mt-4 text-xs text-muted-foreground/50 font-mono">Press Enter to begin</p>
-          </motion.div>
+          <p className="font-display text-sm sm:text-lg md:text-2xl lg:text-3xl text-muted-foreground leading-relaxed px-2">
+            backed by <em className="text-foreground font-accent">real market demand</em>
+            <br className="sm:hidden" />
+            <span className="hidden sm:inline"> and </span>
+            <span className="sm:hidden"> & </span>
+            rewarded for <em className="text-foreground font-accent">real impact</em>
+          </p>
+        </motion.div>
 
-          {/* Footer - embedded in this section */}
-          <div className="mt-20 pt-8 border-t border-border/30">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-              <p>© 2026 MothershipX. All rights reserved.</p>
-              <div className="flex items-center gap-6">
-                <a href="/terms" className="hover:text-foreground transition-colors">
-                  Terms
-                </a>
-                <a href="/privacy" className="hover:text-foreground transition-colors">
-                  Privacy
-                </a>
-              </div>
+        {/* Screenshots - Carousel on mobile, side-by-side on desktop */}
+        <ScreenshotCarousel
+          images={[
+            { src: showcaseSignals, alt: "Live Signals Dashboard" },
+            { src: showcaseDetail, alt: "Problem Analysis" },
+            { src: showcaseArena, alt: "Builder Arena" },
+          ]}
+        />
+
+        {/* CTA Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5, duration: 0.6 }}
+          className="flex flex-col items-center mt-16"
+        >
+          <Button
+            onClick={handleEnter}
+            size="lg"
+            className="group text-base px-8 py-6 rounded-full bg-foreground text-background hover:bg-foreground/90 transition-all duration-300 shadow-lg hover:shadow-xl"
+          >
+            Enter MothershipX
+            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </Button>
+
+          <p className="mt-4 text-xs text-muted-foreground/50 font-mono">Press Enter to begin</p>
+        </motion.div>
+
+        {/* Footer - embedded in this section */}
+        <div className="mt-20 pt-8 border-t border-border/30">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+            <p>© 2026 MothershipX. All rights reserved.</p>
+            <div className="flex items-center gap-6">
+              <a href="/terms" className="hover:text-foreground transition-colors">
+                Terms
+              </a>
+              <a href="/privacy" className="hover:text-foreground transition-colors">
+                Privacy
+              </a>
             </div>
           </div>
         </div>
-      </section>
-    </div>
-    </>
+      </div>
+    </section>
+  );
+}
+
+// Orbiting mascot component
+function OrbitingMascot({ phase }: { phase: "orbiting" | "flyaway" }) {
+  // Orbit parameters
+  const orbitRadiusX = 180; // Horizontal radius (wider)
+  const orbitRadiusY = 60;  // Vertical radius (elliptical)
+  
+  if (phase === "flyaway") {
+    return (
+      <motion.div
+        className="absolute left-1/2 top-1/2 z-20 pointer-events-none"
+        initial={{ x: orbitRadiusX, y: 0, scale: 1, opacity: 1 }}
+        animate={{ 
+          x: [orbitRadiusX, 400, 800],
+          y: [0, -100, -300],
+          scale: [1, 1.2, 0.5],
+          opacity: [1, 1, 0],
+          rotate: [0, 15, 45],
+        }}
+        exit={{ opacity: 0 }}
+        transition={{ 
+          duration: 1.2, 
+          ease: [0.23, 1, 0.32, 1],
+        }}
+      >
+        <motion.img
+          src={mothershipMascot}
+          alt=""
+          className="w-10 h-10 sm:w-14 sm:h-14 object-contain"
+          style={{
+            filter: "drop-shadow(0 0 15px hsl(var(--primary) / 0.6))",
+          }}
+        />
+        
+        {/* Trail particles on flyaway */}
+        {[...Array(5)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 rounded-full bg-primary/60"
+            style={{ left: -10 - i * 8, top: 10 + i * 5 }}
+            initial={{ opacity: 0.8, scale: 1 }}
+            animate={{ opacity: 0, scale: 0, x: -20 }}
+            transition={{ duration: 0.4, delay: i * 0.05 }}
+          />
+        ))}
+      </motion.div>
+    );
+  }
+
+  // Orbiting phase - circular motion around the text
+  return (
+    <motion.div
+      className="absolute left-1/2 top-1/2 z-20 pointer-events-none"
+      initial={{ x: orbitRadiusX, y: 0, opacity: 0, scale: 0.5 }}
+      animate={{
+        x: [
+          orbitRadiusX,
+          0,
+          -orbitRadiusX,
+          0,
+          orbitRadiusX,
+          0,
+          -orbitRadiusX,
+          0,
+          orbitRadiusX,
+        ],
+        y: [
+          0,
+          -orbitRadiusY,
+          0,
+          orbitRadiusY,
+          0,
+          -orbitRadiusY,
+          0,
+          orbitRadiusY,
+          0,
+        ],
+        opacity: [0, 1, 1, 1, 1, 1, 1, 1, 1],
+        scale: [0.5, 1, 1, 1, 1, 1, 1, 1, 1],
+      }}
+      transition={{
+        duration: 3.5,
+        ease: "linear",
+        times: [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1],
+      }}
+    >
+      {/* Mascot with glow */}
+      <motion.div
+        animate={{ 
+          rotate: [0, 10, -10, 10, 0],
+        }}
+        transition={{ 
+          duration: 0.8, 
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      >
+        <motion.img
+          src={mothershipMascot}
+          alt=""
+          className="w-10 h-10 sm:w-14 sm:h-14 object-contain"
+          style={{
+            filter: "drop-shadow(0 0 20px hsl(var(--primary) / 0.5))",
+          }}
+          animate={{
+            filter: [
+              "drop-shadow(0 0 15px hsl(var(--primary) / 0.4))",
+              "drop-shadow(0 0 25px hsl(var(--primary) / 0.7))",
+              "drop-shadow(0 0 15px hsl(var(--primary) / 0.4))",
+            ],
+          }}
+          transition={{ duration: 0.5, repeat: Infinity }}
+        />
+      </motion.div>
+      
+      {/* Trailing sparkles */}
+      <motion.div
+        className="absolute -left-2 top-1/2 w-1.5 h-1.5 rounded-full bg-primary/70"
+        animate={{
+          opacity: [0.8, 0],
+          scale: [1, 0],
+          x: [-5, -20],
+        }}
+        transition={{ duration: 0.3, repeat: Infinity }}
+      />
+      <motion.div
+        className="absolute -left-4 top-1/3 w-1 h-1 rounded-full bg-primary/50"
+        animate={{
+          opacity: [0.6, 0],
+          scale: [1, 0],
+          x: [-5, -25],
+        }}
+        transition={{ duration: 0.4, repeat: Infinity, delay: 0.1 }}
+      />
+    </motion.div>
   );
 }
 
