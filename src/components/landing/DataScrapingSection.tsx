@@ -38,17 +38,17 @@ function DataParticle({ delay, startX, startY }: { delay: number; startX: number
 }
 
 // Ultra-minimal platform node - senior designer aesthetic
-function PlatformNode({ platform, angle, radius }: { platform: typeof platforms[0]; angle: number; radius: number }) {
+function PlatformNode({ platform, angle, radius }: { platform: (typeof platforms)[0]; angle: number; radius: number }) {
   const x = Math.cos(angle) * radius;
   const y = Math.sin(angle) * radius;
 
   return (
     <motion.div
       className="absolute flex flex-col items-center gap-1"
-      style={{ 
-        left: `calc(50% + ${x}px)`, 
+      style={{
+        left: `calc(50% + ${x}px)`,
         top: `calc(50% + ${y}px)`,
-        transform: 'translate(-50%, -50%)'
+        transform: "translate(-50%, -50%)",
       }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -57,14 +57,14 @@ function PlatformNode({ platform, angle, radius }: { platform: typeof platforms[
       {/* Minimal icon container - just text, no heavy card */}
       <motion.div
         className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-muted/40 flex items-center justify-center font-mono text-xs font-medium text-foreground/70"
-        whileHover={{ 
-          scale: 1.1, 
+        whileHover={{
+          scale: 1.1,
           backgroundColor: "hsl(var(--muted) / 0.6)",
         }}
         transition={{ duration: 0.2 }}
       >
         {platform.icon}
-        
+
         {/* Tiny pulse dot */}
         <motion.div
           className="absolute -right-px -top-px w-1 h-1 rounded-full bg-primary/60"
@@ -74,9 +74,7 @@ function PlatformNode({ platform, angle, radius }: { platform: typeof platforms[
       </motion.div>
 
       {/* Platform name - very subtle */}
-      <span className="text-[9px] text-muted-foreground/50 font-mono tracking-wider uppercase">
-        {platform.name}
-      </span>
+      <span className="text-[9px] text-muted-foreground/50 font-mono tracking-wider uppercase">{platform.name}</span>
     </motion.div>
   );
 }
@@ -92,14 +90,14 @@ function ProcessingCore({ size = "normal" }: { size?: "small" | "normal" }) {
   const containerSize = size === "small" ? 80 : 100;
   const sizeClasses = size === "small" ? "w-20 h-20" : "w-24 h-24 sm:w-28 sm:h-28";
   const logoSize = size === "small" ? "w-5 h-5" : "w-6 h-6 sm:w-7 sm:h-7";
-  
+
   return (
     <motion.div className={`relative ${sizeClasses} flex items-center justify-center`}>
       {/* Outer orbit ring - subtle dashed */}
       <motion.div
         className="absolute inset-0 rounded-full"
         style={{
-          border: '1px dashed hsl(var(--muted-foreground) / 0.2)',
+          border: "1px dashed hsl(var(--muted-foreground) / 0.2)",
         }}
         animate={{ rotate: 360 }}
         transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
@@ -138,12 +136,12 @@ function ProcessingCore({ size = "normal" }: { size?: "small" | "normal" }) {
           transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
         />
       </motion.div>
-      
+
       {/* Subtle glow accent */}
-      <motion.div 
+      <motion.div
         className="absolute inset-0 rounded-full pointer-events-none"
         style={{
-          background: 'radial-gradient(circle, hsl(var(--primary) / 0.05) 0%, transparent 70%)',
+          background: "radial-gradient(circle, hsl(var(--primary) / 0.05) 0%, transparent 70%)",
         }}
         animate={{ opacity: [0.5, 1, 0.5] }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
@@ -348,9 +346,9 @@ function MobileCarouselContent({ activeSection }: { activeSection: number }) {
             animate={{ opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            {'>'} SCANNING 12+ PLATFORMS...
+            {">"} SCANNING 12+ PLATFORMS...
           </motion.p>
-          
+
           {/* Refined orbit display */}
           <div
             className="relative flex items-center justify-center"
@@ -370,25 +368,18 @@ function MobileCarouselContent({ activeSection }: { activeSection: number }) {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8 }}
             />
-            
+
             {/* Core - centered */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
               <ProcessingCore size="small" />
             </div>
-            
+
             {/* Platform nodes */}
             {platforms.map((platform, i) => {
               const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
-              return (
-                <PlatformNode
-                  key={platform.id}
-                  platform={platform}
-                  angle={angle}
-                  radius={ORBIT.mobile.radius}
-                />
-              );
+              return <PlatformNode key={platform.id} platform={platform} angle={angle} radius={ORBIT.mobile.radius} />;
             })}
-            
+
             {/* Minimal particles */}
             {Array.from({ length: 6 }).map((_, i) => (
               <DataParticle
@@ -411,11 +402,7 @@ function MobileCarouselContent({ activeSection }: { activeSection: number }) {
           transition={{ duration: 0.5, ease: "easeOut" }}
           className="flex flex-col items-center w-full px-4"
         >
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center mb-6"
-          >
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center mb-6">
             <p className="font-mono text-xs text-muted-foreground mb-1">EXTRACTED PAIN POINTS</p>
             <motion.p
               className="font-mono text-3xl font-bold text-primary"
@@ -490,34 +477,37 @@ function MobileDataScrapingLayout() {
   const touchStartY = useRef(0);
 
   // Handle scroll/touch to advance sections horizontally
-  const handleScroll = useCallback((deltaY: number) => {
-    if (!isLocked) return;
-    
-    scrollAccumulator.current += deltaY;
-    
-    // Threshold for changing section
-    const threshold = 80;
-    
-    if (scrollAccumulator.current > threshold) {
-      // Scroll down -> next section
-      if (activeSection < 2) {
-        setActiveSection(prev => prev + 1);
-        scrollAccumulator.current = 0;
-      } else {
-        // At last section, unlock and allow normal scroll
-        setIsLocked(false);
+  const handleScroll = useCallback(
+    (deltaY: number) => {
+      if (!isLocked) return;
+
+      scrollAccumulator.current += deltaY;
+
+      // Threshold for changing section
+      const threshold = 80;
+
+      if (scrollAccumulator.current > threshold) {
+        // Scroll down -> next section
+        if (activeSection < 2) {
+          setActiveSection((prev) => prev + 1);
+          scrollAccumulator.current = 0;
+        } else {
+          // At last section, unlock and allow normal scroll
+          setIsLocked(false);
+        }
+      } else if (scrollAccumulator.current < -threshold) {
+        // Scroll up -> previous section
+        if (activeSection > 0) {
+          setActiveSection((prev) => prev - 1);
+          scrollAccumulator.current = 0;
+        } else {
+          // At first section, unlock and allow normal scroll up
+          setIsLocked(false);
+        }
       }
-    } else if (scrollAccumulator.current < -threshold) {
-      // Scroll up -> previous section
-      if (activeSection > 0) {
-        setActiveSection(prev => prev - 1);
-        scrollAccumulator.current = 0;
-      } else {
-        // At first section, unlock and allow normal scroll up
-        setIsLocked(false);
-      }
-    }
-  }, [activeSection, isLocked]);
+    },
+    [activeSection, isLocked],
+  );
 
   // Lock scrolling when section comes into view at center
   useEffect(() => {
@@ -532,7 +522,7 @@ function MobileDataScrapingLayout() {
           }
         });
       },
-      { threshold: [0.6] }
+      { threshold: [0.6] },
     );
 
     observer.observe(sectionRef.current);
@@ -550,8 +540,8 @@ function MobileDataScrapingLayout() {
       }
     };
 
-    window.addEventListener('wheel', handleWheel, { passive: false });
-    return () => window.removeEventListener('wheel', handleWheel);
+    window.addEventListener("wheel", handleWheel, { passive: false });
+    return () => window.removeEventListener("wheel", handleWheel);
   }, [isLocked, handleScroll]);
 
   // Touch event handlers for mobile
@@ -564,10 +554,10 @@ function MobileDataScrapingLayout() {
 
     const handleTouchMove = (e: TouchEvent) => {
       if (!isLocked) return;
-      
+
       const currentY = e.touches[0].clientY;
       const deltaY = touchStartY.current - currentY;
-      
+
       if (Math.abs(deltaY) > 10) {
         e.preventDefault();
         handleScroll(deltaY);
@@ -575,12 +565,12 @@ function MobileDataScrapingLayout() {
       }
     };
 
-    window.addEventListener('touchstart', handleTouchStart, { passive: true });
-    window.addEventListener('touchmove', handleTouchMove, { passive: false });
-    
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+
     return () => {
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
     };
   }, [isLocked, handleScroll]);
 
@@ -592,7 +582,11 @@ function MobileDataScrapingLayout() {
       <BackgroundEffects />
 
       {isInView && (
-        <div ref={containerRef} className="relative z-10 w-full max-w-md mx-auto flex flex-col items-center" style={{ perspective: "1000px" }}>
+        <div
+          ref={containerRef}
+          className="relative z-10 w-full max-w-md mx-auto flex flex-col items-center"
+          style={{ perspective: "1000px" }}
+        >
           {/* Title with dynamic text */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -610,17 +604,23 @@ function MobileDataScrapingLayout() {
                 className="font-display text-xl font-normal text-foreground"
               >
                 {activeSection === 0 && (
-                  <>Scraping <span className="text-primary font-mono">12+</span> platforms</>
+                  <>
+                    Scraping <span className="text-primary font-mono">12+</span> platforms
+                  </>
                 )}
                 {activeSection === 1 && (
-                  <>Extracting <span className="text-primary font-mono">Pain Points</span></>
+                  <>
+                    Extracting <span className="text-primary font-mono">Pain Points</span>
+                  </>
                 )}
                 {activeSection === 2 && (
-                  <>Real-time <span className="text-primary font-mono">Intelligence</span></>
+                  <>
+                    Real-time <span className="text-primary font-mono">Intelligence</span>
+                  </>
                 )}
               </motion.h2>
             </AnimatePresence>
-            
+
             {/* Status indicator */}
             <motion.p
               className="font-mono text-[10px] text-primary/70 mt-2"
@@ -642,15 +642,15 @@ function MobileDataScrapingLayout() {
                 }}
                 transition={{ duration: 0.3 }}
               >
-                <div 
-                  className={`h-1 rounded-full ${i === activeSection ? 'bg-primary' : 'bg-muted-foreground/30'}`}
-                  style={{ width: '100%' }}
+                <div
+                  className={`h-1 rounded-full ${i === activeSection ? "bg-primary" : "bg-muted-foreground/30"}`}
+                  style={{ width: "100%" }}
                 />
                 {i === activeSection && (
                   <motion.div
                     className="absolute inset-0 bg-primary/50 rounded-full"
-                    initial={{ x: '-100%' }}
-                    animate={{ x: '100%' }}
+                    initial={{ x: "-100%" }}
+                    animate={{ x: "100%" }}
                     transition={{ duration: 1.5, repeat: Infinity }}
                   />
                 )}
@@ -676,9 +676,9 @@ function MobileDataScrapingLayout() {
                       animate={{ opacity: [0.5, 1, 0.5] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
-                      {'>'} SCANNING PLATFORMS...
+                      {">"} SCANNING PLATFORMS...
                     </motion.p>
-                    
+
                     {/* Refined mobile orbit */}
                     <div
                       className="relative flex items-center justify-center"
@@ -698,12 +698,12 @@ function MobileDataScrapingLayout() {
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.8 }}
                       />
-                      
+
                       {/* Core - centered */}
                       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
                         <ProcessingCore size="small" />
                       </div>
-                      
+
                       {/* Platform nodes */}
                       {platforms.map((platform, i) => {
                         const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
@@ -716,7 +716,7 @@ function MobileDataScrapingLayout() {
                           />
                         );
                       })}
-                      
+
                       {/* Minimal particles */}
                       {Array.from({ length: 6 }).map((_, i) => (
                         <DataParticle
@@ -732,11 +732,7 @@ function MobileDataScrapingLayout() {
 
                 {activeSection === 1 && (
                   <div className="flex flex-col items-center w-full px-4">
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="text-center mb-6"
-                    >
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center mb-6">
                       <p className="font-mono text-xs text-muted-foreground mb-1">EXTRACTED PAIN POINTS</p>
                       <motion.p
                         className="font-mono text-3xl font-bold text-primary"
@@ -799,8 +795,8 @@ function MobileDataScrapingLayout() {
                 key={label}
                 onClick={() => setActiveSection(i)}
                 className={`font-mono text-xs transition-all ${
-                  i === activeSection 
-                    ? "text-primary scale-110" 
+                  i === activeSection
+                    ? "text-primary scale-110"
                     : "text-muted-foreground/50 hover:text-muted-foreground"
                 }`}
               >
@@ -840,30 +836,25 @@ function DesktopDataScrapingLayout() {
               animate={{ opacity: [0.5, 1, 0.5] }}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              {'>'} INITIALIZING DATA EXTRACTION PROTOCOL...
+              {">"} ACTIVATING DATA EXTRACTION PROTOCOL...
             </motion.p>
             <h2 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-foreground">
               Scraping <span className="text-primary font-mono">12+</span> platforms
             </h2>
-            <p className="text-muted-foreground mt-2 font-mono text-sm">
-              Real-time market intelligence extraction
-            </p>
+            <p className="text-muted-foreground mt-2 font-mono text-sm">Real-time market intelligence extraction</p>
           </motion.div>
 
           {/* Main visualization grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-center">
             {/* Left: Platform nodes orbital display - centered and refined */}
-            <motion.div 
+            <motion.div
               className="relative h-[320px] sm:h-[360px] flex items-center justify-center order-2 lg:order-1"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8 }}
             >
               {/* Central orbit container */}
-              <div
-                className="relative"
-                style={{ width: ORBIT.desktop.container, height: ORBIT.desktop.container }}
-              >
+              <div className="relative" style={{ width: ORBIT.desktop.container, height: ORBIT.desktop.container }}>
                 {/* Orbit track - exactly centered on the same origin as nodes + core */}
                 <motion.div
                   className="absolute rounded-full border border-border/30"
@@ -878,25 +869,20 @@ function DesktopDataScrapingLayout() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 1, delay: 0.2 }}
                 />
-                
+
                 {/* Processing core - perfectly centered */}
                 <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
                   <ProcessingCore />
                 </div>
-                
+
                 {/* Platform nodes orbiting around center */}
                 {platforms.map((platform, i) => {
                   const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
                   return (
-                    <PlatformNode
-                      key={platform.id}
-                      platform={platform}
-                      angle={angle}
-                      radius={ORBIT.desktop.radius}
-                    />
+                    <PlatformNode key={platform.id} platform={platform} angle={angle} radius={ORBIT.desktop.radius} />
                   );
                 })}
-                
+
                 {/* Subtle data particles */}
                 {Array.from({ length: 8 }).map((_, i) => (
                   <DataParticle
