@@ -222,84 +222,34 @@ export function LandingHero() {
               Build useful apps, websites, and digital products at the
             </p>
 
-            {/* Speed of Thought - Matrix style highlight with CRT flicker */}
+            {/* Speed of Thought - MothershipX brand style */}
             <div className="relative inline-block my-3 md:my-4">
-              {/* CRT flicker overlay */}
-              <motion.div
-                className="absolute inset-0 pointer-events-none z-20"
-                animate={{
-                  opacity: [1, 0.97, 1, 0.98, 1, 0.96, 1],
-                }}
-                transition={{
-                  duration: 0.15,
-                  repeat: Infinity,
-                  repeatDelay: Math.random() * 2 + 1,
-                  times: [0, 0.1, 0.2, 0.4, 0.6, 0.8, 1],
-                }}
-              />
-
-              {/* Glitch layers */}
+              {/* Main text with elegant glow - matching MothershipX branding */}
               <motion.span
-                className="absolute inset-0 font-mono text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-primary/30 tracking-tight uppercase"
-                animate={{
-                  x: [0, -2, 2, -1, 0],
-                  opacity: [0.3, 0.5, 0.3, 0.4, 0.3],
-                }}
-                transition={{ duration: 0.2, repeat: Infinity, repeatDelay: 3 }}
-                style={{ clipPath: "inset(0 0 50% 0)" }}
-              >
-                speed_of_thought
-              </motion.span>
-              <motion.span
-                className="absolute inset-0 font-mono text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-primary/20 tracking-tight uppercase"
-                animate={{
-                  x: [0, 2, -2, 1, 0],
-                  opacity: [0.2, 0.4, 0.2, 0.3, 0.2],
-                }}
-                transition={{ duration: 0.15, repeat: Infinity, repeatDelay: 2.5 }}
-                style={{ clipPath: "inset(50% 0 0 0)" }}
-              >
-                speed_of_thought
-              </motion.span>
-
-              {/* Main text with CRT flicker */}
-              <motion.span
-                className="relative font-mono text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-foreground tracking-tight uppercase"
+                className="relative font-display text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-normal text-foreground tracking-tight"
                 animate={{
                   textShadow: [
-                    "0 0 20px hsl(var(--primary) / 0.5), 0 0 40px hsl(var(--primary) / 0.3)",
-                    "0 0 30px hsl(var(--primary) / 0.7), 0 0 60px hsl(var(--primary) / 0.4)",
-                    "0 0 20px hsl(var(--primary) / 0.5), 0 0 40px hsl(var(--primary) / 0.3)",
+                    "0 0 20px hsl(var(--primary) / 0.3), 0 0 40px hsl(var(--primary) / 0.15)",
+                    "0 0 30px hsl(var(--primary) / 0.5), 0 0 60px hsl(var(--primary) / 0.25)",
+                    "0 0 20px hsl(var(--primary) / 0.3), 0 0 40px hsl(var(--primary) / 0.15)",
                   ],
-                  opacity: [1, 0.92, 1, 0.97, 1, 0.94, 1],
                 }}
                 transition={{
-                  textShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" },
-                  opacity: { duration: 0.1, repeat: Infinity, repeatDelay: 0.5 },
+                  textShadow: { duration: 3, repeat: Infinity, ease: "easeInOut" },
                 }}
               >
-                speed_of_thought
+                <em className="font-accent">speed of thought</em>
               </motion.span>
 
-              {/* Horizontal scan lines (CRT effect) */}
-              <div
-                className="absolute inset-0 pointer-events-none z-10 opacity-[0.03]"
-                style={{
-                  backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, hsl(var(--foreground)) 2px, hsl(var(--foreground)) 4px)",
-                }}
-              />
-
-              {/* Scan line effect */}
+              {/* Subtle underline glow */}
               <motion.div
-                className="absolute inset-0 pointer-events-none overflow-hidden"
-                style={{ mixBlendMode: "overlay" }}
-              >
-                <motion.div
-                  className="w-full h-[2px] bg-gradient-to-r from-transparent via-primary/60 to-transparent"
-                  animate={{ y: ["-100%", "3000%"] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "linear", repeatDelay: 1 }}
-                />
-              </motion.div>
+                className="absolute -bottom-1 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"
+                animate={{
+                  opacity: [0.3, 0.7, 0.3],
+                  scaleX: [0.9, 1, 0.9],
+                }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+              />
             </div>
 
             <p className="font-display text-sm sm:text-lg md:text-2xl lg:text-3xl text-muted-foreground leading-relaxed px-2">
