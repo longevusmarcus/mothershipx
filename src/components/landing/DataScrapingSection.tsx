@@ -81,6 +81,12 @@ function PlatformNode({ platform, angle, radius }: { platform: typeof platforms[
   );
 }
 
+// Orbit geometry (keep consistent across desktop + mobile variants)
+const ORBIT = {
+  desktop: { container: 320, ring: 260, radius: 130, particleField: 260 },
+  mobile: { container: 280, ring: 220, radius: 110, particleField: 220 },
+} as const;
+
 // Sophisticated central processing core - minimal and elegant
 function ProcessingCore({ size = "normal" }: { size?: "small" | "normal" }) {
   const containerSize = size === "small" ? 80 : 100;
@@ -346,17 +352,19 @@ function MobileCarouselContent({ activeSection }: { activeSection: number }) {
           </motion.p>
           
           {/* Refined orbit display */}
-          <div className="relative flex items-center justify-center" style={{ width: 280, height: 280 }}>
+          <div
+            className="relative flex items-center justify-center"
+            style={{ width: ORBIT.mobile.container, height: ORBIT.mobile.container }}
+          >
             {/* Orbit track - centered with platform nodes */}
             <motion.div
               className="absolute rounded-full border border-border/30"
               style={{
-                left: '50%',
-                top: '50%',
-                width: 220,
-                height: 220,
-                marginLeft: -110,
-                marginTop: -110,
+                left: "50%",
+                top: "50%",
+                width: ORBIT.mobile.ring,
+                height: ORBIT.mobile.ring,
+                transform: "translate(-50%, -50%)",
               }}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -371,8 +379,14 @@ function MobileCarouselContent({ activeSection }: { activeSection: number }) {
             {/* Platform nodes */}
             {platforms.map((platform, i) => {
               const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
-              const radius = 110;
-              return <PlatformNode key={platform.id} platform={platform} angle={angle} radius={radius} />;
+              return (
+                <PlatformNode
+                  key={platform.id}
+                  platform={platform}
+                  angle={angle}
+                  radius={ORBIT.mobile.radius}
+                />
+              );
             })}
             
             {/* Minimal particles */}
@@ -380,8 +394,8 @@ function MobileCarouselContent({ activeSection }: { activeSection: number }) {
               <DataParticle
                 key={i}
                 delay={i * 0.4}
-                startX={(Math.random() - 0.5) * 220}
-                startY={(Math.random() - 0.5) * 220}
+                startX={(Math.random() - 0.5) * ORBIT.mobile.particleField}
+                startY={(Math.random() - 0.5) * ORBIT.mobile.particleField}
               />
             ))}
           </div>
@@ -666,17 +680,19 @@ function MobileDataScrapingLayout() {
                     </motion.p>
                     
                     {/* Refined mobile orbit */}
-                    <div className="relative flex items-center justify-center" style={{ width: 280, height: 280 }}>
+                    <div
+                      className="relative flex items-center justify-center"
+                      style={{ width: ORBIT.mobile.container, height: ORBIT.mobile.container }}
+                    >
                       {/* Orbit track - centered with platform nodes */}
                       <motion.div
                         className="absolute rounded-full border border-border/30"
                         style={{
-                          left: '50%',
-                          top: '50%',
-                          width: 220,
-                          height: 220,
-                          marginLeft: -110,
-                          marginTop: -110,
+                          left: "50%",
+                          top: "50%",
+                          width: ORBIT.mobile.ring,
+                          height: ORBIT.mobile.ring,
+                          transform: "translate(-50%, -50%)",
                         }}
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -691,8 +707,14 @@ function MobileDataScrapingLayout() {
                       {/* Platform nodes */}
                       {platforms.map((platform, i) => {
                         const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
-                        const radius = 110;
-                        return <PlatformNode key={platform.id} platform={platform} angle={angle} radius={radius} />;
+                        return (
+                          <PlatformNode
+                            key={platform.id}
+                            platform={platform}
+                            angle={angle}
+                            radius={ORBIT.mobile.radius}
+                          />
+                        );
                       })}
                       
                       {/* Minimal particles */}
@@ -700,8 +722,8 @@ function MobileDataScrapingLayout() {
                         <DataParticle
                           key={i}
                           delay={i * 0.4}
-                          startX={(Math.random() - 0.5) * 220}
-                          startY={(Math.random() - 0.5) * 220}
+                          startX={(Math.random() - 0.5) * ORBIT.mobile.particleField}
+                          startY={(Math.random() - 0.5) * ORBIT.mobile.particleField}
                         />
                       ))}
                     </div>
@@ -838,17 +860,19 @@ function DesktopDataScrapingLayout() {
               transition={{ duration: 0.8 }}
             >
               {/* Central orbit container */}
-              <div className="relative" style={{ width: 320, height: 320 }}>
-                {/* Orbit track - positioned exactly where platform nodes orbit */}
+              <div
+                className="relative"
+                style={{ width: ORBIT.desktop.container, height: ORBIT.desktop.container }}
+              >
+                {/* Orbit track - exactly centered on the same origin as nodes + core */}
                 <motion.div
                   className="absolute rounded-full border border-border/30"
                   style={{
-                    left: '50%',
-                    top: '50%',
-                    width: 260,
-                    height: 260,
-                    marginLeft: -130,
-                    marginTop: -130,
+                    left: "50%",
+                    top: "50%",
+                    width: ORBIT.desktop.ring,
+                    height: ORBIT.desktop.ring,
+                    transform: "translate(-50%, -50%)",
                   }}
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -863,8 +887,14 @@ function DesktopDataScrapingLayout() {
                 {/* Platform nodes orbiting around center */}
                 {platforms.map((platform, i) => {
                   const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
-                  const radius = 130;
-                  return <PlatformNode key={platform.id} platform={platform} angle={angle} radius={radius} />;
+                  return (
+                    <PlatformNode
+                      key={platform.id}
+                      platform={platform}
+                      angle={angle}
+                      radius={ORBIT.desktop.radius}
+                    />
+                  );
                 })}
                 
                 {/* Subtle data particles */}
@@ -872,8 +902,8 @@ function DesktopDataScrapingLayout() {
                   <DataParticle
                     key={i}
                     delay={i * 0.4}
-                    startX={(Math.random() - 0.5) * 260}
-                    startY={(Math.random() - 0.5) * 260}
+                    startX={(Math.random() - 0.5) * ORBIT.desktop.particleField}
+                    startY={(Math.random() - 0.5) * ORBIT.desktop.particleField}
                   />
                 ))}
               </div>
