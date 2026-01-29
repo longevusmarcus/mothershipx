@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
@@ -8,19 +8,67 @@ import showcaseSignals from "@/assets/showcase-signals.png";
 import showcaseDetail from "@/assets/showcase-detail.png";
 import showcaseArena from "@/assets/showcase-arena.png";
 
+// Terminal typing effect component
+function TerminalTyping() {
+  const [displayedText, setDisplayedText] = useState("");
+  const [showCursor, setShowCursor] = useState(true);
+  
+  const terminalText = `find 1,000 startup ideas from pain points on Reddit and TikTok, build and host landing pages, register domains, wire up Stripe, test in Chrome — zero mistakes allowed
+--dangerously-skip-permissions --chrome`;
+
+  useEffect(() => {
+    let i = 0;
+    const typingInterval = setInterval(() => {
+      if (i < terminalText.length) {
+        setDisplayedText(terminalText.slice(0, i + 1));
+        i++;
+      } else {
+        clearInterval(typingInterval);
+      }
+    }, 25);
+
+    return () => clearInterval(typingInterval);
+  }, []);
+
+  // Blinking cursor
+  useEffect(() => {
+    const cursorInterval = setInterval(() => {
+      setShowCursor(prev => !prev);
+    }, 530);
+    return () => clearInterval(cursorInterval);
+  }, []);
+
+  return (
+    <div className="font-mono text-xs sm:text-sm text-muted-foreground/80 max-w-3xl mx-auto text-left bg-card/50 border border-border/50 rounded-lg p-4 backdrop-blur-sm">
+      <div className="flex items-center gap-2 mb-3 pb-3 border-b border-border/30">
+        <div className="w-3 h-3 rounded-full bg-destructive/60" />
+        <div className="w-3 h-3 rounded-full bg-warning/60" />
+        <div className="w-3 h-3 rounded-full bg-success/60" />
+        <span className="ml-2 text-muted-foreground/50 text-xs">~/mothership</span>
+      </div>
+      <div className="flex items-start gap-2">
+        <span className="text-primary shrink-0">$</span>
+        <div className="break-words whitespace-pre-wrap">
+          {displayedText}
+          <span className={`${showCursor ? 'opacity-100' : 'opacity-0'} text-primary transition-opacity`}>▌</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function LandingHero() {
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   
-  const { scrollYProgress: heroScrollProgress } = useScroll({
+  // Scroll-based opacity for hero section
+  const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"]
   });
   
-  const heroOpacity = useTransform(heroScrollProgress, [0, 0.5], [1, 0]);
-  const heroScale = useTransform(heroScrollProgress, [0, 0.5], [1, 0.95]);
-  const heroY = useTransform(heroScrollProgress, [0, 0.5], [0, -100]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
 
   const handleEnter = () => {
     localStorage.setItem("mothershipx-visited", "true");
@@ -40,11 +88,11 @@ export function LandingHero() {
 
   return (
     <div ref={containerRef} className="bg-background">
-      {/* Hero Section - First viewport */}
+      {/* Hero Section */}
       <motion.section 
         ref={heroRef}
-        style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
-        className="min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden sticky top-0"
+        style={{ opacity: heroOpacity }}
+        className="min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden"
       >
         {/* Subtle dot grid */}
         <div 
@@ -61,7 +109,7 @@ export function LandingHero() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="flex justify-center mb-12"
+            className="flex justify-center mb-8"
           >
             <motion.div 
               className="relative"
@@ -76,7 +124,7 @@ export function LandingHero() {
                 ease: "linear"
               }}
             >
-              <div className="w-20 h-20 md:w-24 md:h-24 relative">
+              <div className="w-16 h-16 md:w-20 md:h-20 relative">
                 <img 
                   src={logoIcon} 
                   alt="MothershipX" 
@@ -106,12 +154,22 @@ export function LandingHero() {
             </motion.div>
           </motion.div>
 
-          {/* Main headline - No buttons */}
+          {/* Terminal typing effect */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.6 }}
+            className="mb-10"
+          >
+            <TerminalTyping />
+          </motion.div>
+
+          {/* Main headline */}
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8 }}
-            className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-normal tracking-tight text-foreground leading-[1.1]"
+            className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-normal tracking-tight text-foreground leading-[1.1]"
           >
             Know what to build.
             <br />
@@ -127,12 +185,12 @@ export function LandingHero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.5 }}
-            className="absolute bottom-12 left-1/2 -translate-x-1/2"
+            className="mt-12"
           >
             <motion.div
               animate={{ y: [0, 8, 0] }}
               transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-              className="w-6 h-10 rounded-full border-2 border-muted-foreground/30 flex items-start justify-center p-2"
+              className="w-6 h-10 rounded-full border-2 border-muted-foreground/30 flex items-start justify-center p-2 mx-auto"
             >
               <motion.div
                 animate={{ y: [0, 12, 0] }}
@@ -143,9 +201,6 @@ export function LandingHero() {
           </motion.div>
         </div>
       </motion.section>
-
-      {/* Spacer for sticky hero */}
-      <div className="h-screen" />
 
       {/* Second Section - Tagline + Screenshots */}
       <section className="min-h-screen py-24 px-6 relative">
@@ -161,7 +216,7 @@ export function LandingHero() {
             Build useful apps, websites, and digital products at the speed of thought—backed by real market demand and rewarded for <em className="text-foreground font-accent">real impact.</em>
           </motion.p>
 
-          {/* Screenshots with parallax tilt effect */}
+          {/* Screenshots with tilt effect */}
           <div className="relative flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8">
             {/* Left screenshot - tilted left */}
             <ScreenshotCard 
@@ -232,7 +287,7 @@ export function LandingHero() {
   );
 }
 
-// Screenshot card with 3D scroll perspective effect
+// Screenshot card with hover effect
 function ScreenshotCard({ 
   image, 
   alt, 
@@ -246,35 +301,20 @@ function ScreenshotCard({
   delay: number;
   isCenter?: boolean;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "center center"]
-  });
-
-  const rotateX = useTransform(scrollYProgress, [0, 1], [15, 0]);
-  const scale = useTransform(scrollYProgress, [0, 1], [0.9, 1]);
-  const opacity = useTransform(scrollYProgress, [0, 0.3], [0.6, 1]);
-
   return (
     <motion.div
-      ref={ref}
-      initial={{ opacity: 0, x: rotation < 0 ? -40 : rotation > 0 ? 40 : 0, rotate: rotation }}
-      whileInView={{ opacity: 1, x: 0, rotate: rotation }}
+      initial={{ opacity: 0, y: 40, rotate: rotation }}
+      whileInView={{ opacity: 1, y: 0, rotate: rotation }}
       viewport={{ once: true }}
       transition={{ duration: 0.8, delay, ease: "easeOut" }}
       whileHover={{ rotate: 0, scale: 1.02, y: -8 }}
-      style={{ rotateX, scale, opacity }}
       className={`relative shrink-0 ${
         isCenter 
           ? "w-full max-w-[380px] sm:max-w-[440px] md:w-80 lg:w-96 z-10" 
           : "w-full max-w-[320px] sm:max-w-[380px] md:w-64 lg:w-72"
       }`}
     >
-      <div 
-        className="relative rounded-xl overflow-hidden shadow-2xl shadow-background/50 border border-border/30"
-        style={{ perspective: "1000px" }}
-      >
+      <div className="relative rounded-xl overflow-hidden shadow-2xl shadow-background/50 border border-border/30">
         <img 
           src={image} 
           alt={alt} 
