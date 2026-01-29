@@ -249,8 +249,8 @@ export function LandingHero() {
               </motion.div>
             </div>
             
-            <p className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl text-muted-foreground leading-relaxed">
-              —backed by real market demand and rewarded for <em className="text-foreground font-accent">real impact.</em>
+            <p className="font-display text-lg sm:text-xl md:text-2xl lg:text-3xl text-muted-foreground leading-relaxed whitespace-nowrap">
+              Backed by <em className="text-foreground font-accent">real market demand</em> and rewarded for <em className="text-foreground font-accent">real impact.</em>
             </p>
           </motion.div>
 
