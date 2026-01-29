@@ -183,16 +183,76 @@ export function LandingHero() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
 
         <div className="relative z-10 max-w-6xl mx-auto">
-          {/* Tagline */}
-          <motion.p
+          {/* Tagline with "speed of thought" emphasis */}
+          <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl text-center text-muted-foreground max-w-4xl mx-auto leading-relaxed mb-16"
+            className="text-center max-w-4xl mx-auto mb-16"
           >
-            Build useful apps, websites, and digital products at the speed of thought—backed by real market demand and rewarded for <em className="text-foreground font-accent">real impact.</em>
-          </motion.p>
+            <p className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl text-muted-foreground leading-relaxed">
+              Build useful apps, websites, and digital products at the
+            </p>
+            
+            {/* Speed of Thought - Matrix style highlight */}
+            <div className="relative inline-block my-4">
+              {/* Glitch layers */}
+              <motion.span
+                className="absolute inset-0 font-mono text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary/30"
+                animate={{ 
+                  x: [0, -2, 2, -1, 0],
+                  opacity: [0.3, 0.5, 0.3, 0.4, 0.3],
+                }}
+                transition={{ duration: 0.2, repeat: Infinity, repeatDelay: 3 }}
+                style={{ clipPath: 'inset(0 0 50% 0)' }}
+              >
+                speed of thought
+              </motion.span>
+              <motion.span
+                className="absolute inset-0 font-mono text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary/20"
+                animate={{ 
+                  x: [0, 2, -2, 1, 0],
+                  opacity: [0.2, 0.4, 0.2, 0.3, 0.2],
+                }}
+                transition={{ duration: 0.15, repeat: Infinity, repeatDelay: 2.5 }}
+                style={{ clipPath: 'inset(50% 0 0 0)' }}
+              >
+                speed of thought
+              </motion.span>
+              
+              {/* Main text */}
+              <motion.span 
+                className="relative font-mono text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground"
+                animate={{ 
+                  textShadow: [
+                    "0 0 20px hsl(var(--primary) / 0.5), 0 0 40px hsl(var(--primary) / 0.3)",
+                    "0 0 30px hsl(var(--primary) / 0.7), 0 0 60px hsl(var(--primary) / 0.4)",
+                    "0 0 20px hsl(var(--primary) / 0.5), 0 0 40px hsl(var(--primary) / 0.3)",
+                  ]
+                }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              >
+                speed of thought
+              </motion.span>
+              
+              {/* Scan line effect */}
+              <motion.div
+                className="absolute inset-0 pointer-events-none overflow-hidden"
+                style={{ mixBlendMode: 'overlay' }}
+              >
+                <motion.div
+                  className="w-full h-[2px] bg-gradient-to-r from-transparent via-primary/60 to-transparent"
+                  animate={{ y: ["-100%", "3000%"] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "linear", repeatDelay: 1 }}
+                />
+              </motion.div>
+            </div>
+            
+            <p className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl text-muted-foreground leading-relaxed">
+              —backed by real market demand and rewarded for <em className="text-foreground font-accent">real impact.</em>
+            </p>
+          </motion.div>
 
           {/* Screenshots with intense glow */}
           <div className="relative flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8">
