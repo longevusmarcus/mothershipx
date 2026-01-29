@@ -222,11 +222,10 @@ export function LandingHero() {
               Build useful apps, websites, and digital products at the
             </p>
 
-            {/* Speed of Thought - MothershipX brand style */}
+            {/* Speed of Thought - styled exactly like MothershipX */}
             <div className="relative inline-block my-3 md:my-4">
-              {/* Main text with elegant glow - matching MothershipX branding */}
               <motion.span
-                className="relative font-display text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-normal text-foreground tracking-tight"
+                className="relative font-display text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-normal text-primary tracking-tight glow-text"
                 animate={{
                   textShadow: [
                     "0 0 20px hsl(var(--primary) / 0.3), 0 0 40px hsl(var(--primary) / 0.15)",
@@ -238,18 +237,8 @@ export function LandingHero() {
                   textShadow: { duration: 3, repeat: Infinity, ease: "easeInOut" },
                 }}
               >
-                <em className="font-accent">speed of thought</em>
+                speed of thought
               </motion.span>
-
-              {/* Subtle underline glow */}
-              <motion.div
-                className="absolute -bottom-1 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"
-                animate={{
-                  opacity: [0.3, 0.7, 0.3],
-                  scaleX: [0.9, 1, 0.9],
-                }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-              />
             </div>
 
             <p className="font-display text-sm sm:text-lg md:text-2xl lg:text-3xl text-muted-foreground leading-relaxed px-2">
