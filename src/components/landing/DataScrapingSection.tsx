@@ -37,52 +37,46 @@ function DataParticle({ delay, startX, startY }: { delay: number; startX: number
   );
 }
 
-// Elegant platform node - minimal and refined
+// Ultra-minimal platform node - senior designer aesthetic
 function PlatformNode({ platform, angle, radius }: { platform: typeof platforms[0]; angle: number; radius: number }) {
   const x = Math.cos(angle) * radius;
   const y = Math.sin(angle) * radius;
 
   return (
     <motion.div
-      className="absolute flex flex-col items-center"
+      className="absolute flex flex-col items-center gap-1"
       style={{ 
         left: `calc(50% + ${x}px)`, 
         top: `calc(50% + ${y}px)`,
         transform: 'translate(-50%, -50%)'
       }}
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: platform.delay, duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: platform.delay, duration: 0.8, ease: "easeOut" }}
     >
-      {/* Platform icon - clean, minimal card */}
+      {/* Minimal icon container - just text, no heavy card */}
       <motion.div
-        className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-card/90 border border-border/40 flex items-center justify-center font-mono text-sm font-medium text-foreground/80 backdrop-blur-md"
+        className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-muted/40 flex items-center justify-center font-mono text-xs font-medium text-foreground/70"
         whileHover={{ 
-          scale: 1.08, 
-          borderColor: "hsl(var(--primary) / 0.5)",
-          backgroundColor: "hsl(var(--card))"
+          scale: 1.1, 
+          backgroundColor: "hsl(var(--muted) / 0.6)",
         }}
         transition={{ duration: 0.2 }}
       >
         {platform.icon}
         
-        {/* Subtle active indicator */}
+        {/* Tiny pulse dot */}
         <motion.div
-          className="absolute -right-0.5 -top-0.5 w-1.5 h-1.5 rounded-full bg-primary/80"
-          animate={{ opacity: [0.4, 1, 0.4] }}
-          transition={{ duration: 2, repeat: Infinity, delay: platform.delay }}
+          className="absolute -right-px -top-px w-1 h-1 rounded-full bg-primary/60"
+          animate={{ opacity: [0.3, 0.8, 0.3] }}
+          transition={{ duration: 2.5, repeat: Infinity, delay: platform.delay }}
         />
       </motion.div>
 
-      {/* Platform name - understated */}
-      <motion.span
-        className="mt-1.5 text-[10px] text-muted-foreground/70 font-mono tracking-wide"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: platform.delay + 0.3 }}
-      >
+      {/* Platform name - very subtle */}
+      <span className="text-[9px] text-muted-foreground/50 font-mono tracking-wider uppercase">
         {platform.name}
-      </motion.span>
+      </span>
     </motion.div>
   );
 }
