@@ -191,25 +191,25 @@ export function LandingHero() {
       <DataScrapingSection />
 
       {/* PAGE 5: Tagline + Screenshots */}
-      <section className="min-h-screen snap-start py-20 px-6 relative overflow-hidden flex flex-col justify-center">
+      <section className="min-h-screen snap-start py-12 md:py-20 px-4 md:px-6 relative overflow-hidden flex flex-col justify-center">
         {/* Background glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
 
-        <div className="relative z-10 max-w-6xl mx-auto">
-          {/* Tagline with "speed of thought" emphasis */}
+        <div className="relative z-10 max-w-6xl mx-auto w-full">
+          {/* Tagline with "speed of thought" emphasis - fixed for mobile */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="text-center max-w-4xl mx-auto mb-16"
+            className="text-center max-w-4xl mx-auto mb-10 md:mb-16"
           >
-            <p className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl text-muted-foreground leading-relaxed">
+            <p className="font-display text-lg sm:text-xl md:text-3xl lg:text-4xl text-muted-foreground leading-relaxed px-2">
               Build useful apps, websites, and digital products at the
             </p>
 
             {/* Speed of Thought - Matrix style highlight with CRT flicker */}
-            <div className="relative inline-block my-4">
+            <div className="relative inline-block my-3 md:my-4">
               {/* CRT flicker overlay */}
               <motion.div
                 className="absolute inset-0 pointer-events-none z-20"
@@ -226,7 +226,7 @@ export function LandingHero() {
 
               {/* Glitch layers */}
               <motion.span
-                className="absolute inset-0 font-mono text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary/30 tracking-tight uppercase"
+                className="absolute inset-0 font-mono text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-primary/30 tracking-tight uppercase"
                 animate={{
                   x: [0, -2, 2, -1, 0],
                   opacity: [0.3, 0.5, 0.3, 0.4, 0.3],
@@ -237,7 +237,7 @@ export function LandingHero() {
                 speed_of_thought
               </motion.span>
               <motion.span
-                className="absolute inset-0 font-mono text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary/20 tracking-tight uppercase"
+                className="absolute inset-0 font-mono text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-primary/20 tracking-tight uppercase"
                 animate={{
                   x: [0, 2, -2, 1, 0],
                   opacity: [0.2, 0.4, 0.2, 0.3, 0.2],
@@ -250,7 +250,7 @@ export function LandingHero() {
 
               {/* Main text with CRT flicker */}
               <motion.span
-                className="relative font-mono text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground tracking-tight uppercase"
+                className="relative font-mono text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-foreground tracking-tight uppercase"
                 animate={{
                   textShadow: [
                     "0 0 20px hsl(var(--primary) / 0.5), 0 0 40px hsl(var(--primary) / 0.3)",
@@ -288,23 +288,23 @@ export function LandingHero() {
               </motion.div>
             </div>
 
-            <p className="font-display text-lg sm:text-xl md:text-2xl lg:text-3xl text-muted-foreground leading-relaxed whitespace-nowrap">
-              • backed by <em className="text-foreground font-accent">real market demand</em> and rewarded for{" "}
-              <em className="text-foreground font-accent">real impact </em>•
+            <p className="font-display text-sm sm:text-lg md:text-2xl lg:text-3xl text-muted-foreground leading-relaxed px-2">
+              backed by <em className="text-foreground font-accent">real market demand</em>
+              <br className="sm:hidden" />
+              <span className="hidden sm:inline"> and </span>
+              <span className="sm:hidden"> & </span>
+              rewarded for <em className="text-foreground font-accent">real impact</em>
             </p>
           </motion.div>
 
-          {/* Screenshots with intense glow */}
-          <div className="relative flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8">
-            {/* Left screenshot */}
-            <ScreenshotCard image={showcaseSignals} alt="Live Signals Dashboard" rotation={-6} delay={0} />
-
-            {/* Center screenshot - larger */}
-            <ScreenshotCard image={showcaseDetail} alt="Problem Analysis" rotation={0} delay={0.15} isCenter />
-
-            {/* Right screenshot */}
-            <ScreenshotCard image={showcaseArena} alt="Builder Arena" rotation={6} delay={0.3} />
-          </div>
+          {/* Screenshots - Carousel on mobile, side-by-side on desktop */}
+          <ScreenshotCarousel
+            images={[
+              { src: showcaseSignals, alt: "Live Signals Dashboard" },
+              { src: showcaseDetail, alt: "Problem Analysis" },
+              { src: showcaseArena, alt: "Builder Arena" },
+            ]}
+          />
 
           {/* CTA Button */}
           <motion.div
@@ -346,7 +346,97 @@ export function LandingHero() {
   );
 }
 
-// Screenshot card with glowing effect
+// Screenshot carousel for mobile with rotation effect
+function ScreenshotCarousel({ images }: { images: { src: string; alt: string }[] }) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
+  // Auto-rotate on mobile
+  useEffect(() => {
+    if (!isMobile) return;
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % images.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [images.length, isMobile]);
+
+  // Desktop layout - side by side
+  if (!isMobile) {
+    return (
+      <div className="relative flex flex-row items-center justify-center gap-8">
+        {images.map((img, i) => (
+          <ScreenshotCard
+            key={img.alt}
+            image={img.src}
+            alt={img.alt}
+            rotation={i === 0 ? -6 : i === 2 ? 6 : 0}
+            delay={i * 0.15}
+            isCenter={i === 1}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  // Mobile layout - 3D rotating carousel
+  return (
+    <div className="relative w-full h-[280px] perspective-[1000px]">
+      <div className="relative w-full h-full flex items-center justify-center">
+        {images.map((img, i) => {
+          const offset = i - activeIndex;
+          const normalizedOffset = ((offset % images.length) + images.length) % images.length;
+          const adjustedOffset = normalizedOffset > images.length / 2 ? normalizedOffset - images.length : normalizedOffset;
+          
+          return (
+            <motion.div
+              key={img.alt}
+              className="absolute w-[85%] max-w-[320px]"
+              initial={false}
+              animate={{
+                rotateY: adjustedOffset * 45,
+                x: adjustedOffset * 60,
+                z: adjustedOffset === 0 ? 0 : -150,
+                opacity: Math.abs(adjustedOffset) > 1 ? 0 : 1 - Math.abs(adjustedOffset) * 0.4,
+                scale: adjustedOffset === 0 ? 1 : 0.85,
+              }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              style={{ transformStyle: "preserve-3d" }}
+              onClick={() => setActiveIndex(i)}
+            >
+              {/* Glow effect */}
+              <motion.div
+                className="absolute inset-0 rounded-xl bg-primary/30 blur-2xl"
+                animate={{ opacity: adjustedOffset === 0 ? 0.6 : 0.2 }}
+              />
+              
+              <div className="relative rounded-xl overflow-hidden shadow-2xl border border-primary/20">
+                <img src={img.src} alt={img.alt} className="block w-full h-auto" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/30 via-transparent to-transparent pointer-events-none" />
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      {/* Carousel indicators */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex gap-2">
+        {images.map((_, i) => (
+          <motion.button
+            key={i}
+            className="w-2 h-2 rounded-full"
+            animate={{
+              backgroundColor: i === activeIndex ? "hsl(var(--primary))" : "hsl(var(--muted-foreground) / 0.3)",
+              scale: i === activeIndex ? 1.2 : 1,
+            }}
+            onClick={() => setActiveIndex(i)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Screenshot card with glowing effect (for desktop)
 function ScreenshotCard({
   image,
   alt,
@@ -369,8 +459,8 @@ function ScreenshotCard({
       whileHover={{ rotate: 0, scale: 1.03, y: -10 }}
       className={`relative shrink-0 group ${
         isCenter
-          ? "w-full max-w-[380px] sm:max-w-[440px] md:w-80 lg:w-96 z-10"
-          : "w-full max-w-[320px] sm:max-w-[380px] md:w-64 lg:w-72"
+          ? "w-80 lg:w-96 z-10"
+          : "w-64 lg:w-72"
       }`}
     >
       {/* Glow effect behind the image */}
