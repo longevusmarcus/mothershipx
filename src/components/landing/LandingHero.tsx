@@ -7,6 +7,7 @@ import { DataScrapingSection } from "./DataScrapingSection";
 import { MeetMothershipSection } from "./MeetMothershipSection";
 import { FloatingMascot } from "./FloatingMascot";
 import { ActivationAnimation } from "./ActivationAnimation";
+import { OrbitingMascot } from "./OrbitingMascot";
 import logoIcon from "@/assets/logo-icon.png";
 import showcaseSignals from "@/assets/showcase-signals.png";
 import showcaseDetail from "@/assets/showcase-detail.png";
@@ -73,6 +74,7 @@ function TerminalTyping() {
 export function LandingHero() {
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
+  const speedOfThoughtRef = useRef<HTMLDivElement>(null);
   const [showActivation, setShowActivation] = useState(false);
 
   const handleEnter = () => {
@@ -223,7 +225,8 @@ export function LandingHero() {
             </p>
 
             {/* Speed of Thought - styled exactly like MothershipX */}
-            <div className="relative inline-block my-3 md:my-4">
+            <div ref={speedOfThoughtRef} className="relative inline-block my-3 md:my-4">
+              <OrbitingMascot targetRef={speedOfThoughtRef as React.RefObject<HTMLDivElement>} />
               <motion.span
                 className="relative font-display text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-normal text-primary tracking-tight glow-text"
                 animate={{
