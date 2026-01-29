@@ -19,7 +19,7 @@ function TerminalTyping() {
   const [displayedText, setDisplayedText] = useState("");
   const [showCursor, setShowCursor] = useState(true);
 
-  const terminalText = `find 1,000 startup ideas from pain points on Reddit and TikTok, build and host landing pages, register domains, wire up Stripe, test in Chrome — zero mistakes allowed
+  const terminalText = `find 1,000 startup ideas from top pain points and posts on Reddit/TikTok/YouTube, build and host landing pages, register domains, wire up Stripe, test in Chrome — zero mistakes allowed
 --dangerously-skip-permissions --chrome`;
 
   useEffect(() => {
