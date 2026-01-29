@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { formatNumber } from "@/lib/utils";
 import { useState, useMemo } from "react";
 import { toast } from "sonner";
+import type { ProblemEvidence } from "@/hooks/useProblemEvidence";
 
 // Source brand icons
 const TikTokIcon = () => (
@@ -28,6 +29,11 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
   const { data, isLoading, refetch } = useProblemEvidence(problemId);
   const scrapeEvidence = useScrapeEvidence();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+
+  const handleImageError = (videoId: string) => {
+    setFailedImages((prev) => new Set(prev).add(videoId));
+  };
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -64,7 +70,13 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
     }
   };
 
-  const videos = data?.videos || [];
+  // Filter out videos with broken thumbnails
+  const videos = useMemo(() => {
+    return (data?.videos || []).filter(
+      (v) => v.video_thumbnail && !failedImages.has(v.id)
+    );
+  }, [data?.videos, failedImages]);
+  
   const comments = data?.comments || [];
   const hasEvidence = videos.length > 0 || comments.length > 0;
   
@@ -76,6 +88,7 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
   // Number of blurred placeholder cards to show
   const blurredVideoCount = Math.min(5, Math.max(3, 5 - videos.length));
   const blurredCommentCount = Math.min(3, Math.max(2, 3 - comments.length));
+
 
   if (isLoading) {
     return (
@@ -154,17 +167,12 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
                     transition={{ delay: index * 0.05 }}
                     className="group relative aspect-[9/16] rounded-lg overflow-hidden bg-muted border border-border hover:border-primary/50 transition-all"
                   >
-                    {video.video_thumbnail ? (
-                      <img
-                        src={video.video_thumbnail}
-                        alt={video.video_title || "Video thumbnail"}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-muted">
-                        <Play className="h-8 w-8 text-muted-foreground/30" />
-                      </div>
-                    )}
+                    <img
+                      src={video.video_thumbnail!}
+                      alt={video.video_title || "Video thumbnail"}
+                      className="w-full h-full object-cover"
+                      onError={() => handleImageError(video.id)}
+                    />
 
                     {/* Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
