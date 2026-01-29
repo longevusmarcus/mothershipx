@@ -7,7 +7,7 @@ import { DataScrapingSection } from "./DataScrapingSection";
 import { MeetMothershipSection } from "./MeetMothershipSection";
 import { FloatingMascot } from "./FloatingMascot";
 import { ActivationAnimation } from "./ActivationAnimation";
-import { OrbitingMascot } from "./OrbitingMascot";
+
 import logoIcon from "@/assets/logo-icon.png";
 import showcaseSignals from "@/assets/showcase-signals.png";
 import showcaseDetail from "@/assets/showcase-detail.png";
@@ -212,45 +212,118 @@ export function LandingHero() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
 
         <div className="relative z-10 max-w-6xl mx-auto w-full">
-          {/* Tagline - minimal, sophisticated typography */}
+          {/* Tagline - matching MeetMothershipSection style */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="text-center max-w-4xl mx-auto mb-10 md:mb-16"
+            className="text-center max-w-3xl mx-auto mb-10 md:mb-16"
           >
-            <p className="font-mono text-xs sm:text-sm text-muted-foreground/60 tracking-widest uppercase mb-6">
-              The future of building
-            </p>
-            
-            <h2 className="font-display text-xl sm:text-2xl md:text-3xl text-muted-foreground/80 font-normal leading-relaxed mb-4">
-              Build useful apps, websites, and digital products at the
-            </h2>
-
-            {/* Speed of Thought - hero emphasis */}
-            <div ref={speedOfThoughtRef} className="relative inline-block my-2 md:my-4">
-              <OrbitingMascot targetRef={speedOfThoughtRef as React.RefObject<HTMLDivElement>} />
+            {/* Terminal-style intro */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="font-mono text-xs sm:text-sm text-muted-foreground mb-6"
+            >
               <motion.span
-                className="font-display text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-normal text-primary tracking-tight"
+                animate={{ opacity: [1, 0.5, 1] }}
+                transition={{ duration: 1, repeat: Infinity }}
+                className="text-primary"
+              >
+                $
+              </motion.span>{" "}
+              <span className="text-foreground/70">./build</span>{" "}
+              <motion.span
+                className="text-primary font-bold"
                 animate={{
                   textShadow: [
-                    "0 0 20px hsl(var(--primary) / 0.2)",
-                    "0 0 40px hsl(var(--primary) / 0.3)",
-                    "0 0 20px hsl(var(--primary) / 0.2)",
+                    "0 0 5px hsl(var(--primary) / 0.5)",
+                    "0 0 15px hsl(var(--primary) / 0.8)",
+                    "0 0 5px hsl(var(--primary) / 0.5)",
                   ],
                 }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                --validated
+              </motion.span>
+            </motion.div>
+
+            {/* Main headline */}
+            <motion.h2
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-center mb-4"
+            >
+              <span className="text-muted-foreground">Build useful apps at the</span>
+            </motion.h2>
+
+            {/* Speed of Thought - hero emphasis like MothershipX */}
+            <motion.div
+              ref={speedOfThoughtRef}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="mb-4"
+            >
+              <motion.span
+                className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal text-foreground"
+                animate={{
+                  textShadow: [
+                    "0 0 20px hsl(var(--primary) / 0.3)",
+                    "0 0 40px hsl(var(--primary) / 0.5)",
+                    "0 0 20px hsl(var(--primary) / 0.3)",
+                  ],
+                }}
+                transition={{ duration: 3, repeat: Infinity }}
               >
                 speed of thought
               </motion.span>
-            </div>
+            </motion.div>
 
-            <p className="font-display text-base sm:text-lg md:text-xl text-muted-foreground/70 font-normal leading-relaxed mt-4">
-              backed by <span className="text-foreground/90">real market demand</span>
-              <span className="mx-2 text-muted-foreground/40">·</span>
-              rewarded for <span className="text-foreground/90">real impact</span>
-            </p>
+            {/* Subtitle line - like "Think Lovable on steroids" style */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5 }}
+              className="flex items-center justify-center gap-2 flex-wrap"
+            >
+              <span className="font-mono text-sm sm:text-base text-muted-foreground">backed by</span>
+              <motion.span
+                className="font-mono text-sm sm:text-base font-bold text-primary"
+                animate={{
+                  textShadow: [
+                    "0 0 10px hsl(var(--primary) / 0.5)",
+                    "0 0 20px hsl(var(--primary) / 0.8)",
+                    "0 0 10px hsl(var(--primary) / 0.5)",
+                  ],
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                real market demand
+              </motion.span>
+              <span className="font-mono text-sm sm:text-base text-muted-foreground/50">·</span>
+              <span className="font-mono text-sm sm:text-base text-muted-foreground">rewarded for</span>
+              <motion.span
+                className="font-mono text-sm sm:text-base font-bold text-primary"
+                animate={{
+                  textShadow: [
+                    "0 0 10px hsl(var(--primary) / 0.5)",
+                    "0 0 20px hsl(var(--primary) / 0.8)",
+                    "0 0 10px hsl(var(--primary) / 0.5)",
+                  ],
+                }}
+                transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+              >
+                real impact
+              </motion.span>
+            </motion.div>
           </motion.div>
 
           {/* Screenshots - Carousel on mobile, side-by-side on desktop */}
