@@ -327,11 +327,11 @@ const ProblemDetail = () => {
             {problem.subtitle}
           </p>
           
-          {/* Stats Row - source-specific */}
-          <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+          {/* Stats Row - source-specific, compact on mobile */}
+          <div className="flex items-center gap-2 md:gap-4 text-xs md:text-sm text-muted-foreground mb-4">
             {problem.trendingRank && (
               <span className="flex items-center gap-1">
-                <TrendingUp className="h-3.5 w-3.5" />
+                <TrendingUp className="h-3 w-3 md:h-3.5 md:w-3.5" />
                 #{problem.trendingRank}
               </span>
             )}
@@ -339,14 +339,16 @@ const ProblemDetail = () => {
               <>
                 {problem.views > 0 && (
                   <span className="flex items-center gap-1">
-                    <ArrowUp className="h-3.5 w-3.5" />
-                    {formatNumber(problem.views)} upvotes
+                    <ArrowUp className="h-3 w-3 md:h-3.5 md:w-3.5" />
+                    <span>{formatNumber(problem.views)}</span>
+                    <span className="hidden md:inline">upvotes</span>
                   </span>
                 )}
                 {problem.shares > 0 && (
                   <span className="flex items-center gap-1">
-                    <MessageSquare className="h-3.5 w-3.5" />
-                    {formatNumber(problem.shares)} comments
+                    <MessageSquare className="h-3 w-3 md:h-3.5 md:w-3.5" />
+                    <span>{formatNumber(problem.shares)}</span>
+                    <span className="hidden md:inline">comments</span>
                   </span>
                 )}
               </>
@@ -354,20 +356,23 @@ const ProblemDetail = () => {
               <>
                 {problem.views > 0 && (
                   <span className="flex items-center gap-1">
-                    <Eye className="h-3.5 w-3.5" />
-                    {formatNumber(problem.views)} views
+                    <Eye className="h-3 w-3 md:h-3.5 md:w-3.5" />
+                    <span>{formatNumber(problem.views)}</span>
+                    <span className="hidden md:inline">views</span>
                   </span>
                 )}
                 {problem.saves > 0 && (
                   <span className="flex items-center gap-1">
-                    <Bookmark className="h-3.5 w-3.5" />
-                    {formatNumber(problem.saves)} likes
+                    <Bookmark className="h-3 w-3 md:h-3.5 md:w-3.5" />
+                    <span>{formatNumber(problem.saves)}</span>
+                    <span className="hidden md:inline">likes</span>
                   </span>
                 )}
                 {problem.shares > 0 && (
                   <span className="flex items-center gap-1">
-                    <MessageSquare className="h-3.5 w-3.5" />
-                    {formatNumber(problem.shares)} comments
+                    <MessageSquare className="h-3 w-3 md:h-3.5 md:w-3.5" />
+                    <span>{formatNumber(problem.shares)}</span>
+                    <span className="hidden md:inline">comments</span>
                   </span>
                 )}
               </>
@@ -375,28 +380,31 @@ const ProblemDetail = () => {
               <>
                 {problem.views > 0 && (
                   <span className="flex items-center gap-1">
-                    <Eye className="h-3.5 w-3.5" />
-                    {formatNumber(problem.views)} Views
+                    <Eye className="h-3 w-3 md:h-3.5 md:w-3.5" />
+                    <span>{formatNumber(problem.views)}</span>
+                    <span className="hidden md:inline">Views</span>
                   </span>
                 )}
                 {problem.saves > 0 && (
                   <span className="flex items-center gap-1">
-                    <Bookmark className="h-3.5 w-3.5" />
-                    {formatNumber(problem.saves)} Saves
+                    <Bookmark className="h-3 w-3 md:h-3.5 md:w-3.5" />
+                    <span>{formatNumber(problem.saves)}</span>
+                    <span className="hidden md:inline">Saves</span>
                   </span>
                 )}
                 {problem.shares > 0 && (
                   <span className="flex items-center gap-1">
-                    <Share2 className="h-3.5 w-3.5" />
-                    {formatNumber(problem.shares)} Shares
+                    <Share2 className="h-3 w-3 md:h-3.5 md:w-3.5" />
+                    <span>{formatNumber(problem.shares)}</span>
+                    <span className="hidden md:inline">Shares</span>
                   </span>
                 )}
               </>
             )}
           </div>
           
-          {/* Action Buttons */}
-          <div className="flex items-center gap-2 mb-4 flex-wrap">
+          {/* Action Buttons - Row 1: Joined + Launch buttons + Share */}
+          <div className="flex items-center gap-2 mb-2">
             <Button
               ref={startBuildingRef}
               size="sm"
@@ -450,47 +458,53 @@ const ProblemDetail = () => {
               <span className="hidden md:inline">Launch 10 Ideas</span>
             </Button>
             
-            {isJoined && (
-              <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ type: "spring", stiffness: 400, damping: 15 }}
-              >
-                <motion.div
-                  animate={{ scale: [1, 1.05, 1] }}
-                  transition={{ duration: 1.5, repeat: 2, ease: "easeInOut" }}
-                >
-                  <Button 
-                    size="sm"
-                    variant="glow"
-                    onClick={() => navigate("/submit", {
-                      state: {
-                        problem: {
-                          id: problem.id,
-                          title: problem.title,
-                          subtitle: problem.subtitle,
-                          niche: problem.niche,
-                          opportunityScore: problem.opportunityScore,
-                          sentiment: problem.sentiment,
-                        },
-                        joinType: "solo",
-                      },
-                    })}
-                  >
-                    <Plus className="h-4 w-4 mr-1" />
-                    Submit Build
-                  </Button>
-                </motion.div>
-              </motion.div>
-            )}
+            {/* Share Button - next to Launch 10 */}
             <Button 
               variant="outline" 
               size="sm"
               onClick={handleShare}
+              className="h-8 w-8 p-0"
             >
               <Share2 className="h-4 w-4" />
             </Button>
           </div>
+          
+          {/* Action Buttons - Row 2: Submit Build (full width on mobile when joined) */}
+          {isJoined && (
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 400, damping: 15 }}
+              className="mb-4"
+            >
+              <motion.div
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ duration: 1.5, repeat: 2, ease: "easeInOut" }}
+              >
+                <Button 
+                  size="sm"
+                  variant="glow"
+                  onClick={() => navigate("/submit", {
+                    state: {
+                      problem: {
+                        id: problem.id,
+                        title: problem.title,
+                        subtitle: problem.subtitle,
+                        niche: problem.niche,
+                        opportunityScore: problem.opportunityScore,
+                        sentiment: problem.sentiment,
+                      },
+                      joinType: "solo",
+                    },
+                  })}
+                  className="w-full md:w-auto"
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  Submit Build
+                </Button>
+              </motion.div>
+            </motion.div>
+          )}
           
           {/* Builder Capacity */}
           <div className="pt-4 border-t border-border">
@@ -511,25 +525,25 @@ const ProblemDetail = () => {
           </div>
         </motion.div>
 
-        {/* Tabs */}
+        {/* Tabs - compact on mobile */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
-            <TabsList className="h-9 p-1 bg-secondary/50 w-max md:w-auto">
-              <TabsTrigger value="overview" className="text-xs data-[state=active]:bg-background whitespace-nowrap">
+            <TabsList className="h-8 md:h-9 p-0.5 md:p-1 bg-secondary/50 w-max md:w-auto">
+              <TabsTrigger value="overview" className="text-[10px] md:text-xs px-2 md:px-3 data-[state=active]:bg-background whitespace-nowrap">
                 Overview
               </TabsTrigger>
-              <TabsTrigger value="squads" className="text-xs data-[state=active]:bg-background whitespace-nowrap">
+              <TabsTrigger value="squads" className="text-[10px] md:text-xs px-2 md:px-3 data-[state=active]:bg-background whitespace-nowrap">
                 Squads
               </TabsTrigger>
-              <TabsTrigger value="solutions" className="text-xs data-[state=active]:bg-background whitespace-nowrap">
+              <TabsTrigger value="solutions" className="text-[10px] md:text-xs px-2 md:px-3 data-[state=active]:bg-background whitespace-nowrap">
                 Ideas
               </TabsTrigger>
-              <TabsTrigger value="competitors" className="text-xs data-[state=active]:bg-background whitespace-nowrap">
-                Competitors
+              <TabsTrigger value="competitors" className="text-[10px] md:text-xs px-2 md:px-3 data-[state=active]:bg-background whitespace-nowrap">
+                Comp.
               </TabsTrigger>
-              <TabsTrigger value="prompts" className="text-xs data-[state=active]:bg-background gap-1 whitespace-nowrap">
+              <TabsTrigger value="prompts" className="text-[10px] md:text-xs px-2 md:px-3 data-[state=active]:bg-background gap-1 whitespace-nowrap">
                 <Terminal className="h-3 w-3" />
-                Prompts
+                <span className="hidden md:inline">Prompts</span>
               </TabsTrigger>
             </TabsList>
           </div>
