@@ -34,6 +34,8 @@ import { PromptsGenerator } from "@/components/PromptsGenerator";
 import { AutoBuildModal } from "@/components/AutoBuildModal";
 import { ProblemDashboardOnboarding } from "@/components/ProblemDashboardOnboarding";
 import { ProblemEvidenceSection } from "@/components/ProblemEvidenceSection";
+import { BuildWithLovableModal } from "@/components/BuildWithLovableModal";
+import { BulkLaunchModal } from "@/components/BulkLaunchModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -105,6 +107,8 @@ const ProblemDetail = () => {
   const [searchCompetitors, setSearchCompetitors] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const [autoBuildOpen, setAutoBuildOpen] = useState(false);
+  const [buildModalOpen, setBuildModalOpen] = useState(false);
+  const [bulkLaunchOpen, setBulkLaunchOpen] = useState(false);
   const [justJoined, setJustJoined] = useState(false);
   const wasJoined = useRef(false);
   const startBuildingRef = useRef<HTMLButtonElement>(null);
@@ -463,10 +467,7 @@ const ProblemDetail = () => {
             <Button
               variant="outline"
               size="icon"
-              onClick={() => {
-                const prompt = encodeURIComponent(`Build a solution for: ${problem.title}\n\n${problem.subtitle || ""}\n\nNiche: ${problem.niche}\nCategory: ${problem.category}`);
-                window.open(`https://lovable.dev/projects/create?prompt=${prompt}`, "_blank");
-              }}
+              onClick={() => setBuildModalOpen(true)}
               className="md:w-auto md:px-3"
             >
               <Rocket className="h-4 w-4 md:mr-1" />
@@ -477,17 +478,7 @@ const ProblemDetail = () => {
             <Button
               variant="outline"
               size="icon"
-              onClick={async () => {
-                toast({
-                  title: "Launching ideas...",
-                  description: "Opening 10 project tabs sequentially",
-                });
-                for (let i = 0; i < 10; i++) {
-                  const prompt = encodeURIComponent(`Build unique startup idea #${i + 1} for: ${problem.title}\n\nNiche: ${problem.niche}`);
-                  window.open(`https://lovable.dev/projects/create?prompt=${prompt}`, "_blank");
-                  await new Promise((resolve) => setTimeout(resolve, 1500));
-                }
-              }}
+              onClick={() => setBulkLaunchOpen(true)}
               className="md:w-auto md:px-3"
             >
               <Layers className="h-4 w-4 md:mr-1" />
@@ -977,6 +968,34 @@ const ProblemDetail = () => {
         justJoined={justJoined}
         onDismiss={() => setJustJoined(false)}
         startBuildingRef={startBuildingRef}
+      />
+
+      {/* Launch in Lovable Modal */}
+      <BuildWithLovableModal
+        open={buildModalOpen}
+        onOpenChange={setBuildModalOpen}
+        problem={{
+          title: problem?.title || "",
+          subtitle: problem?.subtitle,
+          category: problem?.category || "",
+          niche: problem?.niche || "",
+          painPoints: problem?.painPoints,
+          marketSize: problem?.marketSize,
+          opportunityScore: problem?.opportunityScore || 50,
+          sentiment: problem?.sentiment || "stable",
+          hiddenInsight: problem?.hiddenInsight,
+        }}
+        competitors={competitors?.map(c => ({
+          name: c.name,
+          description: c.description,
+          ratingLabel: c.ratingLabel,
+        }))}
+      />
+
+      {/* Bulk Launch Modal */}
+      <BulkLaunchModal
+        open={bulkLaunchOpen}
+        onOpenChange={setBulkLaunchOpen}
       />
     </AppLayout>
   );
