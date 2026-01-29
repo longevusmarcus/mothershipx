@@ -615,7 +615,7 @@ function MobileDataScrapingLayout() {
                 )}
                 {activeSection === 2 && (
                   <>
-                    Real-time <span className="text-primary font-mono">Intelligence</span>
+                    Showcasing <span className="text-primary font-mono">Arena</span>
                   </>
                 )}
               </motion.h2>
@@ -841,7 +841,9 @@ function DesktopDataScrapingLayout() {
             <h2 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-foreground">
               Scraping <span className="text-primary font-mono">12+</span> platforms
             </h2>
-            <p className="text-muted-foreground mt-2 font-mono text-sm">Real-time arena</p>
+            <p className="text-muted-foreground mt-2 font-mono text-sm">
+              Real-time market intelligence x mass-builder agent x hackathon arena
+            </p>
           </motion.div>
 
           {/* Main visualization grid */}
