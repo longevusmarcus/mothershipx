@@ -290,7 +290,7 @@ export function LandingHero() {
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
 
-            <p className="mt-4 text-xs text-muted-foreground/50 font-mono">Press Enter to begin →</p>
+            <p className="mt-4 text-xs text-muted-foreground/50 font-mono">Press Enter to begin</p>
           </motion.div>
 
           {/* Footer - embedded in this section */}

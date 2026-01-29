@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
 
 // Platform icons with their brand colors (using semantic tokens for theming)
@@ -158,7 +158,77 @@ function ProcessingCore() {
   );
 }
 
-// Pain point extraction visualization
+// Pain point extraction visualization with typewriter effect
+function PainPointItem({ text, delay }: { text: string; delay: number }) {
+  const [displayedText, setDisplayedText] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const [showCursor, setShowCursor] = useState(true);
+
+  useEffect(() => {
+    const startDelay = setTimeout(() => {
+      setIsTyping(true);
+      let i = 0;
+      const typingInterval = setInterval(() => {
+        if (i < text.length) {
+          setDisplayedText(text.slice(0, i + 1));
+          i++;
+        } else {
+          clearInterval(typingInterval);
+          setIsTyping(false);
+        }
+      }, 50);
+      return () => clearInterval(typingInterval);
+    }, delay * 1000);
+
+    return () => clearTimeout(startDelay);
+  }, [text, delay]);
+
+  // Blinking cursor
+  useEffect(() => {
+    const cursorInterval = setInterval(() => {
+      setShowCursor((prev) => !prev);
+    }, 400);
+    return () => clearInterval(cursorInterval);
+  }, []);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: delay, duration: 0.3 }}
+      className="relative"
+    >
+      <motion.div
+        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-card/80 border border-border/50 backdrop-blur-sm"
+        animate={
+          isTyping
+            ? {
+                borderColor: "hsl(var(--primary) / 0.7)",
+                boxShadow: "0 0 10px 0 hsl(var(--primary) / 0.2)",
+              }
+            : {
+                borderColor: "hsl(var(--border) / 0.5)",
+                boxShadow: "0 0 0 0 transparent",
+              }
+        }
+        transition={{ duration: 0.3 }}
+      >
+        <motion.span
+          className={`w-2 h-2 rounded-full shrink-0 ${isTyping ? "bg-primary" : "bg-muted-foreground/50"}`}
+          animate={isTyping ? { scale: [1, 1.3, 1] } : { scale: 1 }}
+          transition={{ duration: 0.5, repeat: isTyping ? Infinity : 0 }}
+        />
+        <span className="font-mono text-xs sm:text-sm text-muted-foreground">
+          {displayedText}
+          {(isTyping || displayedText.length === 0) && (
+            <span className={`${showCursor ? "opacity-100" : "opacity-0"} text-primary transition-opacity`}>▌</span>
+          )}
+        </span>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 function PainPointExtraction() {
   const painPoints = [
     "users frustrated with...",
@@ -171,32 +241,7 @@ function PainPointExtraction() {
   return (
     <div className="flex flex-col gap-2">
       {painPoints.map((text, i) => (
-        <motion.div
-          key={i}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 2 + i * 0.3, duration: 0.5 }}
-          className="relative"
-        >
-          <motion.div
-            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-card/80 border border-border/50 backdrop-blur-sm"
-            animate={{
-              borderColor: [
-                "hsl(var(--border) / 0.5)",
-                "hsl(var(--primary) / 0.5)",
-                "hsl(var(--border) / 0.5)",
-              ],
-            }}
-            transition={{ duration: 2, delay: i * 0.5, repeat: Infinity }}
-          >
-            <motion.span
-              className="w-2 h-2 rounded-full bg-primary shrink-0"
-              animate={{ scale: [1, 1.3, 1] }}
-              transition={{ duration: 1, delay: i * 0.2, repeat: Infinity }}
-            />
-            <span className="font-mono text-xs sm:text-sm text-muted-foreground truncate">{text}</span>
-          </motion.div>
-        </motion.div>
+        <PainPointItem key={i} text={text} delay={2 + i * 0.8} />
       ))}
     </div>
   );
