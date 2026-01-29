@@ -13,7 +13,7 @@ import terminalAvatar from "@/assets/terminal-avatar.png";
 function TerminalTyping() {
   const [displayedText, setDisplayedText] = useState("");
   const [showCursor, setShowCursor] = useState(true);
-  
+
   const terminalText = `find 1,000 startup ideas from pain points on Reddit and TikTok, build and host landing pages, register domains, wire up Stripe, test in Chrome — zero mistakes allowed
 --dangerously-skip-permissions --chrome`;
 
@@ -34,7 +34,7 @@ function TerminalTyping() {
   // Blinking cursor
   useEffect(() => {
     const cursorInterval = setInterval(() => {
-      setShowCursor(prev => !prev);
+      setShowCursor((prev) => !prev);
     }, 530);
     return () => clearInterval(cursorInterval);
   }, []);
@@ -50,11 +50,7 @@ function TerminalTyping() {
       <div className="flex items-start gap-3">
         {/* Avatar circle */}
         <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-primary/50 shrink-0">
-          <img 
-            src={terminalAvatar} 
-            alt="Builder" 
-            className="w-full h-full object-cover"
-          />
+          <img src={terminalAvatar} alt="Builder" className="w-full h-full object-cover" />
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
@@ -62,7 +58,7 @@ function TerminalTyping() {
           </div>
           <div className="break-words whitespace-pre-wrap leading-relaxed">
             {displayedText}
-            <span className={`${showCursor ? 'opacity-100' : 'opacity-0'} text-primary transition-opacity`}>▌</span>
+            <span className={`${showCursor ? "opacity-100" : "opacity-0"} text-primary transition-opacity`}>▌</span>
           </div>
         </div>
       </div>
@@ -91,14 +87,11 @@ export function LandingHero() {
   }, []);
 
   return (
-    <div 
-      ref={containerRef} 
-      className="bg-background h-screen overflow-y-auto snap-y snap-mandatory"
-    >
+    <div ref={containerRef} className="bg-background h-screen overflow-y-auto snap-y snap-mandatory">
       {/* PAGE 1: Terminal Only */}
       <section className="h-screen snap-start flex flex-col items-center justify-center px-6 relative overflow-hidden">
         {/* Subtle dot grid */}
-        <div 
+        <div
           className="absolute inset-0 opacity-[0.04]"
           style={{
             backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
@@ -114,23 +107,19 @@ export function LandingHero() {
             transition={{ duration: 0.6 }}
             className="flex justify-center mb-8"
           >
-            <motion.div 
-              animate={{ 
+            <motion.div
+              animate={{
                 x: [0, -1, 1, -1, 0],
                 y: [0, 1, -1, 0, 1],
               }}
-              transition={{ 
+              transition={{
                 duration: 0.15,
                 repeat: Infinity,
-                ease: "linear"
+                ease: "linear",
               }}
             >
               <div className="w-14 h-14 md:w-16 md:h-16 relative">
-                <img 
-                  src={logoIcon} 
-                  alt="MothershipX" 
-                  className="w-full h-full object-contain dark:invert-0 invert" 
-                />
+                <img src={logoIcon} alt="MothershipX" className="w-full h-full object-contain dark:invert-0 invert" />
               </div>
             </motion.div>
           </motion.div>
@@ -170,7 +159,7 @@ export function LandingHero() {
       <section className="h-screen snap-start flex flex-col items-center justify-center px-6 relative overflow-hidden">
         {/* Gradient background */}
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-muted/20" />
-        
+
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -207,52 +196,52 @@ export function LandingHero() {
             <p className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl text-muted-foreground leading-relaxed">
               Build useful apps, websites, and digital products at the
             </p>
-            
+
             {/* Speed of Thought - Matrix style highlight */}
             <div className="relative inline-block my-4">
               {/* Glitch layers */}
               <motion.span
                 className="absolute inset-0 font-mono text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary/30"
-                animate={{ 
+                animate={{
                   x: [0, -2, 2, -1, 0],
                   opacity: [0.3, 0.5, 0.3, 0.4, 0.3],
                 }}
                 transition={{ duration: 0.2, repeat: Infinity, repeatDelay: 3 }}
-                style={{ clipPath: 'inset(0 0 50% 0)' }}
+                style={{ clipPath: "inset(0 0 50% 0)" }}
               >
                 speed of thought
               </motion.span>
               <motion.span
                 className="absolute inset-0 font-mono text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary/20"
-                animate={{ 
+                animate={{
                   x: [0, 2, -2, 1, 0],
                   opacity: [0.2, 0.4, 0.2, 0.3, 0.2],
                 }}
                 transition={{ duration: 0.15, repeat: Infinity, repeatDelay: 2.5 }}
-                style={{ clipPath: 'inset(50% 0 0 0)' }}
+                style={{ clipPath: "inset(50% 0 0 0)" }}
               >
                 speed of thought
               </motion.span>
-              
+
               {/* Main text */}
-              <motion.span 
+              <motion.span
                 className="relative font-mono text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground"
-                animate={{ 
+                animate={{
                   textShadow: [
                     "0 0 20px hsl(var(--primary) / 0.5), 0 0 40px hsl(var(--primary) / 0.3)",
                     "0 0 30px hsl(var(--primary) / 0.7), 0 0 60px hsl(var(--primary) / 0.4)",
                     "0 0 20px hsl(var(--primary) / 0.5), 0 0 40px hsl(var(--primary) / 0.3)",
-                  ]
+                  ],
                 }}
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               >
                 speed of thought
               </motion.span>
-              
+
               {/* Scan line effect */}
               <motion.div
                 className="absolute inset-0 pointer-events-none overflow-hidden"
-                style={{ mixBlendMode: 'overlay' }}
+                style={{ mixBlendMode: "overlay" }}
               >
                 <motion.div
                   className="w-full h-[2px] bg-gradient-to-r from-transparent via-primary/60 to-transparent"
@@ -261,38 +250,23 @@ export function LandingHero() {
                 />
               </motion.div>
             </div>
-            
+
             <p className="font-display text-lg sm:text-xl md:text-2xl lg:text-3xl text-muted-foreground leading-relaxed whitespace-nowrap">
-              Backed by <em className="text-foreground font-accent">real market demand</em> and rewarded for <em className="text-foreground font-accent">real impact.</em>
+              • backed by <em className="text-foreground font-accent">real market demand</em> and rewarded for{" "}
+              <em className="text-foreground font-accent">real impact•</em>
             </p>
           </motion.div>
 
           {/* Screenshots with intense glow */}
           <div className="relative flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8">
             {/* Left screenshot */}
-            <ScreenshotCard 
-              image={showcaseSignals}
-              alt="Live Signals Dashboard"
-              rotation={-6}
-              delay={0}
-            />
+            <ScreenshotCard image={showcaseSignals} alt="Live Signals Dashboard" rotation={-6} delay={0} />
 
             {/* Center screenshot - larger */}
-            <ScreenshotCard 
-              image={showcaseDetail}
-              alt="Problem Analysis"
-              rotation={0}
-              delay={0.15}
-              isCenter
-            />
+            <ScreenshotCard image={showcaseDetail} alt="Problem Analysis" rotation={0} delay={0.15} isCenter />
 
             {/* Right screenshot */}
-            <ScreenshotCard 
-              image={showcaseArena}
-              alt="Builder Arena"
-              rotation={6}
-              delay={0.3}
-            />
+            <ScreenshotCard image={showcaseArena} alt="Builder Arena" rotation={6} delay={0.3} />
           </div>
 
           {/* CTA Button */}
@@ -303,7 +277,7 @@ export function LandingHero() {
             transition={{ delay: 0.5, duration: 0.6 }}
             className="flex flex-col items-center mt-16"
           >
-            <Button 
+            <Button
               onClick={handleEnter}
               size="lg"
               className="group text-base px-8 py-6 rounded-full bg-foreground text-background hover:bg-foreground/90 transition-all duration-300 shadow-lg hover:shadow-xl"
@@ -311,10 +285,8 @@ export function LandingHero() {
               Enter MothershipX
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
-            
-            <p className="mt-4 text-xs text-muted-foreground/50 font-mono">
-              Press Enter to begin →
-            </p>
+
+            <p className="mt-4 text-xs text-muted-foreground/50 font-mono">Press Enter to begin →</p>
           </motion.div>
 
           {/* Footer - embedded in this section */}
@@ -322,8 +294,12 @@ export function LandingHero() {
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
               <p>© 2026 MothershipX. All rights reserved.</p>
               <div className="flex items-center gap-6">
-                <a href="/terms" className="hover:text-foreground transition-colors">Terms</a>
-                <a href="/privacy" className="hover:text-foreground transition-colors">Privacy</a>
+                <a href="/terms" className="hover:text-foreground transition-colors">
+                  Terms
+                </a>
+                <a href="/privacy" className="hover:text-foreground transition-colors">
+                  Privacy
+                </a>
               </div>
             </div>
           </div>
@@ -334,15 +310,15 @@ export function LandingHero() {
 }
 
 // Screenshot card with glowing effect
-function ScreenshotCard({ 
-  image, 
-  alt, 
-  rotation, 
+function ScreenshotCard({
+  image,
+  alt,
+  rotation,
   delay,
-  isCenter = false 
-}: { 
-  image: string; 
-  alt: string; 
+  isCenter = false,
+}: {
+  image: string;
+  alt: string;
   rotation: number;
   delay: number;
   isCenter?: boolean;
@@ -355,23 +331,23 @@ function ScreenshotCard({
       transition={{ duration: 0.8, delay, ease: "easeOut" }}
       whileHover={{ rotate: 0, scale: 1.03, y: -10 }}
       className={`relative shrink-0 group ${
-        isCenter 
-          ? "w-full max-w-[380px] sm:max-w-[440px] md:w-80 lg:w-96 z-10" 
+        isCenter
+          ? "w-full max-w-[380px] sm:max-w-[440px] md:w-80 lg:w-96 z-10"
           : "w-full max-w-[320px] sm:max-w-[380px] md:w-64 lg:w-72"
       }`}
     >
       {/* Glow effect behind the image */}
-      <div className={`absolute inset-0 rounded-2xl bg-primary/30 blur-2xl group-hover:blur-3xl transition-all duration-500 ${isCenter ? 'scale-110' : 'scale-105'} opacity-60 group-hover:opacity-80`} />
-      
+      <div
+        className={`absolute inset-0 rounded-2xl bg-primary/30 blur-2xl group-hover:blur-3xl transition-all duration-500 ${isCenter ? "scale-110" : "scale-105"} opacity-60 group-hover:opacity-80`}
+      />
+
       {/* Secondary outer glow */}
-      <div className={`absolute -inset-4 rounded-3xl bg-primary/10 blur-3xl ${isCenter ? 'opacity-50' : 'opacity-30'}`} />
-      
+      <div
+        className={`absolute -inset-4 rounded-3xl bg-primary/10 blur-3xl ${isCenter ? "opacity-50" : "opacity-30"}`}
+      />
+
       <div className="relative rounded-xl overflow-hidden shadow-2xl border border-primary/20 group-hover:border-primary/40 transition-colors">
-        <img 
-          src={image} 
-          alt={alt} 
-          className="block w-full h-auto"
-        />
+        <img src={image} alt={alt} className="block w-full h-auto" />
         {/* Overlay gradient */}
         <div className="absolute inset-0 bg-gradient-to-t from-background/30 via-transparent to-transparent pointer-events-none" />
       </div>
