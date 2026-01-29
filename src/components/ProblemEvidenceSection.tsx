@@ -30,6 +30,7 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
   const scrapeEvidence = useScrapeEvidence();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+  const [showAll, setShowAll] = useState(false);
 
   const handleImageError = (videoId: string) => {
     setFailedImages((prev) => new Set(prev).add(videoId));
@@ -71,23 +72,33 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
   };
 
   // Filter out videos with broken thumbnails
-  const videos = useMemo(() => {
+  const allVideos = useMemo(() => {
     return (data?.videos || []).filter(
       (v) => v.video_thumbnail && !failedImages.has(v.id)
     );
   }, [data?.videos, failedImages]);
   
-  const comments = data?.comments || [];
-  const hasEvidence = videos.length > 0 || comments.length > 0;
+  const allComments = data?.comments || [];
+  const hasEvidence = allVideos.length > 0 || allComments.length > 0;
+  
+  // Limit to first 4 total items when collapsed
+  const INITIAL_LIMIT = 4;
+  const totalItems = allVideos.length + allComments.length;
+  const hasMore = totalItems > INITIAL_LIMIT;
+  
+  // Distribute the limit between videos and comments
+  const videos = showAll ? allVideos : allVideos.slice(0, Math.min(INITIAL_LIMIT, allVideos.length));
+  const remainingSlots = Math.max(0, INITIAL_LIMIT - videos.length);
+  const comments = showAll ? allComments : allComments.slice(0, remainingSlots);
   
   // Generate a fake higher count for display (real items + fake extras)
-  const realCount = videos.length + comments.length;
+  const realCount = allVideos.length + allComments.length;
   const fakeExtraCount = Math.floor(Math.random() * 8) + 12; // 12-20 extra fake items
   const displayCount = realCount > 0 ? realCount + fakeExtraCount : 0;
   
-  // Number of blurred placeholder cards to show
-  const blurredVideoCount = Math.min(5, Math.max(3, 5 - videos.length));
-  const blurredCommentCount = Math.min(3, Math.max(2, 3 - comments.length));
+  // Number of blurred placeholder cards to show (only when showing all)
+  const blurredVideoCount = showAll ? Math.min(5, Math.max(3, 5 - allVideos.length)) : 0;
+  const blurredCommentCount = showAll ? Math.min(3, Math.max(2, 3 - allComments.length)) : 0;
 
 
   if (isLoading) {
@@ -298,6 +309,16 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
                 ))}
               </div>
             </div>
+          )}
+          
+          {/* Show More / Show Less Button */}
+          {hasMore && (
+            <button
+              onClick={() => setShowAll(!showAll)}
+              className="w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors py-2"
+            >
+              {showAll ? "Show less" : `Show ${totalItems - INITIAL_LIMIT} more`}
+            </button>
           )}
         </div>
       )}
