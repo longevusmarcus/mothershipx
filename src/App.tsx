@@ -9,6 +9,7 @@ import { ScrollToTop } from "@/components/ScrollToTop";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import Index from "./pages/Index";
+import Landing from "./pages/Landing";
 import Problems from "./pages/Problems";
 import ProblemDetail from "./pages/ProblemDetail";
 import Challenges from "./pages/Challenges";
@@ -39,8 +40,8 @@ const App = () => (
               <BrowserRouter>
                 <ScrollToTop />
                 <Routes>
-                  {/* Redirect root to Signals page */}
-                  <Route path="/" element={<Navigate to="/problems" replace />} />
+                  {/* Landing page for first-time visitors */}
+                  <Route path="/" element={<Landing />} />
                   <Route path="/search" element={<Index />} />
                   <Route path="/problems" element={<Problems />} />
                   <Route path="/problems/:id" element={<ProblemDetail />} />
