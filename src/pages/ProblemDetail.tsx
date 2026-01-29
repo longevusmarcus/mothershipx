@@ -6,6 +6,7 @@ import {
   Users, 
   TrendingUp, 
   Share2,
+  Pin,
   Bookmark,
   Eye,
   Check,
@@ -485,8 +486,9 @@ const ProblemDetail = () => {
               variant="outline" 
               size="sm"
               onClick={handleSave}
+              className={isSaved ? "text-primary border-primary/30 bg-primary/10" : ""}
             >
-              <Bookmark className={`h-4 w-4 ${isSaved ? "fill-current" : ""}`} />
+              <Pin className={`h-3.5 w-3.5 ${isSaved ? "fill-current" : ""}`} />
             </Button>
             <Button variant="outline" size="sm" onClick={handleShare}>
               <Share2 className="h-4 w-4" />
