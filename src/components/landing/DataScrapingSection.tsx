@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 import logoIcon from "@/assets/logo-icon.png";
 
 // Platform icons with their brand colors (using semantic tokens for theming)
@@ -242,7 +243,7 @@ function PainPointExtraction() {
   return (
     <div className="flex flex-col gap-2">
       {painPoints.map((text, i) => (
-        <PainPointItem key={i} text={text} delay={2 + i * 0.8} />
+        <PainPointItem key={i} text={text} delay={0.5 + i * 0.8} />
       ))}
     </div>
   );
@@ -260,7 +261,7 @@ function LeaderboardPreview() {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 4, duration: 0.6 }}
+      transition={{ delay: 0.3, duration: 0.6 }}
       className="bg-card/80 border border-border/50 rounded-xl p-4 backdrop-blur-sm w-full max-w-xs"
     >
       <div className="flex items-center gap-2 mb-3 pb-2 border-b border-border/30">
@@ -273,7 +274,7 @@ function LeaderboardPreview() {
             key={builder.rank}
             initial={{ opacity: 0, x: 10 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 4.2 + i * 0.15 }}
+            transition={{ delay: 0.5 + i * 0.15 }}
             className="flex items-center justify-between text-sm"
           >
             <div className="flex items-center gap-2">
@@ -296,15 +297,10 @@ function LeaderboardPreview() {
   );
 }
 
-export function DataScrapingSection() {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-
+// Background effects component
+function BackgroundEffects() {
   return (
-    <section
-      ref={ref}
-      className="h-screen snap-start flex flex-col items-center justify-center px-6 relative overflow-hidden"
-    >
+    <>
       {/* Matrix-style falling code background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.03]">
         {Array.from({ length: 20 }).map((_, i) => (
@@ -336,6 +332,194 @@ export function DataScrapingSection() {
           backgroundSize: "50px 50px",
         }}
       />
+    </>
+  );
+}
+
+// Mobile section wrapper with snap scrolling
+function MobileSection({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div className={`h-screen snap-start flex flex-col items-center justify-center px-4 relative ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+// Mobile layout with separate snap-scroll sections
+function MobileDataScrapingLayout() {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+
+  return (
+    <div ref={ref} className="h-[300vh] snap-start">
+      {/* Section 1: Platforms orbital visualization */}
+      <MobileSection>
+        <BackgroundEffects />
+        {isInView && (
+          <div className="relative z-10 w-full flex flex-col items-center">
+            {/* Title */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-center mb-6"
+            >
+              <motion.p
+                className="font-mono text-xs text-primary mb-2"
+                animate={{ opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                {'>'} INITIALIZING DATA EXTRACTION...
+              </motion.p>
+              <h2 className="font-display text-2xl font-normal text-foreground">
+                Scraping <span className="text-primary font-mono">12+</span> platforms
+              </h2>
+            </motion.div>
+
+            {/* Platforms orbital display */}
+            <div className="relative h-[350px] w-full flex items-center justify-center">
+              <div className="relative w-full h-full max-w-[350px] mx-auto">
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                  <ProcessingCore />
+                </div>
+                {platforms.slice(0, 8).map((platform, i) => {
+                  const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
+                  const radius = 120;
+                  return <PlatformNode key={platform.id} platform={platform} angle={angle} radius={radius} />;
+                })}
+                {Array.from({ length: 15 }).map((_, i) => (
+                  <DataParticle
+                    key={i}
+                    delay={i * 0.3}
+                    startX={(Math.random() - 0.5) * 300}
+                    startY={(Math.random() - 0.5) * 300}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Scroll indicator */}
+            <motion.div
+              className="mt-8 flex flex-col items-center gap-2"
+              animate={{ y: [0, 8, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            >
+              <span className="text-xs text-muted-foreground font-mono">scroll</span>
+              <div className="w-px h-6 bg-gradient-to-b from-muted-foreground to-transparent" />
+            </motion.div>
+          </div>
+        )}
+      </MobileSection>
+
+      {/* Section 2: Problems found / Pain points */}
+      <MobileSection>
+        <BackgroundEffects />
+        {isInView && (
+          <div className="relative z-10 w-full flex flex-col items-center">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="text-center mb-6"
+            >
+              <p className="font-mono text-xs text-muted-foreground mb-1">EXTRACTED PAIN POINTS</p>
+              <motion.p
+                className="font-mono text-4xl font-bold text-primary"
+                animate={{ opacity: [0.8, 1, 0.8] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                1,247
+              </motion.p>
+            </motion.div>
+
+            <PainPointExtraction />
+
+            {/* One-click solution button */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+              className="mt-8"
+            >
+              <motion.button
+                className="group px-6 py-3 rounded-xl bg-primary text-primary-foreground font-mono text-sm font-medium flex items-center gap-2 shadow-lg"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
+                animate={{
+                  boxShadow: [
+                    "0 0 20px 0 hsl(var(--primary) / 0.3)",
+                    "0 0 40px 5px hsl(var(--primary) / 0.5)",
+                    "0 0 20px 0 hsl(var(--primary) / 0.3)",
+                  ],
+                }}
+                transition={{ boxShadow: { duration: 2, repeat: Infinity } }}
+              >
+                <span>→</span>
+                <span>Turn into solution</span>
+                <motion.span
+                  className="text-primary-foreground/70"
+                  animate={{ opacity: [0.5, 1, 0.5] }}
+                  transition={{ duration: 1, repeat: Infinity }}
+                >
+                  1-CLICK
+                </motion.span>
+              </motion.button>
+            </motion.div>
+
+            {/* Scroll indicator */}
+            <motion.div
+              className="mt-10 flex flex-col items-center gap-2"
+              animate={{ y: [0, 8, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            >
+              <span className="text-xs text-muted-foreground font-mono">scroll</span>
+              <div className="w-px h-6 bg-gradient-to-b from-muted-foreground to-transparent" />
+            </motion.div>
+          </div>
+        )}
+      </MobileSection>
+
+      {/* Section 3: Leaderboard & Stats */}
+      <MobileSection>
+        <BackgroundEffects />
+        {isInView && (
+          <div className="relative z-10 w-full flex flex-col items-center gap-6">
+            <LeaderboardPreview />
+
+            {/* Stats */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="grid grid-cols-2 gap-4 w-full max-w-xs"
+            >
+              <div className="bg-card/50 border border-border/30 rounded-lg p-4 text-center backdrop-blur-sm">
+                <p className="font-mono text-2xl font-bold text-foreground">847</p>
+                <p className="font-mono text-[10px] text-muted-foreground">ACTIVE BUILDERS</p>
+              </div>
+              <div className="bg-card/50 border border-border/30 rounded-lg p-4 text-center backdrop-blur-sm">
+                <p className="font-mono text-2xl font-bold text-primary">$12K</p>
+                <p className="font-mono text-[10px] text-muted-foreground">WEEKLY PRIZES</p>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </MobileSection>
+    </div>
+  );
+}
+
+// Desktop layout (original)
+function DesktopDataScrapingLayout() {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  return (
+    <section
+      ref={ref}
+      className="h-screen snap-start flex flex-col items-center justify-center px-6 relative overflow-hidden"
+    >
+      <BackgroundEffects />
 
       {isInView && (
         <div className="relative z-10 w-full max-w-6xl mx-auto">
@@ -465,18 +649,19 @@ export function DataScrapingSection() {
               </motion.div>
             </div>
           </div>
-
-          {/* Bottom text */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 5 }}
-            className="text-center mt-8 sm:mt-12 font-mono text-xs text-muted-foreground/60"
-          >
-            ▼ SCROLL TO CONTINUE ▼
-          </motion.p>
         </div>
       )}
     </section>
   );
+}
+
+export function DataScrapingSection() {
+  const isMobile = useIsMobile();
+
+  // Show mobile layout with separate snap sections, desktop shows single section
+  if (isMobile) {
+    return <MobileDataScrapingLayout />;
+  }
+
+  return <DesktopDataScrapingLayout />;
 }
