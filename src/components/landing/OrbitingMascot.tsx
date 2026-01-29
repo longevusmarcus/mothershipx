@@ -1,5 +1,5 @@
 import { motion, useInView } from "framer-motion";
-import { useRef, useState, useEffect } from "react";
+import { useRef } from "react";
 import mothershipMascot from "@/assets/mothership-mascot.png";
 
 interface OrbitingMascotProps {
@@ -7,160 +7,88 @@ interface OrbitingMascotProps {
 }
 
 export function OrbitingMascot({ targetRef }: OrbitingMascotProps) {
-  const isInView = useInView(targetRef, { once: true, amount: 0.5 });
-  const [phase, setPhase] = useState<"hidden" | "entering" | "orbiting" | "exiting" | "done">("hidden");
-  
-  useEffect(() => {
-    if (isInView && phase === "hidden") {
-      // Start the sequence
-      setPhase("entering");
-      
-      // After entering, start orbiting
-      const orbitTimer = setTimeout(() => {
-        setPhase("orbiting");
-      }, 600);
-      
-      // After orbiting (2 full rotations), exit
-      const exitTimer = setTimeout(() => {
-        setPhase("exiting");
-      }, 3600); // 600ms enter + 3000ms orbit
-      
-      // Mark as done
-      const doneTimer = setTimeout(() => {
-        setPhase("done");
-      }, 4600);
-      
-      return () => {
-        clearTimeout(orbitTimer);
-        clearTimeout(exitTimer);
-        clearTimeout(doneTimer);
-      };
-    }
-  }, [isInView, phase]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(targetRef, { once: true, amount: 0.3 });
 
-  if (phase === "hidden" || phase === "done") return null;
+  if (!isInView) return null;
 
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-visible">
-      {/* Orbiting mascot */}
+    <div className="absolute inset-0 pointer-events-none" style={{ overflow: "visible" }}>
+      {/* Container centered on the text */}
       <motion.div
-        className="absolute"
-        style={{
-          left: "50%",
-          top: "50%",
-          marginLeft: -20,
-          marginTop: -20,
-        }}
-        initial={{ 
-          x: -200, 
-          y: 0, 
-          opacity: 0,
-          scale: 0.5,
-        }}
-        animate={
-          phase === "entering"
-            ? { 
-                x: 100, 
-                y: -60, 
-                opacity: 1, 
-                scale: 0.8,
-              }
-            : phase === "orbiting"
-            ? { 
-                opacity: 1, 
-                scale: 0.8,
-              }
-            : phase === "exiting"
-            ? { 
-                x: 300, 
-                y: -150, 
-                opacity: 0, 
-                scale: 0.4,
-              }
-            : {}
-        }
-        transition={
-          phase === "entering"
-            ? { duration: 0.6, ease: "easeOut" }
-            : phase === "exiting"
-            ? { duration: 1, ease: "easeIn" }
-            : {}
-        }
+        className="absolute left-1/2 top-1/2"
+        style={{ marginLeft: -16, marginTop: -16 }}
+        initial={{ opacity: 0, scale: 0, x: -150 }}
+        animate={{ opacity: 1, scale: 1, x: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
       >
-        {/* Orbit animation container */}
+        {/* Orbit container - this rotates around the center */}
         <motion.div
-          animate={phase === "orbiting" ? {
-            rotate: [0, 360, 720],
-          } : {}}
-          transition={
-            phase === "orbiting" 
-              ? { 
-                  duration: 3, 
-                  ease: "linear",
-                }
-              : {}
-          }
           style={{
-            width: 180,
-            height: 100,
-            transformOrigin: "center center",
+            width: 280,
+            height: 80,
+            marginLeft: -140,
+            marginTop: -40,
+          }}
+          animate={{ rotate: 720 }}
+          transition={{
+            duration: 4,
+            ease: "linear",
+            delay: 0.5,
           }}
         >
-          {/* The mascot on the orbit path */}
+          {/* Mascot positioned at edge of orbit */}
           <motion.div
             className="absolute"
-            style={{
-              left: "50%",
-              top: 0,
-              marginLeft: -20,
-              marginTop: -20,
+            style={{ right: -16, top: "50%", marginTop: -16 }}
+            animate={{ rotate: -720 }}
+            transition={{
+              duration: 4,
+              ease: "linear",
+              delay: 0.5,
             }}
-            animate={phase === "orbiting" ? {
-              rotate: [0, -360, -720], // Counter-rotate to keep upright
-            } : {}}
-            transition={
-              phase === "orbiting" 
-                ? { 
-                    duration: 3, 
-                    ease: "linear",
-                  }
-                : {}
-            }
           >
-            {/* Glow effect */}
-            <div className="absolute inset-0 bg-primary/30 rounded-full blur-xl scale-150" />
+            {/* Glow */}
+            <div className="absolute inset-0 bg-primary/20 rounded-full blur-lg scale-150" />
             
-            {/* Mascot with bob */}
+            {/* Mascot with subtle bob */}
             <motion.div
-              animate={{ y: [0, -4, 0] }}
-              transition={{
-                duration: 1,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
+              animate={{ y: [0, -3, 0] }}
+              transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
             >
               <img
                 src={mothershipMascot}
                 alt=""
-                className="w-10 h-10 object-contain"
-                style={{
-                  filter: "drop-shadow(0 0 12px hsl(var(--primary) / 0.5))",
-                }}
+                className="w-8 h-8 object-contain"
+                style={{ filter: "drop-shadow(0 0 8px hsl(var(--primary) / 0.4))" }}
               />
             </motion.div>
             
-            {/* Trail particles */}
+            {/* Trail */}
             <motion.div
-              className="absolute -left-1 top-1/2 w-1 h-1 rounded-full bg-primary/60"
-              animate={{
-                opacity: [0.8, 0],
-                x: [-3, -12],
-                scale: [1, 0],
-              }}
-              transition={{ duration: 0.3, repeat: Infinity }}
+              className="absolute -left-1 top-1/2 w-0.5 h-0.5 rounded-full bg-primary/50"
+              animate={{ opacity: [0.6, 0], x: [-2, -10], scale: [1, 0] }}
+              transition={{ duration: 0.4, repeat: Infinity }}
             />
           </motion.div>
         </motion.div>
+      </motion.div>
+
+      {/* Exit animation - flies away after orbiting */}
+      <motion.div
+        className="absolute left-1/2 top-1/2"
+        style={{ marginLeft: -16, marginTop: -16 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: [0, 0, 1], x: [0, 0, 200], y: [0, 0, -100], scale: [0.8, 0.8, 0] }}
+        transition={{ duration: 5.5, times: [0, 0.82, 1], ease: "easeIn" }}
+      >
+        <div className="absolute inset-0 bg-primary/20 rounded-full blur-lg scale-150" />
+        <img
+          src={mothershipMascot}
+          alt=""
+          className="w-8 h-8 object-contain"
+          style={{ filter: "drop-shadow(0 0 8px hsl(var(--primary) / 0.4))" }}
+        />
       </motion.div>
     </div>
   );

@@ -212,44 +212,44 @@ export function LandingHero() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
 
         <div className="relative z-10 max-w-6xl mx-auto w-full">
-          {/* Tagline with "speed of thought" emphasis - fixed for mobile */}
+          {/* Tagline - minimal, sophisticated typography */}
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
             className="text-center max-w-4xl mx-auto mb-10 md:mb-16"
           >
-            <p className="font-display text-lg sm:text-xl md:text-3xl lg:text-4xl text-muted-foreground leading-relaxed px-2">
-              Build useful apps, websites, and digital products at the
+            <p className="font-mono text-xs sm:text-sm text-muted-foreground/60 tracking-widest uppercase mb-6">
+              The future of building
             </p>
+            
+            <h2 className="font-display text-xl sm:text-2xl md:text-3xl text-muted-foreground/80 font-normal leading-relaxed mb-4">
+              Build useful apps, websites, and digital products at the
+            </h2>
 
-            {/* Speed of Thought - styled exactly like MothershipX */}
-            <div ref={speedOfThoughtRef} className="relative inline-block my-3 md:my-4">
+            {/* Speed of Thought - hero emphasis */}
+            <div ref={speedOfThoughtRef} className="relative inline-block my-2 md:my-4">
               <OrbitingMascot targetRef={speedOfThoughtRef as React.RefObject<HTMLDivElement>} />
               <motion.span
-                className="relative font-display text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-normal text-primary tracking-tight glow-text"
+                className="font-display text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-normal text-primary tracking-tight"
                 animate={{
                   textShadow: [
-                    "0 0 20px hsl(var(--primary) / 0.3), 0 0 40px hsl(var(--primary) / 0.15)",
-                    "0 0 30px hsl(var(--primary) / 0.5), 0 0 60px hsl(var(--primary) / 0.25)",
-                    "0 0 20px hsl(var(--primary) / 0.3), 0 0 40px hsl(var(--primary) / 0.15)",
+                    "0 0 20px hsl(var(--primary) / 0.2)",
+                    "0 0 40px hsl(var(--primary) / 0.3)",
+                    "0 0 20px hsl(var(--primary) / 0.2)",
                   ],
                 }}
-                transition={{
-                  textShadow: { duration: 3, repeat: Infinity, ease: "easeInOut" },
-                }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               >
                 speed of thought
               </motion.span>
             </div>
 
-            <p className="font-display text-sm sm:text-lg md:text-2xl lg:text-3xl text-muted-foreground leading-relaxed px-2">
-              backed by <em className="text-foreground font-accent">real market demand</em>
-              <br className="sm:hidden" />
-              <span className="hidden sm:inline"> and </span>
-              <span className="sm:hidden"> & </span>
-              rewarded for <em className="text-foreground font-accent">real impact</em>
+            <p className="font-display text-base sm:text-lg md:text-xl text-muted-foreground/70 font-normal leading-relaxed mt-4">
+              backed by <span className="text-foreground/90">real market demand</span>
+              <span className="mx-2 text-muted-foreground/40">·</span>
+              rewarded for <span className="text-foreground/90">real impact</span>
             </p>
           </motion.div>
 
