@@ -174,10 +174,7 @@ export function LandingHero() {
         {/* PAGE 2: Meet Mothership */}
         <MeetMothershipSection />
 
-        {/* PAGE 3: The Unlocking Stack */}
-        <UnlockingSection />
-
-        {/* PAGE 4: Data Scraping Visualization */}
+        {/* PAGE 3: Data Scraping Visualization */}
         <DataScrapingSection />
 
         {/* PAGE 4: Main Headline */}
@@ -204,7 +201,10 @@ export function LandingHero() {
           </motion.div>
         </section>
 
-        {/* PAGE 5: Tagline + Screenshots */}
+        {/* PAGE 5: The Unlocking Stack */}
+        <UnlockingSection />
+
+        {/* PAGE 6: Tagline + Screenshots */}
         <section className="min-h-screen snap-start py-12 md:py-20 px-4 md:px-6 relative overflow-hidden flex flex-col justify-center">
           {/* Background glow */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
