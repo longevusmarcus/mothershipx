@@ -202,7 +202,7 @@ export function ActivationAnimation({ onComplete }: ActivationAnimationProps) {
 
       {/* Activation text */}
       <motion.div
-        className="absolute bottom-20 left-1/2 -translate-x-1/2 text-center"
+        className="absolute bottom-20 inset-x-0 flex flex-col items-center justify-center text-center"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5, duration: 0.5 }}
