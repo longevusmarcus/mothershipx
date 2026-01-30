@@ -134,25 +134,24 @@ function AnimatedArrow({ delay }: { delay: number }) {
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
       transition={{ delay, duration: 0.5 }}
-      className="flex items-center justify-center py-1 md:py-0 md:px-8"
+      className="flex items-center justify-center py-0.5 md:py-0 md:px-8"
     >
-      {/* Vertical arrows on mobile (smaller), horizontal on desktop */}
+      {/* Vertical arrows on mobile (2 arrows), horizontal on desktop (4 arrows) */}
       <motion.div
-        className="flex flex-col md:flex-row items-center gap-0.5 md:gap-1"
+        className="flex flex-col md:flex-row items-center gap-0 md:gap-1"
         animate={{ scale: [1, 1.05, 1] }}
         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
       >
-        {/* Up/Left arrows */}
+        {/* Up/Left arrows - show 1 on mobile, 2 on desktop */}
         <motion.span
-          className="text-primary/40 text-base md:text-3xl font-mono"
+          className="hidden md:inline text-primary/40 text-3xl font-mono"
           animate={{ opacity: [0.3, 1, 0.3] }}
           transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }}
         >
-          <span className="hidden md:inline">←</span>
-          <span className="md:hidden">↑</span>
+          ←
         </motion.span>
         <motion.span
-          className="text-primary/60 text-base md:text-3xl font-mono"
+          className="text-primary/60 text-sm md:text-3xl font-mono"
           animate={{ opacity: [0.3, 1, 0.3] }}
           transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }}
         >
@@ -162,16 +161,16 @@ function AnimatedArrow({ delay }: { delay: number }) {
 
         {/* Center divider */}
         <motion.span
-          className="text-primary text-base md:text-3xl font-mono"
+          className="text-primary text-sm md:text-3xl font-mono"
           animate={{ opacity: [0.5, 1, 0.5] }}
           transition={{ duration: 1, repeat: Infinity }}
         >
           ·
         </motion.span>
 
-        {/* Down/Right arrows */}
+        {/* Down/Right arrows - show 1 on mobile, 2 on desktop */}
         <motion.span
-          className="text-primary/60 text-base md:text-3xl font-mono"
+          className="text-primary/60 text-sm md:text-3xl font-mono"
           animate={{ opacity: [0.3, 1, 0.3] }}
           transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }}
         >
@@ -179,12 +178,11 @@ function AnimatedArrow({ delay }: { delay: number }) {
           <span className="md:hidden">↓</span>
         </motion.span>
         <motion.span
-          className="text-primary/40 text-base md:text-3xl font-mono"
+          className="hidden md:inline text-primary/40 text-3xl font-mono"
           animate={{ opacity: [0.3, 1, 0.3] }}
           transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }}
         >
-          <span className="hidden md:inline">→</span>
-          <span className="md:hidden">↓</span>
+          →
         </motion.span>
       </motion.div>
     </motion.div>
