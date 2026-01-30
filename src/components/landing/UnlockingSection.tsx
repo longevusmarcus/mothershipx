@@ -291,7 +291,13 @@ export function UnlockingSection() {
           <AnimatedArrow delay={0.6} />
 
           {/* MothershipX - in the middle, highlighted */}
-          <UnlockCard logo={mascotUfo} name="MothershipX" unlocks="Unlocking Utility" delay={0.8} isHighlighted />
+          <UnlockCard
+            logo={mascotUfo}
+            name="MothershipX"
+            unlocks="Unlocking Utility + Viability"
+            delay={0.8}
+            isHighlighted
+          />
 
           <AnimatedArrow delay={1.2} />
 
