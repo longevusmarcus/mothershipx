@@ -111,6 +111,7 @@ export function MarketProblemCard({ problem, delay = 0, isPinned = false, onTogg
       <div
         onClick={handleCardClick}
         className={`relative rounded-xl border bg-card p-4 cursor-pointer hover:border-foreground/20 hover:shadow-lg transition-all duration-200 group ${isPinned ? 'border-primary/50 ring-1 ring-primary/20' : 'border-border'}`}
+        data-testid="problem-card"
       >
         {/* Pin button */}
         {isAuthenticated && onTogglePin && (
