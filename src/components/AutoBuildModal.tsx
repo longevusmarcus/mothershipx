@@ -137,7 +137,7 @@ export function AutoBuildModal({ open, onOpenChange, signal }: AutoBuildModalPro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl p-0 overflow-hidden bg-black border-primary/20">
+      <DialogContent className="sm:max-w-2xl p-0 overflow-hidden bg-black border-primary/20 [&>button]:text-white [&>button]:hover:text-white/80">
         {/* Matrix rain effect background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="matrix-rain" />
@@ -181,7 +181,7 @@ export function AutoBuildModal({ open, onOpenChange, signal }: AutoBuildModalPro
             </div>
 
             {/* Terminal output */}
-            <div className="space-y-1.5 text-primary/90">
+            <div className="space-y-1.5">
               {completedLines.map((line, index) => (
                 <motion.div
                   key={index}
@@ -189,23 +189,23 @@ export function AutoBuildModal({ open, onOpenChange, signal }: AutoBuildModalPro
                   animate={{ opacity: 1, x: 0 }}
                   className="flex items-center gap-2"
                 >
-                  <span className="text-success">✓</span>
-                  <span className="text-primary/70">{line}</span>
+                  <span className="text-green-400">✓</span>
+                  <span className="text-white/70">{line}</span>
                 </motion.div>
               ))}
 
               {!isTypingComplete && (
                 <div className="flex items-center gap-2">
                   <motion.span
-                    className="text-primary"
+                    className="text-white"
                     animate={{ opacity: [1, 0.5, 1] }}
                     transition={{ duration: 0.8, repeat: Infinity }}
                   >
                     ▶
                   </motion.span>
-                  <span className="text-primary">{currentText}</span>
+                  <span className="text-white">{currentText}</span>
                   <motion.span
-                    className="inline-block w-2 h-4 bg-primary"
+                    className="inline-block w-2 h-4 bg-white"
                     animate={{ opacity: [1, 0, 1] }}
                     transition={{ duration: 0.5, repeat: Infinity }}
                   />
