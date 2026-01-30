@@ -343,7 +343,7 @@ export function LandingHero() {
                 size="lg"
                 className="group text-base px-8 py-6 rounded-full bg-foreground text-background hover:bg-foreground/90 transition-all duration-300 shadow-lg hover:shadow-xl"
               >
-                Enter MothershipX
+                Enter MothershipX (Beta)
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
 
