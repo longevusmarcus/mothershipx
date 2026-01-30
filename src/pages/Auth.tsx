@@ -38,7 +38,7 @@ export default function Auth() {
 
   useEffect(() => {
     if (isAuthenticated && mode !== "reset" && mode !== "reset-success") {
-      navigate("/");
+      navigate("/problems");
     }
   }, [isAuthenticated, navigate, mode]);
 
@@ -105,7 +105,7 @@ export default function Auth() {
           }
         } else {
           toast.success("Welcome back!");
-          navigate("/");
+          navigate("/problems");
         }
       } else if (mode === "signup") {
         const { error } = await signUp(name, email, password);

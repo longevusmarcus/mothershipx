@@ -3,9 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSubscription } from "@/contexts/SubscriptionContext";
-const ONBOARDING_COUNT_KEY = "problem_dashboard_onboarding_count";
+const ONBOARDING_DISMISSED_KEY = "problem_dashboard_onboarding_dismissed";
 const JOINED_GUIDE_KEY = "problem_joined_guide_dismissed";
-const MAX_ONBOARDING_VIEWS = 3;
 
 interface ProblemDashboardOnboardingProps {
   isJoined: boolean;
@@ -96,20 +95,19 @@ export function ProblemDashboardOnboarding({
     };
   }, [showTutorial, currentStep, step.selector]);
 
-  // Check if should show tutorial - only for subscribed users
+  // Check if should show tutorial - only for subscribed users, only once
   useEffect(() => {
     if (waitForMatrix) return;
     // Only show tutorial for premium/subscribed users
     if (!hasPremiumAccess) return;
-    
-    const viewCount = parseInt(localStorage.getItem(ONBOARDING_COUNT_KEY) || "0", 10);
-    
-    if (viewCount < MAX_ONBOARDING_VIEWS && !isJoined) {
+
+    const isDismissed = localStorage.getItem(ONBOARDING_DISMISSED_KEY) === "true";
+
+    if (!isDismissed && !isJoined) {
       // Small delay to let page render
       const timer = setTimeout(() => {
         setShowTutorial(true);
         setCurrentStep(0);
-        localStorage.setItem(ONBOARDING_COUNT_KEY, String(viewCount + 1));
       }, 500);
       return () => clearTimeout(timer);
     }
@@ -136,6 +134,7 @@ export function ProblemDashboardOnboarding({
   const handleSkipAll = () => {
     setShowTutorial(false);
     setCurrentStep(0);
+    localStorage.setItem(ONBOARDING_DISMISSED_KEY, "true");
   };
 
   const dismissJoinedGuide = () => {
