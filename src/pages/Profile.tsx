@@ -531,7 +531,7 @@ export default function Profile() {
                             <p className="text-xs text-muted-foreground">Upgrade to unlock unlimited AI searches and more</p>
                           </div>
                         </div>
-                        <Button size="sm" onClick={() => setShowPaywall(true)} className="h-8 text-xs w-full sm:w-auto">Upgrade to Premium</Button>
+                        <Button size="sm" onClick={() => setShowPaywall(true)} className="h-8 text-xs w-full sm:w-auto" data-testid="upgrade-button">Upgrade to Premium</Button>
                       </div>
                     )}
                   </CardContent>
@@ -1266,10 +1266,11 @@ export default function Profile() {
                     <p className="text-[11px] text-muted-foreground">Unlock unlimited features</p>
                   </div>
                 </div>
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   className="w-full h-8 text-xs"
                   onClick={() => setShowPaywall(true)}
+                  data-testid="upgrade-button"
                 >
                   Upgrade Now
                 </Button>

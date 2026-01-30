@@ -308,6 +308,7 @@ export default function Auth() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="pl-10"
+                        data-testid="auth-email-input"
                       />
                     </div>
                     {errors.email && (
@@ -342,6 +343,7 @@ export default function Auth() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="pl-10"
+                        data-testid="auth-password-input"
                       />
                     </div>
                     {errors.password && (
@@ -371,7 +373,7 @@ export default function Auth() {
                   </div>
                 )}
 
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button type="submit" className="w-full" disabled={isLoading} data-testid="auth-submit-button">
                   {isLoading ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : mode === "signin" ? (

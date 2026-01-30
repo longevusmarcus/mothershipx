@@ -85,7 +85,7 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
         Solution: switch to a wider (2-col) desktop layout to reduce vertical height.
         Mobile keeps full-height (100dvh) behavior.
       */}
-      <DialogContent className="p-0 gap-0 border-border bg-card overflow-y-auto h-[100dvh] sm:h-auto sm:overflow-hidden rounded-none sm:rounded-xl sm:max-w-2xl">
+      <DialogContent className="p-0 gap-0 border-border bg-card overflow-y-auto h-[100dvh] sm:h-auto sm:overflow-hidden rounded-none sm:rounded-xl sm:max-w-2xl" data-testid="subscription-paywall-dialog">
         <div className="relative min-h-full sm:h-auto flex flex-col">
           {/* Animated background gradient */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -250,6 +250,7 @@ export function SubscriptionPaywall({ open, onOpenChange, feature = "search" }: 
                         onClick={handleSubscribe}
                         disabled={isProcessing}
                         className="w-full h-12 sm:h-12 text-base font-medium relative overflow-hidden group"
+                        data-testid="subscribe-button"
                       >
                         <motion.span className="absolute inset-0 bg-gradient-to-r from-primary via-primary/90 to-primary opacity-0 group-hover:opacity-100 transition-opacity" />
                         <span className="relative flex items-center justify-center gap-2">
