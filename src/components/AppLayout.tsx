@@ -9,7 +9,7 @@ import { AuthModal } from "@/components/AuthModal";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
-import { User, Settings, Info, LogOut, LogIn, Crown, Plus } from "lucide-react";
+import { User, Settings, Info, LogOut, LogIn, Crown, Plus, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -171,7 +171,7 @@ export function AppLayout({ children, hideChrome = false }: AppLayoutProps) {
                         Profile & Settings
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={handleAbout} className="gap-2">
-                        <Info className="h-4 w-4" />
+                        <ExternalLink className="h-4 w-4" />
                         About
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
