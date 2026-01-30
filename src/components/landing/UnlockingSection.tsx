@@ -24,7 +24,7 @@ function UnlockCard({ logo, name, unlocks, delay, isHighlighted }: UnlockCardPro
         type: "spring",
         stiffness: 100,
       }}
-      className="flex flex-col items-center gap-3 relative"
+      className="flex flex-col items-center gap-2 md:gap-3 relative"
     >
       {/* Glow ring for highlighted card */}
       {isHighlighted && (
@@ -40,7 +40,7 @@ function UnlockCard({ logo, name, unlocks, delay, isHighlighted }: UnlockCardPro
 
       {/* Logo container - same size for all */}
       <motion.div
-        className="relative z-10 w-16 h-16 md:w-20 md:h-20"
+        className="relative z-10 w-12 h-12 md:w-20 md:h-20"
         whileHover={{ scale: 1.1, rotate: 5 }}
         transition={{ type: "spring", stiffness: 300 }}
       >
@@ -66,7 +66,7 @@ function UnlockCard({ logo, name, unlocks, delay, isHighlighted }: UnlockCardPro
 
       {/* Brand name */}
       <motion.span
-        className={`font-display text-lg md:text-xl ${isHighlighted ? "text-foreground font-semibold" : "text-muted-foreground"}`}
+        className={`font-display text-base md:text-xl ${isHighlighted ? "text-foreground font-semibold" : "text-muted-foreground"}`}
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
@@ -81,7 +81,7 @@ function UnlockCard({ logo, name, unlocks, delay, isHighlighted }: UnlockCardPro
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
         transition={{ delay: delay + 0.4, type: "spring" }}
-        className={`font-mono text-xl md:text-2xl ${isHighlighted ? "text-primary" : "text-muted-foreground/50"}`}
+        className={`font-mono text-lg md:text-2xl ${isHighlighted ? "text-primary" : "text-muted-foreground/50"}`}
       >
         =
       </motion.div>
@@ -104,7 +104,7 @@ function UnlockCard({ logo, name, unlocks, delay, isHighlighted }: UnlockCardPro
           />
         )}
         <motion.span
-          className={`relative font-mono text-sm md:text-base tracking-wider ${
+          className={`relative font-mono text-xs md:text-base tracking-wider ${
             isHighlighted ? "text-primary font-bold" : "text-muted-foreground"
           }`}
           animate={
@@ -134,17 +134,17 @@ function AnimatedArrow({ delay }: { delay: number }) {
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
       transition={{ delay, duration: 0.5 }}
-      className="flex items-center justify-center py-2 md:py-0 md:px-8"
+      className="flex items-center justify-center py-1 md:py-0 md:px-8"
     >
-      {/* Vertical arrows on mobile, horizontal on desktop */}
+      {/* Vertical arrows on mobile (smaller), horizontal on desktop */}
       <motion.div
-        className="flex flex-col md:flex-row items-center gap-1"
+        className="flex flex-col md:flex-row items-center gap-0.5 md:gap-1"
         animate={{ scale: [1, 1.05, 1] }}
         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
       >
         {/* Up/Left arrows */}
         <motion.span
-          className="text-primary/40 text-2xl md:text-3xl font-mono"
+          className="text-primary/40 text-base md:text-3xl font-mono"
           animate={{ opacity: [0.3, 1, 0.3] }}
           transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }}
         >
@@ -152,7 +152,7 @@ function AnimatedArrow({ delay }: { delay: number }) {
           <span className="md:hidden">↑</span>
         </motion.span>
         <motion.span
-          className="text-primary/60 text-2xl md:text-3xl font-mono"
+          className="text-primary/60 text-base md:text-3xl font-mono"
           animate={{ opacity: [0.3, 1, 0.3] }}
           transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }}
         >
@@ -162,7 +162,7 @@ function AnimatedArrow({ delay }: { delay: number }) {
 
         {/* Center divider */}
         <motion.span
-          className="text-primary text-2xl md:text-3xl font-mono mx-1"
+          className="text-primary text-base md:text-3xl font-mono"
           animate={{ opacity: [0.5, 1, 0.5] }}
           transition={{ duration: 1, repeat: Infinity }}
         >
@@ -171,7 +171,7 @@ function AnimatedArrow({ delay }: { delay: number }) {
 
         {/* Down/Right arrows */}
         <motion.span
-          className="text-primary/60 text-2xl md:text-3xl font-mono"
+          className="text-primary/60 text-base md:text-3xl font-mono"
           animate={{ opacity: [0.3, 1, 0.3] }}
           transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }}
         >
@@ -179,7 +179,7 @@ function AnimatedArrow({ delay }: { delay: number }) {
           <span className="md:hidden">↓</span>
         </motion.span>
         <motion.span
-          className="text-primary/40 text-2xl md:text-3xl font-mono"
+          className="text-primary/40 text-base md:text-3xl font-mono"
           animate={{ opacity: [0.3, 1, 0.3] }}
           transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }}
         >
@@ -253,7 +253,7 @@ export function UnlockingSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16 md:mb-20"
+          className="text-center mb-8 md:mb-20"
         >
           <motion.div
             className="font-mono text-xs sm:text-sm mb-4 tracking-widest"
@@ -289,7 +289,7 @@ export function UnlockingSection() {
         </motion.div>
 
         {/* Unlocking flow - Lovable → MothershipX → Higgsfield */}
-        <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-4">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-4">
           {/* Lovable */}
           <UnlockCard logo={lovableLogo} name="Lovable" unlocks="Unlocking Creativity" delay={0.2} />
 
