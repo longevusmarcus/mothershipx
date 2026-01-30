@@ -503,10 +503,9 @@ export const SolutionsLab = ({
             variant="outline"
             size="sm"
             onClick={() => setShowAIGenerator(true)}
-            className="gap-2 text-xs font-normal"
+            className="text-xs font-normal"
             disabled={!user}
           >
-            <Plus className="h-3.5 w-3.5" />
             New Idea
           </Button>
         </div>
