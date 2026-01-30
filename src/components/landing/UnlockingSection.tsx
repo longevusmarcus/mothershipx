@@ -198,7 +198,7 @@ export function UnlockingSection() {
   return (
     <section
       ref={sectionRef}
-      className="h-screen snap-start flex flex-col items-center justify-center px-6 relative overflow-hidden"
+        className="h-[100svh] snap-start flex flex-col items-center justify-center px-6 relative overflow-hidden safe-area-pb"
     >
       {/* Background effects */}
       <div className="absolute inset-0 bg-gradient-to-b from-muted/10 via-background to-muted/10" />
