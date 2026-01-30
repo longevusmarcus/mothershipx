@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, ArrowRight, ArrowUpRight, Sparkles, Building2, Users, Package, Rocket } from "lucide-react";
+import { motion } from "framer-motion";
+import { Loader2, ArrowRight, ArrowUpRight } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -54,19 +54,12 @@ interface GeneratedIdea {
   };
 }
 
-const IDEA_TYPE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
-  digital: Building2,
-  community: Users,
-  physical: Package,
-  futuristic: Rocket,
-};
-
-const IDEA_TYPE_COLORS: Record<string, string> = {
-  digital: "bg-blue-500/10 text-blue-500 border-blue-500/20",
-  community: "bg-green-500/10 text-green-500 border-green-500/20",
-  physical: "bg-orange-500/10 text-orange-500 border-orange-500/20",
-  futuristic: "bg-purple-500/10 text-purple-500 border-purple-500/20",
-};
+const IDEA_CATEGORIES = [
+  { type: "digital", label: "Digital", abbr: "01" },
+  { type: "community", label: "Community", abbr: "02" },
+  { type: "physical", label: "Physical", abbr: "03" },
+  { type: "futuristic", label: "Futuristic", abbr: "04" },
+];
 
 export function AIIdeaGeneratorModal({
   open,
@@ -112,10 +105,9 @@ export function AIIdeaGeneratorModal({
         throw new Error(error.message);
       }
 
-      // Handle both old (single idea) and new (multiple ideas) response format
       if (data?.ideas && Array.isArray(data.ideas)) {
         setIdeas(data.ideas);
-        toast.success(`Generated ${data.ideas.length} diverse ideas`);
+        toast.success(`Generated ${data.ideas.length} ideas`);
       } else if (data?.idea) {
         setIdeas([data.idea]);
         toast.success("Idea generated");
@@ -169,17 +161,12 @@ ${selectedIdea.monetization}`;
     );
   };
 
-  const getIdeaIcon = (type?: string) => {
-    const Icon = IDEA_TYPE_ICONS[type || "digital"] || Sparkles;
-    return Icon;
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden p-0 gap-0">
-        <DialogHeader className="p-6 pb-4 border-b border-border/50">
-          <DialogTitle className="text-sm font-medium tracking-wide uppercase text-muted-foreground">
-            Idea Generator
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden p-0 gap-0 border-border/40">
+        <DialogHeader className="p-6 pb-4 border-b border-border/30">
+          <DialogTitle className="text-[10px] font-mono tracking-[0.2em] uppercase text-muted-foreground/60">
+            ./generate
           </DialogTitle>
         </DialogHeader>
 
@@ -188,53 +175,62 @@ ${selectedIdea.monetization}`;
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="p-12 text-center"
+              className="p-16 text-center"
             >
-              <div className="max-w-md mx-auto">
-                <h3 className="text-2xl font-light tracking-tight mb-3">
-                  Generate Diverse Ideas
+              <div className="max-w-lg mx-auto">
+                {/* Minimal header */}
+                <p className="text-[10px] font-mono tracking-[0.3em] uppercase text-muted-foreground/50 mb-4">
+                  Idea Generation
+                </p>
+                <h3 className="text-3xl font-light tracking-tight mb-3">
+                  What will you build?
                 </h3>
-                <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-                  AI will generate 3-4 unique ideas across different categories:
+                <p className="text-sm text-muted-foreground/70 mb-12 leading-relaxed max-w-sm mx-auto">
+                  Generate 3–4 distinct concepts across digital, physical, community, and emerging tech.
                 </p>
                 
-                <div className="grid grid-cols-2 gap-3 mb-8 text-left">
-                  <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/30">
-                    <Building2 className="h-4 w-4 text-blue-500" />
-                    <span className="text-xs">Digital Products</span>
-                  </div>
-                  <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/30">
-                    <Users className="h-4 w-4 text-green-500" />
-                    <span className="text-xs">Communities</span>
-                  </div>
-                  <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/30">
-                    <Package className="h-4 w-4 text-orange-500" />
-                    <span className="text-xs">Physical Goods</span>
-                  </div>
-                  <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/30">
-                    <Rocket className="h-4 w-4 text-purple-500" />
-                    <span className="text-xs">Futuristic Tech</span>
-                  </div>
+                {/* Elegant category display */}
+                <div className="flex items-center justify-center gap-8 mb-12">
+                  {IDEA_CATEGORIES.map((cat, i) => (
+                    <motion.div
+                      key={cat.type}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                      className="text-center"
+                    >
+                      <p className="text-[10px] font-mono text-muted-foreground/40 mb-1">
+                        {cat.abbr}
+                      </p>
+                      <p className="text-xs text-muted-foreground/70">
+                        {cat.label}
+                      </p>
+                    </motion.div>
+                  ))}
                 </div>
 
-                <div className="flex items-center justify-center gap-6 text-xs text-muted-foreground mb-10">
-                  <span>{problemCategory}</span>
-                  <span className="w-1 h-1 rounded-full bg-border" />
-                  <span>{opportunityScore}% opportunity</span>
+                {/* Context stats */}
+                <div className="flex items-center justify-center gap-4 text-[11px] text-muted-foreground/50 mb-12">
+                  <span className="font-mono">{problemCategory}</span>
+                  <span className="w-px h-3 bg-border/50" />
+                  <span className="font-mono">{opportunityScore}% opp</span>
                   {demandVelocity && (
                     <>
-                      <span className="w-1 h-1 rounded-full bg-border" />
-                      <span>{demandVelocity}% demand</span>
+                      <span className="w-px h-3 bg-border/50" />
+                      <span className="font-mono">{demandVelocity}% vel</span>
                     </>
                   )}
                 </div>
+
+                {/* Clean CTA button */}
                 <Button 
                   onClick={generateIdeas} 
+                  variant="outline"
                   size="lg" 
-                  className="px-8 h-12 text-sm font-normal"
+                  className="h-12 px-10 text-sm font-normal border-border/50 hover:bg-foreground hover:text-background transition-all duration-300"
                 >
-                  Generate Ideas
-                  <Sparkles className="h-4 w-4 ml-2" />
+                  Generate
+                  <ArrowRight className="h-4 w-4 ml-3" />
                 </Button>
               </div>
             </motion.div>
@@ -244,67 +240,61 @@ ${selectedIdea.monetization}`;
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="p-16 text-center"
+              className="p-20 text-center"
             >
-              <div className="w-8 h-8 mx-auto mb-6">
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              <div className="relative w-6 h-6 mx-auto mb-8">
+                <motion.div
+                  className="absolute inset-0 border border-foreground/20 rounded-full"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                />
+                <motion.div
+                  className="absolute inset-1 border-t border-foreground/60 rounded-full"
+                  animate={{ rotate: -360 }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                />
               </div>
-              <p className="text-sm text-muted-foreground mb-2">
-                Generating diverse ideas...
-              </p>
-              <p className="text-xs text-muted-foreground/60">
-                This may take 20-30 seconds
+              <p className="text-xs font-mono text-muted-foreground/60 tracking-wider">
+                Generating...
               </p>
             </motion.div>
           )}
 
           {ideas.length > 0 && selectedIdea && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              {/* Idea Selector */}
+              {/* Idea Selector - Minimal Design */}
               {ideas.length > 1 && (
-                <div className="px-6 pt-4 pb-2">
-                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
-                    Select an idea ({ideas.length} generated)
-                  </p>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                    {ideas.map((idea, idx) => {
-                      const Icon = getIdeaIcon(idea.ideaType);
-                      const colorClass = IDEA_TYPE_COLORS[idea.ideaType || "digital"] || IDEA_TYPE_COLORS.digital;
-                      return (
-                        <button
-                          key={idx}
-                          onClick={() => setSelectedIdeaIndex(idx)}
-                          className={cn(
-                            "p-3 rounded-lg border text-left transition-all",
-                            selectedIdeaIndex === idx
-                              ? "border-primary bg-primary/5 ring-1 ring-primary/20"
-                              : "border-border/50 hover:border-border"
-                          )}
-                        >
-                          <div className="flex items-center gap-2 mb-1.5">
-                            <div className={cn("p-1 rounded", colorClass)}>
-                              <Icon className="h-3 w-3" />
-                            </div>
-                            <span className="text-[10px] text-muted-foreground">
-                              {idea.ideaLabel || "Digital"}
-                            </span>
-                          </div>
-                          <p className="text-xs font-medium truncate">{idea.name}</p>
-                        </button>
-                      );
-                    })}
+                <div className="px-6 pt-6 pb-2 border-b border-border/30">
+                  <div className="flex items-center gap-1">
+                    {ideas.map((idea, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setSelectedIdeaIndex(idx)}
+                        className={cn(
+                          "px-4 py-2.5 text-xs transition-all duration-200 border-b-2 -mb-[1px]",
+                          selectedIdeaIndex === idx
+                            ? "border-foreground text-foreground"
+                            : "border-transparent text-muted-foreground/60 hover:text-muted-foreground"
+                        )}
+                      >
+                        <span className="font-mono text-[10px] text-muted-foreground/40 mr-2">
+                          {String(idx + 1).padStart(2, '0')}
+                        </span>
+                        {idea.name}
+                      </button>
+                    ))}
                   </div>
                 </div>
               )}
 
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <div className="px-6 pt-4">
-                  <TabsList className="w-full h-11 p-1 bg-muted/30">
-                    <TabsTrigger value="overview" className="flex-1 text-sm font-normal">
+                <div className="px-6 pt-5">
+                  <TabsList className="w-auto h-8 p-0.5 bg-muted/20 gap-0.5">
+                    <TabsTrigger value="overview" className="h-7 px-4 text-xs font-normal data-[state=active]:bg-background">
                       Overview
                     </TabsTrigger>
-                    <TabsTrigger value="landing" className="flex-1 text-sm font-normal">
-                      Landing Page
+                    <TabsTrigger value="landing" className="h-7 px-4 text-xs font-normal data-[state=active]:bg-background">
+                      Preview
                     </TabsTrigger>
                   </TabsList>
                 </div>
@@ -314,24 +304,22 @@ ${selectedIdea.monetization}`;
                   <div>
                     <div className="flex items-start justify-between gap-4 mb-4">
                       <div>
-                        <div className="flex items-center gap-2 mb-2">
+                        <div className="flex items-center gap-3 mb-2">
                           <h2 className="text-2xl font-light tracking-tight">{selectedIdea.name}</h2>
                           {selectedIdea.ideaLabel && (
-                            <Badge 
-                              variant="outline" 
-                              className={cn("text-[10px] font-normal", IDEA_TYPE_COLORS[selectedIdea.ideaType || "digital"])}
-                            >
+                            <span className="text-[10px] font-mono tracking-wider text-muted-foreground/50 uppercase">
                               {selectedIdea.ideaLabel}
-                            </Badge>
+                            </span>
                           )}
                         </div>
-                        <p className="text-muted-foreground">{selectedIdea.tagline}</p>
+                        <p className="text-muted-foreground/80">{selectedIdea.tagline}</p>
                       </div>
-                      <Badge variant="outline" className="text-xs font-normal shrink-0">
-                        {selectedIdea.marketFit}% fit
-                      </Badge>
+                      <div className="text-right">
+                        <p className="text-2xl font-light tracking-tight">{selectedIdea.marketFit}</p>
+                        <p className="text-[10px] font-mono text-muted-foreground/50 uppercase tracking-wider">fit score</p>
+                      </div>
                     </div>
-                    <p className="text-sm text-foreground/80 leading-relaxed">
+                    <p className="text-sm text-foreground/70 leading-relaxed">
                       {selectedIdea.description}
                     </p>
                   </div>
@@ -592,33 +580,33 @@ ${selectedIdea.monetization}`;
                 </TabsContent>
               </Tabs>
 
-              {/* Actions */}
-              <div className="flex items-center justify-between p-6 border-t border-border/50 bg-muted/20">
-                <Button 
-                  variant="ghost" 
+              {/* Actions - Refined Footer */}
+              <div className="flex items-center justify-between p-5 border-t border-border/30">
+                <button 
                   onClick={generateIdeas} 
                   disabled={isGenerating}
-                  className="text-sm font-normal"
+                  className="text-xs font-mono text-muted-foreground/60 hover:text-foreground transition-colors disabled:opacity-40"
                 >
-                  Regenerate All
-                </Button>
-                <div className="flex gap-3">
-                  <Button 
-                    variant="ghost" 
+                  ./regenerate
+                </button>
+                <div className="flex items-center gap-4">
+                  <button 
                     onClick={() => onOpenChange(false)}
-                    className="text-sm font-normal"
+                    className="text-xs text-muted-foreground/60 hover:text-foreground transition-colors"
                   >
                     Cancel
-                  </Button>
+                  </button>
                   <Button 
                     onClick={saveIdea} 
                     disabled={createSolution.isPending}
-                    className="text-sm font-normal"
+                    size="sm"
+                    className="h-9 px-5 text-xs font-normal"
                   >
-                    {createSolution.isPending && (
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    )}
-                    Save "{selectedIdea.name}"
+                    {createSolution.isPending ? (
+                      <Loader2 className="h-3 w-3 mr-2 animate-spin" />
+                    ) : null}
+                    Save Idea
+                    <ArrowRight className="h-3 w-3 ml-2" />
                   </Button>
                 </div>
               </div>
