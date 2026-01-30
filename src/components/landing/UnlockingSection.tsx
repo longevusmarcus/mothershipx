@@ -316,7 +316,7 @@ export function UnlockingSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 2, duration: 0.8 }}
-          className="text-center mt-16 md:mt-20"
+          className="text-center mt-6 md:mt-20"
         >
           <motion.p
             className="font-mono text-sm md:text-base text-muted-foreground/70"
