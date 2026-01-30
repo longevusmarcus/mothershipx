@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Loader2, ArrowRight, ArrowUpRight, Circle } from "lucide-react";
+import { Loader2, ArrowRight, ArrowUpRight, Sparkles, Building2, Users, Package, Rocket } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/lib/supabaseClient";
 import { toast } from "sonner";
 import { useSolutions } from "@/hooks/useSolutions";
+import { cn } from "@/lib/utils";
 
 interface AIIdeaGeneratorModalProps {
   open: boolean;
@@ -24,6 +25,8 @@ interface AIIdeaGeneratorModalProps {
 }
 
 interface GeneratedIdea {
+  ideaType?: string;
+  ideaLabel?: string;
   name: string;
   tagline: string;
   description: string;
@@ -51,6 +54,20 @@ interface GeneratedIdea {
   };
 }
 
+const IDEA_TYPE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  digital: Building2,
+  community: Users,
+  physical: Package,
+  futuristic: Rocket,
+};
+
+const IDEA_TYPE_COLORS: Record<string, string> = {
+  digital: "bg-blue-500/10 text-blue-500 border-blue-500/20",
+  community: "bg-green-500/10 text-green-500 border-green-500/20",
+  physical: "bg-orange-500/10 text-orange-500 border-orange-500/20",
+  futuristic: "bg-purple-500/10 text-purple-500 border-purple-500/20",
+};
+
 export function AIIdeaGeneratorModal({
   open,
   onOpenChange,
@@ -65,13 +82,17 @@ export function AIIdeaGeneratorModal({
   sources,
 }: AIIdeaGeneratorModalProps) {
   const [isGenerating, setIsGenerating] = useState(false);
-  const [idea, setIdea] = useState<GeneratedIdea | null>(null);
+  const [ideas, setIdeas] = useState<GeneratedIdea[]>([]);
+  const [selectedIdeaIndex, setSelectedIdeaIndex] = useState(0);
   const [activeTab, setActiveTab] = useState("overview");
   const { createSolution } = useSolutions(problemId);
 
-  const generateIdea = async () => {
+  const selectedIdea = ideas[selectedIdeaIndex] || null;
+
+  const generateIdeas = async () => {
     setIsGenerating(true);
-    setIdea(null);
+    setIdeas([]);
+    setSelectedIdeaIndex(0);
 
     try {
       const { data, error } = await supabase.functions.invoke("generate-idea", {
@@ -91,46 +112,53 @@ export function AIIdeaGeneratorModal({
         throw new Error(error.message);
       }
 
-      if (!data?.success || !data?.idea) {
-        throw new Error(data?.error || "Failed to generate idea");
+      // Handle both old (single idea) and new (multiple ideas) response format
+      if (data?.ideas && Array.isArray(data.ideas)) {
+        setIdeas(data.ideas);
+        toast.success(`Generated ${data.ideas.length} diverse ideas`);
+      } else if (data?.idea) {
+        setIdeas([data.idea]);
+        toast.success("Idea generated");
+      } else {
+        throw new Error(data?.error || "Failed to generate ideas");
       }
-
-      setIdea(data.idea);
-      toast.success("Idea generated");
     } catch (err) {
-      console.error("Error generating idea:", err);
-      toast.error(err instanceof Error ? err.message : "Failed to generate idea");
+      console.error("Error generating ideas:", err);
+      toast.error(err instanceof Error ? err.message : "Failed to generate ideas");
     } finally {
       setIsGenerating(false);
     }
   };
 
   const saveIdea = () => {
-    if (!idea) return;
+    if (!selectedIdea) return;
 
-    const approach = `## Unique Value
-${idea.uniqueValue}
+    const approach = `## Idea Type
+${selectedIdea.ideaLabel || 'Digital Product'}
+
+## Unique Value
+${selectedIdea.uniqueValue}
 
 ## Target Persona
-${idea.targetPersona}
+${selectedIdea.targetPersona}
 
 ## Key Features
-${idea.keyFeatures.map((f) => `- **${f.title}**: ${f.description}`).join("\n")}
+${selectedIdea.keyFeatures.map((f) => `- **${f.title}**: ${f.description}`).join("\n")}
 
-## Tech Stack
-${idea.techStack.join(", ")}
+## Tech Stack / Resources
+${selectedIdea.techStack.join(", ")}
 
 ## Monetization
-${idea.monetization}`;
+${selectedIdea.monetization}`;
 
     createSolution.mutate(
       {
-        title: idea.name,
-        description: idea.description,
+        title: selectedIdea.name,
+        description: selectedIdea.description,
         approach,
-        techStack: idea.techStack,
-        marketFit: idea.marketFit || 0,
-        landingPage: idea.landingPage,
+        techStack: selectedIdea.techStack,
+        marketFit: selectedIdea.marketFit || 0,
+        landingPage: selectedIdea.landingPage,
       },
       {
         onSuccess: () => {
@@ -139,6 +167,11 @@ ${idea.monetization}`;
         },
       }
     );
+  };
+
+  const getIdeaIcon = (type?: string) => {
+    const Icon = IDEA_TYPE_ICONS[type || "digital"] || Sparkles;
+    return Icon;
   };
 
   return (
@@ -151,7 +184,7 @@ ${idea.monetization}`;
         </DialogHeader>
 
         <div className="overflow-y-auto max-h-[calc(90vh-80px)]">
-          {!idea && !isGenerating && (
+          {ideas.length === 0 && !isGenerating && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -159,12 +192,31 @@ ${idea.monetization}`;
             >
               <div className="max-w-md mx-auto">
                 <h3 className="text-2xl font-light tracking-tight mb-3">
-                  Generate Product Idea
+                  Generate Diverse Ideas
                 </h3>
-                <p className="text-sm text-muted-foreground mb-8 leading-relaxed">
-                  AI will analyze the problem context, market signals, and competition 
-                  to create a unique, actionable product concept.
+                <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+                  AI will generate 3-4 unique ideas across different categories:
                 </p>
+                
+                <div className="grid grid-cols-2 gap-3 mb-8 text-left">
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/30">
+                    <Building2 className="h-4 w-4 text-blue-500" />
+                    <span className="text-xs">Digital Products</span>
+                  </div>
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/30">
+                    <Users className="h-4 w-4 text-green-500" />
+                    <span className="text-xs">Communities</span>
+                  </div>
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/30">
+                    <Package className="h-4 w-4 text-orange-500" />
+                    <span className="text-xs">Physical Goods</span>
+                  </div>
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/30">
+                    <Rocket className="h-4 w-4 text-purple-500" />
+                    <span className="text-xs">Futuristic Tech</span>
+                  </div>
+                </div>
+
                 <div className="flex items-center justify-center gap-6 text-xs text-muted-foreground mb-10">
                   <span>{problemCategory}</span>
                   <span className="w-1 h-1 rounded-full bg-border" />
@@ -177,12 +229,12 @@ ${idea.monetization}`;
                   )}
                 </div>
                 <Button 
-                  onClick={generateIdea} 
+                  onClick={generateIdeas} 
                   size="lg" 
                   className="px-8 h-12 text-sm font-normal"
                 >
-                  Generate
-                  <ArrowRight className="h-4 w-4 ml-2" />
+                  Generate Ideas
+                  <Sparkles className="h-4 w-4 ml-2" />
                 </Button>
               </div>
             </motion.div>
@@ -197,14 +249,54 @@ ${idea.monetization}`;
               <div className="w-8 h-8 mx-auto mb-6">
                 <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
               </div>
-              <p className="text-sm text-muted-foreground">
-                Analyzing market signals...
+              <p className="text-sm text-muted-foreground mb-2">
+                Generating diverse ideas...
+              </p>
+              <p className="text-xs text-muted-foreground/60">
+                This may take 20-30 seconds
               </p>
             </motion.div>
           )}
 
-          {idea && (
+          {ideas.length > 0 && selectedIdea && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+              {/* Idea Selector */}
+              {ideas.length > 1 && (
+                <div className="px-6 pt-4 pb-2">
+                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
+                    Select an idea ({ideas.length} generated)
+                  </p>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    {ideas.map((idea, idx) => {
+                      const Icon = getIdeaIcon(idea.ideaType);
+                      const colorClass = IDEA_TYPE_COLORS[idea.ideaType || "digital"] || IDEA_TYPE_COLORS.digital;
+                      return (
+                        <button
+                          key={idx}
+                          onClick={() => setSelectedIdeaIndex(idx)}
+                          className={cn(
+                            "p-3 rounded-lg border text-left transition-all",
+                            selectedIdeaIndex === idx
+                              ? "border-primary bg-primary/5 ring-1 ring-primary/20"
+                              : "border-border/50 hover:border-border"
+                          )}
+                        >
+                          <div className="flex items-center gap-2 mb-1.5">
+                            <div className={cn("p-1 rounded", colorClass)}>
+                              <Icon className="h-3 w-3" />
+                            </div>
+                            <span className="text-[10px] text-muted-foreground">
+                              {idea.ideaLabel || "Digital"}
+                            </span>
+                          </div>
+                          <p className="text-xs font-medium truncate">{idea.name}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <div className="px-6 pt-4">
                   <TabsList className="w-full h-11 p-1 bg-muted/30">
@@ -222,15 +314,25 @@ ${idea.monetization}`;
                   <div>
                     <div className="flex items-start justify-between gap-4 mb-4">
                       <div>
-                        <h2 className="text-2xl font-light tracking-tight mb-2">{idea.name}</h2>
-                        <p className="text-muted-foreground">{idea.tagline}</p>
+                        <div className="flex items-center gap-2 mb-2">
+                          <h2 className="text-2xl font-light tracking-tight">{selectedIdea.name}</h2>
+                          {selectedIdea.ideaLabel && (
+                            <Badge 
+                              variant="outline" 
+                              className={cn("text-[10px] font-normal", IDEA_TYPE_COLORS[selectedIdea.ideaType || "digital"])}
+                            >
+                              {selectedIdea.ideaLabel}
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-muted-foreground">{selectedIdea.tagline}</p>
                       </div>
                       <Badge variant="outline" className="text-xs font-normal shrink-0">
-                        AI Generated
+                        {selectedIdea.marketFit}% fit
                       </Badge>
                     </div>
                     <p className="text-sm text-foreground/80 leading-relaxed">
-                      {idea.description}
+                      {selectedIdea.description}
                     </p>
                   </div>
 
@@ -240,26 +342,26 @@ ${idea.monetization}`;
                       <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
                         Unique Value
                       </p>
-                      <p className="text-sm leading-relaxed">{idea.uniqueValue}</p>
+                      <p className="text-sm leading-relaxed">{selectedIdea.uniqueValue}</p>
                     </div>
                     <div>
                       <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
                         Target Persona
                       </p>
-                      <p className="text-sm leading-relaxed">{idea.targetPersona}</p>
+                      <p className="text-sm leading-relaxed">{selectedIdea.targetPersona}</p>
                     </div>
                     <div>
                       <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
                         Monetization
                       </p>
-                      <p className="text-sm leading-relaxed">{idea.monetization}</p>
+                      <p className="text-sm leading-relaxed">{selectedIdea.monetization}</p>
                     </div>
                     <div>
                       <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
-                        Tech Stack
+                        Tech Stack / Resources
                       </p>
                       <div className="flex flex-wrap gap-1.5">
-                        {idea.techStack.map((tech) => (
+                        {selectedIdea.techStack.map((tech) => (
                           <span 
                             key={tech} 
                             className="text-xs px-2 py-1 rounded-md bg-muted/50 text-muted-foreground"
@@ -277,7 +379,7 @@ ${idea.monetization}`;
                       Key Features
                     </p>
                     <div className="grid grid-cols-2 gap-4">
-                      {idea.keyFeatures.map((feature, i) => (
+                      {selectedIdea.keyFeatures.map((feature, i) => (
                         <div key={i} className="p-4 rounded-lg border border-border/50">
                           <p className="text-sm font-medium mb-1">{feature.title}</p>
                           <p className="text-xs text-muted-foreground leading-relaxed">
@@ -301,7 +403,7 @@ ${idea.monetization}`;
                           animate={{ opacity: 1, y: 0 }}
                           className="text-3xl font-light tracking-tight mb-4 leading-[1.1]"
                         >
-                          {idea.landingPage.hero.headline}
+                          {selectedIdea.landingPage.hero.headline}
                         </motion.h1>
                         <motion.p
                           initial={{ opacity: 0, y: 20 }}
@@ -309,7 +411,7 @@ ${idea.monetization}`;
                           transition={{ delay: 0.1 }}
                           className="text-sm text-muted-foreground mb-8 max-w-md mx-auto leading-relaxed"
                         >
-                          {idea.landingPage.hero.subheadline}
+                          {selectedIdea.landingPage.hero.subheadline}
                         </motion.p>
                         <motion.div
                           initial={{ opacity: 0, y: 20 }}
@@ -318,7 +420,7 @@ ${idea.monetization}`;
                           className="flex items-center justify-center gap-3"
                         >
                           <Button size="default" className="h-10 px-6 text-sm font-normal">
-                            {idea.landingPage.hero.ctaText}
+                            {selectedIdea.landingPage.hero.ctaText}
                             <ArrowRight className="h-4 w-4 ml-2" />
                           </Button>
                           <Button variant="ghost" size="default" className="h-10 px-4 text-sm font-normal">
@@ -329,7 +431,7 @@ ${idea.monetization}`;
                     </section>
 
                     {/* Product Mockup */}
-                    {idea.landingPage.mockupImage && (
+                    {selectedIdea.landingPage.mockupImage && (
                       <section className="px-6 pb-8">
                         <motion.div
                           initial={{ opacity: 0, y: 20 }}
@@ -339,8 +441,8 @@ ${idea.monetization}`;
                         >
                           <div className="rounded-lg overflow-hidden border border-border/50 shadow-2xl">
                             <img 
-                              src={idea.landingPage.mockupImage} 
-                              alt={`${idea.name} product mockup`}
+                              src={selectedIdea.landingPage.mockupImage} 
+                              alt={`${selectedIdea.name} product mockup`}
                               className="w-full h-auto"
                             />
                           </div>
@@ -352,7 +454,7 @@ ${idea.monetization}`;
                     <section className="px-6 py-12 border-y border-border/50">
                       <div className="max-w-2xl mx-auto">
                         <div className="grid grid-cols-3 gap-6">
-                          {(idea.landingPage.stats || [
+                          {(selectedIdea.landingPage.stats || [
                             { value: "10x", label: "Faster" },
                             { value: "90%", label: "Satisfaction" },
                             { value: "24/7", label: "Available" }
@@ -388,7 +490,7 @@ ${idea.monetization}`;
                           </h2>
                         </div>
                         <div className="grid grid-cols-3 gap-6">
-                          {(idea.landingPage.features || idea.keyFeatures.slice(0, 3)).map((feature, i) => (
+                          {(selectedIdea.landingPage.features || selectedIdea.keyFeatures.slice(0, 3)).map((feature, i) => (
                             <motion.div
                               key={i}
                               initial={{ opacity: 0, y: 10 }}
@@ -423,7 +525,7 @@ ${idea.monetization}`;
                           </h2>
                         </div>
                         <div className="space-y-5">
-                          {(idea.landingPage.howItWorks || [
+                          {(selectedIdea.landingPage.howItWorks || [
                             { step: "1", title: "Sign Up", description: "Create your free account in seconds" },
                             { step: "2", title: "Configure", description: "Set up your preferences and connect your tools" },
                             { step: "3", title: "Launch", description: "Start seeing results immediately" }
@@ -454,14 +556,14 @@ ${idea.monetization}`;
                     <section className="px-6 py-14 border-t border-border/50">
                       <div className="max-w-xl mx-auto text-center">
                         <blockquote className="text-base font-light leading-relaxed mb-4 italic">
-                          "{idea.landingPage.testimonial?.quote || 'This product completely transformed how I work.'}"
+                          "{selectedIdea.landingPage.testimonial?.quote || 'This product completely transformed how I work.'}"
                         </blockquote>
                         <div>
                           <p className="text-xs font-medium">
-                            {idea.landingPage.testimonial?.author || 'Alex Chen'}
+                            {selectedIdea.landingPage.testimonial?.author || 'Alex Chen'}
                           </p>
                           <p className="text-[10px] text-muted-foreground">
-                            {idea.landingPage.testimonial?.role || 'Early Adopter'}
+                            {selectedIdea.landingPage.testimonial?.role || 'Early Adopter'}
                           </p>
                         </div>
                       </div>
@@ -481,7 +583,7 @@ ${idea.monetization}`;
                           size="default" 
                           className="h-10 px-6 text-sm font-normal"
                         >
-                          {idea.landingPage.hero.ctaText}
+                          {selectedIdea.landingPage.hero.ctaText}
                           <ArrowUpRight className="h-4 w-4 ml-2" />
                         </Button>
                       </div>
@@ -494,11 +596,11 @@ ${idea.monetization}`;
               <div className="flex items-center justify-between p-6 border-t border-border/50 bg-muted/20">
                 <Button 
                   variant="ghost" 
-                  onClick={generateIdea} 
+                  onClick={generateIdeas} 
                   disabled={isGenerating}
                   className="text-sm font-normal"
                 >
-                  Regenerate
+                  Regenerate All
                 </Button>
                 <div className="flex gap-3">
                   <Button 
@@ -516,7 +618,7 @@ ${idea.monetization}`;
                     {createSolution.isPending && (
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     )}
-                    Save to Solutions Lab
+                    Save "{selectedIdea.name}"
                   </Button>
                 </div>
               </div>
