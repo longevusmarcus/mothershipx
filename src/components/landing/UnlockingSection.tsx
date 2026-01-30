@@ -324,7 +324,7 @@ export function UnlockingSection() {
             }}
             transition={{ duration: 3, repeat: Infinity }}
           >
-            Create → <span className="text-primary font-bold">Ship with Purpose</span> → Spread
+            Create ←→ <span className="text-primary font-bold">Ship with Purpose</span> ←→ Spread
           </motion.p>
         </motion.div>
       </div>
