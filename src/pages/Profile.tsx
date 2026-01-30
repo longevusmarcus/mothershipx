@@ -458,7 +458,7 @@ export default function Profile() {
         {/* Reddit-style two-column layout */}
         <div className="relative z-10 flex flex-col lg:flex-row gap-6 max-w-6xl mx-auto">
           
-          {/* Main Content - Left */}
+          {/* Main Content - Left (includes tabs + settings on mobile) */}
           <div className="flex-1 min-w-0 space-y-4 order-2 lg:order-1">
             <Tabs value={activeTab} onValueChange={(v) => {
               setActiveTab(v);
@@ -911,6 +911,170 @@ export default function Profile() {
                 </Card>
               </TabsContent>
             </Tabs>
+
+            {/* Mobile-only Settings Section - shown below tabs on mobile */}
+            <div className="lg:hidden space-y-4">
+              {/* Settings Card */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+                className="rounded-xl border border-border bg-card p-4"
+              >
+                <h3 className="text-[11px] font-medium text-primary uppercase tracking-wider mb-3">Settings</h3>
+                
+                <div className="space-y-1">
+                  {/* Profile Settings */}
+                  <div 
+                    className="flex items-center justify-between gap-3 py-2.5 cursor-pointer group hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors"
+                    onClick={() => setIsEditing(true)}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-9 h-9 rounded-full bg-muted/50 flex items-center justify-center shrink-0">
+                        <User className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium">Profile</p>
+                        <p className="text-[11px] text-muted-foreground truncate">Customize your profile</p>
+                      </div>
+                    </div>
+                    <Button variant="secondary" size="sm" className="h-7 px-3 text-xs shrink-0">
+                      {isEditing ? "Editing" : "Update"}
+                    </Button>
+                  </div>
+
+                  {/* Privacy */}
+                  <div 
+                    className={`flex items-center justify-between gap-3 py-2.5 cursor-pointer group hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors ${activeTab === "privacy" ? "bg-muted/40" : ""}`}
+                    onClick={() => setActiveTab("privacy")}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-9 h-9 rounded-full bg-muted/50 flex items-center justify-center shrink-0">
+                        <Eye className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium">Curate your profile</p>
+                        <p className="text-[11px] text-muted-foreground truncate">Manage visibility settings</p>
+                      </div>
+                    </div>
+                    <Button variant="secondary" size="sm" className="h-7 px-3 text-xs shrink-0">
+                      Update
+                    </Button>
+                  </div>
+
+                  {/* Notifications */}
+                  <div 
+                    className={`flex items-center justify-between gap-3 py-2.5 cursor-pointer group hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors ${activeTab === "notifications" ? "bg-muted/40" : ""}`}
+                    onClick={() => setActiveTab("notifications")}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-9 h-9 rounded-full bg-muted/50 flex items-center justify-center shrink-0">
+                        <Bell className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium">Notifications</p>
+                        <p className="text-[11px] text-muted-foreground truncate">Manage alerts</p>
+                      </div>
+                    </div>
+                    <Button variant="secondary" size="sm" className="h-7 px-3 text-xs shrink-0">
+                      Update
+                    </Button>
+                  </div>
+
+                  {/* Integrations */}
+                  <div 
+                    className={`flex items-center justify-between gap-3 py-2.5 cursor-pointer group hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors ${activeTab === "integrations" ? "bg-muted/40" : ""}`}
+                    onClick={() => setActiveTab("integrations")}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-9 h-9 rounded-full bg-muted/50 flex items-center justify-center shrink-0">
+                        <Link2 className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium">Integrations</p>
+                        <p className="text-[11px] text-muted-foreground truncate">Connect services</p>
+                      </div>
+                    </div>
+                    <Button variant="secondary" size="sm" className="h-7 px-3 text-xs shrink-0">
+                      Update
+                    </Button>
+                  </div>
+
+                  {/* Danger Zone */}
+                  <div 
+                    className={`flex items-center justify-between gap-3 py-2.5 cursor-pointer group hover:bg-destructive/10 -mx-2 px-2 rounded-lg transition-colors ${activeTab === "danger" ? "bg-destructive/10" : ""}`}
+                    onClick={() => setActiveTab("danger")}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-9 h-9 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
+                        <AlertTriangle className="h-4 w-4 text-destructive" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-destructive">Danger Zone</p>
+                        <p className="text-[11px] text-muted-foreground truncate">Delete data</p>
+                      </div>
+                    </div>
+                    <Button variant="outline" size="sm" className="h-7 px-3 text-xs shrink-0 border-destructive/30 text-destructive hover:bg-destructive/10">
+                      Update
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Subscription Card - mobile */}
+              {!hasPremiumAccess && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="rounded-xl border border-warning/30 bg-warning/5 p-4"
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-9 h-9 rounded-full bg-warning/20 flex items-center justify-center">
+                      <Crown className="h-4 w-4 text-warning" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">Upgrade to Pro</p>
+                      <p className="text-[11px] text-muted-foreground">Unlock unlimited features</p>
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    className="w-full h-8 text-xs"
+                    onClick={() => setShowPaywall(true)}
+                    data-testid="upgrade-button"
+                  >
+                    Upgrade Now
+                  </Button>
+                </motion.div>
+              )}
+
+              {/* Action buttons when editing - mobile */}
+              {isEditing && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex gap-2"
+                >
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1 h-9"
+                    onClick={() => setIsEditing(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    className="flex-1 h-9"
+                    onClick={handleSave}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save Changes"}
+                  </Button>
+                </motion.div>
+              )}
+            </div>
           </div>
 
           {/* Sidebar - Right (Reddit-style) */}
@@ -1142,12 +1306,12 @@ export default function Profile() {
               </div>
             </motion.div>
 
-            {/* Settings Card */}
+            {/* Settings Card - Desktop only */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
-              className="rounded-xl border border-border bg-card p-4"
+              className="hidden lg:block rounded-xl border border-border bg-card p-4"
             >
               <h3 className="text-[11px] font-medium text-primary uppercase tracking-wider mb-3">Settings</h3>
               
@@ -1249,13 +1413,13 @@ export default function Profile() {
               </div>
             </motion.div>
 
-            {/* Subscription Card */}
+            {/* Subscription Card - Desktop only */}
             {!hasPremiumAccess && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="rounded-xl border border-warning/30 bg-warning/5 p-4"
+                className="hidden lg:block rounded-xl border border-warning/30 bg-warning/5 p-4"
               >
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-9 h-9 rounded-full bg-warning/20 flex items-center justify-center">
@@ -1277,12 +1441,12 @@ export default function Profile() {
               </motion.div>
             )}
 
-            {/* Action buttons when editing */}
+            {/* Action buttons when editing - Desktop only */}
             {isEditing && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex gap-2"
+                className="hidden lg:flex gap-2"
               >
                 <Button 
                   variant="outline" 
