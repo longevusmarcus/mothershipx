@@ -326,10 +326,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-48 bg-popover">
               <DropdownMenuItem onClick={() => navigate("/profile")}>Profile & Settings</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                localStorage.removeItem("mothershipx-visited");
-                navigate("/");
-              }}>
+              <DropdownMenuItem onClick={() => navigate("/?about=true")}>
                 <ExternalLink className="h-4 w-4 mr-2" />
                 About
               </DropdownMenuItem>
