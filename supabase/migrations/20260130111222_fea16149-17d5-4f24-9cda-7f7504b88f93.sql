@@ -1,0 +1,1 @@
+DELETE FROM challenges WHERE id = 'd4e5f6a7-b8c9-0123-defa-234567890123';
