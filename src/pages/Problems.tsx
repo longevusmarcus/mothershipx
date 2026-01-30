@@ -107,20 +107,20 @@ const Problems = () => {
           {/* Action Buttons - hidden on mobile */}
           {!isMobile && (
             <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
-              {/* Auto-Build Button - 1.5x bigger */}
+              {/* Auto-Build Button */}
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setAutoBuildOpen(true)}
-                className="text-muted-foreground hover:text-foreground h-12 w-12 group relative"
+                className="text-muted-foreground hover:text-foreground h-8 w-8 group relative flex items-center justify-center"
               >
                 <img
                   src={mascotUfo}
                   alt="Auto-build"
-                  className="h-9 w-9 object-contain opacity-60 group-hover:opacity-100 transition-opacity"
+                  className="h-8 w-8 object-contain opacity-60 group-hover:opacity-100 transition-opacity"
                 />
                 <motion.div
-                  className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-primary"
+                  className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-primary"
                   animate={{ opacity: [1, 0.3, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 />
