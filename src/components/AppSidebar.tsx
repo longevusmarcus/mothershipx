@@ -14,7 +14,7 @@ import {
   ExternalLink,
   LogIn,
   Trophy,
-  Hammer,
+  Rocket,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import logoIcon from "@/assets/logo-icon.png";
 import builderTweet from "@/assets/builder-tweet.png";
-import mascotUfo from "@/assets/mascot-ufo.png";
+
 import {
   HoverCard,
   HoverCardContent,
@@ -237,14 +237,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
                 "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/50 transition-colors",
               )}
             >
-              {/* Keep alignment with other 16x16 icons, but visually boost the logo size */}
-              <div className="h-4 w-4 shrink-0 flex items-center justify-center relative overflow-visible">
-                <img
-                  src={mascotUfo}
-                  alt="Launchpad"
-                  className="h-10 w-10 object-contain absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-                />
-              </div>
+              <Rocket className="h-4 w-4 shrink-0" />
               <AnimatePresence mode="wait">
                 {(!collapsed || isMobile) && (
                   <motion.div
