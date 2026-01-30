@@ -55,10 +55,11 @@ interface GeneratedIdea {
 }
 
 const IDEA_CATEGORIES = [
-  { type: "digital", label: "Digital", abbr: "01" },
-  { type: "community", label: "Community", abbr: "02" },
-  { type: "physical", label: "Physical", abbr: "03" },
-  { type: "futuristic", label: "Futuristic", abbr: "04" },
+  { type: "reallife", label: "Real-Life", abbr: "01" },
+  { type: "digital", label: "Digital", abbr: "02" },
+  { type: "community", label: "Community", abbr: "03" },
+  { type: "physical", label: "Physical", abbr: "04" },
+  { type: "futuristic", label: "Futuristic", abbr: "05" },
 ];
 
 export function AIIdeaGeneratorModal({

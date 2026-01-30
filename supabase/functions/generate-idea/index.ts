@@ -20,6 +20,11 @@ interface GenerateIdeaRequest {
 
 const IDEA_CATEGORIES = [
   { 
+    type: "reallife", 
+    label: "Real-Life Business",
+    description: "Events, physical spaces, local communities, or in-person services"
+  },
+  { 
     type: "digital", 
     label: "Digital Product",
     description: "SaaS platform, mobile app, or web application"
@@ -343,6 +348,16 @@ Return ONLY valid JSON.`;
 
 function getCategoryPrompt(category: { type: string; label: string; description: string }): string {
   switch (category.type) {
+    case "reallife":
+      return `This should be a real-life business: events, physical spaces, local communities, or in-person services.
+Focus on:
+- In-person experiences and human connection
+- Local or regional market focus
+- Event-based or recurring gathering model
+- Physical venue or mobile service considerations
+- Community building through real-world interaction
+Examples: Curated dinner events, co-working space, wellness retreat, local meetup series, pop-up experiences, coaching/consulting practice, workshop series`;
+
     case "digital":
       return `This should be a SaaS platform, mobile app, or web application.
 Focus on:
@@ -388,6 +403,9 @@ function getMockupPrompt(category: { type: string; label: string }, idea: any): 
   const baseDesc = idea.landingPage?.productDescription || idea.description || "";
 
   switch (category.type) {
+    case "reallife":
+      return `A beautiful lifestyle photography shot of "${baseName}" - ${baseDesc}. People connecting at an event, warm ambient lighting, authentic human interaction, cozy inviting atmosphere. Editorial style photography. Ultra high resolution.`;
+
     case "digital":
       return `A clean, minimal, modern SaaS dashboard interface for "${baseName}" - ${baseDesc}. Dark theme, professional UI design, data visualization, minimal aesthetic. Ultra high resolution product screenshot mockup.`;
     
