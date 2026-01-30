@@ -10,34 +10,35 @@ export function FloatingMascot({ containerRef }: FloatingMascotProps) {
     container: containerRef,
   });
 
-  // Mascot appears after first section and flies across screen
+  // Mascot appears from third section (Data Scraping) - ~0.28 scroll progress
+  // With 6 sections: section 3 starts at 2/6 ≈ 0.33
   const opacity = useTransform(
     scrollYProgress,
-    [0, 0.1, 0.15, 0.85, 0.95],
+    [0, 0.28, 0.35, 0.85, 0.95],
     [0, 0, 1, 1, 0]
   );
 
-  // X position - flies from left to right across the page
+  // X position - flies from left to right across the page (starts from section 3)
   const x = useTransform(
     scrollYProgress,
-    [0.1, 0.9],
+    [0.28, 0.9],
     ["-10vw", "85vw"]
   );
 
   // Y position - slight wave motion
-  const baseY = useTransform(scrollYProgress, [0.1, 0.9], ["30vh", "60vh"]);
+  const baseY = useTransform(scrollYProgress, [0.28, 0.9], ["30vh", "60vh"]);
 
   // Rotation based on scroll direction (tilts in direction of movement)
   const rotate = useTransform(
     scrollYProgress,
-    [0.1, 0.3, 0.5, 0.7, 0.9],
+    [0.28, 0.4, 0.55, 0.7, 0.9],
     [-10, 5, -5, 8, -5]
   );
 
   // Scale - slightly smaller so it doesn't obstruct
   const scale = useTransform(
     scrollYProgress,
-    [0.1, 0.2, 0.8, 0.9],
+    [0.28, 0.38, 0.8, 0.9],
     [0.5, 0.8, 0.8, 0.5]
   );
 
