@@ -170,7 +170,13 @@ export function LandingHero() {
           </div>
         </section>
 
-        {/* PAGE 2: Main Headline */}
+        {/* PAGE 2: Meet Mothership */}
+        <MeetMothershipSection />
+
+        {/* PAGE 3: Data Scraping Visualization */}
+        <DataScrapingSection />
+
+        {/* PAGE 4: Main Headline */}
         <section className="h-screen snap-start flex flex-col items-center justify-center px-6 relative overflow-hidden">
           {/* Gradient background */}
           <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-muted/20" />
@@ -193,12 +199,6 @@ export function LandingHero() {
             </h1>
           </motion.div>
         </section>
-
-        {/* PAGE 3: Meet Mothership */}
-        <MeetMothershipSection />
-
-        {/* PAGE 4: Data Scraping Visualization */}
-        <DataScrapingSection />
 
         {/* PAGE 5: Tagline + Screenshots */}
         <section className="min-h-screen snap-start py-12 md:py-20 px-4 md:px-6 relative overflow-hidden flex flex-col justify-center">
