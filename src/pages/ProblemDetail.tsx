@@ -905,23 +905,23 @@ const ProblemDetail = () => {
 
       {/* Floating Buttons Container */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3 items-center">
-        {/* Auto-Build Button */}
+        {/* Auto-Build Button - Mascot only, no container */}
         <motion.button
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
           onClick={() => setAutoBuildOpen(true)}
-          className="h-11 w-11 rounded-full bg-foreground dark:bg-card border border-border shadow-lg hover:scale-105 active:scale-95 transition-transform flex items-center justify-center group"
+          className="hover:scale-110 active:scale-95 transition-transform"
           aria-label="Auto-build ideas"
         >
           <div className="relative">
             <img 
               src={mascotUfo} 
               alt="Auto-build" 
-              className="h-8 w-8 object-contain" 
+              className="h-14 w-14 object-contain drop-shadow-lg" 
             />
             <motion.div
-              className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-primary"
+              className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-primary"
               animate={{ opacity: [1, 0.3, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
             />
