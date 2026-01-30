@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { LandingHero } from "@/components/landing/LandingHero";
 import { SEO } from "@/components/SEO";
@@ -8,14 +9,24 @@ export default function Landing() {
   const { isAuthenticated, isLoading } = useAuth();
 
   // Redirect authenticated users or returning visitors to /problems
-  if (!isLoading && isAuthenticated) {
-    navigate("/problems", { replace: true });
+  useEffect(() => {
+    if (isLoading) return;
+    
+    const hasVisited = localStorage.getItem("mothershipx-visited");
+    
+    if (isAuthenticated || hasVisited) {
+      navigate("/problems", { replace: true });
+    }
+  }, [isAuthenticated, isLoading, navigate]);
+
+  // Show loading or nothing while checking auth/redirect
+  if (isLoading) {
     return null;
   }
 
+  // Don't render landing if we should redirect
   const hasVisited = localStorage.getItem("mothershipx-visited");
-  if (hasVisited) {
-    navigate("/problems", { replace: true });
+  if (isAuthenticated || hasVisited) {
     return null;
   }
 
