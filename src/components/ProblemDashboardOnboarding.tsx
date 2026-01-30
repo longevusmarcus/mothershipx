@@ -143,16 +143,36 @@ export function ProblemDashboardOnboarding({
     onDismiss?.();
   };
 
-  // Calculate tooltip position
-  const getTooltipStyle = () => {
+  // Calculate tooltip position - mobile-aware
+  const getTooltipStyle = (): React.CSSProperties => {
     if (!targetRect) return { top: "50%", left: "50%", transform: "translate(-50%, -50%)" };
     
     const padding = 16;
+    const tooltipWidth = 256; // w-64 = 16rem = 256px
+    const viewportWidth = window.innerWidth;
+    const isMobile = viewportWidth < 640;
     
-    if (step.position === "bottom") {
+    // On mobile, center the tooltip horizontally with safe margins
+    if (isMobile) {
+      const safeMargin = 16;
       return {
         top: targetRect.bottom + padding,
-        left: targetRect.left + targetRect.width / 2,
+        left: safeMargin,
+        right: safeMargin,
+        transform: "none",
+      };
+    }
+    
+    if (step.position === "bottom") {
+      // Clamp horizontal position to keep tooltip on screen
+      const idealLeft = targetRect.left + targetRect.width / 2;
+      const minLeft = tooltipWidth / 2 + padding;
+      const maxLeft = viewportWidth - tooltipWidth / 2 - padding;
+      const clampedLeft = Math.max(minLeft, Math.min(maxLeft, idealLeft));
+      
+      return {
+        top: targetRect.bottom + padding,
+        left: clampedLeft,
         transform: "translateX(-50%)",
       };
     }
@@ -228,7 +248,7 @@ export function ProblemDashboardOnboarding({
               className="fixed z-[63] pointer-events-auto"
               style={getTooltipStyle()}
             >
-              <div className="bg-card border border-border rounded-lg shadow-xl p-4 w-64">
+              <div className="bg-card border border-border rounded-lg shadow-xl p-4 w-full sm:w-64">
                 {/* Step indicator */}
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-[10px] font-mono text-primary">
