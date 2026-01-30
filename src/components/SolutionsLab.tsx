@@ -503,10 +503,10 @@ export const SolutionsLab = ({
             variant="outline"
             size="sm"
             onClick={() => setShowAIGenerator(true)}
-            className="gap-2 group"
+            className="gap-2 text-xs font-normal"
             disabled={!user}
           >
-            <Sparkles className="h-3.5 w-3.5 group-hover:text-primary transition-colors" />
+            <Plus className="h-3.5 w-3.5" />
             New Idea
           </Button>
         </div>
@@ -516,10 +516,12 @@ export const SolutionsLab = ({
       <div className="space-y-3">
         {solutions.length === 0 && (
           <div className="flex flex-col items-center gap-3 py-12 text-center">
-            <Sparkles className="h-8 w-8 text-muted-foreground/50" />
+            <div className="w-10 h-10 rounded-full border border-dashed border-border flex items-center justify-center">
+              <Plus className="h-4 w-4 text-muted-foreground/50" />
+            </div>
             <div>
-              <p className="text-sm text-muted-foreground">No ideas yet for this problem.</p>
-              <p className="text-xs text-muted-foreground/70 mt-1">Click "New Idea" to generate AI-powered startup concepts.</p>
+              <p className="text-sm text-muted-foreground">No ideas yet</p>
+              <p className="text-xs text-muted-foreground/60 mt-1">Generate AI-powered startup concepts</p>
             </div>
           </div>
         )}
