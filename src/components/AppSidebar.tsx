@@ -238,11 +238,11 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
               )}
             >
               {/* Keep alignment with other 16x16 icons, but visually boost the logo size */}
-              <div className="h-4 w-4 shrink-0 flex items-center justify-center">
+              <div className="h-5 w-5 shrink-0 flex items-center justify-center">
                 <img
                   src={mascotUfo}
                   alt="Builder"
-                  className="h-4 w-4 object-contain scale-[1.35]"
+                  className="h-5 w-5 object-contain scale-[1.5]"
                 />
               </div>
               <AnimatePresence mode="wait">
