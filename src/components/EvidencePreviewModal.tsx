@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { X, ExternalLink, ThumbsUp, Eye, MessageSquare, Play, ChevronLeft, ChevronRight } from "lucide-react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { formatNumber } from "@/lib/utils";
 import type { ProblemEvidence } from "@/hooks/useProblemEvidence";
@@ -81,9 +81,9 @@ export function EvidencePreviewModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl p-0 gap-0 overflow-hidden bg-black border-border/20">
+      <DialogContent showCloseButton={false} className="max-w-3xl p-0 gap-0 overflow-hidden bg-black border-border/10">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-white/10">
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b border-white/10">
           <div className="flex items-center gap-3">
             {evidence.video_author_avatar || evidence.comment_author_avatar ? (
               <img
@@ -101,16 +101,22 @@ export function EvidencePreviewModal({
               <p className="text-xs text-white/50 capitalize">{evidence.source}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => window.open(evidence.video_url || evidence.comment_source_url, '_blank')}
-              className="text-white/70 hover:text-white hover:bg-white/10"
+              className="text-white/70 hover:text-white hover:bg-white/10 text-xs sm:text-sm px-2 sm:px-3"
             >
-              <ExternalLink className="h-4 w-4 mr-2" />
-              Open Original
+              <ExternalLink className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Open Original</span>
             </Button>
+            <DialogClose asChild>
+              <button className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors">
+                <X className="h-5 w-5" />
+                <span className="sr-only">Close</span>
+              </button>
+            </DialogClose>
           </div>
         </div>
 
