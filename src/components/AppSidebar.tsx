@@ -326,11 +326,12 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-48 bg-popover">
               <DropdownMenuItem onClick={() => navigate("/profile")}>Profile & Settings</DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <a href="https://mothership.io" target="_blank" rel="noopener noreferrer" className="flex items-center">
-                  <ExternalLink className="h-4 w-4 mr-2" />
-                  About
-                </a>
+              <DropdownMenuItem onClick={() => {
+                localStorage.removeItem("mothershipx-visited");
+                navigate("/");
+              }}>
+                <ExternalLink className="h-4 w-4 mr-2" />
+                About
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
