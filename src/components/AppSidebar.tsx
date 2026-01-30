@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import logoIcon from "@/assets/logo-icon.png";
 import builderTweet from "@/assets/builder-tweet.png";
-import superloveLogo from "@/assets/superlove-logo.png";
+import mascotUfo from "@/assets/mascot-ufo.png";
 import {
   HoverCard,
   HoverCardContent,
@@ -240,7 +240,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
               {/* Keep alignment with other 16x16 icons, but visually boost the logo size */}
               <div className="h-4 w-4 shrink-0 flex items-center justify-center">
                 <img
-                  src={superloveLogo}
+                  src={mascotUfo}
                   alt="Builder"
                   className="h-4 w-4 object-contain scale-[1.35]"
                 />

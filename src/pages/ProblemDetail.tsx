@@ -51,7 +51,7 @@ import { useSolutions } from "@/hooks/useSolutions";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { cn } from "@/lib/utils";
-import superloveLogo from "@/assets/superlove-logo.png";
+import mascotUfo from "@/assets/mascot-ufo.png";
 
 const formatNumber = (num: number): string => {
   if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
@@ -895,7 +895,7 @@ const ProblemDetail = () => {
         >
           <div className="relative">
             <img 
-              src={superloveLogo} 
+              src={mascotUfo} 
               alt="Auto-build" 
               className="h-5 w-5 object-contain" 
             />

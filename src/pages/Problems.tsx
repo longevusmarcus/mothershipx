@@ -16,7 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { AutoBuildModal } from "@/components/AutoBuildModal";
-import superloveLogo from "@/assets/superlove-logo.png";
+import mascotUfo from "@/assets/mascot-ufo.png";
 
 const COLUMNS_KEY = "mothership_columns_count";
 const CATEGORY_KEY = "mothership_selected_category";
@@ -115,7 +115,7 @@ const Problems = () => {
                 className="text-muted-foreground hover:text-foreground h-12 w-12 group relative"
               >
                 <img
-                  src={superloveLogo}
+                  src={mascotUfo}
                   alt="Auto-build"
                   className="h-9 w-9 object-contain opacity-60 group-hover:opacity-100 transition-opacity"
                 />
