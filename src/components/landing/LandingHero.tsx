@@ -190,9 +190,9 @@ export function LandingHero() {
             className="relative z-10 text-center max-w-5xl mx-auto"
           >
             <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-normal tracking-tight text-foreground leading-[1.1]">
-              Know what to build.
+              Know what to ship.
               <br />
-              <span className="text-muted-foreground">Compete to ship it.</span>
+              <span className="text-muted-foreground">Compete to serve.</span>
               <br />
               Earn rewards from
               <br />
