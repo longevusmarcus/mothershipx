@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataScrapingSection } from "./DataScrapingSection";
 import { MeetMothershipSection } from "./MeetMothershipSection";
+import { UnlockingSection } from "./UnlockingSection";
 import { FloatingMascot } from "./FloatingMascot";
 import { ActivationAnimation } from "./ActivationAnimation";
 
@@ -173,7 +174,10 @@ export function LandingHero() {
         {/* PAGE 2: Meet Mothership */}
         <MeetMothershipSection />
 
-        {/* PAGE 3: Data Scraping Visualization */}
+        {/* PAGE 3: The Unlocking Stack */}
+        <UnlockingSection />
+
+        {/* PAGE 4: Data Scraping Visualization */}
         <DataScrapingSection />
 
         {/* PAGE 4: Main Headline */}
