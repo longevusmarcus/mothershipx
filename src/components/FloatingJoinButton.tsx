@@ -19,6 +19,7 @@ import { BuilderVerificationModal } from "@/components/BuilderVerificationModal"
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { supabase } from "@/lib/supabaseClient";
 import { DailyChallenge } from "@/data/challengesData";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface FloatingJoinButtonProps {
   challenge: DailyChallenge | null;
@@ -30,6 +31,7 @@ export const FloatingJoinButton = ({ challenge }: FloatingJoinButtonProps) => {
   const { hasPremiumAccess } = useSubscription();
   const { data: myChallengeJoins = [] } = useMyChallengeJoins();
   const joinChallengeMutation = useJoinChallenge();
+  const isMobile = useIsMobile();
   
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
   const [isVerificationOpen, setIsVerificationOpen] = useState(false);
@@ -38,6 +40,29 @@ export const FloatingJoinButton = ({ challenge }: FloatingJoinButtonProps) => {
   const [joinType, setJoinType] = useState<"solo" | "team" | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
+  const [showButton, setShowButton] = useState(true);
+
+  // Hide floating button after 80% scroll on mobile
+  useEffect(() => {
+    if (!isMobile) {
+      setShowButton(true);
+      return;
+    }
+
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollPercent = docHeight > 0 ? scrollTop / docHeight : 0;
+      
+      // Hide after 80% scroll on mobile
+      setShowButton(scrollPercent < 0.8);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll(); // Check initial state
+    
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isMobile]);
 
   // Check if user is already verified
   useEffect(() => {
@@ -181,25 +206,30 @@ export const FloatingJoinButton = ({ challenge }: FloatingJoinButtonProps) => {
   return (
     <>
       {/* Floating Button */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="fixed bottom-20 md:bottom-6 left-4 right-4 md:left-auto md:right-6 z-40"
-      >
-        <Button
-          onClick={handleButtonClick}
-          disabled={isProcessing}
-          className="w-full md:w-auto font-mono shadow-lg"
-          size="lg"
-        >
-          {isProcessing ? (
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-          ) : (
-            <Trophy className="h-4 w-4 mr-2" />
-          )}
-          ./join
-        </Button>
-      </motion.div>
+      <AnimatePresence>
+        {showButton && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-20 md:bottom-6 left-4 right-4 md:left-auto md:right-6 z-40"
+          >
+            <Button
+              onClick={handleButtonClick}
+              disabled={isProcessing}
+              className="w-full md:w-auto font-mono shadow-lg"
+              size="lg"
+            >
+              {isProcessing ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Trophy className="h-4 w-4 mr-2" />
+              )}
+              ./join
+            </Button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Join Dialog */}
       <Dialog open={isJoinDialogOpen} onOpenChange={setIsJoinDialogOpen}>
