@@ -114,26 +114,47 @@ const ProblemDetail = () => {
   const wasJoined = useRef(false);
   const startBuildingRef = useRef<HTMLButtonElement>(null);
 
-  // Check access on mount - only show paywall after subscription check completes
-  // Use a ref to track if we've already shown the paywall to prevent re-triggering
+  // Check access on mount - show paywall after 8 second preview for non-subscribed users
+  // Use a ref to track if we've already triggered the paywall timer
   const paywallCheckedRef = useRef(false);
+  const paywallTimerRef = useRef<NodeJS.Timeout | null>(null);
   
   useEffect(() => {
     // Only check once when subscription loading finishes
     if (!subscriptionLoading && user && !paywallCheckedRef.current) {
       paywallCheckedRef.current = true;
       if (!hasPremiumAccess) {
-        setShowPaywall(true);
+        // Give user 8 seconds to preview the dashboard before showing paywall
+        paywallTimerRef.current = setTimeout(() => {
+          setShowPaywall(true);
+        }, 8000);
       }
     }
-    // Dismiss paywall if access is granted (e.g. after a retry succeeds)
-    if (hasPremiumAccess && showPaywall) {
-      setShowPaywall(false);
+    // Dismiss paywall immediately if access is granted (e.g. after payment)
+    if (hasPremiumAccess) {
+      if (paywallTimerRef.current) {
+        clearTimeout(paywallTimerRef.current);
+        paywallTimerRef.current = null;
+      }
+      if (showPaywall) {
+        setShowPaywall(false);
+      }
     }
     // Reset ref if user logs out
     if (!user) {
       paywallCheckedRef.current = false;
+      if (paywallTimerRef.current) {
+        clearTimeout(paywallTimerRef.current);
+        paywallTimerRef.current = null;
+      }
     }
+    
+    // Cleanup timer on unmount
+    return () => {
+      if (paywallTimerRef.current) {
+        clearTimeout(paywallTimerRef.current);
+      }
+    };
   }, [subscriptionLoading, user, hasPremiumAccess, showPaywall]);
 
   const { data: problem, isLoading } = useProblem(id || "");
