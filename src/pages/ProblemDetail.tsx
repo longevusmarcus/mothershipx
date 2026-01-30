@@ -897,7 +897,7 @@ const ProblemDetail = () => {
             <img 
               src={mascotUfo} 
               alt="Auto-build" 
-              className="h-5 w-5 object-contain" 
+              className="h-8 w-8 object-contain" 
             />
             <motion.div
               className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-primary"
