@@ -238,11 +238,11 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
               )}
             >
               {/* Keep alignment with other 16x16 icons, but visually boost the logo size */}
-              <div className="h-4 w-4 shrink-0 flex items-center justify-center relative">
+              <div className="h-4 w-4 shrink-0 flex items-center justify-center relative overflow-visible">
                 <img
                   src={mascotUfo}
                   alt="Launchpad"
-                  className="h-7 w-7 object-contain absolute"
+                  className="h-10 w-10 object-contain absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
                 />
               </div>
               <AnimatePresence mode="wait">
