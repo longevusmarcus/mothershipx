@@ -238,11 +238,11 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
               )}
             >
               {/* Keep alignment with other 16x16 icons, but visually boost the logo size */}
-              <div className="h-5 w-5 shrink-0 flex items-center justify-center">
+              <div className="h-4 w-4 shrink-0 flex items-center justify-center relative">
                 <img
                   src={mascotUfo}
-                  alt="Builder"
-                  className="h-5 w-5 object-contain scale-[1.5]"
+                  alt="Launchpad"
+                  className="h-7 w-7 object-contain absolute"
                 />
               </div>
               <AnimatePresence mode="wait">
@@ -253,7 +253,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
                     exit={{ opacity: 0, width: 0 }}
                     className="flex items-center gap-2 overflow-hidden whitespace-nowrap"
                   >
-                    <span>Builder</span>
+                    <span>Launchpad</span>
                     <span className="text-[8px] bg-muted text-muted-foreground px-1 py-0.5 rounded font-medium">SOON</span>
                   </motion.div>
                 )}
