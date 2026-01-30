@@ -18,11 +18,11 @@ function UnlockCard({ logo, name, unlocks, delay, isHighlighted }: UnlockCardPro
       initial={{ opacity: 0, y: 50, scale: 0.8 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true }}
-      transition={{ 
-        delay, 
-        duration: 0.8, 
+      transition={{
+        delay,
+        duration: 0.8,
         type: "spring",
-        stiffness: 100 
+        stiffness: 100,
       }}
       className="flex flex-col items-center gap-3 relative"
     >
@@ -49,20 +49,24 @@ function UnlockCard({ logo, name, unlocks, delay, isHighlighted }: UnlockCardPro
           src={logo}
           alt={name}
           className="w-full h-full object-contain"
-          animate={isHighlighted ? {
-            filter: [
-              "drop-shadow(0 0 10px hsl(var(--primary) / 0.3))",
-              "drop-shadow(0 0 30px hsl(var(--primary) / 0.6))",
-              "drop-shadow(0 0 10px hsl(var(--primary) / 0.3))",
-            ]
-          } : {}}
+          animate={
+            isHighlighted
+              ? {
+                  filter: [
+                    "drop-shadow(0 0 10px hsl(var(--primary) / 0.3))",
+                    "drop-shadow(0 0 30px hsl(var(--primary) / 0.6))",
+                    "drop-shadow(0 0 10px hsl(var(--primary) / 0.3))",
+                  ],
+                }
+              : {}
+          }
           transition={{ duration: 2, repeat: Infinity }}
         />
       </motion.div>
 
       {/* Brand name */}
       <motion.span
-        className={`font-display text-lg md:text-xl ${isHighlighted ? 'text-foreground font-semibold' : 'text-muted-foreground'}`}
+        className={`font-display text-lg md:text-xl ${isHighlighted ? "text-foreground font-semibold" : "text-muted-foreground"}`}
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
@@ -77,7 +81,7 @@ function UnlockCard({ logo, name, unlocks, delay, isHighlighted }: UnlockCardPro
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
         transition={{ delay: delay + 0.4, type: "spring" }}
-        className={`font-mono text-xl md:text-2xl ${isHighlighted ? 'text-primary' : 'text-muted-foreground/50'}`}
+        className={`font-mono text-xl md:text-2xl ${isHighlighted ? "text-primary" : "text-muted-foreground/50"}`}
       >
         =
       </motion.div>
@@ -101,17 +105,19 @@ function UnlockCard({ logo, name, unlocks, delay, isHighlighted }: UnlockCardPro
         )}
         <motion.span
           className={`relative font-mono text-sm md:text-base tracking-wider ${
-            isHighlighted 
-              ? 'text-primary font-bold' 
-              : 'text-muted-foreground'
+            isHighlighted ? "text-primary font-bold" : "text-muted-foreground"
           }`}
-          animate={isHighlighted ? {
-            textShadow: [
-              "0 0 10px hsl(var(--primary) / 0.5)",
-              "0 0 30px hsl(var(--primary) / 0.8)",
-              "0 0 10px hsl(var(--primary) / 0.5)",
-            ]
-          } : {}}
+          animate={
+            isHighlighted
+              ? {
+                  textShadow: [
+                    "0 0 10px hsl(var(--primary) / 0.5)",
+                    "0 0 30px hsl(var(--primary) / 0.8)",
+                    "0 0 10px hsl(var(--primary) / 0.5)",
+                  ],
+                }
+              : {}
+          }
           transition={{ duration: 2, repeat: Infinity }}
         >
           {unlocks}
@@ -150,7 +156,7 @@ function AnimatedArrow({ delay }: { delay: number }) {
         >
           ←
         </motion.span>
-        
+
         {/* Center divider */}
         <motion.span
           className="text-primary text-2xl md:text-3xl font-mono mx-1"
@@ -159,7 +165,7 @@ function AnimatedArrow({ delay }: { delay: number }) {
         >
           ·
         </motion.span>
-        
+
         {/* Right arrows */}
         <motion.span
           className="text-primary/60 text-2xl md:text-3xl font-mono"
@@ -191,7 +197,7 @@ export function UnlockingSection() {
     >
       {/* Background effects */}
       <div className="absolute inset-0 bg-gradient-to-b from-muted/10 via-background to-muted/10" />
-      
+
       {/* Animated grid lines */}
       <motion.div
         className="absolute inset-0 opacity-[0.03]"
@@ -252,7 +258,7 @@ export function UnlockingSection() {
             <span className="text-primary">&gt;</span>
             <span className="text-muted-foreground/70 ml-1">evolution_of_creation</span>
           </motion.div>
-          
+
           <motion.h2
             className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-foreground"
             initial={{ opacity: 0, scale: 0.9 }}
@@ -260,7 +266,7 @@ export function UnlockingSection() {
             viewport={{ once: true }}
             transition={{ delay: 0.2, duration: 0.8 }}
           >
-            The Stack That{" "}
+            The Mother Of All{" "}
             <motion.span
               className="text-primary"
               animate={{
@@ -268,11 +274,11 @@ export function UnlockingSection() {
                   "0 0 10px hsl(var(--primary) / 0.3)",
                   "0 0 30px hsl(var(--primary) / 0.6)",
                   "0 0 10px hsl(var(--primary) / 0.3)",
-                ]
+                ],
               }}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              Ships
+              Stacks
             </motion.span>
           </motion.h2>
         </motion.div>
@@ -280,33 +286,17 @@ export function UnlockingSection() {
         {/* Unlocking flow - Lovable → MothershipX → Higgsfield */}
         <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-4">
           {/* Lovable */}
-          <UnlockCard
-            logo={lovableLogo}
-            name="Lovable"
-            unlocks="Unlocking Creativity"
-            delay={0.2}
-          />
+          <UnlockCard logo={lovableLogo} name="Lovable" unlocks="Unlocking Creativity" delay={0.2} />
 
           <AnimatedArrow delay={0.6} />
 
           {/* MothershipX - in the middle, highlighted */}
-          <UnlockCard
-            logo={mascotUfo}
-            name="MothershipX"
-            unlocks="Unlocking Utility"
-            delay={0.8}
-            isHighlighted
-          />
+          <UnlockCard logo={mascotUfo} name="MothershipX" unlocks="Unlocking Utility" delay={0.8} isHighlighted />
 
           <AnimatedArrow delay={1.2} />
 
           {/* Higgsfield */}
-          <UnlockCard
-            logo={higgsfieldLogo}
-            name="Higgsfield"
-            unlocks="Unlocking Virality"
-            delay={1.4}
-          />
+          <UnlockCard logo={higgsfieldLogo} name="Higgsfield" unlocks="Unlocking Virality" delay={1.4} />
         </div>
 
         {/* Bottom tagline */}
