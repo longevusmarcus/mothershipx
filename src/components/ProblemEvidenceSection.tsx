@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
 import { Video, MessageSquare, ExternalLink, ThumbsUp, Eye, Play, RefreshCw, Lock } from "lucide-react";
-import { useProblemEvidence, useScrapeEvidence } from "@/hooks/useProblemEvidence";
+import { useProblemEvidence, useScrapeEvidence, ProblemEvidence } from "@/hooks/useProblemEvidence";
 import { Button } from "@/components/ui/button";
 import { formatNumber } from "@/lib/utils";
 import { useState, useMemo, useCallback } from "react";
 import { toast } from "sonner";
-import type { ProblemEvidence } from "@/hooks/useProblemEvidence";
+import { EvidencePreviewModal } from "@/components/EvidencePreviewModal";
 
 // Source brand icons
 const TikTokIcon = () => (
@@ -32,6 +32,8 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   const [showAll, setShowAll] = useState(false);
+  const [previewEvidence, setPreviewEvidence] = useState<ProblemEvidence | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   const handleImageError = useCallback((videoId: string) => {
     // Only mark as failed if we haven't successfully loaded it before
@@ -182,15 +184,16 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
                 {videos.map((video, index) => (
-                  <motion.a
+                  <motion.button
                     key={video.id}
-                    href={video.video_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    onClick={() => {
+                      setPreviewEvidence(video);
+                      setPreviewOpen(true);
+                    }}
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: index * 0.05 }}
-                    className="group relative aspect-[9/16] rounded-lg overflow-hidden bg-muted border border-border hover:border-primary/50 transition-all"
+                    className="group relative aspect-[9/16] rounded-lg overflow-hidden bg-muted border border-border hover:border-primary/50 transition-all text-left"
                   >
                     <img
                       src={video.video_thumbnail!}
@@ -238,7 +241,7 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
                         <div className="w-5 h-5 rounded-full bg-muted-foreground/30" />
                       )}
                     </div>
-                  </motion.a>
+                  </motion.button>
                 ))}
                 
                 {/* Blurred placeholder video cards */}
@@ -273,15 +276,16 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
               </div>
               <div className="space-y-2">
                 {comments.map((comment, index) => (
-                  <motion.a
+                  <motion.button
                     key={comment.id}
-                    href={comment.comment_source_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    onClick={() => {
+                      setPreviewEvidence(comment);
+                      setPreviewOpen(true);
+                    }}
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    className="block p-3 rounded-lg border border-border bg-secondary/20 hover:border-primary/30 hover:bg-secondary/40 transition-all group"
+                    className="w-full text-left p-3 rounded-lg border border-border bg-secondary/20 hover:border-primary/30 hover:bg-secondary/40 transition-all group"
                   >
                     <div className="flex items-start gap-3">
                       <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center">
@@ -299,7 +303,7 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
                         </div>
                       </div>
                     </div>
-                  </motion.a>
+                  </motion.button>
                 ))}
                 
                 {/* Blurred placeholder comment cards */}
@@ -339,6 +343,15 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
           )}
         </div>
       )}
+
+      {/* Evidence Preview Modal */}
+      <EvidencePreviewModal
+        open={previewOpen}
+        onOpenChange={setPreviewOpen}
+        evidence={previewEvidence}
+        allEvidence={[...allVideos, ...allComments]}
+        onNavigate={(ev) => setPreviewEvidence(ev)}
+      />
     </motion.div>
   );
 }
