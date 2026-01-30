@@ -47,6 +47,11 @@ export function AppLayout({ children, hideChrome = false }: AppLayoutProps) {
     navigate("/");
   };
 
+  const handleAbout = () => {
+    localStorage.removeItem("mothershipx-visited");
+    navigate("/?about=true");
+  };
+
   return (
     <div className="flex min-h-screen w-full bg-background">
       {/* Desktop Sidebar */}
@@ -165,7 +170,7 @@ export function AppLayout({ children, hideChrome = false }: AppLayoutProps) {
                         <User className="h-4 w-4" />
                         Profile & Settings
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => window.open("https://docs.lovable.dev", "_blank")} className="gap-2">
+                      <DropdownMenuItem onClick={handleAbout} className="gap-2">
                         <Info className="h-4 w-4" />
                         About
                       </DropdownMenuItem>
