@@ -24,7 +24,7 @@ function UnlockCard({ logo, name, unlocks, delay, isHighlighted }: UnlockCardPro
         type: "spring",
         stiffness: 100,
       }}
-      className="flex flex-col items-center gap-2 md:gap-3 relative"
+      className="flex flex-col items-center gap-1.5 md:gap-3 relative"
     >
       {/* Glow ring for highlighted card */}
       {isHighlighted && (
@@ -40,7 +40,7 @@ function UnlockCard({ logo, name, unlocks, delay, isHighlighted }: UnlockCardPro
 
       {/* Logo container - same size for all */}
       <motion.div
-        className="relative z-10 w-12 h-12 md:w-20 md:h-20"
+        className="relative z-10 w-11 h-11 md:w-20 md:h-20"
         whileHover={{ scale: 1.1, rotate: 5 }}
         transition={{ type: "spring", stiffness: 300 }}
       >
@@ -66,7 +66,7 @@ function UnlockCard({ logo, name, unlocks, delay, isHighlighted }: UnlockCardPro
 
       {/* Brand name */}
       <motion.span
-        className={`font-display text-base md:text-xl ${isHighlighted ? "text-foreground font-semibold" : "text-muted-foreground"}`}
+        className={`font-display text-sm md:text-xl ${isHighlighted ? "text-foreground font-semibold" : "text-muted-foreground"}`}
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
@@ -81,7 +81,7 @@ function UnlockCard({ logo, name, unlocks, delay, isHighlighted }: UnlockCardPro
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
         transition={{ delay: delay + 0.4, type: "spring" }}
-        className={`font-mono text-lg md:text-2xl ${isHighlighted ? "text-primary" : "text-muted-foreground/50"}`}
+        className={`font-mono text-base md:text-2xl ${isHighlighted ? "text-primary" : "text-muted-foreground/50"}`}
       >
         =
       </motion.div>
@@ -104,7 +104,7 @@ function UnlockCard({ logo, name, unlocks, delay, isHighlighted }: UnlockCardPro
           />
         )}
         <motion.span
-          className={`relative font-mono text-xs md:text-base tracking-wider ${
+          className={`relative font-mono text-[11px] md:text-base tracking-wider leading-tight ${
             isHighlighted ? "text-primary font-bold" : "text-muted-foreground"
           }`}
           animate={
