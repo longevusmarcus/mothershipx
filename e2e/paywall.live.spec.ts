@@ -83,6 +83,24 @@ async function deleteTestUser(userId: string) {
   }
 }
 
+// Check if the deployed version has our test attributes
+async function verifyDeploymentVersion(page: any) {
+  console.log('Verifying deployment has latest test attributes...');
+  await page.goto('/auth');
+  await page.waitForLoadState('networkidle');
+
+  const hasTestId = await page.locator('[data-testid="auth-email-input"]').count() > 0;
+
+  if (!hasTestId) {
+    throw new Error(
+      'Deployment version mismatch: data-testid="auth-email-input" not found.\n' +
+      'The live site may not have the latest code deployed yet.\n' +
+      'Wait for deployment to complete and try again.'
+    );
+  }
+  console.log('✓ Deployment verified - test attributes present');
+}
+
 // Helper to sign in via the UI
 async function signInViaUI(page: any, email: string, password: string) {
   await page.goto('/auth');
@@ -103,6 +121,13 @@ async function signInViaUI(page: any, email: string, password: string) {
 }
 
 test.describe('Live Paywall Tests', () => {
+  // Verify deployment has our test attributes before running tests
+  test.beforeAll(async ({ browser }) => {
+    const page = await browser.newPage();
+    await verifyDeploymentVersion(page);
+    await page.close();
+  });
+
   test('non-premium user sees paywall on problem detail', async ({ page }) => {
     const testUser = await createTestUser(false);
 
