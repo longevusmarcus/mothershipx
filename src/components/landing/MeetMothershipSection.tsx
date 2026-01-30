@@ -153,7 +153,7 @@ export function MeetMothershipSection() {
             className="flex items-center justify-center gap-2 mb-4"
           >
             <span className="font-mono text-sm sm:text-base text-muted-foreground">Think</span>
-            <img src={lovableLogo} alt="Lovable" className="h-5 sm:h-6 object-contain dark:invert-0 invert" />
+            <img src={lovableLogo} alt="Lovable" className="h-5 sm:h-6 object-contain" />
             <span className="font-mono text-sm sm:text-base text-muted-foreground">on</span>
             <motion.span
               className="font-mono text-sm sm:text-base font-bold text-primary"
