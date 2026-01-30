@@ -10,10 +10,9 @@ interface UnlockCardProps {
   unlocks: string;
   delay: number;
   isHighlighted?: boolean;
-  logoClassName?: string;
 }
 
-function UnlockCard({ logo, name, unlocks, delay, isHighlighted, logoClassName }: UnlockCardProps) {
+function UnlockCard({ logo, name, unlocks, delay, isHighlighted }: UnlockCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 50, scale: 0.8 }}
@@ -25,7 +24,7 @@ function UnlockCard({ logo, name, unlocks, delay, isHighlighted, logoClassName }
         type: "spring",
         stiffness: 100 
       }}
-      className="flex flex-col items-center gap-4 relative"
+      className="flex flex-col items-center gap-3 relative"
     >
       {/* Glow ring for highlighted card */}
       {isHighlighted && (
@@ -39,57 +38,17 @@ function UnlockCard({ logo, name, unlocks, delay, isHighlighted, logoClassName }
         />
       )}
 
-      {/* Logo container with hover effects */}
+      {/* Logo container - same size for all */}
       <motion.div
-        className={`relative z-10 ${isHighlighted ? 'w-24 h-24 md:w-32 md:h-32' : 'w-16 h-16 md:w-20 md:h-20'}`}
+        className="relative z-10 w-16 h-16 md:w-20 md:h-20"
         whileHover={{ scale: 1.1, rotate: 5 }}
         transition={{ type: "spring", stiffness: 300 }}
       >
-        {/* Orbiting particles for highlighted */}
-        {isHighlighted && (
-          <>
-            <motion.div
-              className="absolute w-2 h-2 rounded-full bg-primary"
-              animate={{
-                rotate: 360,
-              }}
-              transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-              style={{ 
-                transformOrigin: "80px 80px",
-                left: "50%",
-                top: "50%",
-              }}
-            />
-            <motion.div
-              className="absolute w-1.5 h-1.5 rounded-full bg-primary/60"
-              animate={{
-                rotate: -360,
-              }}
-              transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
-              style={{ 
-                transformOrigin: "60px 60px",
-                left: "50%",
-                top: "50%",
-              }}
-            />
-          </>
-        )}
-
-        {/* Pulse ring */}
-        <motion.div
-          className={`absolute inset-0 rounded-2xl ${isHighlighted ? 'border-2 border-primary' : 'border border-border/50'}`}
-          animate={isHighlighted ? {
-            scale: [1, 1.3, 1],
-            opacity: [0.8, 0, 0.8],
-          } : {}}
-          transition={{ duration: 2, repeat: Infinity }}
-        />
-
-        {/* Logo */}
+        {/* Logo - no container/border */}
         <motion.img
           src={logo}
           alt={name}
-          className={`w-full h-full object-contain rounded-2xl ${logoClassName || ''}`}
+          className="w-full h-full object-contain"
           animate={isHighlighted ? {
             filter: [
               "drop-shadow(0 0 10px hsl(var(--primary) / 0.3))",
@@ -112,7 +71,7 @@ function UnlockCard({ logo, name, unlocks, delay, isHighlighted, logoClassName }
         {name}
       </motion.span>
 
-      {/* Equals sign with animation */}
+      {/* Equals sign */}
       <motion.div
         initial={{ opacity: 0, scale: 0 }}
         whileInView={{ opacity: 1, scale: 1 }}
@@ -123,7 +82,7 @@ function UnlockCard({ logo, name, unlocks, delay, isHighlighted, logoClassName }
         =
       </motion.div>
 
-      {/* Unlocking text with typewriter effect */}
+      {/* Unlocking text */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -299,7 +258,7 @@ export function UnlockingSection() {
           </motion.h2>
         </motion.div>
 
-        {/* Unlocking flow - horizontal on desktop, vertical on mobile */}
+        {/* Unlocking flow - Lovable → MothershipX → Higgsfield */}
         <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-4">
           {/* Lovable */}
           <UnlockCard
@@ -311,23 +270,23 @@ export function UnlockingSection() {
 
           <AnimatedArrow delay={0.6} />
 
+          {/* MothershipX - in the middle, highlighted */}
+          <UnlockCard
+            logo={mascotUfo}
+            name="MothershipX"
+            unlocks="Unlocking Utility"
+            delay={0.8}
+            isHighlighted
+          />
+
+          <AnimatedArrow delay={1.2} />
+
           {/* Higgsfield */}
           <UnlockCard
             logo={higgsfieldLogo}
             name="Higgsfield"
             unlocks="Unlocking Virality"
-            delay={0.8}
-          />
-
-          <AnimatedArrow delay={1.2} />
-
-          {/* MothershipX - highlighted */}
-          <UnlockCard
-            logo={mascotUfo}
-            name="MothershipX"
-            unlocks="Unlocking Utility"
             delay={1.4}
-            isHighlighted
           />
         </div>
 
@@ -346,7 +305,7 @@ export function UnlockingSection() {
             }}
             transition={{ duration: 3, repeat: Infinity }}
           >
-            Create → Spread → <span className="text-primary font-bold">Ship with Purpose</span>
+            Create → <span className="text-primary font-bold">Ship with Purpose</span> → Spread
           </motion.p>
         </motion.div>
       </div>
