@@ -49,7 +49,7 @@ export function AppLayout({ children, hideChrome = false }: AppLayoutProps) {
 
   const handleAbout = () => {
     localStorage.removeItem("mothershipx-visited");
-    navigate("/?about=true");
+    window.open("/?about=true", "_blank");
   };
 
   return (
