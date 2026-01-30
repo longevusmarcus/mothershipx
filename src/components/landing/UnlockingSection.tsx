@@ -198,7 +198,7 @@ export function UnlockingSection() {
   return (
     <section
       ref={sectionRef}
-        className="h-[100svh] snap-start flex flex-col items-center justify-center px-6 relative overflow-hidden safe-area-pb"
+        className="h-[100svh] snap-start flex flex-col items-center justify-center px-4 sm:px-6 relative overflow-hidden safe-area-pb"
     >
       {/* Background effects */}
       <div className="absolute inset-0 bg-gradient-to-b from-muted/10 via-background to-muted/10" />
@@ -253,7 +253,7 @@ export function UnlockingSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-8 md:mb-20"
+          className="text-center mb-5 sm:mb-8 md:mb-20"
         >
           <motion.div
             className="font-mono text-xs sm:text-sm mb-4 tracking-widest"
@@ -265,7 +265,7 @@ export function UnlockingSection() {
           </motion.div>
 
           <motion.h2
-            className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-foreground"
+            className="font-display text-xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-foreground"
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
@@ -289,7 +289,7 @@ export function UnlockingSection() {
         </motion.div>
 
         {/* Unlocking flow - Lovable → MothershipX → Higgsfield */}
-        <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-4">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-3 sm:gap-4 md:gap-4">
           {/* Lovable */}
           <UnlockCard logo={lovableLogo} name="Lovable" unlocks="Unlocking Creativity" delay={0.2} />
 
@@ -316,10 +316,10 @@ export function UnlockingSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 2, duration: 0.8 }}
-          className="text-center mt-6 md:mt-20"
+          className="text-center mt-3 sm:mt-6 md:mt-20"
         >
           <motion.p
-            className="font-mono text-sm md:text-base text-muted-foreground/70"
+            className="font-mono text-xs sm:text-sm md:text-base text-muted-foreground/70"
             animate={{
               opacity: [0.5, 1, 0.5],
             }}
