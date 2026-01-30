@@ -76,7 +76,7 @@ const faqItems: FAQItem[] = [
     question: "Doesn't this just mean 'vibe do all the work because I have no productive thoughts'?",
     answer: (
       <div className="space-y-4 text-muted-foreground">
-        <p></p>
+        <p>No.</p>
         <p className="text-foreground font-medium">
           The end goal is to make people compete on productive thoughts, because that's the one thing that won't be
           fully replicable by AI.
