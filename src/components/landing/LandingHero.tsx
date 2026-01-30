@@ -8,6 +8,7 @@ import { MeetMothershipSection } from "./MeetMothershipSection";
 import { UnlockingSection } from "./UnlockingSection";
 import { FloatingMascot } from "./FloatingMascot";
 import { ActivationAnimation } from "./ActivationAnimation";
+import { FAQDialog } from "./FAQDialog";
 
 import logoIcon from "@/assets/logo-icon.png";
 import showcaseSignals from "@/assets/showcase-signals.png";
@@ -355,6 +356,7 @@ export function LandingHero() {
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
                 <p>© 2026 MothershipX. All rights reserved.</p>
                 <div className="flex items-center gap-6">
+                  <FAQDialog />
                   <a href="/terms" className="hover:text-foreground transition-colors">
                     Terms
                   </a>
