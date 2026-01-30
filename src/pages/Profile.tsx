@@ -456,15 +456,15 @@ export default function Profile() {
         <div className="absolute inset-0 -z-10 h-32 bg-gradient-to-b from-primary/5 to-transparent" />
       
         {/* Reddit-style two-column layout */}
-        <Tabs value={activeTab} onValueChange={(v) => {
-          setActiveTab(v);
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }} className="relative z-10 flex flex-col lg:flex-row gap-6 max-w-6xl mx-auto">
+        <div className="relative z-10 flex flex-col lg:flex-row gap-6 max-w-6xl mx-auto">
           
           {/* Main Content - Left */}
           <div className="flex-1 min-w-0 space-y-4 order-2 lg:order-1">
-            {/* Desktop-only: TabsList here */}
-              <TabsList className="hidden lg:inline-flex w-full justify-start bg-card border border-border/50 p-1 h-11 overflow-x-auto rounded-lg">
+            <Tabs value={activeTab} onValueChange={(v) => {
+              setActiveTab(v);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }} className="w-full">
+              <TabsList className="w-full justify-start bg-card border border-border/50 p-1 h-11 overflow-x-auto rounded-lg">
                 <TabsTrigger value="overview" className="text-xs px-4 h-9 data-[state=active]:bg-background data-[state=active]:shadow-sm font-medium">Overview</TabsTrigger>
                 <TabsTrigger value="achievements" className="text-xs px-4 h-9 data-[state=active]:bg-background data-[state=active]:shadow-sm font-medium">Achievements</TabsTrigger>
                 <TabsTrigger value="builds" className="text-xs px-4 h-9 data-[state=active]:bg-background data-[state=active]:shadow-sm font-medium">Builds</TabsTrigger>
@@ -910,26 +910,11 @@ export default function Profile() {
                   </CardContent>
                 </Card>
               </TabsContent>
+            </Tabs>
           </div>
 
           {/* Sidebar - Right (Reddit-style) */}
           <div className="w-full lg:w-80 shrink-0 order-1 lg:order-2 space-y-4">
-            {/* Mobile-only: Tab navigation above settings */}
-            <div className="lg:hidden">
-              <TabsList className="w-full justify-start bg-card border border-border/50 p-1 h-11 overflow-x-auto rounded-lg">
-                <TabsTrigger value="overview" className="text-xs px-4 h-9 data-[state=active]:bg-background data-[state=active]:shadow-sm font-medium">Overview</TabsTrigger>
-                <TabsTrigger value="achievements" className="text-xs px-4 h-9 data-[state=active]:bg-background data-[state=active]:shadow-sm font-medium">Achievements</TabsTrigger>
-                <TabsTrigger value="builds" className="text-xs px-4 h-9 data-[state=active]:bg-background data-[state=active]:shadow-sm font-medium">Builds</TabsTrigger>
-                <TabsTrigger value="notifications" className="text-xs px-3 h-9 data-[state=active]:bg-background data-[state=active]:shadow-sm font-medium gap-1.5">
-                  <Bell className="h-3 w-3" />
-                  Notif.
-                </TabsTrigger>
-                <TabsTrigger value="privacy" className="text-xs px-3 h-9 data-[state=active]:bg-background data-[state=active]:shadow-sm font-medium gap-1.5">
-                  <Shield className="h-3 w-3" />
-                  Privacy
-                </TabsTrigger>
-              </TabsList>
-            </div>
             {/* Profile Card */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -1319,7 +1304,7 @@ export default function Profile() {
             )}
 
           </div>
-        </Tabs>
+        </div>
       </div>
       <SubscriptionPaywall open={showPaywall} onOpenChange={setShowPaywall} />
       <BuilderVerificationModal open={showVerificationModal} onOpenChange={setShowVerificationModal} onVerified={handleVerificationComplete} />
