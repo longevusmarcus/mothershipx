@@ -134,27 +134,30 @@ function AnimatedArrow({ delay }: { delay: number }) {
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
       transition={{ delay, duration: 0.5 }}
-      className="flex items-center justify-center px-4 md:px-8"
+      className="flex items-center justify-center py-2 md:py-0 md:px-8"
     >
+      {/* Vertical arrows on mobile, horizontal on desktop */}
       <motion.div
-        className="flex items-center gap-1"
+        className="flex flex-col md:flex-row items-center gap-1"
         animate={{ scale: [1, 1.05, 1] }}
         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
       >
-        {/* Left arrows */}
+        {/* Up/Left arrows */}
         <motion.span
           className="text-primary/40 text-2xl md:text-3xl font-mono"
           animate={{ opacity: [0.3, 1, 0.3] }}
           transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }}
         >
-          ←
+          <span className="hidden md:inline">←</span>
+          <span className="md:hidden">↑</span>
         </motion.span>
         <motion.span
           className="text-primary/60 text-2xl md:text-3xl font-mono"
           animate={{ opacity: [0.3, 1, 0.3] }}
           transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }}
         >
-          ←
+          <span className="hidden md:inline">←</span>
+          <span className="md:hidden">↑</span>
         </motion.span>
 
         {/* Center divider */}
@@ -166,20 +169,22 @@ function AnimatedArrow({ delay }: { delay: number }) {
           ·
         </motion.span>
 
-        {/* Right arrows */}
+        {/* Down/Right arrows */}
         <motion.span
           className="text-primary/60 text-2xl md:text-3xl font-mono"
           animate={{ opacity: [0.3, 1, 0.3] }}
           transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }}
         >
-          →
+          <span className="hidden md:inline">→</span>
+          <span className="md:hidden">↓</span>
         </motion.span>
         <motion.span
           className="text-primary/40 text-2xl md:text-3xl font-mono"
           animate={{ opacity: [0.3, 1, 0.3] }}
           transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }}
         >
-          →
+          <span className="hidden md:inline">→</span>
+          <span className="md:hidden">↓</span>
         </motion.span>
       </motion.div>
     </motion.div>
