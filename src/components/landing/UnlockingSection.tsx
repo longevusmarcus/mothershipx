@@ -124,24 +124,43 @@ function UnlockCard({ logo, name, unlocks, delay, isHighlighted }: UnlockCardPro
 function AnimatedArrow({ delay }: { delay: number }) {
   return (
     <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      whileInView={{ opacity: 1, x: 0 }}
+      initial={{ opacity: 0, scale: 0.8 }}
+      whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
       transition={{ delay, duration: 0.5 }}
       className="flex items-center justify-center px-4 md:px-8"
     >
       <motion.div
         className="flex items-center gap-1"
-        animate={{ x: [0, 10, 0] }}
-        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+        animate={{ scale: [1, 1.05, 1] }}
+        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
       >
+        {/* Left arrows */}
         <motion.span
           className="text-primary/40 text-2xl md:text-3xl font-mono"
           animate={{ opacity: [0.3, 1, 0.3] }}
-          transition={{ duration: 1.5, repeat: Infinity, delay: 0 }}
+          transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }}
         >
-          →
+          ←
         </motion.span>
+        <motion.span
+          className="text-primary/60 text-2xl md:text-3xl font-mono"
+          animate={{ opacity: [0.3, 1, 0.3] }}
+          transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }}
+        >
+          ←
+        </motion.span>
+        
+        {/* Center divider */}
+        <motion.span
+          className="text-primary text-2xl md:text-3xl font-mono mx-1"
+          animate={{ opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 1, repeat: Infinity }}
+        >
+          ·
+        </motion.span>
+        
+        {/* Right arrows */}
         <motion.span
           className="text-primary/60 text-2xl md:text-3xl font-mono"
           animate={{ opacity: [0.3, 1, 0.3] }}
@@ -150,7 +169,7 @@ function AnimatedArrow({ delay }: { delay: number }) {
           →
         </motion.span>
         <motion.span
-          className="text-primary text-2xl md:text-3xl font-mono"
+          className="text-primary/40 text-2xl md:text-3xl font-mono"
           animate={{ opacity: [0.3, 1, 0.3] }}
           transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }}
         >
