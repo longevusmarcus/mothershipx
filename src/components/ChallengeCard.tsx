@@ -312,10 +312,10 @@ export const ChallengeCard = ({ challenge, delay = 0, showHighlight = false, hig
         </div>
 
         {/* Participants Row */}
-        <div className="flex items-center justify-between font-mono text-xs text-muted-foreground mb-4">
+        <div className="flex flex-wrap items-center justify-between gap-y-2 font-mono text-[10px] sm:text-xs text-muted-foreground mb-4">
           <div className="flex items-center">
             {/* Fake avatars */}
-            <div className="flex -space-x-2 mr-3">
+            <div className="flex -space-x-1.5 sm:-space-x-2 mr-2 sm:mr-3">
               {[
                 "https://i.pravatar.cc/32?img=1",
                 "https://i.pravatar.cc/32?img=2", 
@@ -327,24 +327,24 @@ export const ChallengeCard = ({ challenge, delay = 0, showHighlight = false, hig
                   key={idx}
                   src={avatar}
                   alt=""
-                  className="w-6 h-6 rounded-full border-2 border-background object-cover"
+                  className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-background object-cover"
                 />
               ))}
               {challenge.participants > 5 && (
-                <div className="w-6 h-6 rounded-full border-2 border-background bg-muted flex items-center justify-center text-[10px] font-medium">
+                <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-background bg-muted flex items-center justify-center text-[8px] sm:text-[10px] font-medium">
                   +{challenge.participants - 5}
                 </div>
               )}
             </div>
             <span>{challenge.participants}/{challenge.maxParticipants} builders</span>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1.5">
-              <User className="h-3.5 w-3.5" />
+          <div className="flex items-center gap-2 sm:gap-4">
+            <span className="flex items-center gap-1 sm:gap-1.5">
+              <User className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
               {challenge.soloParticipants} solo
             </span>
-            <span className="flex items-center gap-1.5">
-              <Users className="h-3.5 w-3.5" />
+            <span className="flex items-center gap-1 sm:gap-1.5">
+              <Users className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
               {challenge.teamCount} teams
             </span>
           </div>
