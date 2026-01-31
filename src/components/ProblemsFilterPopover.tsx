@@ -27,7 +27,7 @@ const sourceOptions: FilterOption[] = [
 const formatOptions: FilterOption[] = [
   { id: "pain_trends", label: "Pain Points / Trends", isDefault: true },
   { id: "insights", label: "Insights", soon: true },
-  { id: "competitors", label: "Competitors", soon: true },
+  { id: "competitors", label: "Incumbents", soon: true },
 ];
 
 interface ProblemsFilterPopoverProps {
