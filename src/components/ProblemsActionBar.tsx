@@ -72,7 +72,7 @@ export function ProblemsActionBar({
         {/* Auto-Build Mascot */}
         <motion.button
           onClick={onAutoBuild}
-          className="relative flex items-center justify-center cursor-pointer -ml-1"
+          className="relative flex items-center justify-center cursor-pointer -ml-1 mt-0.5"
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.95 }}
           transition={{ type: "spring", stiffness: 400, damping: 17 }}
