@@ -1,13 +1,15 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Lightbulb, ChevronRight, Loader2, TrendingUp, LogOut, ExternalLink, Hammer } from "lucide-react";
+import { Lightbulb, ChevronRight, Loader2, TrendingUp, LogOut, ExternalLink, Hammer, ChevronDown, ChevronUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -43,10 +45,13 @@ interface Submission {
   problem_id: string;
 }
 
+const INITIAL_DISPLAY_COUNT = 5;
+
 export function MyProblems() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [showAll, setShowAll] = useState(false);
 
   const { data: myProblems = [], isLoading } = useQuery({
     queryKey: ["my_problems", user?.id],
@@ -108,6 +113,9 @@ export function MyProblems() {
     queryClient.invalidateQueries({ queryKey: ["userStats"] });
   };
 
+  const displayedProblems = showAll ? myProblems : myProblems.slice(0, INITIAL_DISPLAY_COUNT);
+  const hasMore = myProblems.length > INITIAL_DISPLAY_COUNT;
+
   if (isLoading) {
     return (
       <Card className="overflow-hidden">
@@ -123,6 +131,128 @@ export function MyProblems() {
       </Card>
     );
   }
+
+  const renderProblemItem = (item: JoinedProblem, index: number) => {
+    const problem = item.problem;
+    const problemBuilds = submissionsByProblem[problem.id] || [];
+
+    return (
+      <motion.div
+        key={item.id}
+        initial={{ opacity: 0, y: 5 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.03 }}
+        className="rounded-lg bg-muted/30 border border-border/50 overflow-hidden"
+      >
+        {/* Problem Header */}
+        <div
+          onClick={() => navigate(`/problems/${problem.slug || problem.id}`)}
+          className="p-3 hover:bg-muted/50 cursor-pointer transition-colors"
+        >
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5 flex-wrap mb-1">
+                <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                  {problem.category}
+                </Badge>
+                <Badge
+                  variant="outline"
+                  className={`text-[10px] px-1.5 py-0 ${
+                    problem.sentiment === "rising"
+                      ? "bg-success/10 text-success border-success/30"
+                      : "bg-muted"
+                  }`}
+                >
+                  <TrendingUp className="h-2.5 w-2.5 mr-0.5" />
+                  {problem.sentiment}
+                </Badge>
+              </div>
+              <h4 className="text-sm font-medium truncate">{problem.title}</h4>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <div className="text-right">
+                <div className="text-xs font-semibold text-primary">{problem.opportunity_score}%</div>
+                <p className="text-[9px] text-muted-foreground">Score</p>
+              </div>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <LogOut className="h-3 w-3" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Leave problem?</AlertDialogTitle>
+                    <AlertDialogDescription>You can rejoin anytime.</AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => handleLeaveProblem(problem.id)}
+                      className="bg-destructive text-destructive-foreground"
+                    >
+                      Leave
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          </div>
+        </div>
+
+        {/* My Builds for this Problem */}
+        {problemBuilds.length > 0 && (
+          <div className="border-t border-border/50 bg-background/50 px-3 py-2 space-y-1.5">
+            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground uppercase tracking-wide">
+              <Hammer className="h-3 w-3" />
+              My Builds
+            </div>
+            {problemBuilds.map((build) => (
+              <div
+                key={build.id}
+                className="flex items-center justify-between gap-2 p-2 rounded-md bg-muted/40 hover:bg-muted/60 transition-colors"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-medium truncate">{build.product_name}</p>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <Badge
+                      variant="outline"
+                      className={`text-[9px] px-1 py-0 ${
+                        build.status === "validated"
+                          ? "bg-success/10 text-success border-success/30"
+                          : build.status === "winner"
+                            ? "bg-warning/10 text-warning border-warning/30"
+                            : "bg-muted"
+                      }`}
+                    >
+                      {build.status}
+                    </Badge>
+                    {build.total_score !== null && (
+                      <span className="text-[10px] text-muted-foreground">Score: {build.total_score}</span>
+                    )}
+                  </div>
+                </div>
+                <a
+                  href={build.product_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="shrink-0 h-6 w-6 flex items-center justify-center rounded hover:bg-muted transition-colors"
+                >
+                  <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                </a>
+              </div>
+            ))}
+          </div>
+        )}
+      </motion.div>
+    );
+  };
 
   return (
     <Card className="overflow-hidden">
@@ -154,127 +284,38 @@ export function MyProblems() {
           </div>
         ) : (
           <div className="space-y-3">
-            {myProblems.map((item, index) => {
-              const problem = item.problem;
-              const problemBuilds = submissionsByProblem[problem.id] || [];
-
-              return (
-                <motion.div
-                  key={item.id}
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.03 }}
-                  className="rounded-lg bg-muted/30 border border-border/50 overflow-hidden"
-                >
-                  {/* Problem Header */}
-                  <div
-                    onClick={() => navigate(`/problems/${problem.slug || problem.id}`)}
-                    className="p-3 hover:bg-muted/50 cursor-pointer transition-colors"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1.5 flex-wrap mb-1">
-                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                            {problem.category}
-                          </Badge>
-                          <Badge
-                            variant="outline"
-                            className={`text-[10px] px-1.5 py-0 ${
-                              problem.sentiment === "rising"
-                                ? "bg-success/10 text-success border-success/30"
-                                : "bg-muted"
-                            }`}
-                          >
-                            <TrendingUp className="h-2.5 w-2.5 mr-0.5" />
-                            {problem.sentiment}
-                          </Badge>
-                        </div>
-                        <h4 className="text-sm font-medium truncate">{problem.title}</h4>
-                      </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <div className="text-right">
-                          <div className="text-xs font-semibold text-primary">{problem.opportunity_score}%</div>
-                          <p className="text-[9px] text-muted-foreground">Score</p>
-                        </div>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-6 w-6"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <LogOut className="h-3 w-3" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent onClick={(e) => e.stopPropagation()}>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Leave problem?</AlertDialogTitle>
-                              <AlertDialogDescription>You can rejoin anytime.</AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => handleLeaveProblem(problem.id)}
-                                className="bg-destructive text-destructive-foreground"
-                              >
-                                Leave
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* My Builds for this Problem */}
-                  {problemBuilds.length > 0 && (
-                    <div className="border-t border-border/50 bg-background/50 px-3 py-2 space-y-1.5">
-                      <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground uppercase tracking-wide">
-                        <Hammer className="h-3 w-3" />
-                        My Builds
-                      </div>
-                      {problemBuilds.map((build) => (
-                        <div
-                          key={build.id}
-                          className="flex items-center justify-between gap-2 p-2 rounded-md bg-muted/40 hover:bg-muted/60 transition-colors"
-                        >
-                          <div className="min-w-0 flex-1">
-                            <p className="text-xs font-medium truncate">{build.product_name}</p>
-                            <div className="flex items-center gap-2 mt-0.5">
-                              <Badge
-                                variant="outline"
-                                className={`text-[9px] px-1 py-0 ${
-                                  build.status === "validated"
-                                    ? "bg-success/10 text-success border-success/30"
-                                    : build.status === "winner"
-                                      ? "bg-warning/10 text-warning border-warning/30"
-                                      : "bg-muted"
-                                }`}
-                              >
-                                {build.status}
-                              </Badge>
-                              {build.total_score !== null && (
-                                <span className="text-[10px] text-muted-foreground">Score: {build.total_score}</span>
-                              )}
-                            </div>
-                          </div>
-                          <a
-                            href={build.product_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="shrink-0 h-6 w-6 flex items-center justify-center rounded hover:bg-muted transition-colors"
-                          >
-                            <ExternalLink className="h-3 w-3 text-muted-foreground" />
-                          </a>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </motion.div>
-              );
-            })}
+            {showAll && hasMore ? (
+              <ScrollArea className="h-[400px] pr-3">
+                <div className="space-y-3">
+                  {displayedProblems.map((item, index) => renderProblemItem(item, index))}
+                </div>
+              </ScrollArea>
+            ) : (
+              <div className="space-y-3">
+                {displayedProblems.map((item, index) => renderProblemItem(item, index))}
+              </div>
+            )}
+            
+            {hasMore && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full h-8 text-xs text-muted-foreground hover:text-foreground"
+                onClick={() => setShowAll(!showAll)}
+              >
+                {showAll ? (
+                  <>
+                    Show less
+                    <ChevronUp className="h-3 w-3 ml-1" />
+                  </>
+                ) : (
+                  <>
+                    Show {myProblems.length - INITIAL_DISPLAY_COUNT} more
+                    <ChevronDown className="h-3 w-3 ml-1" />
+                  </>
+                )}
+              </Button>
+            )}
           </div>
         )}
       </CardContent>
