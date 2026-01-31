@@ -40,23 +40,23 @@ export function ProblemsActionBar({
       <motion.div
         className="relative flex items-center gap-1 px-2 py-1.5 rounded-full"
         style={{
-          background: "linear-gradient(135deg, hsl(var(--card) / 0.6), hsl(var(--card) / 0.3))",
-          backdropFilter: "blur(16px)",
-          WebkitBackdropFilter: "blur(16px)",
+          background: "linear-gradient(135deg, hsl(var(--card) / 0.4), hsl(var(--card) / 0.15))",
+          backdropFilter: "blur(24px) saturate(1.4)",
+          WebkitBackdropFilter: "blur(24px) saturate(1.4)",
           boxShadow: `
-            inset 0 1px 1px hsl(0 0% 100% / 0.1),
-            inset 0 -1px 1px hsl(0 0% 0% / 0.05),
-            0 4px 16px hsl(var(--foreground) / 0.05),
-            0 1px 3px hsl(var(--foreground) / 0.03)
+            inset 0 1px 2px hsl(0 0% 100% / 0.2),
+            inset 0 -1px 2px hsl(0 0% 0% / 0.08),
+            0 8px 32px hsl(var(--foreground) / 0.08),
+            0 2px 8px hsl(var(--foreground) / 0.04)
           `,
-          border: "1px solid hsl(var(--border) / 0.3)",
+          border: "1px solid hsl(0 0% 100% / 0.15)",
         }}
         whileHover={{
           boxShadow: `
-            inset 0 1px 1px hsl(0 0% 100% / 0.15),
-            inset 0 -1px 1px hsl(0 0% 0% / 0.05),
-            0 8px 24px hsl(var(--foreground) / 0.08),
-            0 2px 6px hsl(var(--foreground) / 0.04)
+            inset 0 1px 3px hsl(0 0% 100% / 0.25),
+            inset 0 -1px 2px hsl(0 0% 0% / 0.08),
+            0 12px 40px hsl(var(--foreground) / 0.12),
+            0 4px 12px hsl(var(--foreground) / 0.06)
           `,
         }}
         transition={{ duration: 0.2 }}
