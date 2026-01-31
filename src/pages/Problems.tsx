@@ -1,13 +1,12 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { AppLayout } from "@/components/AppLayout";
 import { SEO } from "@/components/SEO";
 import { MasonryGrid, ColumnCount } from "@/components/MasonryGrid";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { RefreshCw, LayoutGrid } from "lucide-react";
 import { useProblems } from "@/hooks/useProblems";
+import { useProblemEvidenceSummary } from "@/hooks/useProblemEvidence";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useCategories } from "@/hooks/useCategories";
 import { useSubscription } from "@/contexts/SubscriptionContext";
@@ -16,8 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { AutoBuildModal } from "@/components/AutoBuildModal";
-import { ProblemsFilterPopover } from "@/components/ProblemsFilterPopover";
-import mascotUfo from "@/assets/mascot-ufo.png";
+import { ProblemsActionBar } from "@/components/ProblemsActionBar";
 
 const COLUMNS_KEY = "mothership_columns_count";
 const CATEGORY_KEY = "mothership_selected_category";
@@ -67,6 +65,7 @@ const Problems = () => {
   const { isAuthenticated } = useAuth();
   const { hasPremiumAccess, isLoading: subscriptionLoading, isAdmin } = useSubscription();
   const { data: problems = [], isLoading } = useProblems(selectedCategory);
+  const { data: evidenceSummary } = useProblemEvidenceSummary();
   const { data: categories = ["All"] } = useCategories();
   const queryClient = useQueryClient();
 
@@ -99,12 +98,51 @@ const Problems = () => {
     if (q) setSearchQuery(q);
   }, [searchParams]);
 
-  const filteredProblems = problems.filter((problem) => {
-    const matchesSearch =
-      problem.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      problem.subtitle.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSearch;
-  });
+  // Filter problems based on search, sources, and formats
+  const filteredProblems = useMemo(() => {
+    return problems.filter((problem) => {
+      // Text search filter
+      const matchesSearch =
+        problem.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        problem.subtitle.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      if (!matchesSearch) return false;
+
+      // If no filters active, show all
+      const hasSourceFilters = filters.sources.length > 0;
+      const hasFormatFilters = filters.formats.length > 0;
+      
+      if (!hasSourceFilters && !hasFormatFilters) return true;
+
+      // Get evidence summary for this problem
+      const evidence = evidenceSummary?.get(problem.dbId || problem.id);
+      
+      // Source filter: problem must have at least one of the selected sources
+      if (hasSourceFilters) {
+        if (!evidence) return false;
+        const hasMatchingSource = filters.sources.some(source => 
+          evidence.sources.includes(source)
+        );
+        if (!hasMatchingSource) return false;
+      }
+
+      // Format filter: map UI formats to evidence_type values
+      if (hasFormatFilters) {
+        if (!evidence) return false;
+        const formatMapping: Record<string, string[]> = {
+          pain_points: ["comment"], // Comments represent pain points
+          trends: ["video"], // Videos represent trends
+        };
+        const requiredTypes = filters.formats.flatMap(f => formatMapping[f] || []);
+        const hasMatchingFormat = requiredTypes.some(type => 
+          evidence.evidence_types.includes(type)
+        );
+        if (!hasMatchingFormat) return false;
+      }
+
+      return true;
+    });
+  }, [problems, searchQuery, filters, evidenceSummary]);
 
   return (
     <AppLayout>
@@ -123,51 +161,15 @@ const Problems = () => {
 
           {/* Action Buttons - hidden on mobile */}
           {!isMobile && (
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
-              {/* Auto-Build Button - 1.5x bigger */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setAutoBuildOpen(true)}
-                className="text-muted-foreground hover:text-foreground h-12 w-12 group relative flex items-center justify-center"
-              >
-                <img
-                  src={mascotUfo}
-                  alt="Auto-build"
-                  className="h-12 w-12 object-contain opacity-60 group-hover:opacity-100 transition-opacity"
-                />
-                <motion.div
-                  className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-primary"
-                  animate={{ opacity: [1, 0.3, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-              </Button>
-
-              {/* Refresh Button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleRefreshData}
-                disabled={isRefreshing}
-                className="text-muted-foreground hover:text-foreground h-8 w-8"
-              >
-                <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
-              </Button>
-
-              {/* Filter Popover */}
-              <ProblemsFilterPopover filters={filters} onFiltersChange={handleFiltersChange} />
-
-              {/* Column Switcher */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={cycleColumns}
-                className="text-muted-foreground hover:text-foreground h-8 px-2 gap-1"
-              >
-                <LayoutGrid className="h-4 w-4" />
-                <span className="text-xs font-medium tabular-nums">{columnCount}</span>
-              </Button>
-            </div>
+            <ProblemsActionBar
+              isRefreshing={isRefreshing}
+              onRefresh={handleRefreshData}
+              onAutoBuild={() => setAutoBuildOpen(true)}
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
+              columnCount={columnCount}
+              onCycleColumns={cycleColumns}
+            />
           )}
         </motion.div>
 

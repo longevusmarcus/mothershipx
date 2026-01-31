@@ -86,3 +86,50 @@ export function useScrapeEvidence() {
     },
   });
 }
+
+interface ProblemEvidenceSummary {
+  problem_id: string;
+  sources: string[];
+  evidence_types: string[];
+}
+
+export function useProblemEvidenceSummary() {
+  return useQuery({
+    queryKey: ["problem-evidence-summary"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("problem_evidence")
+        .select("problem_id, source, evidence_type");
+
+      if (error) {
+        console.error("Error fetching problem evidence summary:", error);
+        return new Map<string, ProblemEvidenceSummary>();
+      }
+
+      // Group by problem_id
+      const summaryMap = new Map<string, ProblemEvidenceSummary>();
+
+      for (const row of data || []) {
+        const existing = summaryMap.get(row.problem_id);
+        if (existing) {
+          if (!existing.sources.includes(row.source)) {
+            existing.sources.push(row.source);
+          }
+          if (!existing.evidence_types.includes(row.evidence_type)) {
+            existing.evidence_types.push(row.evidence_type);
+          }
+        } else {
+          summaryMap.set(row.problem_id, {
+            problem_id: row.problem_id,
+            sources: [row.source],
+            evidence_types: [row.evidence_type],
+          });
+        }
+      }
+
+      return summaryMap;
+    },
+    staleTime: 1000 * 60 * 5, // Fresh for 5 minutes
+    gcTime: 1000 * 60 * 15, // Cache for 15 minutes
+  });
+}
