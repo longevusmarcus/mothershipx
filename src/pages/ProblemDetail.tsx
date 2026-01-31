@@ -36,6 +36,7 @@ import { ProblemDashboardOnboarding } from "@/components/ProblemDashboardOnboard
 import { ProblemEvidenceSection } from "@/components/ProblemEvidenceSection";
 import { BuildWithLovableModal } from "@/components/BuildWithLovableModal";
 import { BulkLaunchModal } from "@/components/BulkLaunchModal";
+import { JoinFirstAlert } from "@/components/JoinFirstAlert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -110,6 +111,7 @@ const ProblemDetail = () => {
   const [autoBuildOpen, setAutoBuildOpen] = useState(false);
   const [buildModalOpen, setBuildModalOpen] = useState(false);
   const [bulkLaunchOpen, setBulkLaunchOpen] = useState(false);
+  const [joinFirstAlertOpen, setJoinFirstAlertOpen] = useState(false);
   const [justJoined, setJustJoined] = useState(false);
   const wasJoined = useRef(false);
   const startBuildingRef = useRef<HTMLButtonElement>(null);
@@ -483,13 +485,35 @@ const ProblemDetail = () => {
             )}
 
             {/* Launch in Lovable Button - icon only on mobile */}
-            <Button variant="outline" size="icon" onClick={() => setBuildModalOpen(true)} className="md:w-auto md:px-3">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => {
+                if (!isJoined) {
+                  setJoinFirstAlertOpen(true);
+                  return;
+                }
+                setBuildModalOpen(true);
+              }}
+              className="md:w-auto md:px-3"
+            >
               <Rocket className="h-4 w-4 md:mr-1" />
               <span className="hidden md:inline">Launch in Lovable</span>
             </Button>
 
             {/* Launch 10 Ideas Button - icon only on mobile */}
-            <Button variant="outline" size="icon" onClick={() => setBulkLaunchOpen(true)} className="md:w-auto md:px-3">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => {
+                if (!isJoined) {
+                  setJoinFirstAlertOpen(true);
+                  return;
+                }
+                setBulkLaunchOpen(true);
+              }}
+              className="md:w-auto md:px-3"
+            >
               <Layers className="h-4 w-4 md:mr-1" />
               <span className="hidden md:inline">Launch 10 Ideas</span>
             </Button>
@@ -943,6 +967,10 @@ const ProblemDetail = () => {
               });
               return;
             }
+            if (!isJoined) {
+              setJoinFirstAlertOpen(true);
+              return;
+            }
             navigate("/submit", {
               state: {
                 problem: {
@@ -1025,6 +1053,13 @@ const ProblemDetail = () => {
 
       {/* Bulk Launch Modal */}
       <BulkLaunchModal open={bulkLaunchOpen} onOpenChange={setBulkLaunchOpen} />
+
+      {/* Join First Alert */}
+      <JoinFirstAlert
+        open={joinFirstAlertOpen}
+        onClose={() => setJoinFirstAlertOpen(false)}
+        onJoin={handleJoinToggle}
+      />
     </AppLayout>
   );
 };
