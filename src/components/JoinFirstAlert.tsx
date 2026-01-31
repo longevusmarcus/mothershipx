@@ -29,9 +29,9 @@ export function JoinFirstAlert({ open, onClose, onJoin }: JoinFirstAlertProps) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
           >
-            <div className="relative overflow-hidden rounded-2xl border border-border/50 bg-card shadow-2xl">
+            <div className="relative w-full max-w-sm overflow-hidden rounded-2xl border border-border/50 bg-card shadow-2xl">
               {/* Subtle gradient overlay */}
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
 

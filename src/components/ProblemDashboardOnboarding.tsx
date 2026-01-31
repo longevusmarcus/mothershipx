@@ -309,10 +309,10 @@ export function ProblemDashboardOnboarding({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[60] w-[92%] max-w-sm"
+            className="fixed bottom-20 left-0 right-0 z-[60] flex justify-center px-4"
           >
             <div 
-              className="bg-card/95 backdrop-blur-md border border-border/50 rounded-xl p-4 shadow-2xl cursor-pointer"
+              className="w-full max-w-sm bg-card/95 backdrop-blur-md border border-border/50 rounded-xl p-4 shadow-2xl cursor-pointer"
               onClick={dismissJoinedGuide}
             >
               <div className="flex items-center gap-2 mb-3">
