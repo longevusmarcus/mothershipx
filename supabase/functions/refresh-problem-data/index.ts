@@ -21,8 +21,8 @@ function formatValue(n: number): string {
   return n.toString();
 }
 
-// Fetch real Freelancer data from API
-async function fetchFreelancerData(searchQuery: string): Promise<{ jobCount: number; avgBids: number } | null> {
+// Fetch real Freelancer data from API using problem-specific search
+async function fetchFreelancerData(searchQuery: string): Promise<{ jobCount: number; avgBids: number; searchQuery: string } | null> {
   const FREELANCER_TOKEN = Deno.env.get('FREELANCER_OAUTH_TOKEN');
   if (!FREELANCER_TOKEN) {
     console.log("No FREELANCER_OAUTH_TOKEN, skipping Freelancer fetch");
@@ -30,8 +30,19 @@ async function fetchFreelancerData(searchQuery: string): Promise<{ jobCount: num
   }
   
   try {
+    // Extract key terms from the problem title for a more targeted search
+    const cleanQuery = searchQuery
+      .toLowerCase()
+      .replace(/\b(the|a|an|and|or|for|to|in|of|with)\b/g, '')
+      .replace(/[^a-z0-9\s]/g, '')
+      .split(/\s+/)
+      .filter(w => w.length > 2)
+      .slice(0, 3)
+      .join(' ')
+      .trim() || searchQuery.slice(0, 30);
+    
     const url = new URL("https://www.freelancer.com/api/projects/0.1/projects/active/");
-    url.searchParams.set("query", searchQuery);
+    url.searchParams.set("query", cleanQuery);
     url.searchParams.set("limit", "50");
     url.searchParams.set("job_details", "true");
     url.searchParams.set("project_details", "full");
@@ -52,21 +63,28 @@ async function fetchFreelancerData(searchQuery: string): Promise<{ jobCount: num
     const projects = data.result?.projects || [];
     
     if (projects.length === 0) {
-      return { jobCount: 0, avgBids: 0 };
+      return { jobCount: 0, avgBids: 0, searchQuery: cleanQuery };
     }
     
     const totalBids = projects.reduce((sum: number, p: any) => sum + (p.bid_stats?.bid_count || 0), 0);
     const avgBids = Math.round(totalBids / projects.length);
     
-    console.log(`Freelancer API: Found ${projects.length} jobs, avg ${avgBids} bids`);
-    return { jobCount: projects.length, avgBids };
+    console.log(`Freelancer API: Found ${projects.length} jobs for "${cleanQuery}", avg ${avgBids} bids`);
+    return { jobCount: projects.length, avgBids, searchQuery: cleanQuery };
   } catch (error) {
     console.error("Error fetching Freelancer data:", error);
     return null;
   }
 }
 
-function generateFreshSources(views: number, shares: number, demandVelocity: number, competitionGap: number, existingSources: any[], freelancerData?: { jobCount: number; avgBids: number } | null): TrendSignal[] {
+function generateFreshSources(
+  views: number, 
+  shares: number, 
+  demandVelocity: number, 
+  competitionGap: number, 
+  existingSources: any[], 
+  freelancerData?: { jobCount: number; avgBids: number; searchQuery: string } | null
+): TrendSignal[] {
   // Check if this is a Reddit-only problem (has 'name' key = 'reddit' or only reddit sources)
   const isRedditOnly = existingSources?.some((s: any) => s.name === 'reddit') ||
     (existingSources?.length === 1 && existingSources[0]?.source === 'reddit');
@@ -76,16 +94,21 @@ function generateFreshSources(views: number, shares: number, demandVelocity: num
     (existingSources[0]?.source === 'freelancer' || existingSources[0]?.name === 'freelancer');
   
   if (isFreelancerOnly && freelancerData) {
-    // Use real Freelancer data
+    // Use real Freelancer data with problem-specific metric labels
     const previousJobCount = parseInt(existingSources[0]?.value?.replace(/[^0-9]/g, '') || '0') || freelancerData.jobCount;
     const jobChange = previousJobCount > 0 
       ? Math.round(((freelancerData.jobCount - previousJobCount) / previousJobCount) * 100)
       : Math.round(40 + Math.random() * 30);
     
+    // Use the search query for the metric label to show problem-specific data
+    const metricLabel = freelancerData.searchQuery 
+      ? `"${freelancerData.searchQuery}" Jobs`
+      : "Related Jobs";
+    
     return [
       {
         source: "freelancer",
-        metric: "Active Jobs",
+        metric: metricLabel,
         value: freelancerData.jobCount.toString(),
         change: Math.abs(jobChange) || Math.round(35 + Math.random() * 40),
         icon: "💼",

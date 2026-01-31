@@ -97,12 +97,15 @@ function dbToMarketProblem(dbProblem: DBProblem): MarketProblem {
       // Look for second signal if exists
       const secondSource = rawSources[1];
       
+      // Use the metric label from DB which includes the search query (e.g., '"video transcoding" Jobs')
+      const metricLabel = freelancerSource?.metric || 'Related Jobs';
+      
       sources = [
         {
           source: 'freelancer' as TrendSignal["source"],
-          metric: freelancerSource?.metric || 'Active Jobs',
+          metric: metricLabel,
           value: typeof jobsValue === 'number' ? jobsValue.toString() : jobsValue,
-          change: jobsChange || Math.round(40 + Math.random() * 30), // Fallback only if no data
+          change: jobsChange || 0,
           icon: '💼',
         },
       ];
@@ -113,7 +116,7 @@ function dbToMarketProblem(dbProblem: DBProblem): MarketProblem {
           source: 'freelancer' as TrendSignal["source"],
           metric: secondSource.metric || 'Avg Bids/Job',
           value: typeof secondSource.value === 'number' ? secondSource.value.toString() : (secondSource.value || '0'),
-          change: secondSource.change || Math.round(20 + Math.random() * 25),
+          change: secondSource.change || 0,
           icon: '📊',
         });
       }
