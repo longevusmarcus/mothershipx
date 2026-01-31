@@ -16,10 +16,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { AutoBuildModal } from "@/components/AutoBuildModal";
+import { ProblemsFilterPopover } from "@/components/ProblemsFilterPopover";
 import mascotUfo from "@/assets/mascot-ufo.png";
 
 const COLUMNS_KEY = "mothership_columns_count";
 const CATEGORY_KEY = "mothership_selected_category";
+const FILTERS_KEY = "mothership_problems_filters";
+
+interface FilterState {
+  sources: string[];
+  formats: string[];
+}
 
 const Problems = () => {
   const [searchParams] = useSearchParams();
@@ -31,6 +38,10 @@ const Problems = () => {
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [autoBuildOpen, setAutoBuildOpen] = useState(false);
+  const [filters, setFilters] = useState<FilterState>(() => {
+    const saved = localStorage.getItem(FILTERS_KEY);
+    return saved ? JSON.parse(saved) : { sources: [], formats: [] };
+  });
   const [columnCount, setColumnCount] = useState<ColumnCount>(() => {
     const saved = localStorage.getItem(COLUMNS_KEY);
     return (saved ? parseInt(saved) : 3) as ColumnCount;
@@ -45,6 +56,12 @@ const Problems = () => {
       localStorage.setItem(COLUMNS_KEY, String(next));
       return next;
     });
+  }, []);
+
+  // Handle filter changes
+  const handleFiltersChange = useCallback((newFilters: FilterState) => {
+    setFilters(newFilters);
+    localStorage.setItem(FILTERS_KEY, JSON.stringify(newFilters));
   }, []);
 
   const { isAuthenticated } = useAuth();
@@ -136,6 +153,9 @@ const Problems = () => {
               >
                 <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
               </Button>
+
+              {/* Filter Popover */}
+              <ProblemsFilterPopover filters={filters} onFiltersChange={handleFiltersChange} />
 
               {/* Column Switcher */}
               <Button
