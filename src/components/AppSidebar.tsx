@@ -219,7 +219,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
                 exit={{ opacity: 0, width: 0 }}
                 className="flex items-center gap-2 overflow-hidden whitespace-nowrap"
               >
-                <span>Arena</span>
+                <span>The Forge</span>
                 <span className="text-[9px] bg-destructive text-destructive-foreground px-1 py-0.5 rounded font-semibold">
                   LIVE
                 </span>
