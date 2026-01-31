@@ -5,7 +5,7 @@ export interface ProblemEvidence {
   id: string;
   problem_id: string;
   evidence_type: "video" | "comment";
-  source: "tiktok" | "reddit" | "youtube" | "twitter";
+  source: "tiktok" | "reddit" | "youtube" | "twitter" | "freelancer";
   
   // Video fields
   video_url?: string;
@@ -68,7 +68,7 @@ export function useScrapeEvidence() {
     }: {
       problemId: string;
       searchQuery: string;
-      source?: "tiktok" | "reddit" | "youtube";
+      source?: "tiktok" | "reddit" | "youtube" | "freelancer";
     }) => {
       const { data, error } = await supabase.functions.invoke("scrape-problem-evidence", {
         body: { problemId, searchQuery, source },

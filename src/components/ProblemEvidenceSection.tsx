@@ -20,12 +20,19 @@ const RedditIcon = () => (
   </svg>
 );
 
+const FreelancerIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 text-[#29B2FE]">
+    <path d="M14.096 3.076l1.634 2.292L24 3.076M5.503 20.924l4.474-4.374-2.692-2.89m6.946-10.584L10.271 8.9h5.463l-1.634 6.715L24 3.076H14.73m-9.227 0L0 8.058h6.406l-4.276 12.2" />
+  </svg>
+);
+
 interface ProblemEvidenceSectionProps {
   problemId: string;
   problemTitle: string;
+  sourceType?: "reddit" | "youtube" | "tiktok" | "freelancer" | "default";
 }
 
-export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvidenceSectionProps) {
+export function ProblemEvidenceSection({ problemId, problemTitle, sourceType = "default" }: ProblemEvidenceSectionProps) {
   const { data, isLoading, refetch } = useProblemEvidence(problemId);
   const scrapeEvidence = useScrapeEvidence();
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -55,19 +62,31 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
-      // Scrape from both sources
-      const results = await Promise.all([
-        scrapeEvidence.mutateAsync({
+      let results;
+      
+      // If source is freelancer, only scrape from freelancer
+      if (sourceType === "freelancer") {
+        const result = await scrapeEvidence.mutateAsync({
           problemId,
           searchQuery: problemTitle,
-          source: "tiktok",
-        }),
-        scrapeEvidence.mutateAsync({
-          problemId,
-          searchQuery: problemTitle,
-          source: "reddit",
-        }),
-      ]);
+          source: "freelancer",
+        });
+        results = [result];
+      } else {
+        // Scrape from both TikTok and Reddit for other sources
+        results = await Promise.all([
+          scrapeEvidence.mutateAsync({
+            problemId,
+            searchQuery: problemTitle,
+            source: "tiktok",
+          }),
+          scrapeEvidence.mutateAsync({
+            problemId,
+            searchQuery: problemTitle,
+            source: "reddit",
+          }),
+        ]);
+      }
       
       const totalEvidence = results.reduce((acc, r) => acc + (r?.evidenceCount || 0), 0);
       
@@ -271,8 +290,10 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
           {comments.length > 0 && (
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <RedditIcon />
-                <span className="text-sm font-medium">Real Comments</span>
+                {sourceType === "freelancer" ? <FreelancerIcon /> : <RedditIcon />}
+                <span className="text-sm font-medium">
+                  {sourceType === "freelancer" ? "Freelancer Projects" : "Real Comments"}
+                </span>
               </div>
               <div className="space-y-2">
                 {comments.map((comment, index) => (
@@ -289,15 +310,21 @@ export function ProblemEvidenceSection({ problemId, problemTitle }: ProblemEvide
                   >
                     <div className="flex items-start gap-3">
                       <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                        <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                        {comment.source === "freelancer" ? (
+                          <FreelancerIcon />
+                        ) : (
+                          <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm text-foreground line-clamp-3">"{comment.comment_text}"</p>
                         <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
-                          <span className="font-mono">u/{comment.comment_author}</span>
+                          <span className="font-mono">
+                            {comment.source === "freelancer" ? comment.comment_author : `u/${comment.comment_author}`}
+                          </span>
                           <span className="flex items-center gap-1">
                             <ThumbsUp className="h-3 w-3" />
-                            {comment.comment_upvotes}
+                            {comment.source === "freelancer" ? `${comment.comment_upvotes} bids` : comment.comment_upvotes}
                           </span>
                           <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>

@@ -288,6 +288,54 @@ Deno.serve(async (req) => {
           console.error("[SCRAPE] Reddit error:", errorText);
         }
       }
+    } else if (source === "freelancer") {
+      // Use Freelancer API to search for projects
+      const freelancerToken = Deno.env.get("FREELANCER_OAUTH_TOKEN");
+      console.log("[SCRAPE] Freelancer token present:", !!freelancerToken);
+      
+      if (freelancerToken) {
+        console.log("[SCRAPE] Starting Freelancer scrape with query:", searchQuery);
+        
+        try {
+          const freelancerResponse = await fetch(
+            `https://www.freelancer.com/api/projects/0.1/projects/active/?query=${encodeURIComponent(searchQuery)}&limit=10&full_description=true&job_details=true&user_details=true`,
+            {
+              headers: {
+                "freelancer-oauth-v1": freelancerToken,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          console.log("[SCRAPE] Freelancer response status:", freelancerResponse.status);
+
+          if (freelancerResponse.ok) {
+            const responseData = await freelancerResponse.json();
+            console.log("[SCRAPE] Freelancer response:", JSON.stringify(responseData).substring(0, 500));
+            
+            const projects = responseData?.result?.projects || [];
+            console.log("[SCRAPE] Freelancer projects count:", projects.length);
+            
+            if (Array.isArray(projects) && projects.length > 0) {
+              evidenceData = projects.slice(0, 8).map((project: any) => ({
+                problem_id: problemId,
+                evidence_type: "comment",
+                source: "freelancer",
+                comment_text: project.preview_description || project.title || project.description?.substring(0, 500),
+                comment_author: project.owner?.display_name || project.owner?.username || "Anonymous",
+                comment_upvotes: project.bid_stats?.bid_count || 0,
+                comment_source_url: `https://www.freelancer.com/projects/${project.seo_url || project.id}`,
+                scraped_at: new Date().toISOString(),
+              }));
+            }
+          } else {
+            const errorText = await freelancerResponse.text();
+            console.error("[SCRAPE] Freelancer error:", errorText);
+          }
+        } catch (fetchError) {
+          console.error("[SCRAPE] Freelancer fetch error:", fetchError);
+        }
+      }
     } else if (source === "youtube") {
       // Direct YouTube search
       if (youtubeApiKey) {
