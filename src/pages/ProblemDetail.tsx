@@ -75,7 +75,7 @@ const getSentimentLabel = (sentiment: string): { label: string; className: strin
 };
 
 // Detect source type from problem sources
-const detectSourceType = (sources: any[] | undefined): "reddit" | "youtube" | "tiktok" | "default" => {
+const detectSourceType = (sources: any[] | undefined): "reddit" | "youtube" | "tiktok" | "freelancer" | "default" => {
   if (!sources || sources.length === 0) return "default";
   const firstSource = sources[0];
   // Check both 'source' and 'name' keys for compatibility
@@ -83,6 +83,7 @@ const detectSourceType = (sources: any[] | undefined): "reddit" | "youtube" | "t
   if (sourceName === "reddit") return "reddit";
   if (sourceName === "youtube") return "youtube";
   if (sourceName === "tiktok") return "tiktok";
+  if (sourceName === "freelancer") return "freelancer";
   return "default";
 };
 
@@ -661,7 +662,11 @@ const ProblemDetail = () => {
             </div>
 
             {/* Source Evidence - Videos & Comments */}
-            <ProblemEvidenceSection problemId={dbProblemId} problemTitle={problem.title} />
+            <ProblemEvidenceSection 
+              problemId={dbProblemId} 
+              problemTitle={problem.title} 
+              sourceType={detectSourceType(problem.sources)}
+            />
 
             {/* Pain Points */}
             <div className="rounded-lg border border-border bg-card p-4">
