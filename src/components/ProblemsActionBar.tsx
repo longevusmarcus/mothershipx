@@ -31,10 +31,10 @@ export function ProblemsActionBar({
 }: ProblemsActionBarProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
-      className="absolute right-0 top-1/2 -translate-y-1/2"
+      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.4, ease: "easeOut", delay: 0.2 }}
+      className="fixed bottom-6 right-6 z-50"
     >
       {/* Glassy container */}
       <motion.div

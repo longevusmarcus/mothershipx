@@ -152,26 +152,26 @@ const Problems = () => {
       />
       <div className="space-y-6">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center relative">
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
           <h1 className="font-display text-2xl sm:text-3xl font-normal tracking-tight">Live Signals</h1>
           <p className="text-sm text-muted-foreground mt-1">
             {filteredProblems.length} pain points and trends with real momentum to build for in Q1 2026 (continuously
             AI-validated)
           </p>
-
-          {/* Action Buttons - hidden on mobile */}
-          {!isMobile && (
-            <ProblemsActionBar
-              isRefreshing={isRefreshing}
-              onRefresh={handleRefreshData}
-              onAutoBuild={() => setAutoBuildOpen(true)}
-              filters={filters}
-              onFiltersChange={handleFiltersChange}
-              columnCount={columnCount}
-              onCycleColumns={cycleColumns}
-            />
-          )}
         </motion.div>
+
+        {/* Floating Action Bar - hidden on mobile */}
+        {!isMobile && (
+          <ProblemsActionBar
+            isRefreshing={isRefreshing}
+            onRefresh={handleRefreshData}
+            onAutoBuild={() => setAutoBuildOpen(true)}
+            filters={filters}
+            onFiltersChange={handleFiltersChange}
+            columnCount={columnCount}
+            onCycleColumns={cycleColumns}
+          />
+        )}
 
         {/* Auto-Build Modal */}
         <AutoBuildModal open={autoBuildOpen} onOpenChange={setAutoBuildOpen} />
