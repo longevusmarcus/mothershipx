@@ -127,6 +127,7 @@ export default function Profile() {
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("overview");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const tabsRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState({
     name: "",
     username: "",
@@ -460,9 +461,14 @@ export default function Profile() {
           
           {/* Main Content - Left (includes tabs + settings on mobile) */}
           <div className="flex-1 min-w-0 space-y-4 order-2 lg:order-1">
-            <Tabs value={activeTab} onValueChange={(v) => {
+            <Tabs ref={tabsRef} value={activeTab} onValueChange={(v) => {
               setActiveTab(v);
-              window.scrollTo({ top: 0, behavior: "smooth" });
+              // On mobile, scroll to the tabs section instead of top
+              if (tabsRef.current && window.innerWidth < 1024) {
+                const offset = 80; // Account for fixed header
+                const top = tabsRef.current.getBoundingClientRect().top + window.scrollY - offset;
+                window.scrollTo({ top, behavior: "smooth" });
+              }
             }} className="w-full">
               <TabsList className="w-full justify-start bg-card border border-border/50 p-1 h-11 overflow-x-auto rounded-lg">
                 <TabsTrigger value="overview" className="text-xs px-4 h-9 data-[state=active]:bg-background data-[state=active]:shadow-sm font-medium">Overview</TabsTrigger>
