@@ -1,8 +1,14 @@
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, LayoutGrid } from "lucide-react";
+import { RefreshCw, LayoutGrid, Search } from "lucide-react";
 import { ProblemsFilterPopover } from "@/components/ProblemsFilterPopover";
 import { ColumnCount } from "@/components/MasonryGrid";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import mascotUfo from "@/assets/mascot-ufo.png";
 
 interface FilterState {
@@ -18,6 +24,7 @@ interface ProblemsActionBarProps {
   onFiltersChange: (filters: FilterState) => void;
   columnCount: ColumnCount;
   onCycleColumns: () => void;
+  isAdmin?: boolean;
 }
 
 export function ProblemsActionBar({
@@ -28,7 +35,10 @@ export function ProblemsActionBar({
   onFiltersChange,
   columnCount,
   onCycleColumns,
+  isAdmin = false,
 }: ProblemsActionBarProps) {
+  const navigate = useNavigate();
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -121,6 +131,31 @@ export function ProblemsActionBar({
             <span className="text-xs font-medium tabular-nums">{columnCount}</span>
           </Button>
         </motion.div>
+
+        {/* Admin Search Button */}
+        {isAdmin && (
+          <motion.div
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ duration: 0.15 }}
+          >
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => navigate("/search")}
+                  className="text-muted-foreground hover:text-foreground h-8 w-8 hover:bg-transparent"
+                >
+                  <Search className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>New Search</p>
+              </TooltipContent>
+            </Tooltip>
+          </motion.div>
+        )}
 
         {/* Refresh Button */}
         <motion.div
