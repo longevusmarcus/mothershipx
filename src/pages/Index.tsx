@@ -345,8 +345,11 @@ const Index = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          onClick={() => navigate(-1)}
-          className="absolute top-5 right-5 p-1 text-white/50 hover:text-white transition-colors z-20"
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(-1);
+          }}
+          className="absolute top-5 right-5 p-3 text-white/50 hover:text-white transition-colors z-[60]"
         >
           <X className="h-5 w-5" strokeWidth={1.5} />
         </motion.button>
