@@ -123,43 +123,65 @@ export function AIIdeaGeneratorModal({
     }
   };
 
-  const saveIdea = () => {
-    if (!selectedIdea) return;
+  const [isSavingAll, setIsSavingAll] = useState(false);
 
-    const approach = `## Idea Type
-${selectedIdea.ideaLabel || 'Digital Product'}
+  const buildApproach = (idea: GeneratedIdea) => `## Idea Type
+${idea.ideaLabel || 'Digital Product'}
 
 ## Unique Value
-${selectedIdea.uniqueValue}
+${idea.uniqueValue}
 
 ## Target Persona
-${selectedIdea.targetPersona}
+${idea.targetPersona}
 
 ## Key Features
-${selectedIdea.keyFeatures.map((f) => `- **${f.title}**: ${f.description}`).join("\n")}
+${idea.keyFeatures.map((f) => `- **${f.title}**: ${f.description}`).join("\n")}
 
 ## Tech Stack / Resources
-${selectedIdea.techStack.join(", ")}
+${idea.techStack.join(", ")}
 
 ## Monetization
-${selectedIdea.monetization}`;
+${idea.monetization}`;
 
-    createSolution.mutate(
-      {
-        title: selectedIdea.name,
-        description: selectedIdea.description,
-        approach,
-        techStack: selectedIdea.techStack,
-        marketFit: selectedIdea.marketFit || 0,
-        landingPage: selectedIdea.landingPage,
-      },
-      {
-        onSuccess: () => {
-          toast.success("Idea saved to Solutions Lab");
-          onOpenChange(false);
-        },
+  const saveAllIdeas = async () => {
+    if (ideas.length === 0) return;
+    
+    setIsSavingAll(true);
+    let savedCount = 0;
+    
+    try {
+      for (const idea of ideas) {
+        await new Promise<void>((resolve, reject) => {
+          createSolution.mutate(
+            {
+              title: idea.name,
+              description: idea.description,
+              approach: buildApproach(idea),
+              techStack: idea.techStack,
+              marketFit: idea.marketFit || 0,
+              landingPage: idea.landingPage,
+            },
+            {
+              onSuccess: () => {
+                savedCount++;
+                resolve();
+              },
+              onError: (error) => {
+                reject(error);
+              },
+            }
+          );
+        });
       }
-    );
+      
+      toast.success(`${savedCount} ideas saved to Solutions Lab`);
+      onOpenChange(false);
+    } catch (err) {
+      console.error("Error saving ideas:", err);
+      toast.error(`Saved ${savedCount} ideas, but some failed`);
+    } finally {
+      setIsSavingAll(false);
+    }
   };
 
   return (
@@ -598,15 +620,15 @@ ${selectedIdea.monetization}`;
                     Cancel
                   </button>
                   <Button 
-                    onClick={saveIdea} 
-                    disabled={createSolution.isPending}
+                    onClick={saveAllIdeas} 
+                    disabled={isSavingAll}
                     size="sm"
                     className="h-9 px-5 text-xs font-normal"
                   >
-                    {createSolution.isPending ? (
+                    {isSavingAll ? (
                       <Loader2 className="h-3 w-3 mr-2 animate-spin" />
                     ) : null}
-                    Save Idea
+                    Save All Ideas
                     <ArrowRight className="h-3 w-3 ml-2" />
                   </Button>
                 </div>
