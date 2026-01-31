@@ -85,7 +85,7 @@ export const CommunityChallenges = () => {
             transition={{ delay: 0.2 }}
             className="text-center max-w-2xl mx-auto space-y-4"
           >
-            <p className="font-mono text-xs text-muted-foreground tracking-widest uppercase">~/arena</p>
+            <p className="font-mono text-xs text-muted-foreground tracking-widest uppercase">~/THE_FORGE</p>
             <h1 className="font-mono text-xl sm:text-2xl font-medium tracking-wider uppercase">Weekly Quests</h1>
             <p className="font-mono text-xs text-muted-foreground tracking-wide">
               Serve validated market demand • Earn & Compete for rewards • Graduate into live markets
