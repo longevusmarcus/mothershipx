@@ -34,7 +34,7 @@ export function JoinFirstAlert({ open, onClose, onJoin }: JoinFirstAlertProps) {
             <div className="relative overflow-hidden rounded-2xl border border-border/50 bg-card shadow-2xl">
               {/* Subtle gradient overlay */}
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
-              
+
               {/* Close button */}
               <button
                 onClick={onClose}
@@ -61,19 +61,13 @@ export function JoinFirstAlert({ open, onClose, onJoin }: JoinFirstAlertProps) {
                   >
                     {/* Glow effect behind mascot */}
                     <div className="absolute inset-0 blur-xl bg-primary/20 rounded-full scale-150" />
-                    <img
-                      src={mascotUfo}
-                      alt="Mascot"
-                      className="relative h-20 w-20 drop-shadow-lg"
-                    />
+                    <img src={mascotUfo} alt="Mascot" className="relative h-20 w-20 drop-shadow-lg" />
                   </motion.div>
                 </div>
 
                 {/* Text */}
                 <div className="text-center space-y-2 mb-6">
-                  <h3 className="font-display text-lg font-medium tracking-tight">
-                    Join the challenge first
-                  </h3>
+                  <h3 className="font-display text-lg font-medium tracking-tight">Join the challenge first</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     Ready to build? Join this challenge to unlock launching and submitting your creation.
                   </p>
@@ -89,13 +83,11 @@ export function JoinFirstAlert({ open, onClose, onJoin }: JoinFirstAlertProps) {
                   }}
                   className="w-full py-3 px-4 rounded-xl bg-foreground text-background font-medium text-sm transition-all hover:opacity-90"
                 >
-                  Join Challenge
+                  Join Challenge (free)
                 </motion.button>
 
                 {/* Subtle footer hint */}
-                <p className="text-center text-xs text-muted-foreground/60 mt-4">
-                  You can leave anytime
-                </p>
+                <p className="text-center text-xs text-muted-foreground/60 mt-4">You can leave anytime</p>
               </div>
             </div>
           </motion.div>
