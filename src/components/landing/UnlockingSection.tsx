@@ -196,7 +196,7 @@ export function UnlockingSection() {
   return (
     <section
       ref={sectionRef}
-        className="h-[100svh] snap-start flex flex-col items-center justify-center px-4 sm:px-6 relative overflow-hidden safe-area-pb"
+      className="h-[100svh] snap-start flex flex-col items-center justify-center px-4 sm:px-6 relative overflow-hidden safe-area-pb"
     >
       {/* Background effects */}
       <div className="absolute inset-0 bg-gradient-to-b from-muted/10 via-background to-muted/10" />
@@ -323,7 +323,7 @@ export function UnlockingSection() {
             }}
             transition={{ duration: 3, repeat: Infinity }}
           >
-            Create ←→ <span className="text-primary font-bold">Ship with Purpose</span> ←→ Spread
+            Create ←→ <span className="text-primary font-bold">Mass-Ship with Purpose</span> ←→ Spread
           </motion.p>
         </motion.div>
       </div>
