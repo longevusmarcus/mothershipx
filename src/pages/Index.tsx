@@ -318,8 +318,8 @@ const Index = () => {
       <SEO />
 
       {/* Simulated background - blurred signals page effect */}
-      <div className="fixed inset-0 z-40 bg-gradient-to-br from-background via-background to-muted opacity-30" />
-      <div className="fixed inset-0 z-40">
+      <div className="fixed inset-0 z-40 pointer-events-none bg-gradient-to-br from-background via-background to-muted opacity-40" />
+      <div className="fixed inset-0 z-40 pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_0%,_hsl(var(--background))_70%)]" />
         {/* Simulated card shapes in background */}
         <div className="absolute top-20 left-[10%] w-64 h-40 rounded-xl bg-card/20 blur-sm" />
@@ -330,12 +330,12 @@ const Index = () => {
         <div className="absolute top-[42%] right-[12%] w-72 h-48 rounded-xl bg-card/15 blur-sm" />
       </div>
 
-      {/* Dark overlay backdrop */}
+      {/* Dark overlay backdrop (keep background subtly visible) */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl"
+        className="fixed inset-0 z-50 bg-black/55 backdrop-blur-lg backdrop-saturate-150"
       >
         {/* Scanline effect */}
         <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px] opacity-5" />
@@ -345,14 +345,14 @@ const Index = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          onClick={() => navigate("/problems")}
-          className="absolute top-5 right-5 p-1 text-white/40 hover:text-white transition-colors z-10"
+          onClick={() => navigate(-1)}
+          className="absolute top-5 right-5 p-1 text-white/50 hover:text-white transition-colors z-20"
         >
           <X className="h-5 w-5" strokeWidth={1.5} />
         </motion.button>
 
         {/* Content container */}
-        <div className="relative z-10 h-full overflow-y-auto">
+        <div className="relative h-full overflow-y-auto">
           <div className="container max-w-4xl mx-auto px-4 py-12">
             <div className={cn(
               "flex flex-col",
