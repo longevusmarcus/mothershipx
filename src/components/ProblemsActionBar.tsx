@@ -115,23 +115,6 @@ export function ProblemsActionBar({
           <ProblemsFilterPopover filters={filters} onFiltersChange={onFiltersChange} />
         </motion.div>
 
-        {/* Column Switcher */}
-        <motion.div
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          transition={{ duration: 0.15 }}
-        >
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onCycleColumns}
-            className="text-muted-foreground hover:text-foreground h-8 px-2 gap-1 hover:bg-transparent"
-          >
-            <LayoutGrid className="h-4 w-4" />
-            <span className="text-xs font-medium tabular-nums">{columnCount}</span>
-          </Button>
-        </motion.div>
-
         {/* Admin Search Button */}
         {isAdmin && (
           <motion.div
@@ -156,6 +139,23 @@ export function ProblemsActionBar({
             </Tooltip>
           </motion.div>
         )}
+
+        {/* Column Switcher */}
+        <motion.div
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          transition={{ duration: 0.15 }}
+        >
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onCycleColumns}
+            className="text-muted-foreground hover:text-foreground h-8 px-2 gap-1 hover:bg-transparent"
+          >
+            <LayoutGrid className="h-4 w-4" />
+            <span className="text-xs font-medium tabular-nums">{columnCount}</span>
+          </Button>
+        </motion.div>
 
         {/* Refresh Button */}
         <motion.div
