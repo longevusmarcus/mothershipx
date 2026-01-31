@@ -170,6 +170,7 @@ const Problems = () => {
             onFiltersChange={handleFiltersChange}
             columnCount={columnCount}
             onCycleColumns={cycleColumns}
+            isAdmin={isAdmin}
           />
         )}
 
