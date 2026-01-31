@@ -76,15 +76,13 @@ const Index = () => {
       }
 
       // Sort by opportunity score and take top results
-      const sorted = allResults
-        .sort((a, b) => (b.opportunityScore || 0) - (a.opportunityScore || 0))
-        .slice(0, 10);
+      const sorted = allResults.sort((a, b) => (b.opportunityScore || 0) - (a.opportunityScore || 0)).slice(0, 10);
 
       setSearchResults(sorted);
-      
+
       // Invalidate problems cache so Library shows new data
       await queryClient.invalidateQueries({ queryKey: ["problems"] });
-      
+
       toast({
         title: "Quick Scan Complete",
         description: `Found ${sorted.length} top opportunities across ${randomNiches.length} niches`,
@@ -116,7 +114,7 @@ const Index = () => {
   };
 
   const performSearch = async (nicheId: NicheId) => {
-    const niche = NICHES.find(n => n.id === nicheId);
+    const niche = NICHES.find((n) => n.id === nicheId);
     if (!niche) return;
 
     setSelectedNiche(nicheId);
@@ -142,7 +140,7 @@ const Index = () => {
         setSearchResults([]);
       } else if (data?.success && data?.data) {
         setSearchResults(data.data);
-        
+
         // Invalidate problems cache so Library shows new data
         await queryClient.invalidateQueries({ queryKey: ["problems"] });
       }
@@ -158,14 +156,14 @@ const Index = () => {
     if (pendingNiche) {
       const nicheToSearch = pendingNiche;
       setPendingNiche(null);
-      
+
       // Re-check subscription - if not premium, show paywall
       if (!hasPremiumAccess && !subscriptionLoading) {
         setPendingNiche(nicheToSearch);
         setShowPaywall(true);
         return;
       }
-      
+
       // User has premium access, perform the search
       performSearch(nicheToSearch);
     }
@@ -223,16 +221,17 @@ const Index = () => {
           saves: 0,
           shares: 0,
           painPoints: item.painPoints || [],
-          sources: item.sources?.map((s: any) => ({
-            source: "YouTube",
-            metric: s.trend || "",
-            value: s.trend || ""
-          })) || [],
+          sources:
+            item.sources?.map((s: any) => ({
+              source: "YouTube",
+              metric: s.trend || "",
+              value: s.trend || "",
+            })) || [],
           isViral: item.isViral || false,
           opportunityScore: item.opportunityScore || 50,
-          addedToLibrary: true // All YouTube results are saved to library
+          addedToLibrary: true, // All YouTube results are saved to library
         }));
-        
+
         setSearchResults(transformedResults);
         await queryClient.invalidateQueries({ queryKey: ["problems"] });
         toast({
@@ -288,16 +287,17 @@ const Index = () => {
           saves: 0,
           shares: item.totalComments || 0,
           painPoints: item.painPoints || [],
-          sources: item.sources?.map((s: any) => ({
-            source: "Reddit",
-            metric: s.trend || "",
-            value: s.trend || ""
-          })) || [],
+          sources:
+            item.sources?.map((s: any) => ({
+              source: "Reddit",
+              metric: s.trend || "",
+              value: s.trend || "",
+            })) || [],
           isViral: item.isViral || false,
           opportunityScore: item.opportunityScore || 50,
-          addedToLibrary: true
+          addedToLibrary: true,
         }));
-        
+
         setSearchResults(transformedResults);
         await queryClient.invalidateQueries({ queryKey: ["problems"] });
         await queryClient.invalidateQueries({ queryKey: ["categories"] });
@@ -354,176 +354,166 @@ const Index = () => {
         {/* Content container */}
         <div className="relative h-full overflow-y-auto">
           <div className="container max-w-4xl mx-auto px-4 py-12">
-            <div className={cn(
-              "flex flex-col",
-              hasSearched ? "min-h-0 pt-6" : "min-h-[calc(100vh-8rem)] items-center justify-center"
-            )}>
-        {/* Title - Only show when not searched */}
-        {!hasSearched && (
-          <motion.h1
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="font-display text-2xl sm:text-3xl font-normal tracking-tight text-center mb-8"
-          >
-            Mothership Search
-          </motion.h1>
-        )}
-
-        {/* Search Results - Chat-like vertical display or Grid */}
-        {hasSearched && (
-          <div className="w-full max-w-2xl mx-auto px-4 mb-6">
-            <SearchResults
-              results={searchResults}
-              isLoading={isSearching}
-              selectedNiche={selectedNiche}
-              viewMode={searchMode === "grid" ? "grid" : "list"}
-              isQuickScan={searchMode === "quick"}
-            />
-          </div>
-        )}
-
-        {/* Niche Selector and Search Box */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: hasSearched ? 0 : 0.1 }}
-          className={cn(
-            "w-full max-w-2xl px-4",
-            hasSearched && "md:sticky md:bottom-4 mt-6"
-          )}
-        >
-          <div className="rounded-xl border border-border bg-card overflow-hidden shadow-lg p-5 space-y-5">
-            {/* Show source-specific selector */}
-            {selectedSource === "youtube" ? (
-              <ChannelSelector
-                selectedChannel={selectedChannel}
-                onSelect={handleChannelSelect}
-                disabled={isSearching}
-              />
-            ) : selectedSource === "reddit" ? (
-              <SubredditSelector
-                selectedSubreddit={selectedSubreddit}
-                onSelect={handleSubredditSelect}
-                disabled={isSearching}
-              />
-            ) : (
-              <NicheSelector
-                selectedNiche={selectedNiche}
-                onSelect={handleNicheSelect}
-                disabled={isSearching}
-              />
-            )}
-
-            {/* Bottom Bar */}
-            <div className="flex items-center justify-between pt-3 border-t border-border">
-              {/* Mode Toggles */}
-              <div className="flex items-center gap-1 bg-secondary/50 rounded-lg p-0.5">
-                <button
-                  type="button"
-                  onClick={() => setSearchMode("search")}
-                  title="Standard search - pick a niche"
-                  className={cn(
-                    "p-2 rounded-md transition-colors",
-                    searchMode === "search" ? "bg-background shadow-sm" : "hover:bg-background/50",
-                  )}
-                >
-                  <Search className="h-4 w-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={handleQuickScan}
-                  title="Quick scan - analyze multiple niches"
-                  disabled={isSearching}
-                  className={cn(
-                    "p-2 rounded-md transition-colors",
-                    searchMode === "quick" ? "bg-background shadow-sm" : "hover:bg-background/50",
-                    isSearching && "opacity-50 cursor-not-allowed"
-                  )}
-                >
-                  <Zap className="h-4 w-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSearchMode("grid")}
-                  title="Grid view - compact layout"
-                  className={cn(
-                    "p-2 rounded-md transition-colors",
-                    searchMode === "grid" ? "bg-background shadow-sm" : "hover:bg-background/50",
-                  )}
-                >
-                  <LayoutGrid className="h-4 w-4" />
-                </button>
-              </div>
-
-              {/* New Search Button when searched */}
-              {hasSearched && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleNewSearch}
-                  className="gap-2"
-                >
-                  New Search
-                </Button>
+            <div
+              className={cn(
+                "flex flex-col",
+                hasSearched ? "min-h-0 pt-6" : "min-h-[calc(100vh-8rem)] items-center justify-center",
               )}
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Data Sources - Only show when not searched */}
-        {!hasSearched && (
-          <>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="w-full max-w-2xl px-4 mt-8"
             >
-              <div className="rounded-xl border border-dashed border-muted-foreground/15 bg-card overflow-hidden">
-                {/* Collapsible Header */}
-                <button
-                  onClick={() => setDataSourcesExpanded(!dataSourcesExpanded)}
-                  className="w-full flex items-center justify-between p-4 hover:bg-secondary/30 transition-colors"
+              {/* Title - Only show when not searched */}
+              {!hasSearched && (
+                <motion.h1
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="font-display text-2xl sm:text-3xl font-normal tracking-tight text-center mb-8"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-lg bg-secondary/50 flex items-center justify-center">
-                      <Search className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                    <div className="text-left">
-                      <p className="text-sm font-medium">Data Sources</p>
-                      <p className="text-xs text-muted-foreground">Currently scraping TikTok</p>
-                    </div>
-                  </div>
-                  <motion.div
-                    animate={{ rotate: dataSourcesExpanded ? 180 : 0 }}
-                    transition={{ duration: 0.2, ease: "easeInOut" }}
-                    className="h-8 w-8 rounded-full flex items-center justify-center hover:bg-secondary/50 transition-colors"
-                  >
-                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                  </motion.div>
-                </button>
+                  MothershipX Search
+                </motion.h1>
+              )}
 
-                {/* Collapsible Content */}
-                <AnimatePresence initial={false}>
-                  {dataSourcesExpanded && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.25, ease: "easeInOut" }}
-                      className="overflow-hidden"
-                    >
-                      <div className="px-4 pb-4 pt-1">
-                        <DataSourceSelector onSelectionChange={setSelectedSource} />
-                      </div>
-                    </motion.div>
+              {/* Search Results - Chat-like vertical display or Grid */}
+              {hasSearched && (
+                <div className="w-full max-w-2xl mx-auto px-4 mb-6">
+                  <SearchResults
+                    results={searchResults}
+                    isLoading={isSearching}
+                    selectedNiche={selectedNiche}
+                    viewMode={searchMode === "grid" ? "grid" : "list"}
+                    isQuickScan={searchMode === "quick"}
+                  />
+                </div>
+              )}
+
+              {/* Niche Selector and Search Box */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: hasSearched ? 0 : 0.1 }}
+                className={cn("w-full max-w-2xl px-4", hasSearched && "md:sticky md:bottom-4 mt-6")}
+              >
+                <div className="rounded-xl border border-border bg-card overflow-hidden shadow-lg p-5 space-y-5">
+                  {/* Show source-specific selector */}
+                  {selectedSource === "youtube" ? (
+                    <ChannelSelector
+                      selectedChannel={selectedChannel}
+                      onSelect={handleChannelSelect}
+                      disabled={isSearching}
+                    />
+                  ) : selectedSource === "reddit" ? (
+                    <SubredditSelector
+                      selectedSubreddit={selectedSubreddit}
+                      onSelect={handleSubredditSelect}
+                      disabled={isSearching}
+                    />
+                  ) : (
+                    <NicheSelector selectedNiche={selectedNiche} onSelect={handleNicheSelect} disabled={isSearching} />
                   )}
-                </AnimatePresence>
-              </div>
-            </motion.div>
-          </>
-        )}
+
+                  {/* Bottom Bar */}
+                  <div className="flex items-center justify-between pt-3 border-t border-border">
+                    {/* Mode Toggles */}
+                    <div className="flex items-center gap-1 bg-secondary/50 rounded-lg p-0.5">
+                      <button
+                        type="button"
+                        onClick={() => setSearchMode("search")}
+                        title="Standard search - pick a niche"
+                        className={cn(
+                          "p-2 rounded-md transition-colors",
+                          searchMode === "search" ? "bg-background shadow-sm" : "hover:bg-background/50",
+                        )}
+                      >
+                        <Search className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleQuickScan}
+                        title="Quick scan - analyze multiple niches"
+                        disabled={isSearching}
+                        className={cn(
+                          "p-2 rounded-md transition-colors",
+                          searchMode === "quick" ? "bg-background shadow-sm" : "hover:bg-background/50",
+                          isSearching && "opacity-50 cursor-not-allowed",
+                        )}
+                      >
+                        <Zap className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSearchMode("grid")}
+                        title="Grid view - compact layout"
+                        className={cn(
+                          "p-2 rounded-md transition-colors",
+                          searchMode === "grid" ? "bg-background shadow-sm" : "hover:bg-background/50",
+                        )}
+                      >
+                        <LayoutGrid className="h-4 w-4" />
+                      </button>
+                    </div>
+
+                    {/* New Search Button when searched */}
+                    {hasSearched && (
+                      <Button variant="outline" size="sm" onClick={handleNewSearch} className="gap-2">
+                        New Search
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Data Sources - Only show when not searched */}
+              {!hasSearched && (
+                <>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                    className="w-full max-w-2xl px-4 mt-8"
+                  >
+                    <div className="rounded-xl border border-dashed border-muted-foreground/15 bg-card overflow-hidden">
+                      {/* Collapsible Header */}
+                      <button
+                        onClick={() => setDataSourcesExpanded(!dataSourcesExpanded)}
+                        className="w-full flex items-center justify-between p-4 hover:bg-secondary/30 transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="h-9 w-9 rounded-lg bg-secondary/50 flex items-center justify-center">
+                            <Search className="h-4 w-4 text-muted-foreground" />
+                          </div>
+                          <div className="text-left">
+                            <p className="text-sm font-medium">Data Sources</p>
+                            <p className="text-xs text-muted-foreground">Currently scraping TikTok</p>
+                          </div>
+                        </div>
+                        <motion.div
+                          animate={{ rotate: dataSourcesExpanded ? 180 : 0 }}
+                          transition={{ duration: 0.2, ease: "easeInOut" }}
+                          className="h-8 w-8 rounded-full flex items-center justify-center hover:bg-secondary/50 transition-colors"
+                        >
+                          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                        </motion.div>
+                      </button>
+
+                      {/* Collapsible Content */}
+                      <AnimatePresence initial={false}>
+                        {dataSourcesExpanded && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.25, ease: "easeInOut" }}
+                            className="overflow-hidden"
+                          >
+                            <div className="px-4 pb-4 pt-1">
+                              <DataSourceSelector onSelectionChange={setSelectedSource} />
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </motion.div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -531,13 +521,9 @@ const Index = () => {
 
       {/* Auth Modal for logged out users */}
       <AuthModal open={showAuthModal} onOpenChange={setShowAuthModal} onSuccess={handleAuthSuccess} />
-      
+
       {/* Subscription Paywall */}
-      <SubscriptionPaywall 
-        open={showPaywall} 
-        onOpenChange={setShowPaywall} 
-        feature="search"
-      />
+      <SubscriptionPaywall open={showPaywall} onOpenChange={setShowPaywall} feature="search" />
     </>
   );
 };
