@@ -32,12 +32,12 @@ interface DBProblem {
   updated_at: string;
 }
 
-// Generic source from DB - can be TikTok/YouTube format or Reddit format
+// Generic source from DB - can be TikTok/YouTube format, Reddit format, or Freelancer format
 interface SourceFromDB {
   // TikTok/YouTube format
   source?: string;
   metric?: string;
-  value?: string;
+  value?: string | number;
   change?: number;
   icon?: string;
   // Reddit format
@@ -45,6 +45,9 @@ interface SourceFromDB {
   trend?: string;
   mentions?: number;
   sentiment?: string;
+  // Freelancer format
+  jobCount?: number;
+  avgBids?: number;
 }
 
 interface HiddenInsightFromDB {
@@ -84,27 +87,36 @@ function dbToMarketProblem(dbProblem: DBProblem): MarketProblem {
       (rawSources[0].source === 'freelancer' || rawSources[0].name === 'freelancer');
     
     if (isFreelancerOnly) {
-      // For Freelancer-sourced problems, show job market signals
+      // For Freelancer-sourced problems, use the stored data from DB
       const freelancerSource = rawSources[0];
-      const jobPosts = dbProblem.views || Math.round(100 + Math.random() * 500);
-      const avgBids = dbProblem.shares || Math.round(10 + Math.random() * 30);
+      
+      // Parse existing values from DB - these should be real from the refresh function
+      const jobsValue = freelancerSource?.value || freelancerSource?.jobCount || '0';
+      const jobsChange = freelancerSource?.change || 0;
+      
+      // Look for second signal if exists
+      const secondSource = rawSources[1];
       
       sources = [
         {
           source: 'freelancer' as TrendSignal["source"],
-          metric: 'Active Jobs',
-          value: formatDbNumber(jobPosts),
-          change: freelancerSource?.change || Math.round(45 + Math.random() * 60),
+          metric: freelancerSource?.metric || 'Active Jobs',
+          value: typeof jobsValue === 'number' ? jobsValue.toString() : jobsValue,
+          change: jobsChange || Math.round(40 + Math.random() * 30), // Fallback only if no data
           icon: '💼',
         },
-        {
-          source: 'freelancer' as TrendSignal["source"],
-          metric: 'Avg Bids/Job',
-          value: avgBids.toString(),
-          change: Math.round(20 + Math.random() * 35),
-          icon: '📊',
-        }
       ];
+      
+      // Add second metric if available from refresh
+      if (secondSource) {
+        sources.push({
+          source: 'freelancer' as TrendSignal["source"],
+          metric: secondSource.metric || 'Avg Bids/Job',
+          value: typeof secondSource.value === 'number' ? secondSource.value.toString() : (secondSource.value || '0'),
+          change: secondSource.change || Math.round(20 + Math.random() * 25),
+          icon: '📊',
+        });
+      }
     } else if (isRedditOnly) {
       // For Reddit-only problems, show Reddit-specific metrics from views/shares
       const redditSource = rawSources.find(s => s.name === 'reddit' || s.source === 'reddit');
@@ -141,18 +153,21 @@ function dbToMarketProblem(dbProblem: DBProblem): MarketProblem {
         }
         // Handle Freelancer source in mixed sources
         if (s.name === 'freelancer' || s.source === 'freelancer') {
+          const valueStr = typeof s.value === 'number' ? s.value.toString() : (s.value || '0');
           return {
             source: 'freelancer' as TrendSignal["source"],
             metric: s.metric || 'Job Posts',
-            value: s.value || `${Math.round(100 + Math.random() * 400)}`,
+            value: valueStr,
             change: s.change || Math.round(40 + Math.random() * 50),
             icon: '💼',
           };
         }
+        // Ensure value is always a string
+        const valueStr = typeof s.value === 'number' ? s.value.toString() : (s.value || '');
         return {
           source: s.source as TrendSignal["source"],
           metric: s.metric || '',
-          value: s.value || '',
+          value: valueStr,
           change: s.change || 0,
           icon: s.icon,
         };
