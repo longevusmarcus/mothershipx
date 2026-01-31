@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Search, Zap, LayoutGrid, ArrowUpRight, ChevronDown } from "lucide-react";
+import { Search, Zap, LayoutGrid, ArrowUpRight, ChevronDown, X } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { AppLayout } from "@/components/AppLayout";
+
 import { SEO } from "@/components/SEO";
 import { DataSourceSelector } from "@/components/DataSourceSelector";
 import { NicheSelector, NICHES, type NicheId } from "@/components/NicheSelector";
@@ -314,13 +314,37 @@ const Index = () => {
   };
 
   return (
-    <AppLayout>
+    <>
       <SEO />
 
-      <div className={cn(
-        "flex flex-col",
-        hasSearched ? "min-h-0 pt-6" : "min-h-[calc(100vh-8rem)] items-center justify-center"
-      )}>
+      {/* Dark overlay backdrop */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md"
+      >
+        {/* Scanline effect */}
+        <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px] opacity-10" />
+
+        {/* Close button */}
+        <motion.button
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.1 }}
+          onClick={() => navigate(-1)}
+          className="absolute top-6 right-6 h-10 w-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/20 transition-all z-10"
+        >
+          <X className="h-5 w-5" />
+        </motion.button>
+
+        {/* Content container */}
+        <div className="relative z-10 h-full overflow-y-auto">
+          <div className="container max-w-4xl mx-auto px-4 py-12">
+            <div className={cn(
+              "flex flex-col",
+              hasSearched ? "min-h-0 pt-6" : "min-h-[calc(100vh-8rem)] items-center justify-center"
+            )}>
         {/* Title - Only show when not searched */}
         {!hasSearched && (
           <motion.h1
@@ -505,7 +529,10 @@ const Index = () => {
             </motion.div>
           </>
         )}
-      </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
 
       {/* Auth Modal for logged out users */}
       <AuthModal open={showAuthModal} onOpenChange={setShowAuthModal} onSuccess={handleAuthSuccess} />
@@ -516,7 +543,7 @@ const Index = () => {
         onOpenChange={setShowPaywall} 
         feature="search"
       />
-    </AppLayout>
+    </>
   );
 };
 
