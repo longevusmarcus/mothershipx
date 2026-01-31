@@ -86,7 +86,10 @@ export function useProblemBuilders(problemId: string) {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["problem_builders", problemId] });
+      queryClient.invalidateQueries({ 
+        queryKey: ["problem_builders", problemId],
+        refetchType: 'active'
+      });
       toast.success("You've joined this problem! 🚀");
     },
     onError: (error) => {
@@ -107,7 +110,10 @@ export function useProblemBuilders(problemId: string) {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["problem_builders", problemId] });
+      queryClient.invalidateQueries({ 
+        queryKey: ["problem_builders", problemId],
+        refetchType: 'active'
+      });
       toast.success("Left problem");
     },
     onError: (error) => {
