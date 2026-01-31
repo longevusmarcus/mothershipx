@@ -14,7 +14,6 @@ import {
   ExternalLink,
   LogIn,
   Trophy,
-  Rocket,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -29,7 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import logoIcon from "@/assets/logo-icon.png";
-import builderTweet from "@/assets/builder-tweet.png";
+
 
 import {
   HoverCard,
@@ -228,52 +227,6 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
           </AnimatePresence>
         </NavLink>
 
-        {/* Builder - Coming Soon with hover preview */}
-        <HoverCard openDelay={200} closeDelay={100}>
-          <HoverCardTrigger asChild>
-            <div
-              className={cn(
-                "flex items-center gap-3 px-2 py-2 rounded-md text-sm cursor-pointer",
-                "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/50 transition-colors",
-              )}
-            >
-              <Rocket className="h-4 w-4 shrink-0" />
-              <AnimatePresence mode="wait">
-                {(!collapsed || isMobile) && (
-                  <motion.div
-                    initial={{ opacity: 0, width: 0 }}
-                    animate={{ opacity: 1, width: "auto" }}
-                    exit={{ opacity: 0, width: 0 }}
-                    className="flex items-center gap-2 overflow-hidden whitespace-nowrap"
-                  >
-                    <span>Launchpad</span>
-                    <span className="text-[8px] bg-muted text-muted-foreground px-1 py-0.5 rounded font-medium">SOON</span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </HoverCardTrigger>
-          <HoverCardContent 
-            side="right" 
-            align="start" 
-            sideOffset={12}
-            className="w-auto p-0 border-0 bg-transparent shadow-2xl z-[100]"
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, x: -10 }}
-              animate={{ opacity: 1, scale: 1, x: 0 }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
-              className="relative rounded-xl overflow-hidden border border-border/50 shadow-2xl"
-            >
-              <img 
-                src={builderTweet} 
-                alt="Builder preview" 
-                className="max-w-[400px] rounded-xl"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
-            </motion.div>
-          </HoverCardContent>
-        </HoverCard>
 
         {/* League - Coming Soon */}
         <div
