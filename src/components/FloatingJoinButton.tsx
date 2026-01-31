@@ -3,13 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, Shield, User, Users, Clock, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMyChallengeJoins, useJoinChallenge } from "@/hooks/useChallengeJoins";
@@ -32,7 +26,7 @@ export const FloatingJoinButton = ({ challenge }: FloatingJoinButtonProps) => {
   const { data: myChallengeJoins = [] } = useMyChallengeJoins();
   const joinChallengeMutation = useJoinChallenge();
   const isMobile = useIsMobile();
-  
+
   const [isJoinDialogOpen, setIsJoinDialogOpen] = useState(false);
   const [isVerificationOpen, setIsVerificationOpen] = useState(false);
   const [isPaywallOpen, setIsPaywallOpen] = useState(false);
@@ -53,14 +47,14 @@ export const FloatingJoinButton = ({ challenge }: FloatingJoinButtonProps) => {
       const scrollTop = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       const scrollPercent = docHeight > 0 ? scrollTop / docHeight : 0;
-      
+
       // Hide after 80% scroll on mobile
       setShowButton(scrollPercent < 0.8);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll(); // Check initial state
-    
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isMobile]);
 
@@ -73,19 +67,19 @@ export const FloatingJoinButton = ({ challenge }: FloatingJoinButtonProps) => {
 
   const checkVerificationStatus = async () => {
     if (!user?.id) return;
-    
+
     const { data } = await supabase
       .from("builder_verifications")
       .select("verification_status")
       .eq("user_id", user.id)
       .maybeSingle();
-    
+
     setIsVerified(data?.verification_status === "verified");
   };
 
   if (!challenge || challenge.status !== "active") return null;
 
-  const existingJoin = myChallengeJoins.find(j => j.challenge_id === challenge.id);
+  const existingJoin = myChallengeJoins.find((j) => j.challenge_id === challenge.id);
   const hasJoined = !!existingJoin;
 
   // Don't show if already joined
@@ -106,7 +100,7 @@ export const FloatingJoinButton = ({ challenge }: FloatingJoinButtonProps) => {
   const handleConfirmJoin = async () => {
     if (!joinType) return;
     setIsJoinDialogOpen(false);
-    
+
     if (!isVerified) {
       setIsVerificationOpen(true);
     } else if (hasPremiumAccess) {
@@ -129,15 +123,15 @@ export const FloatingJoinButton = ({ challenge }: FloatingJoinButtonProps) => {
   const handleFreeJoin = async () => {
     if (!joinType) return;
     setIsProcessing(true);
-    
+
     try {
       await joinChallengeMutation.mutateAsync({
         challengeId: challenge.id,
         joinType,
       });
-      
+
       toast.success(`Joined challenge as ${joinType}! (Premium benefit: Free entry)`);
-      
+
       navigate("/submit", {
         state: {
           challenge: {
@@ -167,16 +161,16 @@ export const FloatingJoinButton = ({ challenge }: FloatingJoinButtonProps) => {
   const handlePaymentSuccess = async () => {
     if (!joinType) return;
     setIsProcessing(true);
-    
+
     try {
       await joinChallengeMutation.mutateAsync({
         challengeId: challenge.id,
         joinType,
       });
-      
+
       toast.success(`Joined challenge as ${joinType}!`);
       setIsPaywallOpen(false);
-      
+
       navigate("/submit", {
         state: {
           challenge: {
@@ -196,8 +190,8 @@ export const FloatingJoinButton = ({ challenge }: FloatingJoinButtonProps) => {
         },
       });
     } catch (error) {
-      console.error("Error joining challenge:", error);
-      toast.error("Failed to join challenge. Please try again.");
+      console.error("Error joining signal:", error);
+      toast.error("Failed to join signal. Please try again.");
     } finally {
       setIsProcessing(false);
     }
@@ -220,11 +214,7 @@ export const FloatingJoinButton = ({ challenge }: FloatingJoinButtonProps) => {
               className="w-full md:w-auto font-mono shadow-lg"
               size="lg"
             >
-              {isProcessing ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <Trophy className="h-4 w-4 mr-2" />
-              )}
+              {isProcessing ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Trophy className="h-4 w-4 mr-2" />}
               ./join
             </Button>
           </motion.div>
@@ -237,9 +227,7 @@ export const FloatingJoinButton = ({ challenge }: FloatingJoinButtonProps) => {
           <DialogHeader>
             <DialogTitle className="font-mono">&gt; {challenge.title}</DialogTitle>
             <DialogDescription className="font-mono text-xs">
-              {isVerified 
-                ? "Verified builder — choose your mode."
-                : "Choose mode. Verification required first."}
+              {isVerified ? "Verified builder — choose your mode." : "Choose mode. Verification required first."}
             </DialogDescription>
           </DialogHeader>
 
@@ -248,9 +236,7 @@ export const FloatingJoinButton = ({ challenge }: FloatingJoinButtonProps) => {
               <button
                 onClick={() => handleJoin("solo")}
                 className={`p-4 rounded-lg border transition-all font-mono ${
-                  joinType === "solo"
-                    ? "border-primary bg-primary/5"
-                    : "border-border hover:border-primary/50"
+                  joinType === "solo" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
                 }`}
               >
                 <User className="h-5 w-5 mx-auto mb-2" />
@@ -260,9 +246,7 @@ export const FloatingJoinButton = ({ challenge }: FloatingJoinButtonProps) => {
               <button
                 onClick={() => handleJoin("team")}
                 className={`p-4 rounded-lg border transition-all font-mono ${
-                  joinType === "team"
-                    ? "border-primary bg-primary/5"
-                    : "border-border hover:border-primary/50"
+                  joinType === "team" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
                 }`}
               >
                 <Users className="h-5 w-5 mx-auto mb-2" />
@@ -291,16 +275,10 @@ export const FloatingJoinButton = ({ challenge }: FloatingJoinButtonProps) => {
                 <Clock className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                 <span className="font-medium">48h sprint</span>
               </div>
-              <p className="text-[10px] text-muted-foreground pl-5">
-                Ship what you can. Progress counts.
-              </p>
+              <p className="text-[10px] text-muted-foreground pl-5">Ship what you can. Progress counts.</p>
             </div>
 
-            <Button
-              className="w-full font-mono"
-              onClick={handleConfirmJoin}
-              disabled={!joinType || isProcessing}
-            >
+            <Button className="w-full font-mono" onClick={handleConfirmJoin} disabled={!joinType || isProcessing}>
               {isProcessing ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               ) : isVerified ? (
@@ -334,10 +312,7 @@ export const FloatingJoinButton = ({ challenge }: FloatingJoinButtonProps) => {
       />
 
       {/* Auth Modal */}
-      <AuthModal 
-        open={isAuthModalOpen} 
-        onOpenChange={setIsAuthModalOpen} 
-      />
+      <AuthModal open={isAuthModalOpen} onOpenChange={setIsAuthModalOpen} />
     </>
   );
 };

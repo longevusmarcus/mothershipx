@@ -443,7 +443,7 @@ const ProblemDetail = () => {
                   Joined
                 </>
               ) : (
-                "Join Challenge"
+                "Join Signal"
               )}
             </Button>
 

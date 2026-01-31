@@ -83,7 +83,7 @@ export function JoinFirstAlert({ open, onClose, onJoin }: JoinFirstAlertProps) {
                   }}
                   className="w-full py-3 px-4 rounded-xl bg-foreground text-background font-medium text-sm transition-all hover:opacity-90"
                 >
-                  Join Challenge (free)
+                  Join Signal (free)
                 </motion.button>
 
                 {/* Subtle footer hint */}
