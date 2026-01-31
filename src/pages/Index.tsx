@@ -317,25 +317,38 @@ const Index = () => {
     <>
       <SEO />
 
+      {/* Simulated background - blurred signals page effect */}
+      <div className="fixed inset-0 z-40 bg-gradient-to-br from-background via-background to-muted opacity-30" />
+      <div className="fixed inset-0 z-40">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_0%,_hsl(var(--background))_70%)]" />
+        {/* Simulated card shapes in background */}
+        <div className="absolute top-20 left-[10%] w-64 h-40 rounded-xl bg-card/20 blur-sm" />
+        <div className="absolute top-32 left-[35%] w-72 h-48 rounded-xl bg-card/15 blur-sm" />
+        <div className="absolute top-24 right-[15%] w-60 h-44 rounded-xl bg-card/20 blur-sm" />
+        <div className="absolute top-[45%] left-[8%] w-68 h-52 rounded-xl bg-card/15 blur-sm" />
+        <div className="absolute top-[50%] left-[38%] w-64 h-40 rounded-xl bg-card/20 blur-sm" />
+        <div className="absolute top-[42%] right-[12%] w-72 h-48 rounded-xl bg-card/15 blur-sm" />
+      </div>
+
       {/* Dark overlay backdrop */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md"
+        className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl"
       >
         {/* Scanline effect */}
-        <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px] opacity-10" />
+        <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px] opacity-5" />
 
-        {/* Close button */}
+        {/* Close button - minimal, no container */}
         <motion.button
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.1 }}
-          onClick={() => navigate(-1)}
-          className="absolute top-6 right-6 h-10 w-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/20 transition-all z-10"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          onClick={() => navigate("/problems")}
+          className="absolute top-5 right-5 p-1 text-white/40 hover:text-white transition-colors z-10"
         >
-          <X className="h-5 w-5" />
+          <X className="h-5 w-5" strokeWidth={1.5} />
         </motion.button>
 
         {/* Content container */}
