@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { 
-  ArrowLeft, 
-  Users, 
-  TrendingUp, 
+import {
+  ArrowLeft,
+  Users,
+  TrendingUp,
   Share2,
   Bookmark,
   Eye,
@@ -118,7 +118,7 @@ const ProblemDetail = () => {
   // Use a ref to track if we've already triggered the paywall timer
   const paywallCheckedRef = useRef(false);
   const paywallTimerRef = useRef<NodeJS.Timeout | null>(null);
-  
+
   useEffect(() => {
     // Only check once when subscription loading finishes
     if (!subscriptionLoading && user && !paywallCheckedRef.current) {
@@ -148,7 +148,7 @@ const ProblemDetail = () => {
         paywallTimerRef.current = null;
       }
     }
-    
+
     // Cleanup timer on unmount
     return () => {
       if (paywallTimerRef.current) {
@@ -170,17 +170,17 @@ const ProblemDetail = () => {
     }
     wasJoined.current = isJoined;
   }, [isJoined]);
-  const { 
-    competitors, 
+  const {
+    competitors,
     threatLevel,
-    isLoading: competitorsLoading, 
-    refetch: refetchCompetitors 
+    isLoading: competitorsLoading,
+    refetch: refetchCompetitors,
   } = useCompetitors(
     dbProblemId,
-    problem?.title || "", 
+    problem?.title || "",
     problem?.opportunityScore || 50,
-    problem?.niche, 
-    searchCompetitors
+    problem?.niche,
+    searchCompetitors,
   );
 
   // Trigger search when tab becomes active
@@ -189,7 +189,7 @@ const ProblemDetail = () => {
       setSearchCompetitors(true);
     }
   }, [activeTab, problem?.title, searchCompetitors]);
-  
+
   // Show loading state while checking subscription (prevents paywall flash)
   if (subscriptionLoading && user) {
     return (
@@ -198,7 +198,7 @@ const ProblemDetail = () => {
       </AppLayout>
     );
   }
-  
+
   if (isLoading) {
     return (
       <AppLayout>
@@ -224,7 +224,7 @@ const ProblemDetail = () => {
       </AppLayout>
     );
   }
-  
+
   const slotsRemaining = problem.slotsTotal - problem.slotsFilled;
   const fillPercentage = (problem.slotsFilled / problem.slotsTotal) * 100;
   const sentiment = getSentimentLabel(problem.sentiment);
@@ -239,7 +239,7 @@ const ProblemDetail = () => {
       });
       return;
     }
-    
+
     if (isJoined) {
       leaveProblem.mutate();
     } else {
@@ -258,16 +258,14 @@ const ProblemDetail = () => {
   const handleShare = async () => {
     // Use SEO-friendly slug URL for sharing
     const baseUrl = window.location.origin;
-    const shareUrl = problem?.slug 
-      ? `${baseUrl}/problems/${problem.slug}`
-      : window.location.href;
-    
-    const shareData = { 
-      title: problem?.title || "Problem Opportunity", 
+    const shareUrl = problem?.slug ? `${baseUrl}/problems/${problem.slug}` : window.location.href;
+
+    const shareData = {
+      title: problem?.title || "Problem Opportunity",
       text: problem?.subtitle || "Check out this market opportunity!",
-      url: shareUrl 
+      url: shareUrl,
     };
-    
+
     // Try Web Share API first (mobile/supported browsers)
     if (navigator.share && navigator.canShare?.(shareData)) {
       try {
@@ -275,10 +273,10 @@ const ProblemDetail = () => {
         return;
       } catch (err) {
         // User cancelled or share failed - fall through to clipboard
-        if ((err as Error).name === 'AbortError') return;
+        if ((err as Error).name === "AbortError") return;
       }
     }
-    
+
     // Fallback to clipboard
     try {
       await navigator.clipboard.writeText(shareUrl);
@@ -304,7 +302,7 @@ const ProblemDetail = () => {
   };
 
   // Generate SEO-friendly canonical URL
-  const canonicalUrl = problem?.slug 
+  const canonicalUrl = problem?.slug
     ? `https://mothershipx.lovable.app/problems/${problem.slug}`
     : `https://mothershipx.lovable.app/problems/${id}`;
 
@@ -312,14 +310,16 @@ const ProblemDetail = () => {
     <AppLayout hideChrome>
       <SEO
         title={problem.title}
-        description={problem.subtitle || `Discover this ${problem.category} opportunity with ${formatNumber(problem.views)} views.`}
+        description={
+          problem.subtitle || `Discover this ${problem.category} opportunity with ${formatNumber(problem.views)} views.`
+        }
         url={canonicalUrl}
         type="article"
       />
       <div className="max-w-3xl mx-auto space-y-6">
         {/* Back Navigation */}
-        <Link 
-          to="/problems" 
+        <Link
+          to="/problems"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -340,26 +340,20 @@ const ProblemDetail = () => {
             </Badge>
             {problem.trendingRank && (
               <span className="text-xs text-muted-foreground flex items-center gap-1">
-                <TrendingUp className="h-3 w-3" />
-                #{problem.trendingRank} Trending
+                <TrendingUp className="h-3 w-3" />#{problem.trendingRank} Trending
               </span>
             )}
           </div>
-          
+
           {/* Title & Subtitle */}
-          <h1 className="font-display text-xl sm:text-2xl font-normal tracking-tight mb-2">
-            {problem.title}
-          </h1>
-          <p className="text-sm text-muted-foreground mb-4">
-            {problem.subtitle}
-          </p>
-          
+          <h1 className="font-display text-xl sm:text-2xl font-normal tracking-tight mb-2">{problem.title}</h1>
+          <p className="text-sm text-muted-foreground mb-4">{problem.subtitle}</p>
+
           {/* Stats Row - source-specific, compact on mobile */}
           <div className="flex items-center gap-2 md:gap-4 text-xs md:text-sm text-muted-foreground mb-4">
             {problem.trendingRank && (
               <span className="flex items-center gap-1">
-                <TrendingUp className="h-3 w-3 md:h-3.5 md:w-3.5" />
-                #{problem.trendingRank}
+                <TrendingUp className="h-3 w-3 md:h-3.5 md:w-3.5" />#{problem.trendingRank}
               </span>
             )}
             {sourceType === "reddit" ? (
@@ -429,7 +423,7 @@ const ProblemDetail = () => {
               </>
             )}
           </div>
-          
+
           {/* Action Buttons - Row 1: Joined + Submit (desktop) + Launch buttons + Share */}
           <div className="flex items-center gap-2 mb-2 flex-wrap">
             <Button
@@ -446,10 +440,10 @@ const ProblemDetail = () => {
                   Joined
                 </>
               ) : (
-                "Compete to Build"
+                "Join Challenge"
               )}
             </Button>
-            
+
             {/* Submit Build - inline on desktop only */}
             {isJoined && (
               <motion.div
@@ -462,22 +456,24 @@ const ProblemDetail = () => {
                   animate={{ scale: [1, 1.05, 1] }}
                   transition={{ duration: 1.5, repeat: 2, ease: "easeInOut" }}
                 >
-                  <Button 
+                  <Button
                     size="sm"
                     variant="glow"
-                    onClick={() => navigate("/submit", {
-                      state: {
-                        problem: {
-                          id: problem.id,
-                          title: problem.title,
-                          subtitle: problem.subtitle,
-                          niche: problem.niche,
-                          opportunityScore: problem.opportunityScore,
-                          sentiment: problem.sentiment,
+                    onClick={() =>
+                      navigate("/submit", {
+                        state: {
+                          problem: {
+                            id: problem.id,
+                            title: problem.title,
+                            subtitle: problem.subtitle,
+                            niche: problem.niche,
+                            opportunityScore: problem.opportunityScore,
+                            sentiment: problem.sentiment,
+                          },
+                          joinType: "solo",
                         },
-                        joinType: "solo",
-                      },
-                    })}
+                      })
+                    }
                   >
                     <Plus className="h-4 w-4 mr-1" />
                     Submit Build
@@ -485,40 +481,25 @@ const ProblemDetail = () => {
                 </motion.div>
               </motion.div>
             )}
-            
+
             {/* Launch in Lovable Button - icon only on mobile */}
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setBuildModalOpen(true)}
-              className="md:w-auto md:px-3"
-            >
+            <Button variant="outline" size="icon" onClick={() => setBuildModalOpen(true)} className="md:w-auto md:px-3">
               <Rocket className="h-4 w-4 md:mr-1" />
               <span className="hidden md:inline">Launch in Lovable</span>
             </Button>
-            
+
             {/* Launch 10 Ideas Button - icon only on mobile */}
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setBulkLaunchOpen(true)}
-              className="md:w-auto md:px-3"
-            >
+            <Button variant="outline" size="icon" onClick={() => setBulkLaunchOpen(true)} className="md:w-auto md:px-3">
               <Layers className="h-4 w-4 md:mr-1" />
               <span className="hidden md:inline">Launch 10 Ideas</span>
             </Button>
-            
+
             {/* Share Button - next to Launch 10 */}
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={handleShare}
-              className="h-8 w-8 p-0"
-            >
+            <Button variant="outline" size="sm" onClick={handleShare} className="h-8 w-8 p-0">
               <Share2 className="h-4 w-4" />
             </Button>
           </div>
-          
+
           {/* Action Buttons - Row 2: Submit Build (full width on mobile only) */}
           {isJoined && (
             <motion.div
@@ -531,22 +512,24 @@ const ProblemDetail = () => {
                 animate={{ scale: [1, 1.05, 1] }}
                 transition={{ duration: 1.5, repeat: 2, ease: "easeInOut" }}
               >
-                <Button 
+                <Button
                   size="sm"
                   variant="glow"
-                  onClick={() => navigate("/submit", {
-                    state: {
-                      problem: {
-                        id: problem.id,
-                        title: problem.title,
-                        subtitle: problem.subtitle,
-                        niche: problem.niche,
-                        opportunityScore: problem.opportunityScore,
-                        sentiment: problem.sentiment,
+                  onClick={() =>
+                    navigate("/submit", {
+                      state: {
+                        problem: {
+                          id: problem.id,
+                          title: problem.title,
+                          subtitle: problem.subtitle,
+                          niche: problem.niche,
+                          opportunityScore: problem.opportunityScore,
+                          sentiment: problem.sentiment,
+                        },
+                        joinType: "solo",
                       },
-                      joinType: "solo",
-                    },
-                  })}
+                    })
+                  }
                   className="w-full"
                 >
                   <Plus className="h-4 w-4 mr-1" />
@@ -555,7 +538,7 @@ const ProblemDetail = () => {
               </motion.div>
             </motion.div>
           )}
-          
+
           {/* Builder Capacity */}
           <div className="pt-4 border-t border-border">
             <div className="flex items-center justify-between text-sm mb-2">
@@ -564,7 +547,9 @@ const ProblemDetail = () => {
                 Builder Capacity
               </span>
               <div className="flex items-center gap-3">
-                <span className="font-medium">{problem.slotsFilled}/{problem.slotsTotal}</span>
+                <span className="font-medium">
+                  {problem.slotsFilled}/{problem.slotsTotal}
+                </span>
                 <span className="flex items-center gap-1 text-success text-xs">
                   <span className="h-1.5 w-1.5 rounded-full bg-success" />
                   {problem.activeBuildersLast24h} active now
@@ -579,26 +564,45 @@ const ProblemDetail = () => {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
             <TabsList className="h-8 md:h-9 p-0.5 md:p-1 bg-secondary/50 w-max md:w-auto">
-              <TabsTrigger value="overview" className="text-[10px] md:text-xs px-2 md:px-3 data-[state=active]:bg-background whitespace-nowrap">
+              <TabsTrigger
+                value="overview"
+                className="text-[10px] md:text-xs px-2 md:px-3 data-[state=active]:bg-background whitespace-nowrap"
+              >
                 Overview
               </TabsTrigger>
-              <TabsTrigger value="squads" className="text-[10px] md:text-xs px-2 md:px-3 data-[state=active]:bg-background whitespace-nowrap">
+              <TabsTrigger
+                value="squads"
+                className="text-[10px] md:text-xs px-2 md:px-3 data-[state=active]:bg-background whitespace-nowrap"
+              >
                 Squads
               </TabsTrigger>
-              <TabsTrigger value="solutions" className="text-[10px] md:text-xs px-2 md:px-3 data-[state=active]:bg-background whitespace-nowrap">
+              <TabsTrigger
+                value="solutions"
+                className="text-[10px] md:text-xs px-2 md:px-3 data-[state=active]:bg-background whitespace-nowrap"
+              >
                 Ideas
               </TabsTrigger>
-              <TabsTrigger value="competitors" className="text-[10px] md:text-xs px-2 md:px-3 data-[state=active]:bg-background whitespace-nowrap">
+              <TabsTrigger
+                value="competitors"
+                className="text-[10px] md:text-xs px-2 md:px-3 data-[state=active]:bg-background whitespace-nowrap"
+              >
                 Competitors
               </TabsTrigger>
-              <TabsTrigger value="prompts" className="text-[10px] md:text-xs px-2 md:px-3 data-[state=active]:bg-background gap-1 whitespace-nowrap">
+              <TabsTrigger
+                value="prompts"
+                className="text-[10px] md:text-xs px-2 md:px-3 data-[state=active]:bg-background gap-1 whitespace-nowrap"
+              >
                 <Terminal className="h-3 w-3" />
                 Prompts
               </TabsTrigger>
             </TabsList>
           </div>
 
-          <TabsContent value="overview" forceMount className={`mt-4 space-y-4 ${activeTab !== "overview" ? "hidden" : ""}`}>
+          <TabsContent
+            value="overview"
+            forceMount
+            className={`mt-4 space-y-4 ${activeTab !== "overview" ? "hidden" : ""}`}
+          >
             {/* Opportunity + Hidden Insight */}
             <div className="grid md:grid-cols-2 gap-4">
               <div className="rounded-lg border border-border bg-card p-4">
@@ -617,9 +621,9 @@ const ProblemDetail = () => {
             <div className="rounded-lg border border-border bg-card p-4">
               <div className="flex items-center justify-between mb-3">
                 <p className="text-sm font-medium">Live Data Signals</p>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => refresh()}
                   disabled={isRefreshing}
                   className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
@@ -632,20 +636,14 @@ const ProblemDetail = () => {
             </div>
 
             {/* Source Evidence - Videos & Comments */}
-            <ProblemEvidenceSection 
-              problemId={dbProblemId} 
-              problemTitle={problem.title} 
-            />
+            <ProblemEvidenceSection problemId={dbProblemId} problemTitle={problem.title} />
 
             {/* Pain Points */}
             <div className="rounded-lg border border-border bg-card p-4">
               <p className="text-sm font-medium mb-3">Validated Pain Points</p>
               <div className="space-y-2">
                 {problem.painPoints.map((point, index) => (
-                  <div
-                    key={index}
-                    className="flex items-start gap-3 p-3 rounded-md bg-secondary/30 text-sm"
-                  >
+                  <div key={index} className="flex items-start gap-3 p-3 rounded-md bg-secondary/30 text-sm">
                     <span className="text-muted-foreground shrink-0">•</span>
                     <span>{point}</span>
                   </div>
@@ -671,8 +669,12 @@ const ProblemDetail = () => {
             <TeamFormation problemId={dbProblemId} problemTitle={problem.title} />
           </TabsContent>
 
-          <TabsContent value="solutions" forceMount className={`mt-4 space-y-4 ${activeTab !== "solutions" ? "hidden" : ""}`}>
-            <SolutionsLab 
+          <TabsContent
+            value="solutions"
+            forceMount
+            className={`mt-4 space-y-4 ${activeTab !== "solutions" ? "hidden" : ""}`}
+          >
+            <SolutionsLab
               problemId={dbProblemId}
               problemTitle={problem.title}
               problemTrend={problem.niche}
@@ -683,7 +685,6 @@ const ProblemDetail = () => {
               competitionGap={problem.competitionGap}
               sources={problem.sources}
             />
-            
           </TabsContent>
 
           <TabsContent value="competitors" forceMount className={`mt-4 ${activeTab !== "competitors" ? "hidden" : ""}`}>
@@ -698,28 +699,30 @@ const ProblemDetail = () => {
                     threatLevel.level === "Critical" && "border-destructive/50 bg-destructive/5",
                     threatLevel.level === "High" && "border-warning/50 bg-warning/5",
                     threatLevel.level === "Moderate" && "border-primary/50 bg-primary/5",
-                    threatLevel.level === "Low" && "border-success/50 bg-success/5"
+                    threatLevel.level === "Low" && "border-success/50 bg-success/5",
                   )}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <div className={cn(
-                        "h-2 w-2 rounded-full",
-                        threatLevel.level === "Critical" && "bg-destructive animate-pulse",
-                        threatLevel.level === "High" && "bg-warning",
-                        threatLevel.level === "Moderate" && "bg-primary",
-                        threatLevel.level === "Low" && "bg-success"
-                      )} />
+                      <div
+                        className={cn(
+                          "h-2 w-2 rounded-full",
+                          threatLevel.level === "Critical" && "bg-destructive animate-pulse",
+                          threatLevel.level === "High" && "bg-warning",
+                          threatLevel.level === "Moderate" && "bg-primary",
+                          threatLevel.level === "Low" && "bg-success",
+                        )}
+                      />
                       <span className="text-sm font-medium">Threat Level: {threatLevel.level}</span>
                     </div>
-                    <Badge 
+                    <Badge
                       variant="outline"
                       className={cn(
                         "text-xs",
                         threatLevel.level === "Critical" && "border-destructive/50 text-destructive",
                         threatLevel.level === "High" && "border-warning/50 text-warning",
                         threatLevel.level === "Moderate" && "border-primary/50 text-primary",
-                        threatLevel.level === "Low" && "border-success/50 text-success"
+                        threatLevel.level === "Low" && "border-success/50 text-success",
                       )}
                     >
                       {threatLevel.score}/100
@@ -727,13 +730,13 @@ const ProblemDetail = () => {
                   </div>
                   <p className="text-xs text-muted-foreground">{threatLevel.description}</p>
                   <div className="mt-2 h-1.5 bg-secondary rounded-full overflow-hidden">
-                    <div 
+                    <div
                       className={cn(
                         "h-full rounded-full transition-all",
                         threatLevel.level === "Critical" && "bg-destructive",
                         threatLevel.level === "High" && "bg-warning",
                         threatLevel.level === "Moderate" && "bg-primary",
-                        threatLevel.level === "Low" && "bg-success"
+                        threatLevel.level === "Low" && "bg-success",
                       )}
                       style={{ width: `${threatLevel.score}%` }}
                     />
@@ -757,11 +760,7 @@ const ProblemDetail = () => {
                     disabled={competitorsLoading}
                     className="gap-2"
                   >
-                    {competitorsLoading ? (
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                    ) : (
-                      <Search className="h-3 w-3" />
-                    )}
+                    {competitorsLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Search className="h-3 w-3" />}
                     {competitorsLoading ? "Searching..." : "Refresh"}
                   </Button>
                 </div>
@@ -808,20 +807,24 @@ const ProblemDetail = () => {
                               </Badge>
                             )}
                             {competitor.source === "hackernews" && (
-                              <Badge variant="outline" className="text-[9px] px-1 py-0 bg-warning/10 border-warning/50 text-warning">
+                              <Badge
+                                variant="outline"
+                                className="text-[9px] px-1 py-0 bg-warning/10 border-warning/50 text-warning"
+                              >
                                 HN
                               </Badge>
                             )}
                             {(competitor.url?.includes("producthunt.com") || competitor.source === "producthunt") && (
-                              <Badge variant="outline" className="text-[9px] px-1 py-0 bg-primary/10 border-primary/50 text-primary">
+                              <Badge
+                                variant="outline"
+                                className="text-[9px] px-1 py-0 bg-primary/10 border-primary/50 text-primary"
+                              >
                                 PH
                               </Badge>
                             )}
                             <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                           </div>
-                          <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
-                            {competitor.description}
-                          </p>
+                          <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{competitor.description}</p>
                           {competitor.firstSeenAt && (
                             <p className="text-[10px] text-muted-foreground/70 mt-1">
                               First seen: {new Date(competitor.firstSeenAt).toLocaleDateString()}
@@ -829,38 +832,41 @@ const ProblemDetail = () => {
                           )}
                         </div>
                         <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                          <Badge 
-                            variant="outline" 
+                          <Badge
+                            variant="outline"
                             className={cn(
                               "text-[10px]",
                               competitor.rating >= 80 && "border-destructive/50 text-destructive",
                               competitor.rating >= 60 && competitor.rating < 80 && "border-warning/50 text-warning",
                               competitor.rating >= 40 && competitor.rating < 60 && "border-primary/50 text-primary",
-                              competitor.rating < 40 && "border-muted-foreground/50"
+                              competitor.rating < 40 && "border-muted-foreground/50",
                             )}
                           >
                             {competitor.ratingLabel}
                           </Badge>
                           <div className="flex items-center gap-1">
                             <div className="w-12 h-1.5 bg-secondary rounded-full overflow-hidden">
-                              <div 
+                              <div
                                 className={cn(
                                   "h-full rounded-full transition-all",
                                   competitor.rating >= 80 && "bg-destructive",
                                   competitor.rating >= 60 && competitor.rating < 80 && "bg-warning",
                                   competitor.rating >= 40 && competitor.rating < 60 && "bg-primary",
-                                  competitor.rating < 40 && "bg-muted-foreground"
+                                  competitor.rating < 40 && "bg-muted-foreground",
                                 )}
                                 style={{ width: `${competitor.rating}%` }}
                               />
                             </div>
                             <span className="text-[10px] text-muted-foreground">{competitor.rating}</span>
                             {competitor.ratingChange !== undefined && competitor.ratingChange !== 0 && (
-                              <span className={cn(
-                                "text-[10px] font-medium",
-                                competitor.ratingChange > 0 ? "text-destructive" : "text-success"
-                              )}>
-                                {competitor.ratingChange > 0 ? "↑" : "↓"}{Math.abs(competitor.ratingChange)}
+                              <span
+                                className={cn(
+                                  "text-[10px] font-medium",
+                                  competitor.ratingChange > 0 ? "text-destructive" : "text-success",
+                                )}
+                              >
+                                {competitor.ratingChange > 0 ? "↑" : "↓"}
+                                {Math.abs(competitor.ratingChange)}
                               </span>
                             )}
                           </div>
@@ -915,11 +921,7 @@ const ProblemDetail = () => {
           aria-label="Auto-build ideas"
         >
           <div className="relative">
-            <img 
-              src={mascotUfo} 
-              alt="Auto-build" 
-              className="h-14 w-14 object-contain drop-shadow-lg" 
-            />
+            <img src={mascotUfo} alt="Auto-build" className="h-14 w-14 object-contain drop-shadow-lg" />
             <motion.div
               className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-primary"
               animate={{ opacity: [1, 0.3, 1] }}
@@ -963,8 +965,8 @@ const ProblemDetail = () => {
       </div>
 
       {/* Auto-Build Modal */}
-      <AutoBuildModal 
-        open={autoBuildOpen} 
+      <AutoBuildModal
+        open={autoBuildOpen}
         onOpenChange={setAutoBuildOpen}
         signal={{
           title: problem.title,
@@ -974,14 +976,14 @@ const ProblemDetail = () => {
       />
 
       {/* Subscription Paywall */}
-      <SubscriptionPaywall 
-        open={showPaywall} 
+      <SubscriptionPaywall
+        open={showPaywall}
         onOpenChange={(open) => {
           setShowPaywall(open);
           if (!open && !hasPremiumAccess) {
             navigate("/problems");
           }
-        }} 
+        }}
         feature="problem"
       />
 
@@ -1008,12 +1010,12 @@ const ProblemDetail = () => {
           sentiment: problem?.sentiment || "stable",
           hiddenInsight: problem?.hiddenInsight,
         }}
-        competitors={competitors?.map(c => ({
+        competitors={competitors?.map((c) => ({
           name: c.name,
           description: c.description,
           ratingLabel: c.ratingLabel,
         }))}
-        solutions={solutions?.map(s => ({
+        solutions={solutions?.map((s) => ({
           title: s.title,
           description: s.description,
           approach: s.approach,
@@ -1022,10 +1024,7 @@ const ProblemDetail = () => {
       />
 
       {/* Bulk Launch Modal */}
-      <BulkLaunchModal
-        open={bulkLaunchOpen}
-        onOpenChange={setBulkLaunchOpen}
-      />
+      <BulkLaunchModal open={bulkLaunchOpen} onOpenChange={setBulkLaunchOpen} />
     </AppLayout>
   );
 };
