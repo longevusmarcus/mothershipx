@@ -69,30 +69,29 @@ export function ProblemsActionBar({
           }}
         />
 
-        {/* Auto-Build Button */}
-        <motion.div
-          whileHover={{ scale: 1.05 }}
+        {/* Auto-Build Mascot */}
+        <motion.button
+          onClick={onAutoBuild}
+          className="relative flex items-center justify-center cursor-pointer -ml-1"
+          whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.95 }}
-          transition={{ duration: 0.15 }}
+          transition={{ type: "spring", stiffness: 400, damping: 17 }}
         >
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onAutoBuild}
-            className="text-muted-foreground hover:text-foreground h-10 w-10 group relative flex items-center justify-center hover:bg-transparent"
-          >
-            <img
-              src={mascotUfo}
-              alt="Auto-build"
-              className="h-10 w-10 object-contain opacity-60 group-hover:opacity-100 transition-opacity"
-            />
-            <motion.div
-              className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-primary"
-              animate={{ opacity: [1, 0.3, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-          </Button>
-        </motion.div>
+          <img
+            src={mascotUfo}
+            alt="Auto-build"
+            className="h-14 w-14 object-contain drop-shadow-md opacity-80 hover:opacity-100 transition-opacity duration-200"
+            style={{ 
+              imageRendering: "auto",
+              filter: "drop-shadow(0 2px 4px hsl(var(--foreground) / 0.1))"
+            }}
+          />
+          <motion.div
+            className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-primary"
+            animate={{ opacity: [1, 0.3, 1], scale: [1, 0.9, 1] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </motion.button>
 
         {/* Divider */}
         <div className="w-px h-5 bg-border/30" />
