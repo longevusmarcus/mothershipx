@@ -43,7 +43,7 @@ export function MobileBottomNav() {
             <Swords className="h-5 w-5 text-white" />
           </div>
           <span className={cn("text-[10px]", location.pathname === "/challenges" ? "text-foreground font-medium" : "text-muted-foreground")}>
-            Arena
+            The Forge
           </span>
         </NavLink>
 
