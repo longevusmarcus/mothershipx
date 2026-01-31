@@ -67,9 +67,10 @@ export function JoinFirstAlert({ open, onClose, onJoin }: JoinFirstAlertProps) {
 
                 {/* Text */}
                 <div className="text-center space-y-2 mb-6">
-                  <h3 className="font-display text-lg font-medium tracking-tight">Join the challenge first</h3>
+                  <h3 className="font-display text-lg font-medium tracking-tight">Join the signal first</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    Ready to build? Join this challenge to unlock launching and submitting your creation.
+                    Ready to build? Join this signal to unlock launching, submit creations, compete in the league, and
+                    earn rewards
                   </p>
                 </div>
 
