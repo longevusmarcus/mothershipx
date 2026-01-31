@@ -96,23 +96,6 @@ export function ProblemsActionBar({
         {/* Divider */}
         <div className="w-px h-5 bg-border/30" />
 
-        {/* Refresh Button */}
-        <motion.div
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          transition={{ duration: 0.15 }}
-        >
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onRefresh}
-            disabled={isRefreshing}
-            className="text-muted-foreground hover:text-foreground h-8 w-8 hover:bg-transparent"
-          >
-            <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
-          </Button>
-        </motion.div>
-
         {/* Filter Popover */}
         <motion.div
           whileHover={{ scale: 1.1 }}
@@ -136,6 +119,23 @@ export function ProblemsActionBar({
           >
             <LayoutGrid className="h-4 w-4" />
             <span className="text-xs font-medium tabular-nums">{columnCount}</span>
+          </Button>
+        </motion.div>
+
+        {/* Refresh Button */}
+        <motion.div
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          transition={{ duration: 0.15 }}
+        >
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onRefresh}
+            disabled={isRefreshing}
+            className="text-muted-foreground hover:text-foreground h-8 w-8 hover:bg-transparent"
+          >
+            <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
           </Button>
         </motion.div>
       </motion.div>
