@@ -37,6 +37,7 @@ import { ProblemEvidenceSection } from "@/components/ProblemEvidenceSection";
 import { BuildWithLovableModal } from "@/components/BuildWithLovableModal";
 import { BulkLaunchModal } from "@/components/BulkLaunchModal";
 import { JoinFirstAlert } from "@/components/JoinFirstAlert";
+import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -161,7 +162,7 @@ const ProblemDetail = () => {
 
   const { data: problem, isLoading } = useProblem(id || "");
   const dbProblemId = problem?.dbId || id || "";
-  const { isJoined, joinProblem, leaveProblem } = useProblemBuilders(dbProblemId);
+  const { builders, isJoined, joinProblem, leaveProblem } = useProblemBuilders(dbProblemId);
   const { refresh, isRefreshing } = useRefreshProblem(dbProblemId);
   const { solutions } = useSolutions(dbProblemId);
 
@@ -572,11 +573,11 @@ const ProblemDetail = () => {
               </span>
               <div className="flex items-center gap-3">
                 <span className="font-medium">
-                  {problem.slotsFilled}/{problem.slotsTotal}
+                  <AnimatedCounter value={builders.length} className="inline-block" />/{problem.slotsTotal}
                 </span>
                 <span className="flex items-center gap-1 text-success text-xs">
-                  <span className="h-1.5 w-1.5 rounded-full bg-success" />
-                  {problem.activeBuildersLast24h} active now
+                  <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
+                  <AnimatedCounter value={problem.activeBuildersLast24h} className="inline-block" /> active now
                 </span>
               </div>
             </div>
