@@ -13,6 +13,7 @@ interface FilterOption {
   id: string;
   label: string;
   soon?: boolean;
+  isDefault?: boolean; // Default options don't filter, they show all
 }
 
 interface FilterState {
@@ -21,16 +22,14 @@ interface FilterState {
 }
 
 const sourceOptions: FilterOption[] = [
-  { id: "tiktok", label: "TikTok" },
-  { id: "reddit", label: "Reddit" },
+  { id: "tiktok_reddit", label: "TikTok / Reddit", isDefault: true },
   { id: "youtube", label: "YouTube", soon: true },
   { id: "moltbook", label: "Moltbook", soon: true },
   { id: "hackernews", label: "HackerNews", soon: true },
 ];
 
 const formatOptions: FilterOption[] = [
-  { id: "pain_points", label: "Pain Points" },
-  { id: "trends", label: "Trends" },
+  { id: "pain_trends", label: "Pain Points / Trends", isDefault: true },
   { id: "insights", label: "Insights", soon: true },
   { id: "competitors", label: "Competitors", soon: true },
 ];
@@ -43,11 +42,20 @@ interface ProblemsFilterPopoverProps {
 export function ProblemsFilterPopover({ filters, onFiltersChange }: ProblemsFilterPopoverProps) {
   const [open, setOpen] = useState(false);
 
-  const activeCount = filters.sources.length + filters.formats.length;
+  // Count only non-default active filters (which would be "soon" items, so effectively 0 for now)
+  const activeCount = filters.sources.filter(s => !sourceOptions.find(o => o.id === s)?.isDefault).length 
+    + filters.formats.filter(f => !formatOptions.find(o => o.id === f)?.isDefault).length;
 
   const toggleSource = (id: string) => {
     const option = sourceOptions.find(o => o.id === id);
     if (option?.soon) return;
+    
+    // Default options don't change filters - they just show all content
+    if (option?.isDefault) {
+      // Clear source filters to show all
+      onFiltersChange({ ...filters, sources: [] });
+      return;
+    }
     
     const newSources = filters.sources.includes(id)
       ? filters.sources.filter(s => s !== id)
@@ -58,6 +66,13 @@ export function ProblemsFilterPopover({ filters, onFiltersChange }: ProblemsFilt
   const toggleFormat = (id: string) => {
     const option = formatOptions.find(o => o.id === id);
     if (option?.soon) return;
+    
+    // Default options don't change filters - they just show all content
+    if (option?.isDefault) {
+      // Clear format filters to show all
+      onFiltersChange({ ...filters, formats: [] });
+      return;
+    }
     
     const newFormats = filters.formats.includes(id)
       ? filters.formats.filter(f => f !== id)
@@ -113,7 +128,7 @@ export function ProblemsFilterPopover({ filters, onFiltersChange }: ProblemsFilt
                 <FilterItem
                   key={option.id}
                   option={option}
-                  selected={filters.sources.includes(option.id)}
+                  selected={option.isDefault ? filters.sources.length === 0 : filters.sources.includes(option.id)}
                   onToggle={() => toggleSource(option.id)}
                 />
               ))}
@@ -135,7 +150,7 @@ export function ProblemsFilterPopover({ filters, onFiltersChange }: ProblemsFilt
                 <FilterItem
                   key={option.id}
                   option={option}
-                  selected={filters.formats.includes(option.id)}
+                  selected={option.isDefault ? filters.formats.length === 0 : filters.formats.includes(option.id)}
                   onToggle={() => toggleFormat(option.id)}
                 />
               ))}
