@@ -1,11 +1,7 @@
 import { useState } from "react";
-import { Filter, Check } from "lucide-react";
+import { Filter, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -85,99 +81,116 @@ export function ProblemsFilterPopover({ filters, onFiltersChange }: ProblemsFilt
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className={cn(
-            "text-muted-foreground hover:text-foreground h-8 w-8 relative",
-            activeCount > 0 && "text-foreground"
-          )}
-        >
-          <Filter className="h-4 w-4" />
-          <AnimatePresence>
-            {activeCount > 0 && (
-              <motion.span
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0 }}
-                className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-primary text-[9px] font-medium text-primary-foreground flex items-center justify-center"
-              >
-                {activeCount}
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent 
-        align="end" 
-        className="w-56 p-0 bg-popover border-border/50 shadow-lg"
-        sideOffset={8}
+    <>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setOpen(true)}
+        className={cn(
+          "text-muted-foreground hover:text-foreground h-8 w-8 relative hover:bg-transparent",
+          activeCount > 0 && "text-foreground"
+        )}
       >
-        <div className="p-3 space-y-3">
-          {/* Sources Section */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                Sources
-              </span>
-            </div>
-            <div className="space-y-0.5">
-              {sourceOptions.map((option) => (
-                <FilterItem
-                  key={option.id}
-                  option={option}
-                  selected={option.isDefault ? filters.sources.length === 0 : filters.sources.includes(option.id)}
-                  onToggle={() => toggleSource(option.id)}
-                />
-              ))}
-            </div>
-          </div>
+        <Filter className="h-4 w-4" />
+        <AnimatePresence>
+          {activeCount > 0 && (
+            <motion.span
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0 }}
+              className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-primary text-[9px] font-medium text-primary-foreground flex items-center justify-center"
+            >
+              {activeCount}
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </Button>
 
-          {/* Divider */}
-          <div className="h-px bg-border/50" />
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-sm p-0 overflow-hidden bg-black border-primary/20 [&>button]:text-white [&>button]:hover:text-white/80">
+          {/* Scanline effect */}
+          <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px] opacity-10" />
 
-          {/* Formats Section */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                Formats
-              </span>
+          {/* Content */}
+          <div className="relative z-10 p-6">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border border-primary/30">
+                  <Filter className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <h2 className="font-mono text-base text-white tracking-wide">Filters</h2>
+                  <p className="font-mono text-[10px] text-white/50 uppercase tracking-wider">
+                    customize your feed
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className="space-y-0.5">
-              {formatOptions.map((option) => (
-                <FilterItem
-                  key={option.id}
-                  option={option}
-                  selected={option.isDefault ? filters.formats.length === 0 : filters.formats.includes(option.id)}
-                  onToggle={() => toggleFormat(option.id)}
-                />
-              ))}
-            </div>
-          </div>
 
-          {/* Clear All */}
-          <AnimatePresence>
-            {activeCount > 0 && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="pt-1"
-              >
-                <button
-                  onClick={clearAll}
-                  className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors py-1.5 text-center"
+            {/* Filter sections */}
+            <div className="space-y-5">
+              {/* Sources Section */}
+              <div className="bg-white/5 rounded-lg border border-white/10 p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[10px] font-mono font-medium uppercase tracking-wider text-primary/80">
+                    Sources
+                  </span>
+                </div>
+                <div className="space-y-1">
+                  {sourceOptions.map((option) => (
+                    <FilterItem
+                      key={option.id}
+                      option={option}
+                      selected={option.isDefault ? filters.sources.length === 0 : filters.sources.includes(option.id)}
+                      onToggle={() => toggleSource(option.id)}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Formats Section */}
+              <div className="bg-white/5 rounded-lg border border-white/10 p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-[10px] font-mono font-medium uppercase tracking-wider text-primary/80">
+                    Formats
+                  </span>
+                </div>
+                <div className="space-y-1">
+                  {formatOptions.map((option) => (
+                    <FilterItem
+                      key={option.id}
+                      option={option}
+                      selected={option.isDefault ? filters.formats.length === 0 : filters.formats.includes(option.id)}
+                      onToggle={() => toggleFormat(option.id)}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Clear All */}
+            <AnimatePresence>
+              {activeCount > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mt-5"
                 >
-                  Clear all filters
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </PopoverContent>
-    </Popover>
+                  <button
+                    onClick={clearAll}
+                    className="w-full text-xs font-mono text-white/50 hover:text-white transition-colors py-2 text-center border border-white/10 rounded-lg hover:border-white/20"
+                  >
+                    Clear all filters
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
@@ -195,19 +208,22 @@ function FilterItem({
       onClick={onToggle}
       disabled={option.soon}
       className={cn(
-        "w-full flex items-center justify-between px-2 py-1.5 rounded-md text-sm transition-colors",
+        "w-full flex items-center justify-between px-3 py-2 rounded-md text-sm font-mono transition-all",
         option.soon
           ? "opacity-40 cursor-not-allowed"
-          : "hover:bg-secondary/50 cursor-pointer",
-        selected && !option.soon && "bg-secondary/70"
+          : "hover:bg-white/10 cursor-pointer",
+        selected && !option.soon && "bg-primary/20 border border-primary/30"
       )}
     >
       <span className="flex items-center gap-2">
-        <span className={cn(selected && !option.soon && "text-foreground")}>
+        <span className={cn(
+          "text-white/70",
+          selected && !option.soon && "text-white"
+        )}>
           {option.label}
         </span>
         {option.soon && (
-          <span className="text-[9px] uppercase tracking-wider text-muted-foreground/70 font-medium">
+          <span className="text-[9px] uppercase tracking-wider text-white/30 font-medium px-1.5 py-0.5 rounded bg-white/5">
             soon
           </span>
         )}
@@ -220,7 +236,7 @@ function FilterItem({
             exit={{ scale: 0, opacity: 0 }}
             transition={{ duration: 0.15 }}
           >
-            <Check className="h-3.5 w-3.5 text-primary" />
+            <Check className="h-4 w-4 text-primary" />
           </motion.div>
         )}
       </AnimatePresence>
