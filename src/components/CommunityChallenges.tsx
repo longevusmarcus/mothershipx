@@ -86,7 +86,9 @@ export const CommunityChallenges = () => {
             className="text-center max-w-2xl mx-auto space-y-4"
           >
             <p className="font-mono text-xs text-muted-foreground tracking-widest uppercase">~/arena</p>
-            <h1 className="font-mono text-xl sm:text-2xl font-medium tracking-wider uppercase">Builder Arena</h1>
+            <h1 className="font-mono text-xl sm:text-2xl font-medium tracking-wider uppercase">
+              The Forge: Weekly Quest
+            </h1>
             <p className="font-mono text-xs text-muted-foreground tracking-wide">
               Serve validated market demand • Earn & Compete for rewards • Graduate into live markets
             </p>
@@ -273,9 +275,9 @@ export const CommunityChallenges = () => {
                   <p className="font-mono text-xs text-muted-foreground">loading...</p>
                 </div>
               ) : todaysChallenge ? (
-                <ChallengeCard 
-                  challenge={todaysChallenge} 
-                  showHighlight={showOnboarding && onboardingStep === 2} 
+                <ChallengeCard
+                  challenge={todaysChallenge}
+                  showHighlight={showOnboarding && onboardingStep === 2}
                   highlightJoinButton={showOnboarding && onboardingStep === 3}
                 />
               ) : (
@@ -311,10 +313,7 @@ export const CommunityChallenges = () => {
 
       {/* Onboarding overlay for first-time visitors */}
       {showOnboarding && (
-        <ArenaOnboardingOverlay 
-          onComplete={() => setShowOnboarding(false)} 
-          onStepChange={setOnboardingStep}
-        />
+        <ArenaOnboardingOverlay onComplete={() => setShowOnboarding(false)} onStepChange={setOnboardingStep} />
       )}
     </div>
   );
