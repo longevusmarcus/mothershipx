@@ -610,12 +610,12 @@ function MobileDataScrapingLayout() {
                 )}
                 {activeSection === 1 && (
                   <>
-                    Extracting <span className="text-primary font-mono">Pain Points</span>
+                    Extracting <span className="text-primary font-mono">Signals</span>
                   </>
                 )}
                 {activeSection === 2 && (
                   <>
-                    Showcasing <span className="text-primary font-mono">Arena</span>
+                    Indexing <span className="text-primary font-mono">Builders</span>
                   </>
                 )}
               </motion.h2>
