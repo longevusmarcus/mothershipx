@@ -263,6 +263,10 @@ export const CommunityChallenges = () => {
                   <Calendar className="h-3.5 w-3.5" />
                   ./archive
                 </TabsTrigger>
+                <TabsTrigger value="sponsored" className="gap-2 text-xs data-[state=active]:bg-background">
+                  <Megaphone className="h-3.5 w-3.5" />
+                  ./sponsored
+                </TabsTrigger>
               </TabsList>
             </div>
 
@@ -304,6 +308,13 @@ export const CommunityChallenges = () => {
                   <p className="font-mono text-xs text-muted-foreground">&gt; No past challenges yet.</p>
                 </div>
               )}
+            </TabsContent>
+
+            <TabsContent value="sponsored" className="mt-0">
+              <div className="py-16 text-center border border-dashed border-border rounded-lg">
+                <Megaphone className="h-8 w-8 mx-auto text-muted-foreground/30 mb-3" />
+                <p className="font-mono text-xs text-muted-foreground">&gt; No sponsored challenges yet.</p>
+              </div>
             </TabsContent>
           </Tabs>
         </motion.div>
