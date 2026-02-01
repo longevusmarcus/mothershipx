@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, useRef, ReactNode } fro
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabaseClient";
 import { toast } from "sonner";
+import posthog from "posthog-js";
 
 export interface Profile {
   id: string;
@@ -88,8 +89,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setTimeout(() => {
             fetchProfile(session.user.id);
           }, 0);
+
+          // Identify user in PostHog
+          posthog.identify(session.user.id, {
+            email: session.user.email,
+            name: session.user.user_metadata?.name,
+          });
         } else {
           setProfile(null);
+          // Reset PostHog identity on logout
+          posthog.reset();
         }
       }
     );

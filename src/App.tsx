@@ -4,6 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
+import { PostHogProvider } from "@posthog/react";
+import posthog from "posthog-js";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -29,8 +31,9 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <ErrorBoundary>
-    <HelmetProvider>
+  <PostHogProvider client={posthog}>
+    <ErrorBoundary>
+      <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <SubscriptionProvider>
@@ -69,6 +72,7 @@ const App = () => (
       </QueryClientProvider>
     </HelmetProvider>
   </ErrorBoundary>
+  </PostHogProvider>
 );
 
 export default App;
