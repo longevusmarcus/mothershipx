@@ -137,7 +137,7 @@ export function AutoBuildModal({ open, onOpenChange, signal }: AutoBuildModalPro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[95vw] sm:max-w-2xl p-0 overflow-hidden bg-black border-primary/20 [&>button]:text-white [&>button]:hover:text-white/80 max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[calc(100vw-1.5rem)] max-w-none sm:w-full sm:max-w-2xl p-0 overflow-hidden bg-black border-primary/20 [&>button]:text-white [&>button]:hover:text-white/80 max-h-[90vh] overflow-y-auto">
         {/* Matrix rain effect background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="matrix-rain" />
