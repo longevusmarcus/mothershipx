@@ -88,7 +88,8 @@ async function deleteTestUser(userId: string) {
 // Check if the deployed version has our test attributes
 async function verifyDeploymentVersion(page: any) {
   console.log('Verifying deployment has latest test attributes...');
-  await page.goto('/auth');
+  // Add ?__test=1 to disable PostHog tracking for test sessions
+  await page.goto('/auth?__test=1');
   await page.waitForLoadState('networkidle');
 
   const hasTestId = await page.locator('[data-testid="auth-email-input"]').count() > 0;
@@ -105,7 +106,8 @@ async function verifyDeploymentVersion(page: any) {
 
 // Helper to sign in via the UI
 async function signInViaUI(page: any, email: string, password: string) {
-  await page.goto('/auth');
+  // Add ?__test=1 to disable PostHog tracking for test sessions
+  await page.goto('/auth?__test=1');
   await page.waitForLoadState('networkidle');
 
   // Fill email
