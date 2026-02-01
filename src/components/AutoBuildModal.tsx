@@ -28,7 +28,7 @@ const getTypingLines = (signal?: SignalContext): string[] => {
       "$ analyzing market demand patterns...",
       "$ generating 5 unique startup concepts...",
       "$ designing landing pages for each idea...",
-      "$ registering domain names...",
+      "$ pre-registering domain names...",
       "$ implementing Stripe payment buttons...",
       "$ configuring analytics & tracking...",
       "$ deploying to edge network...",
@@ -43,7 +43,7 @@ const getTypingLines = (signal?: SignalContext): string[] => {
     "$ scanning 50 market opportunities...",
     "$ auto-generating 200 startup ideas from live signals...",
     "$ building landing pages with AI...",
-    "$ registering domain names...",
+    "$ pre-registering domain names...",
     "$ implementing Stripe payment buttons...",
     "$ deploying to edge network...",
     "$ testing in headless Chrome...",
@@ -233,18 +233,22 @@ export function AutoBuildModal({ open, onOpenChange, signal }: AutoBuildModalPro
                     animate={{ scale: [1, 1.2, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   />
-                  <span className="font-mono text-[10px] sm:text-xs text-primary/80 uppercase tracking-wider">Coming Soon</span>
+                  <span className="font-mono text-[10px] sm:text-xs text-primary/80 uppercase tracking-wider">
+                    Coming Soon
+                  </span>
                 </div>
 
                 <h3 className="text-base sm:text-lg font-light text-white mb-2">{waitlistTitle}</h3>
-                <p className="text-xs sm:text-sm text-white/60 mb-4 sm:mb-6 max-w-md mx-auto px-2">{waitlistDescription}</p>
+                <p className="text-xs sm:text-sm text-white/60 mb-4 sm:mb-6 max-w-md mx-auto px-2">
+                  {waitlistDescription}
+                </p>
 
-              <WaitlistForm
-                feature="builds"
-                buttonText="Join Waitlist"
-                variant="default"
-                className="w-full justify-center"
-              />
+                <WaitlistForm
+                  feature="builds"
+                  buttonText="Join Waitlist"
+                  variant="default"
+                  className="w-full justify-center"
+                />
               </motion.div>
             )}
           </AnimatePresence>
