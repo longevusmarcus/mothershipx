@@ -137,7 +137,7 @@ export function AutoBuildModal({ open, onOpenChange, signal }: AutoBuildModalPro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl p-0 overflow-hidden bg-black border-primary/20 [&>button]:text-white [&>button]:hover:text-white/80">
+      <DialogContent className="max-w-[95vw] sm:max-w-2xl p-0 overflow-hidden bg-black border-primary/20 [&>button]:text-white [&>button]:hover:text-white/80 max-h-[90vh] overflow-y-auto">
         {/* Matrix rain effect background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="matrix-rain" />
@@ -147,65 +147,65 @@ export function AutoBuildModal({ open, onOpenChange, signal }: AutoBuildModalPro
         <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px] opacity-20" />
 
         {/* Content */}
-        <div className="relative z-10 p-8">
+        <div className="relative z-10 p-4 sm:p-8">
           {/* Header */}
-          <div className="flex items-center gap-4 mb-6">
-            <div className="relative">
-              <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border border-primary/30">
-                <img src={mascotUfo} alt="MothershipX" className="h-9 w-9 object-contain" />
+          <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <div className="relative shrink-0">
+              <div className="h-10 w-10 sm:h-14 sm:w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border border-primary/30">
+                <img src={mascotUfo} alt="MothershipX" className="h-6 w-6 sm:h-9 sm:w-9 object-contain" />
               </div>
               <motion.div
-                className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-primary"
+                className="absolute -top-1 -right-1 h-2 w-2 sm:h-3 sm:w-3 rounded-full bg-primary"
                 animate={{ opacity: [1, 0.3, 1] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
               />
             </div>
-            <div>
-              <h2 className="font-mono text-lg text-white tracking-wide">Super_Lovable</h2>
-              <p className="font-mono text-xs text-white/60">
+            <div className="min-w-0">
+              <h2 className="font-mono text-sm sm:text-lg text-white tracking-wide">Super_Lovable</h2>
+              <p className="font-mono text-[10px] sm:text-xs text-white/60 truncate">
                 autonomous builder protocol v1.0 (on top of Claude & Lovable)
               </p>
             </div>
           </div>
 
           {/* Terminal window */}
-          <div className="bg-black/80 rounded-lg border border-primary/20 p-4 font-mono text-sm min-h-[280px]">
+          <div className="bg-black/80 rounded-lg border border-primary/20 p-3 sm:p-4 font-mono text-xs sm:text-sm min-h-[200px] sm:min-h-[280px] max-h-[40vh] sm:max-h-none overflow-y-auto">
             {/* Terminal header */}
-            <div className="flex items-center gap-2 mb-4 pb-3 border-b border-primary/10">
+            <div className="flex items-center gap-2 mb-3 sm:mb-4 pb-2 sm:pb-3 border-b border-primary/10">
               <div className="flex gap-1.5">
-                <div className="h-2.5 w-2.5 rounded-full bg-destructive/80" />
-                <div className="h-2.5 w-2.5 rounded-full bg-warning/80" />
-                <div className="h-2.5 w-2.5 rounded-full bg-success/80" />
+                <div className="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-destructive/80" />
+                <div className="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-warning/80" />
+                <div className="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-success/80" />
               </div>
-              <span className="text-primary/40 text-xs ml-2">{terminalPath}</span>
+              <span className="text-primary/40 text-[10px] sm:text-xs ml-2 truncate">{terminalPath}</span>
             </div>
 
             {/* Terminal output */}
-            <div className="space-y-1.5">
+            <div className="space-y-1 sm:space-y-1.5">
               {completedLines.map((line, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="flex items-center gap-2"
+                  className="flex items-start gap-2"
                 >
-                  <span className="text-green-400">✓</span>
-                  <span className="text-white/70">{line}</span>
+                  <span className="text-green-400 shrink-0">✓</span>
+                  <span className="text-white/70 break-words">{line}</span>
                 </motion.div>
               ))}
 
               {!isTypingComplete && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-start gap-2">
                   <motion.span
-                    className="text-white"
+                    className="text-white shrink-0"
                     animate={{ opacity: [1, 0.5, 1] }}
                     transition={{ duration: 0.8, repeat: Infinity }}
                   >
                     ▶
                   </motion.span>
-                  <span className="text-white">{currentText}</span>
+                  <span className="text-white break-words">{currentText}</span>
                   <motion.span
-                    className="inline-block w-2 h-4 bg-white"
+                    className="inline-block w-1.5 sm:w-2 h-3 sm:h-4 bg-white shrink-0"
                     animate={{ opacity: [1, 0, 1] }}
                     transition={{ duration: 0.5, repeat: Infinity }}
                   />
@@ -221,19 +221,19 @@ export function AutoBuildModal({ open, onOpenChange, signal }: AutoBuildModalPro
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="mt-6 text-center"
+                className="mt-4 sm:mt-6 text-center"
               >
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
+                <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary/10 border border-primary/20 mb-3 sm:mb-4">
                   <motion.div
-                    className="h-2 w-2 rounded-full bg-primary"
+                    className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-primary"
                     animate={{ scale: [1, 1.2, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   />
-                  <span className="font-mono text-xs text-primary/80 uppercase tracking-wider">Coming Soon</span>
+                  <span className="font-mono text-[10px] sm:text-xs text-primary/80 uppercase tracking-wider">Coming Soon</span>
                 </div>
 
-                <h3 className="text-lg font-light text-white mb-2">{waitlistTitle}</h3>
-                <p className="text-sm text-white/60 mb-6 max-w-md mx-auto">{waitlistDescription}</p>
+                <h3 className="text-base sm:text-lg font-light text-white mb-2">{waitlistTitle}</h3>
+                <p className="text-xs sm:text-sm text-white/60 mb-4 sm:mb-6 max-w-md mx-auto px-2">{waitlistDescription}</p>
 
                 <WaitlistForm
                   feature="builds"
