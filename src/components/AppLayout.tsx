@@ -4,6 +4,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { NotificationsDropdown } from "@/components/NotificationsDropdown";
+import { SuperModeButton } from "@/components/SuperModeButton";
 import { WelcomeChatbot } from "@/components/WelcomeChatbot";
 import { AuthModal } from "@/components/AuthModal";
 import { motion, AnimatePresence } from "framer-motion";
@@ -94,6 +95,7 @@ export function AppLayout({ children, hideChrome = false }: AppLayoutProps) {
               </div>
             </div>
             <div className="flex items-center gap-2 md:gap-3">
+              <SuperModeButton />
               <NotificationsDropdown />
               <ThemeToggle />
               

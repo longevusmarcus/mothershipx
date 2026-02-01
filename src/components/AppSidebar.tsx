@@ -12,14 +12,14 @@ import {
   ExternalLink,
   LogIn,
   Trophy,
-  Zap,
+  
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { AuthModal } from "@/components/AuthModal";
-import { AutoBuildModal } from "@/components/AutoBuildModal";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -47,7 +47,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
     return saved === "true";
   });
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [superModeOpen, setSuperModeOpen] = useState(false);
+  
   const [headerHovered, setHeaderHovered] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -253,42 +253,6 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
           </AnimatePresence>
         </div>
 
-        {/* Super Mode Switcher */}
-        <div className="mt-auto pt-4">
-          <button
-            onClick={() => setSuperModeOpen(true)}
-            className={cn(
-              "group w-full flex items-center gap-3 px-2 py-2 rounded-md text-sm transition-all",
-              "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent"
-            )}
-          >
-            <motion.div
-              whileHover={{ scale: 1.15, rotate: 8 }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 400, damping: 17 }}
-              className="relative"
-            >
-              <Zap className="h-4 w-4 shrink-0 transition-colors group-hover:text-primary" />
-              <motion.div
-                className="absolute inset-0 rounded-full bg-primary/20"
-                animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-            </motion.div>
-            <AnimatePresence mode="wait">
-              {(!collapsed || isMobile) && (
-                <motion.div
-                  initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: "auto" }}
-                  exit={{ opacity: 0, width: 0 }}
-                  className="flex items-center gap-2 overflow-hidden whitespace-nowrap"
-                >
-                  <span className="font-mono text-xs tracking-wide">Super Mode</span>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </button>
-        </div>
       </nav>
 
       {/* Profile Section */}
@@ -376,7 +340,6 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
       </AnimatePresence>
 
       <AuthModal open={showAuthModal} onOpenChange={setShowAuthModal} />
-      <AutoBuildModal open={superModeOpen} onOpenChange={setSuperModeOpen} />
     </motion.aside>
   );
 }
