@@ -137,7 +137,11 @@ export function AutoBuildModal({ open, onOpenChange, signal }: AutoBuildModalPro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="!left-1/2 !-translate-x-1/2 w-[92vw] sm:w-full sm:max-w-2xl p-0 overflow-hidden bg-black border-primary/20 [&>button]:text-white [&>button]:hover:text-white/80 max-h-[85vh] overflow-y-auto rounded-lg">
+      <DialogContent
+        className={
+          "!left-0 !right-0 !translate-x-0 mx-auto w-[calc(100vw-1.5rem)] sm:!left-1/2 sm:!right-auto sm:!-translate-x-1/2 sm:w-full sm:max-w-2xl p-0 overflow-hidden bg-black border-primary/20 [&>button]:text-white [&>button]:hover:text-white/80 max-h-[85vh] overflow-y-auto rounded-lg"
+        }
+      >
         {/* Matrix rain effect background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="matrix-rain" />
@@ -162,7 +166,7 @@ export function AutoBuildModal({ open, onOpenChange, signal }: AutoBuildModalPro
             </div>
             <div className="min-w-0">
               <h2 className="font-mono text-sm sm:text-lg text-white tracking-wide">Super_Lovable</h2>
-              <p className="font-mono text-[10px] sm:text-xs text-white/60 truncate">
+              <p className="font-mono text-[10px] sm:text-xs text-white/60 break-words">
                 autonomous builder protocol v1.0 (on top of Claude & Lovable)
               </p>
             </div>
@@ -235,12 +239,12 @@ export function AutoBuildModal({ open, onOpenChange, signal }: AutoBuildModalPro
                 <h3 className="text-base sm:text-lg font-light text-white mb-2">{waitlistTitle}</h3>
                 <p className="text-xs sm:text-sm text-white/60 mb-4 sm:mb-6 max-w-md mx-auto px-2">{waitlistDescription}</p>
 
-                <WaitlistForm
-                  feature="builds"
-                  buttonText="Join Waitlist"
-                  variant="default"
-                  className="justify-center"
-                />
+              <WaitlistForm
+                feature="builds"
+                buttonText="Join Waitlist"
+                variant="default"
+                className="w-full justify-center"
+              />
               </motion.div>
             )}
           </AnimatePresence>
