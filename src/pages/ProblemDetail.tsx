@@ -31,7 +31,7 @@ import { TeamFormation } from "@/components/TeamFormation";
 import { SubscriptionPaywall } from "@/components/SubscriptionPaywall";
 import { SubscriptionLoadingGate } from "@/components/SubscriptionLoadingGate";
 import { PromptsGenerator } from "@/components/PromptsGenerator";
-import { AutoBuildModal } from "@/components/AutoBuildModal";
+
 import { ProblemDashboardOnboarding } from "@/components/ProblemDashboardOnboarding";
 import { ProblemEvidenceSection } from "@/components/ProblemEvidenceSection";
 import { BuildWithLovableModal } from "@/components/BuildWithLovableModal";
@@ -53,7 +53,7 @@ import { useSolutions } from "@/hooks/useSolutions";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { cn } from "@/lib/utils";
-import mascotUfo from "@/assets/mascot-ufo.png";
+
 
 const formatNumber = (num: number): string => {
   if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
@@ -110,7 +110,7 @@ const ProblemDetail = () => {
   const [isSaved, setIsSaved] = useState(false);
   const [searchCompetitors, setSearchCompetitors] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
-  const [autoBuildOpen, setAutoBuildOpen] = useState(false);
+  
   const [buildModalOpen, setBuildModalOpen] = useState(false);
   const [bulkLaunchOpen, setBulkLaunchOpen] = useState(false);
   const [joinFirstAlertOpen, setJoinFirstAlertOpen] = useState(false);
@@ -939,27 +939,8 @@ const ProblemDetail = () => {
         </Tabs>
       </div>
 
-      {/* Floating Buttons Container */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3 items-center">
-        {/* Auto-Build Button - Mascot only, no container */}
-        <motion.button
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-          onClick={() => setAutoBuildOpen(true)}
-          className="hover:scale-110 active:scale-95 transition-transform"
-          aria-label="Auto-build ideas"
-        >
-          <div className="relative">
-            <img src={mascotUfo} alt="Auto-build" className="h-14 w-14 object-contain drop-shadow-lg" />
-            <motion.div
-              className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-primary"
-              animate={{ opacity: [1, 0.3, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-          </div>
-        </motion.button>
-
+      {/* Floating Submit Button */}
+      <div className="fixed bottom-6 right-6 z-50">
         {/* Submit Build Button */}
         <motion.button
           initial={{ scale: 0, opacity: 0 }}
@@ -997,17 +978,6 @@ const ProblemDetail = () => {
           <Plus className="h-6 w-6 transition-transform group-hover:rotate-90" />
         </motion.button>
       </div>
-
-      {/* Auto-Build Modal */}
-      <AutoBuildModal
-        open={autoBuildOpen}
-        onOpenChange={setAutoBuildOpen}
-        signal={{
-          title: problem.title,
-          niche: problem.niche,
-          category: problem.category,
-        }}
-      />
 
       {/* Subscription Paywall */}
       <SubscriptionPaywall
