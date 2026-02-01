@@ -84,29 +84,11 @@ export function SignalOfTheDayModal({ open, onOpenChange, problems }: SignalOfTh
         {/* Content */}
         <div className="relative z-10 p-6">
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <motion.div 
-                className="h-12 w-12 relative"
-                animate={isRevealing ? { 
-                  y: [0, -5, 0],
-                  rotate: [0, 5, -5, 0]
-                } : { y: [0, -3, 0] }}
-                transition={isRevealing ? { duration: 0.5, repeat: 2 } : { duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <img 
-                  src={mascotUfo} 
-                  alt="Signal" 
-                  className="w-full h-full object-contain drop-shadow-lg"
-                />
-              </motion.div>
-              <div>
-                <h2 className="font-mono text-base text-white tracking-wide">Signal of the Day</h2>
-                <p className="font-mono text-[10px] text-white/50 uppercase tracking-wider">
-                  your daily opportunity
-                </p>
-              </div>
-            </div>
+          <div className="mb-6">
+            <h2 className="font-mono text-base text-white tracking-wide">Signal of the Day</h2>
+            <p className="font-mono text-[10px] text-white/50 uppercase tracking-wider">
+              your daily opportunity
+            </p>
           </div>
 
           {/* Main Content Area */}
@@ -120,42 +102,46 @@ export function SignalOfTheDayModal({ open, onOpenChange, problems }: SignalOfTh
                   exit={{ opacity: 0 }}
                   className="flex-1 flex flex-col items-center justify-center py-8"
                 >
-                  {/* Mascot flying toward planet */}
-                  <div className="mb-6 relative h-24 w-full flex items-center justify-center">
-                    {/* Planet */}
+                  {/* Mascot and planet flying together */}
+                  <div className="mb-6 relative h-28 w-full flex items-center justify-center">
+                    {/* Combined flying group */}
                     <motion.div
-                      className="absolute right-8"
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                    >
-                      <img 
-                        src={mothershipPlanet} 
-                        alt="Planet" 
-                        className="h-16 w-16 object-contain opacity-80"
-                      />
-                    </motion.div>
-                    
-                    {/* Flying mascot */}
-                    <motion.div
-                      className="absolute left-8"
+                      className="flex items-center gap-2"
                       animate={{ 
-                        x: [0, 20, 0],
-                        y: [0, -5, 0]
+                        x: [0, 15, 0],
+                        y: [0, -8, 0]
                       }}
                       transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                     >
-                      <img 
+                      {/* Mascot */}
+                      <motion.img 
                         src={mascotUfo} 
                         alt="Mascot" 
-                        className="h-14 w-14 object-contain drop-shadow-lg"
+                        className="h-16 w-16 object-contain drop-shadow-lg"
+                        animate={{ rotate: [0, 3, -3, 0] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                      />
+                      
+                      {/* Planet */}
+                      <motion.img 
+                        src={mothershipPlanet} 
+                        alt="Planet" 
+                        className="h-14 w-14 object-contain opacity-90"
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
                       />
                     </motion.div>
                     
                     {/* Trail particles */}
                     <motion.div
-                      className="absolute left-6 top-1/2 w-8 h-0.5 bg-gradient-to-r from-primary/50 to-transparent rounded-full"
-                      animate={{ opacity: [0, 0.5, 0], x: [-5, -15] }}
-                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
+                      className="absolute left-1/4 top-1/2 -translate-y-1/2 w-12 h-0.5 bg-gradient-to-r from-primary/40 to-transparent rounded-full"
+                      animate={{ opacity: [0, 0.6, 0], x: [-10, -30] }}
+                      transition={{ duration: 1.2, repeat: Infinity, ease: "easeOut" }}
+                    />
+                    <motion.div
+                      className="absolute left-1/4 top-1/2 -translate-y-1/2 mt-2 w-8 h-0.5 bg-gradient-to-r from-primary/30 to-transparent rounded-full"
+                      animate={{ opacity: [0, 0.4, 0], x: [-5, -25] }}
+                      transition={{ duration: 1.4, repeat: Infinity, ease: "easeOut", delay: 0.2 }}
                     />
                   </div>
 
