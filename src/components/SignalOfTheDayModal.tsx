@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, ArrowRight, TrendingUp, Zap } from "lucide-react";
+import { ArrowRight, TrendingUp } from "lucide-react";
 import { Problem } from "@/types/database";
 import { cn } from "@/lib/utils";
+import mascotUfo from "@/assets/mascot-ufo.png";
+import mothershipPlanet from "@/assets/mothership-planet.png";
 
 interface SignalOfTheDayModalProps {
   open: boolean;
@@ -85,14 +87,18 @@ export function SignalOfTheDayModal({ open, onOpenChange, problems }: SignalOfTh
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <motion.div 
-                className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border border-primary/30"
+                className="h-12 w-12 relative"
                 animate={isRevealing ? { 
-                  rotate: [0, 360],
-                  scale: [1, 1.1, 1]
-                } : {}}
-                transition={{ duration: 0.8, ease: "easeInOut" }}
+                  y: [0, -5, 0],
+                  rotate: [0, 5, -5, 0]
+                } : { y: [0, -3, 0] }}
+                transition={isRevealing ? { duration: 0.5, repeat: 2 } : { duration: 2, repeat: Infinity, ease: "easeInOut" }}
               >
-                <Zap className="h-5 w-5 text-primary" />
+                <img 
+                  src={mascotUfo} 
+                  alt="Signal" 
+                  className="w-full h-full object-contain drop-shadow-lg"
+                />
               </motion.div>
               <div>
                 <h2 className="font-mono text-base text-white tracking-wide">Signal of the Day</h2>
@@ -107,28 +113,51 @@ export function SignalOfTheDayModal({ open, onOpenChange, problems }: SignalOfTh
           <div className="min-h-[200px] flex flex-col">
             <AnimatePresence mode="wait">
               {!revealed && !isRevealing && (
-                <motion.div
+              <motion.div
                   key="prompt"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   className="flex-1 flex flex-col items-center justify-center py-8"
                 >
-                  <motion.div
-                    className="mb-6 relative"
-                    animate={{ y: [0, -8, 0] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                  >
-                    <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center border border-primary/40">
-                      <Sparkles className="h-8 w-8 text-primary" />
-                    </div>
-                    {/* Glow ring */}
+                  {/* Mascot flying toward planet */}
+                  <div className="mb-6 relative h-24 w-full flex items-center justify-center">
+                    {/* Planet */}
                     <motion.div
-                      className="absolute inset-0 rounded-2xl border-2 border-primary/30"
-                      animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0, 0.5] }}
-                      transition={{ duration: 2, repeat: Infinity }}
+                      className="absolute right-8"
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                    >
+                      <img 
+                        src={mothershipPlanet} 
+                        alt="Planet" 
+                        className="h-16 w-16 object-contain opacity-80"
+                      />
+                    </motion.div>
+                    
+                    {/* Flying mascot */}
+                    <motion.div
+                      className="absolute left-8"
+                      animate={{ 
+                        x: [0, 20, 0],
+                        y: [0, -5, 0]
+                      }}
+                      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                    >
+                      <img 
+                        src={mascotUfo} 
+                        alt="Mascot" 
+                        className="h-14 w-14 object-contain drop-shadow-lg"
+                      />
+                    </motion.div>
+                    
+                    {/* Trail particles */}
+                    <motion.div
+                      className="absolute left-6 top-1/2 w-8 h-0.5 bg-gradient-to-r from-primary/50 to-transparent rounded-full"
+                      animate={{ opacity: [0, 0.5, 0], x: [-5, -15] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
                     />
-                  </motion.div>
+                  </div>
 
                   <p className="text-white/60 font-mono text-sm text-center mb-6">
                     Discover today's top<br />opportunity picked for you
