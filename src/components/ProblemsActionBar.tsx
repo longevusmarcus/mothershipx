@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Search } from "lucide-react";
+import { RefreshCw, LayoutGrid, Search } from "lucide-react";
 import { ProblemsFilterPopover } from "@/components/ProblemsFilterPopover";
 import { ColumnCount } from "@/components/MasonryGrid";
 import {
@@ -9,6 +9,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import mascotUfo from "@/assets/mascot-ufo.png";
 
 interface FilterState {
   sources: string[];
@@ -18,6 +19,7 @@ interface FilterState {
 interface ProblemsActionBarProps {
   isRefreshing: boolean;
   onRefresh: () => void;
+  onAutoBuild: () => void;
   filters: FilterState;
   onFiltersChange: (filters: FilterState) => void;
   columnCount: ColumnCount;
@@ -28,6 +30,7 @@ interface ProblemsActionBarProps {
 export function ProblemsActionBar({
   isRefreshing,
   onRefresh,
+  onAutoBuild,
   filters,
   onFiltersChange,
   columnCount,
@@ -75,6 +78,33 @@ export function ProblemsActionBar({
             background: "radial-gradient(ellipse at top, hsl(var(--primary) / 0.03), transparent 70%)",
           }}
         />
+
+        {/* Auto-Build Mascot */}
+        <motion.button
+          onClick={onAutoBuild}
+          className="relative flex items-center justify-center cursor-pointer -ml-1 mt-0.5"
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: "spring", stiffness: 400, damping: 17 }}
+        >
+          <img
+            src={mascotUfo}
+            alt="Auto-build"
+            className="h-14 w-14 object-contain drop-shadow-md opacity-80 hover:opacity-100 transition-opacity duration-200"
+            style={{ 
+              imageRendering: "auto",
+              filter: "drop-shadow(0 2px 4px hsl(var(--foreground) / 0.1))"
+            }}
+          />
+          <motion.div
+            className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-primary"
+            animate={{ opacity: [1, 0.3, 1], scale: [1, 0.9, 1] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </motion.button>
+
+        {/* Divider */}
+        <div className="w-px h-5 bg-border/30" />
 
         {/* Filter Popover */}
         <motion.div

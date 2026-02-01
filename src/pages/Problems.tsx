@@ -165,6 +165,7 @@ const Problems = () => {
           <ProblemsActionBar
             isRefreshing={isRefreshing}
             onRefresh={handleRefreshData}
+            onAutoBuild={() => setAutoBuildOpen(true)}
             filters={filters}
             onFiltersChange={handleFiltersChange}
             columnCount={columnCount}
