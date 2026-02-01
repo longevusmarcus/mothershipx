@@ -14,7 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
-import { AutoBuildModal } from "@/components/AutoBuildModal";
+import { SignalOfTheDayModal } from "@/components/SignalOfTheDayModal";
 import { ProblemsActionBar } from "@/components/ProblemsActionBar";
 
 const COLUMNS_KEY = "mothership_columns_count";
@@ -35,7 +35,7 @@ const Problems = () => {
   });
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [autoBuildOpen, setAutoBuildOpen] = useState(false);
+  const [signalOfDayOpen, setSignalOfDayOpen] = useState(false);
   const [filters, setFilters] = useState<FilterState>(() => {
     const saved = localStorage.getItem(FILTERS_KEY);
     return saved ? JSON.parse(saved) : { sources: [], formats: [] };
@@ -165,7 +165,7 @@ const Problems = () => {
           <ProblemsActionBar
             isRefreshing={isRefreshing}
             onRefresh={handleRefreshData}
-            onAutoBuild={() => setAutoBuildOpen(true)}
+            onAutoBuild={() => setSignalOfDayOpen(true)}
             filters={filters}
             onFiltersChange={handleFiltersChange}
             columnCount={columnCount}
@@ -174,8 +174,38 @@ const Problems = () => {
           />
         )}
 
-        {/* Auto-Build Modal */}
-        <AutoBuildModal open={autoBuildOpen} onOpenChange={setAutoBuildOpen} />
+        {/* Signal of the Day Modal */}
+        <SignalOfTheDayModal 
+          open={signalOfDayOpen} 
+          onOpenChange={setSignalOfDayOpen} 
+          problems={filteredProblems.map(p => ({
+            id: p.dbId || p.id,
+            title: p.title,
+            subtitle: p.subtitle || null,
+            category: p.category,
+            niche: p.niche || p.category,
+            sentiment: p.sentiment as any,
+            opportunity_score: p.opportunityScore,
+            market_size: p.marketSize || null,
+            demand_velocity: p.demandVelocity || 0,
+            competition_gap: p.competitionGap || 0,
+            views: p.views || 0,
+            saves: p.saves || 0,
+            shares: p.shares || 0,
+            trending_rank: p.trendingRank || null,
+            is_viral: p.isViral || false,
+            slots_total: p.slotsTotal || 10,
+            slots_filled: p.slotsFilled || 0,
+            active_builders_last_24h: p.activeBuildersLast24h || 0,
+            sources: p.sources?.map(s => ({ source: s.source as any, metric: s.metric, value: s.value })) || [],
+            pain_points: p.painPoints || [],
+            hidden_insight: null,
+            discovered_at: p.discoveredAt || new Date().toISOString(),
+            peak_prediction: p.peakPrediction || null,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          }))} 
+        />
 
         {/* Categories */}
         <motion.div
